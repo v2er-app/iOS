@@ -25,13 +25,14 @@ struct TabBar: View {
                     VStack (spacing: 0) {
                         Capsule()
                             .fill(self.selectedId == tab.id ? Color("indictor") : Color.clear)
-                            .frame(height: 3)
+                            .frame(height: 2.5)
                             .cornerRadius(0)
                         
                         Image(tab.icon)
+                            .resizable()
                             .scaledToFit()
-                            .frame(width: 25, height: 25)
-                            .padding(.top, 4)
+                            .frame(height: 23)
+                            .padding(.top, 6)
                             .padding(.bottom, 2)
                         Text(tab.text)
                             .font(.caption)
@@ -87,7 +88,7 @@ struct TabBar_Previews : PreviewProvider {
         VStack {
             Spacer()
             TabBar(selectedId: $selected)
-            .background(VEBlur())
+                .background(VEBlur())
         }
     }
     

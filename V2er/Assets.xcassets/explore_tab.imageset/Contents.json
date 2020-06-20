@@ -1,15 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "explore_tab.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "tab_node.png",
+      "filename" : "explore_tab@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "explore_tab@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
