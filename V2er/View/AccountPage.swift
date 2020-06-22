@@ -10,7 +10,9 @@ import SwiftUI
 
 struct AccountPage: View {
     var body: some View {
-        Text("AccountPage")
+        GeometryReader{ _ in
+            Text("ME")
+        }
     }
 }
 

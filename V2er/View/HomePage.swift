@@ -10,8 +10,48 @@ import SwiftUI
 
 struct HomePage: View {
     var body: some View {
-        Text("Home")
+        GeometryReader{ _ in
+            VStack(spacing: 0) {
+                self.topBar()
+                Divider()
+                    .frame(height: 0.1)
+//                    .padding(.horizontal, 16)
+                Spacer()
+            }
+        }
     }
+    
+    func topBar() -> some View {
+        ZStack {
+            HStack {
+                Button (action: {
+                    
+                }) {
+                   Image(systemName: "square.grid.2x2")
+                    .foregroundColor(.primary)
+                    .font(.system(size: 22))
+                    .padding(5)
+                }
+                Spacer()
+                Button (action: {
+                    //
+                }) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.primary)
+                        .font(.system(size: 22))
+                        .padding(5)
+                }
+                
+            }.padding()
+            
+            Text("V2EX")
+                .font(.title)
+                .fontWeight(.heavy)
+        }
+//        .background(Color.red)
+//        .background(VEBlur())
+    }
+    
 }
 
 struct HomePage_Previews: PreviewProvider {

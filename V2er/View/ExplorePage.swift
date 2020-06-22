@@ -10,7 +10,9 @@ import SwiftUI
 
 struct ExplorePage: View {
     var body: some View {
-        Text("ExplorePage")
+        GeometryReader{ _ in
+            Text("ExplorePage")
+        }
     }
 }
 

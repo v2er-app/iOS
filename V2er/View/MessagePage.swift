@@ -10,7 +10,9 @@ import SwiftUI
 
 struct MessagePage: View {
     var body: some View {
-        Text("MessagePage")
+        GeometryReader{ _ in
+            Text("Message")
+        }
     }
 }
 

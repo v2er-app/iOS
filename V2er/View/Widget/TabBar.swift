@@ -42,7 +42,7 @@ struct TabBar: View {
                     .padding(.horizontal, 12)
                 }
             }
-        }
+        }.background(VEBlur())
     }
     
     func bg(isSelected : Bool) -> some View {

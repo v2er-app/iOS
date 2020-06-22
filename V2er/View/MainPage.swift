@@ -18,7 +18,6 @@ struct MainPage: View {
                 .edgesIgnoringSafeArea(.all)
             VStack(spacing: 0) {
                 containedView()
-                Spacer()
                 Divider().frame(height: 0.1)
                 TabBar(selectedId: $selectedId)
             }
