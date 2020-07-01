@@ -17,41 +17,47 @@ struct TabBar: View {
                 TabItem(id: TabId.me, text: "Me", icon: "me_tab")]
     
     var body: some View {
-        HStack {
-            ForEach (self.tabs, id: \.self) { tab in
-                Button(action: {
-                    self.selectedId = tab.id
-                }) {
-                    VStack (spacing: 0) {
-                        Capsule()
-                            .fill(self.selectedId == tab.id ? Color("indictor") : Color.clear)
-                            .frame(height: 2.5)
-                            .cornerRadius(0)
-                        
-                        Image(tab.icon)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 23)
-                            .padding(.top, 6)
-                            .padding(.bottom, 2)
-                        Text(tab.text)
-                            .font(.caption)
+        VStack(spacing: 0) {
+            Divider().frame(height: 0.1)
+            HStack {
+                ForEach (self.tabs, id: \.self) { tab in
+                    Button(action: {
+                        self.selectedId = tab.id
+                    }){
+                        VStack (spacing: 0) {
+                            Color(self.selectedId == tab.id ? "indictor" : "clear")
+                                .frame(height: 3)
+                                .cornerRadius(0)
+                            Image(tab.icon)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 23)
+                                .padding(.top, 8)
+                                .padding(.bottom, 2.5)
+                            Text(tab.text)
+                                .font(.caption)
+                                .padding(.bottom, 8)
+                        }
+                        .foregroundColor(Color(self.selectedId == tab.id ? "selected" : "unselected"))
+                        .background(self.bg(isSelected: self.selectedId == tab.id))
+                        .padding(.horizontal, 12)
                     }
-                    .foregroundColor(Color(self.selectedId == tab.id ? "selected" : "unselected"))
-                    .background(self.bg(isSelected: self.selectedId == tab.id))
-                    .padding(.horizontal, 12)
                 }
             }
-        }.background(VEBlur())
+        }
+        .padding(.bottom, safeAreaInsets()?.bottom)
+        .background(VEBlur(style: .systemMaterial))
     }
+    
     
     func bg(isSelected : Bool) -> some View {
         return LinearGradient(
             gradient:Gradient(colors: isSelected ?
-                [Color(0xBFBFBF, a: 0.2), Color(0xBFBFBF, a: 0.1), Color(0xBFBFBF, a: 0.05), Color(0xBFBFBF, a: 0.01)] : [])
+                                [Color(0xBFBFBF, a: 0.2), Color(0xBFBFBF, a: 0.1), Color(0xBFBFBF, a: 0.05), Color(0xBFBFBF, a: 0.01)] : [])
             , startPoint: .top, endPoint: .bottom)
             .padding(.top, 3)
     }
+    
 }
 
 
@@ -89,7 +95,7 @@ struct TabBar_Previews : PreviewProvider {
             Spacer()
             TabBar(selectedId: $selected)
                 .background(VEBlur())
-        }
+        }.edgesIgnoringSafeArea(.bottom)
     }
     
 }

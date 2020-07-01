@@ -1,5 +1,5 @@
 //
-//  ExplorePage.swift
+//  MePage.swift
 //  V2er
 //
 //  Created by Seth on 2020/5/25.
@@ -8,16 +8,16 @@
 
 import SwiftUI
 
-struct ExplorePage: View {
+struct MePage: View {
     var body: some View {
         GeometryReader{ _ in
-            Text("ExplorePage")
+            Text("ME")
         }
     }
 }
 
-struct ExplorePage_Previews: PreviewProvider {
+struct AccountPage_Previews: PreviewProvider {
     static var previews: some View {
-        ExplorePage()
+        MePage()
     }
 }
