@@ -11,10 +11,10 @@ import SwiftUI
 extension View {
     
     public func safeAreaInsets() -> UIEdgeInsets? {
-        let window = UIApplication.shared.windows.first { $0.isKeyWindow }
-        return window?.safeAreaInsets
+        let window = UIApplication.shared.windows[0]
+        let insets = window.safeAreaInsets
+        print("insets.top: \(insets.top)")
+        return insets;
     }
-    
-    
     
 }

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct TabBar: View {
-    @Binding var selectedId : TabId
+    @Binding var selectedTab : TabId
     
     var tabs = [TabItem(id: TabId.feed, text: "Feed", icon: "feed_tab"),
                 TabItem(id: TabId.explore, text: "Explore", icon: "explore_tab"),
@@ -22,25 +22,25 @@ struct TabBar: View {
             HStack {
                 ForEach (self.tabs, id: \.self) { tab in
                     Button(action: {
-                        self.selectedId = tab.id
+                        self.selectedTab = tab.id
                     }){
                         VStack (spacing: 0) {
-                            Color(self.selectedId == tab.id ? "indictor" : "clear")
+                            Color(self.selectedTab == tab.id ? "indictor" : "clear")
                                 .frame(height: 3)
                                 .cornerRadius(0)
                             Image(tab.icon)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(height: 23)
-                                .padding(.top, 8)
+                                .frame(height: 20)
+                                .padding(.top, 5)
                                 .padding(.bottom, 2.5)
                             Text(tab.text)
                                 .font(.caption)
                                 .padding(.bottom, 8)
                         }
-                        .foregroundColor(Color(self.selectedId == tab.id ? "selected" : "unselected"))
-                        .background(self.bg(isSelected: self.selectedId == tab.id))
-                        .padding(.horizontal, 12)
+                        .foregroundColor(Color(self.selectedTab == tab.id ? "selected" : "unselected"))
+                        .background(self.bg(isSelected: self.selectedTab == tab.id))
+                        .padding(.horizontal, 16)
                     }
                 }
             }
@@ -62,7 +62,7 @@ struct TabBar: View {
 
 
 
-enum TabId {
+enum TabId: String {
     case feed, explore, message, me
 }
 
@@ -93,7 +93,7 @@ struct TabBar_Previews : PreviewProvider {
     static var previews: some View {
         VStack {
             Spacer()
-            TabBar(selectedId: $selected)
+            TabBar(selectedTab: $selected)
                 .background(VEBlur())
         }.edgesIgnoringSafeArea(.bottom)
     }

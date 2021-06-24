@@ -1,32 +1,17 @@
 //
-//  Home.swift
+//  TopBar.swift
 //  V2er
 //
-//  Created by Seth on 2020/5/25.
-//  Copyright © 2020 lessmore.io. All rights reserved.
+//  Created by Seth on 2021/6/24.
+//  Copyright © 2021 lessmore.io. All rights reserved.
 //
 
 import SwiftUI
 
-struct HomePage: View {
-    var body: some View {
-        NavigationView {
-            ZStack(alignment: .top) {
-                ScrollView (.vertical, showsIndicators: false) {
-                    ForEach( 0...60, id: \.self) { i in
-                        Text(" LineLineLineLineLineLineLineLineLine Number \(i)   ")
-                            .background(i % 5 == 0 ? Color.blue : Color.clear)
-                    }
-                    .padding(.top, 100)
-                    .padding(.bottom, 80)
-                }
-                topBar
-            }.navigationBarHidden(true)
-            .edgesIgnoringSafeArea(.top)
-        }
-    }
+struct TopBar: View {
+    @Binding var selectedTab : TabId
     
-    private var topBar : some View {
+    var body: some View {
         VStack(spacing: 0) {
             ZStack {
                 HStack {
@@ -62,11 +47,12 @@ struct HomePage: View {
                 .frame(height: 0.1)
         }
     }
-    
 }
 
-struct HomePage_Previews: PreviewProvider {
+struct TopBar_Previews: PreviewProvider {
+    @State static var selecedTab = TabId.feed
+    
     static var previews: some View {
-        HomePage()
+        TopBar(selectedTab: $selecedTab)
     }
 }
