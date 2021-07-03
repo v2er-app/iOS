@@ -11,54 +11,34 @@ import BxRefreshableScrollView
 
 struct HomePage: View {
     @State var selectedId = TabId.feed
-    @State var loading = false;
-    @State var showMoreData = true;
-    
-    @State private var users : [User] = [User("1"), User("2"),User("3"), User("4"), User("5"), User("6"), User("7"), User("8"), User("9"), User("10"),
-                                         User("1"), User("2"),User("3"), User("4"), User("5"), User("6"), User("7"), User("8"), User("9"), User("10"),
-                                         User("1"), User("2"),User("3"), User("4"), User("5"), User("6"), User("7"), User("8"), User("9"), User("10")]
     
     var body: some View {
-        //        List(users) { user in
-        //            VStack {
-        //                Text(user.id)
-        //                Spacer()
-        //            }
-        //        }
-        //        .ignoresSafeArea()
-        //        ScrollView (.vertical, showsIndicators: false) {
-        //            ForEach( 0...60, id: \.self) { i in
-        //                Text(" LineLineLineLineLineLineLineLineLine Number \(i)   ")
-        //                    .background(i % 5 == 0 ? Color.blue : Color.clear)
-        //            }
-        //        }
-        //        .refreshable {
-        //            print("start to refresh...")
-        //        }
-        
-        RefreshableScrollView(
-            height: 70,
-            refreshing: self.$loading,
-            bottomRefreshable: true,
-            showNoMoreData: $showMoreData,
-            showBottomLoading: $showMoreData
-        ) {
-            VStack {
-                ForEach( 0...60, id: \.self) { i in
-                    Text(" LineLineLineLineLineLineLineLineLine Number \(i)   ")
-                        .background(i % 5 == 0 ? Color.blue : Color.clear)
-                }
+        LazyVStack {
+            ForEach( 0...60, id: \.self) { i in
+                Text(" LineLineLineLineLineLineLineLineLine Number \(i)   ")
+                    .background(i % 5 == 0 ? Color.blue : Color.clear)
             }
         }
-        
+        .onRefresh {
+            print("onRefresh...")
+            let result = await fetchData()
+            print("onRefresh ended...")
+        }
     }
     
     
-    private struct User: Identifiable {
-        var id: String
-        
-        public init(_ id: String) {
-            self.id = id;
+    private func fetchData() async -> [String] {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                let persons = [
+                    "new Person 1",
+                    "new Person 2",
+                    "new Person 3",
+                    "new Person 4"
+                ]
+                continuation.resume(returning: persons)
+            }
+            
         }
     }
     

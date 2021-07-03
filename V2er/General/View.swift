@@ -17,4 +17,18 @@ extension View {
         return insets;
     }
     
+    public func debug() -> some View {
+        self.modifier(DebugModifier())
+    }
+    
+}
+
+
+// Custome ViewModifier
+
+struct DebugModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .border(.red, width: 3)
+    }
 }

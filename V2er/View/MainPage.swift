@@ -12,7 +12,7 @@ struct MainPage: View {
     @State var selecedTab = TabId.feed
     
     var body: some View {
-        Group {
+        VStack {
             switch selecedTab {
                 case TabId.feed: HomePage()
                 case TabId.explore: ExplorePage()
@@ -20,8 +20,8 @@ struct MainPage: View {
                 case TabId.me: MePage()
             }
         }
-        .safeAreaInset(edge: .top) { TopBar(selectedTab: $selecedTab) }
-        .safeAreaInset(edge: .bottom) { TabBar(selectedTab: $selecedTab) }
+        .safeAreaInset(edge: .top, spacing: 0) { TopBar(selectedTab: $selecedTab) }
+        .safeAreaInset(edge: .bottom, spacing: 0) { TabBar(selectedTab: $selecedTab) }
         .edgesIgnoringSafeArea([.bottom, .top])
     }
     
