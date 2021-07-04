@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -19,7 +19,7 @@
 		5D5DA26A24A4939B005BC60F /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5DA26924A4939B005BC60F /* View.swift */; };
 		5D6AAAAA26917E7B00F42A13 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6AAAA926917E7B00F42A13 /* Helper.swift */; };
 		5D6AAAAC2691851100F42A13 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6AAAAB2691851100F42A13 /* Utils.swift */; };
-		5D71DF55247C0FFE00B53ED4 /* HomePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF54247C0FFE00B53ED4 /* HomePage.swift */; };
+		5D71DF55247C0FFE00B53ED4 /* NewsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF54247C0FFE00B53ED4 /* NewsPage.swift */; };
 		5D71DF57247C153C00B53ED4 /* ExplorePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF56247C153C00B53ED4 /* ExplorePage.swift */; };
 		5D71DF59247C155400B53ED4 /* MessagePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF58247C155400B53ED4 /* MessagePage.swift */; };
 		5D71DF5B247C155D00B53ED4 /* MePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF5A247C155D00B53ED4 /* MePage.swift */; };
@@ -66,7 +66,7 @@
 		5D5DA26924A4939B005BC60F /* View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		5D6AAAA926917E7B00F42A13 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		5D6AAAAB2691851100F42A13 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
-		5D71DF54247C0FFE00B53ED4 /* HomePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePage.swift; sourceTree = "<group>"; };
+		5D71DF54247C0FFE00B53ED4 /* NewsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsPage.swift; sourceTree = "<group>"; };
 		5D71DF56247C153C00B53ED4 /* ExplorePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePage.swift; sourceTree = "<group>"; };
 		5D71DF58247C155400B53ED4 /* MessagePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePage.swift; sourceTree = "<group>"; };
 		5D71DF5A247C155D00B53ED4 /* MePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MePage.swift; sourceTree = "<group>"; };
@@ -105,7 +105,7 @@
 		5D179BFD2496F6EC00E40E90 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
-				5DE5B4CB268466AF00569684 /* Refreshable */,
+				5DE5B4CB268466AF00569684 /* Updatable */,
 				5D096A07247ABF5E00EF3E47 /* TabBar.swift */,
 				5D1F4264249713640043F604 /* VEBlur.swift */,
 				5DE5B4C92684601A00569684 /* TopBar.swift */,
@@ -183,7 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				5D436FEC24791C2C00FFA37E /* MainPage.swift */,
-				5D71DF54247C0FFE00B53ED4 /* HomePage.swift */,
+				5D71DF54247C0FFE00B53ED4 /* NewsPage.swift */,
 				5D71DF56247C153C00B53ED4 /* ExplorePage.swift */,
 				5D71DF58247C155400B53ED4 /* MessagePage.swift */,
 				5D71DF5A247C155D00B53ED4 /* MePage.swift */,
@@ -192,7 +192,7 @@
 			path = View;
 			sourceTree = "<group>";
 		};
-		5DE5B4CB268466AF00569684 /* Refreshable */ = {
+		5DE5B4CB268466AF00569684 /* Updatable */ = {
 			isa = PBXGroup;
 			children = (
 				5DE5B4CC268466D800569684 /* UpdatableView.swift */,
@@ -201,7 +201,7 @@
 				5D02BD5E26909146007B6A1B /* LoadmoreIndicatorView.swift */,
 				5D6AAAA926917E7B00F42A13 /* Helper.swift */,
 			);
-			path = Refreshable;
+			path = Updatable;
 			sourceTree = "<group>";
 		};
 		5DE5C577249D90690004DCC6 /* General */ = {
@@ -306,7 +306,6 @@
 			);
 			mainGroup = 5D436FDC24791C2C00FFA37E;
 			packageReferences = (
-				5DE5B4C42684471A00569684 /* XCRemoteSwiftPackageReference "BxRefreshableScrollView" */,
 			);
 			productRefGroup = 5D436FE624791C2C00FFA37E /* Products */;
 			projectDirPath = "";
@@ -361,7 +360,7 @@
 				5DF92A5D26859DDD00E6086E /* HeadIndicatorView.swift in Sources */,
 				5D6AAAAC2691851100F42A13 /* Utils.swift in Sources */,
 				5DE5B4CA2684601A00569684 /* TopBar.swift in Sources */,
-				5D71DF55247C0FFE00B53ED4 /* HomePage.swift in Sources */,
+				5D71DF55247C0FFE00B53ED4 /* NewsPage.swift in Sources */,
 				5D436FED24791C2C00FFA37E /* MainPage.swift in Sources */,
 				5D5DA26A24A4939B005BC60F /* View.swift in Sources */,
 				5D1F4265249713640043F604 /* VEBlur.swift in Sources */,
@@ -682,17 +681,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		5DE5B4C42684471A00569684 /* XCRemoteSwiftPackageReference "BxRefreshableScrollView" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/puretears/BxRefreshableScrollView";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 5D436FDD24791C2C00FFA37E /* Project object */;
 }

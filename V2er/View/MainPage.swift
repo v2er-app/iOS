@@ -14,7 +14,7 @@ struct MainPage: View {
     var body: some View {
         VStack {
             switch selecedTab {
-                case TabId.feed: HomePage()
+                case TabId.feed: NewsPage()
                 case TabId.explore: ExplorePage()
                 case TabId.message: MessagePage()
                 case TabId.me: MePage()

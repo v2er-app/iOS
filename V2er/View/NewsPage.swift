@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct HomePage: View {
+struct NewsPage: View {
     @State var selectedId = TabId.feed
     
     var body: some View {
@@ -52,7 +52,7 @@ struct HomePage: View {
     
     struct HomePage_Previews: PreviewProvider {
         static var previews: some View {
-            HomePage()
+            NewsPage()
         }
     }
 }
