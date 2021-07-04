@@ -35,7 +35,6 @@ struct HeadIndicatorView: View {
             }
         }
         .frame(height: height)
-        .border(.red, width: 2)
         .offset(y: offset)
     }
 }

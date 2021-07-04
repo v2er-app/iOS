@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import BxRefreshableScrollView
 
 struct HomePage: View {
     @State var selectedId = TabId.feed
@@ -19,11 +18,19 @@ struct HomePage: View {
                     .background(i % 5 == 0 ? Color.blue : Color.clear)
             }
         }
-        .onRefresh {
+        .updatable(
+            refresh:
+                {
             print("onRefresh...")
             let result = await fetchData()
             print("onRefresh ended...")
+        },
+            loadMore: {
+            print("onLoadMore...")
+            let result = await fetchData()
+            return true
         }
+        )
     }
     
     
