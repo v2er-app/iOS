@@ -32,7 +32,7 @@ struct TabBar: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 20)
-                                .padding(.top, 5)
+                                .padding(.top, 8)
                                 .padding(.bottom, 2.5)
                             Text(tab.text)
                                 .font(.caption)

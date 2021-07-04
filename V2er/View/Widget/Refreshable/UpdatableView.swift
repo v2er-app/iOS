@@ -44,13 +44,16 @@ struct UpdatableView<Content: View>: View {
         self.onRefresh = onRefresh
         self.onLoadMore = onLoadMore
         self.content = content()
+        log("refreshable: \(refreshable), loadMoreable: \(loadMoreable)")
     }
     
     var body: some View {
         ScrollView {
             ZStack(alignment: .top) {
                 AncorView()
-                HeadIndicatorView(threshold: threshold, progress: $progress, isRefreshing: $isRefreshing).zIndex(9)
+                if refreshable {
+                    HeadIndicatorView(threshold: threshold, progress: $progress, isRefreshing: $isRefreshing).zIndex(9)
+                }
                 VStack {
                     content
                         .anchorPreference(key: ContentBoundsKey.self, value: .bounds) { $0 }
@@ -58,7 +61,6 @@ struct UpdatableView<Content: View>: View {
                         LoadmoreIndicatorView(isLoading: $isLoadingMore, noMoreData: $noMoreData)
                     }
                 }
-                // TODO animation
                 .alignmentGuide(.top, computeValue: { d in (self.isRefreshing ? -self.threshold : 0.0) })
             }
         }
@@ -82,9 +84,10 @@ struct UpdatableView<Content: View>: View {
         scrollY = point.y
         log("scrollY: \(scrollY), lastScrollY: \(lastScrollY), isRefreshing: \(isRefreshing), boundsDelta:\(boundsDelta)")
         progress = min(1, max(scrollY / threshold, 0))
-        if !isRefreshing && scrollY <= threshold && lastScrollY > threshold {
+        if refreshable && !isRefreshing
+            && scrollY <= threshold
+            && lastScrollY > threshold {
             isRefreshing = true
-
             async {
                 await onRefresh?()
                 withAnimation(.easeInOut(duration: 0.3)) {
@@ -106,7 +109,6 @@ struct UpdatableView<Content: View>: View {
                 isLoadingMore = false
             }
         }
-        
         
         lastScrollY = scrollY
     }
@@ -155,8 +157,8 @@ struct FrameContentBoundsDeltaKey: PreferenceKey {
 
 
 extension View {
-    public func updatable(refresh: RefreshAction = {},
-                          loadMore: LoadMoreAction = { return true }) -> some View {
+    public func updatable(refresh: RefreshAction = nil,
+                          loadMore: LoadMoreAction = nil) -> some View {
         self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore))
     }
 }

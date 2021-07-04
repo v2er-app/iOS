@@ -19,17 +19,18 @@ struct HomePage: View {
             }
         }
         .updatable(
-            refresh:
-                {
+            refresh:{
             print("onRefresh...")
             let result = await fetchData()
             print("onRefresh ended...")
-        },
+        }
+            ,
             loadMore: {
             print("onLoadMore...")
             let result = await fetchData()
             return true
         }
+            
         )
     }
     
