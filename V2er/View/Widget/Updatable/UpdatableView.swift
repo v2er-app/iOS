@@ -82,7 +82,7 @@ struct UpdatableView<Content: View>: View {
     
     private func onScroll(point: CGPoint) {
         scrollY = point.y
-        log("scrollY: \(scrollY), lastScrollY: \(lastScrollY), isRefreshing: \(isRefreshing), boundsDelta:\(boundsDelta)")
+//        log("scrollY: \(scrollY), lastScrollY: \(lastScrollY), isRefreshing: \(isRefreshing), boundsDelta:\(boundsDelta)")
         progress = min(1, max(scrollY / threshold, 0))
         if refreshable && !isRefreshing
             && scrollY <= threshold

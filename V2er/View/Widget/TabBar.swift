@@ -35,7 +35,7 @@ struct TabBar: View {
                                 .padding(.top, 8)
                                 .padding(.bottom, 2.5)
                             Text(tab.text)
-                                .font(.caption)
+                                .font(.footnote)
                                 .padding(.bottom, 8)
                         }
                         .foregroundColor(Color(self.selectedTab == tab.id ? "selected" : "unselected"))
@@ -53,7 +53,7 @@ struct TabBar: View {
     func bg(isSelected : Bool) -> some View {
         return LinearGradient(
             gradient:Gradient(colors: isSelected ?
-                                [Color(0xBFBFBF, a: 0.2), Color(0xBFBFBF, a: 0.1), Color(0xBFBFBF, a: 0.05), Color(0xBFBFBF, a: 0.01)] : [])
+                              [Color.hex(0xBFBFBF, alpha: 0.2), Color.hex(0xBFBFBF, alpha: 0.1), Color.hex(0xBFBFBF, alpha: 0.05), Color.hex(0xBFBFBF, alpha: 0.01)] : [])
             , startPoint: .top, endPoint: .bottom)
             .padding(.top, 3)
     }

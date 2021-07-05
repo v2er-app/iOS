@@ -13,9 +13,10 @@ struct NewsPage: View {
     
     var body: some View {
         LazyVStack {
-            ForEach( 0...60, id: \.self) { i in
-                Text(" LineLineLineLineLineLineLineLineLine Number \(i)   ")
-                    .background(i % 5 == 0 ? Color.blue : Color.clear)
+            ForEach( 0...20, id: \.self) { i in
+                NavigationLink(destination: NewsDetailPage()) {
+                    NewsItemView()
+                }
             }
         }
         .updatable(

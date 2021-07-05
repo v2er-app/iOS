@@ -12,17 +12,23 @@ struct MainPage: View {
     @State var selecedTab = TabId.feed
     
     var body: some View {
-        VStack {
-            switch selecedTab {
-                case TabId.feed: NewsPage()
-                case TabId.explore: ExplorePage()
-                case TabId.message: MessagePage()
-                case TabId.me: MePage()
+        NavigationView {
+            VStack {
+                switch selecedTab {
+                    case TabId.feed: NewsPage()
+                    case TabId.explore: ExplorePage()
+                    case TabId.message: MessagePage()
+                    case TabId.me: MePage()
+                }
             }
+            .safeAreaInset(edge: .top, spacing: 0) { TopBar(selectedTab: $selecedTab) }
+            .safeAreaInset(edge: .bottom, spacing: 0) { TabBar(selectedTab: $selecedTab) }
+            .edgesIgnoringSafeArea([.bottom, .top])
+            .navigationBarHidden(true)
+            .statusBar(hidden: true)
+            .buttonStyle(.plain)
         }
-        .safeAreaInset(edge: .top, spacing: 0) { TopBar(selectedTab: $selecedTab) }
-        .safeAreaInset(edge: .bottom, spacing: 0) { TabBar(selectedTab: $selecedTab) }
-        .edgesIgnoringSafeArea([.bottom, .top])
+        
     }
     
 }
