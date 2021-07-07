@@ -11,6 +11,7 @@ import SwiftUI
 struct NewsDetailPage: View {
     var body: some View {
         Text("DetailPage")
+            .navigationBarTitle(Text("话题"), displayMode: .inline)
     }
 }
 

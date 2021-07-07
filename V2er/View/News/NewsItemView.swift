@@ -7,19 +7,22 @@
 //
 
 import SwiftUI
+import PureSwiftUI
 
 struct NewsItemView: View {
     
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             VStack {
                 HStack(alignment: .top) {
-                    Image("avar")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 48)
-                        .roundedEdge()
+                    NavigationLink(destination: UserDetailPage()) {
+                        Image("avar")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 48)
+                            .roundedEdge()
+                    }
                     VStack(alignment: .leading, spacing: 5) {
                         Text("ghui")
                             .lineLimit(1)
@@ -29,12 +32,15 @@ struct NewsItemView: View {
                             .font(.footnote)
                     }
                     Spacer()
-                    Text("问与答")
-                        .font(.footnote)
-                        .lineLimit(1)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(Color.lightGray)
+                    NavigationLink(destination: TagDetailPage()) {
+                        Text("问与答")
+                            .font(.footnote)
+                            .foregroundColor(.black)
+                            .lineLimit(1)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Color.lightGray)
+                    }
                 }
                 Text("有人用非等宽字体来写代码的吗？等宽字体显示代码有什么特殊的好处吗？")
                     .lineLimit(2)
@@ -42,6 +48,7 @@ struct NewsItemView: View {
             .padding(10)
             Divider()
         }
+        .background(Color.almostClear)
     }
 }
 

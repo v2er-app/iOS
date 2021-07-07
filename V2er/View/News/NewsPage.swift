@@ -12,7 +12,7 @@ struct NewsPage: View {
     @State var selectedId = TabId.feed
     
     var body: some View {
-        LazyVStack {
+        LazyVStack(spacing: 0) {
             ForEach( 0...20, id: \.self) { i in
                 NavigationLink(destination: NewsDetailPage()) {
                     NewsItemView()
