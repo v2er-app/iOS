@@ -24,14 +24,20 @@ struct HeadIndicatorView: View {
     }
     
     var body: some View {
-        Group {
-            if progress == 1 || isRefreshing {
-                ActivityIndicator()
-            } else {
-                Image(systemName: "arrow.down")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .fixedSize()
+        ZStack {
+            Group {
+                if progress == 1 || isRefreshing {
+                    ActivityIndicator()
+                } else {
+                    Image(systemName: "arrow.down")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .fixedSize()
+                }
+            }
+            VStack {
+                Spacer()
+                Divider()
             }
         }
         .frame(height: height)
