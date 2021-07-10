@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import PureSwiftUI
 
 struct NewsItemView: View {
     

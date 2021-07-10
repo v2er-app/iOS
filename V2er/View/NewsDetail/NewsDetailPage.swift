@@ -7,19 +7,26 @@
 //
 
 import SwiftUI
-import PureSwiftUI
 
 struct NewsDetailPage: View {
     var body: some View {
-        VStack {
-            Text("DetailPage")
-            Color.blue.frame(width: 100, height: 100)
+        LazyVStack(spacing: 0) {
+            AuthorInfoView()
+            NewsContentView()
+                .padding(.horizontal, 10)
+            replayListView
         }
-        .debug()
+        .navigationBarTitle(Text("话题"), displayMode: .inline)
         .updatable(refresh: {},
                    loadMore: { return true}
         )
-        .navigationBarTitle(Text("话题"), displayMode: .inline)
+        
+    }
+    
+    private var replayListView: some View {
+        ForEach( 0...20, id: \.self) { index in
+            ReplyItemView()
+        }
     }
 }
 

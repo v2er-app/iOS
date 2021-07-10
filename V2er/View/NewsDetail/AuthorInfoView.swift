@@ -14,19 +14,15 @@ struct AuthorInfoView: View {
             VStack {
                 HStack(alignment: .top) {
                     NavigationLink(destination: UserDetailPage()) {
-                        Image("avar")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 48)
-                            .roundedEdge()
+                        AvatarView(size: 48)
                     }
                     VStack(alignment: .leading, spacing: 5) {
                         Text("ghui")
                             .lineLimit(1)
                             .font(.body)
-                        Text("51分钟前 评论3")
+                        Text("51分钟前 评论3 点击667")
                             .lineLimit(1)
-                            .font(.footnote)
+                            .font(.caption2)
                     }
                     Spacer()
                     NavigationLink(destination: TagDetailPage()) {
@@ -39,8 +35,8 @@ struct AuthorInfoView: View {
                             .background(Color.lightGray)
                     }
                 }
-                Text("有人用非等宽字体来写代码的吗？等宽字体显示代码有什么特殊的好处吗？")
-                    .lineLimit(2)
+                Text("计算机经历几十年 CURD，难道没有一个大而全的解决方案吗？")
+                    .font(.subheadline)
             }
             .padding(10)
             Divider()
