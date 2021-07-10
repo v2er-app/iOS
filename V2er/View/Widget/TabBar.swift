@@ -19,7 +19,7 @@ struct TabBar: View {
     var body: some View {
         VStack(spacing: 0) {
             Divider().frame(height: 0.1)
-            HStack {
+            HStack(spacing: 0) {
                 ForEach (self.tabs, id: \.self) { tab in
                     Button(action: {
                         self.selectedTab = tab.id
@@ -41,7 +41,9 @@ struct TabBar: View {
                         .foregroundColor(Color(self.selectedTab == tab.id ? "selected" : "unselected"))
                         .background(self.bg(isSelected: self.selectedTab == tab.id))
                         .padding(.horizontal, 16)
+                        .background(Color.almostClear)
                     }
+//                    .debug()
                 }
             }
         }
