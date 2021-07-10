@@ -21,8 +21,12 @@ struct MainPage: View {
                     case TabId.me: MePage()
                 }
             }
-            .safeAreaInset(edge: .top, spacing: 0) { TopBar(selectedTab: $selecedTab) }
-            .safeAreaInset(edge: .bottom, spacing: 0) { TabBar(selectedTab: $selecedTab) }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                TopBar(selectedTab: $selecedTab)
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                TabBar(selectedTab: $selecedTab)
+            }
             .edgesIgnoringSafeArea([.bottom, .top])
             .navigationBarHidden(true)
             .statusBar(hidden: true)

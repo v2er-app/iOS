@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import PureSwiftUI
 
 struct TopBar: View {
     @Binding var selectedTab : TabId
@@ -33,14 +34,16 @@ struct TopBar: View {
                             .padding(3)
                     }
                     
-                }.padding()
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
                 
                 Text("V2EX")
-                    .font(.title)
+                    .font(.title2)
                     .foregroundColor(.primary)
                     .fontWeight(.heavy)
             }
-            .padding(.top, safeAreaInsets()?.top)
+            .padding(.top, safeAreaInsets().top)
             .background(VEBlur())
             
             Divider()

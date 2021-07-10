@@ -11,26 +11,23 @@ import SwiftUI
 @main
 struct V2erApp: App {
     
+    public static let deviceType = UIDevice().type
+    
     init() {
         setupApperance()
     }
     
     private func setupApperance() {
+        let coloredAppearance = UINavigationBarAppearance()
+        let textColor = UIColor.black
+        coloredAppearance.titleTextAttributes = [.foregroundColor: textColor]
+        coloredAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
         
-//        let tintColor = UIColor(named: "indictor")
-        let tintColor = UIColor.black
-
-//        UINavigationBar.appearance().largeTitleTextAttributes = [
-//            NSAttributedString.Key.foregroundColor: tintColor!]
-//
-//        UINavigationBar.appearance().titleTextAttributes = [
-//            NSAttributedString.Key.foregroundColor: tintColor!]
-//
-//        UIBarButtonItem.appearance().setTitleTextAttributes([
-//            NSAttributedString.Key.foregroundColor: tintColor], for: .normal)
-        UIBarButtonItem.appearance().tintColor = tintColor
-        
-        UIWindow.appearance().tintColor = .black
+        let navAppearance = UINavigationBar.appearance()
+        navAppearance.standardAppearance = coloredAppearance
+        navAppearance.compactAppearance = coloredAppearance
+        navAppearance.scrollEdgeAppearance = coloredAppearance
+        navAppearance.tintColor = textColor
     }
     
     var body: some Scene {
@@ -39,3 +36,5 @@ struct V2erApp: App {
         }
     }
 }
+
+

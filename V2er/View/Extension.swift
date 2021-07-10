@@ -10,15 +10,25 @@ import SwiftUI
 
 extension View {
     
-    public func safeAreaInsets() -> UIEdgeInsets? {
-        let window = UIApplication.shared.windows[0]
-        let insets = window.safeAreaInsets
-        print("insets.top: \(insets.top)")
-        return insets;
+    public func safeAreaInsets() -> UIEdgeInsets {
+        var result: UIEdgeInsets
+        if let insets = UIApplication.shared.windows.first?.safeAreaInsets {
+            result = insets
+        } else {
+            let isIPhoneMini = V2erApp.deviceType == .iPhone12Mini
+            let defaultInsetTop = isIPhoneMini ? 50.0 : 47.0
+            let defaultInsetBottom = 34.0
+            result = UIEdgeInsets.init(top: defaultInsetTop, left: 0,
+                                       bottom: defaultInsetBottom, right: 0)
+        }
+        print("insets: \(result)")
+        return result;
     }
     
     public func debug() -> some View {
+        #if DEBUG
         self.modifier(DebugModifier())
+        #endif
     }
     
     public func roundedEdge(radius: CGFloat = -1,
@@ -30,13 +40,10 @@ extension View {
     
 }
 
-
-// Custome ViewModifier
-
 struct DebugModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .border(.red, width: 3)
+            .border(.green, width: 3)
     }
 }
 
@@ -65,5 +72,63 @@ struct RoundedEdgeModifier: ViewModifier {
                 .background(color)
                 .cornerRadius(cornerRadius)
         }
+    }
+}
+
+
+extension UINavigationController: UIGestureRecognizerDelegate {
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        interactivePopGestureRecognizer?.delegate = self
+    }
+    
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return viewControllers.count > 1
+    }
+}
+
+// Mark -- NavigationBar Modifiter
+
+struct NavigationBarModifier: ViewModifier {
+    var backgroundColor: UIColor
+    var textColor: UIColor
+    
+    init(backgroundColor: UIColor, textColor: UIColor) {
+        self.backgroundColor = backgroundColor
+        self.textColor = textColor
+        let coloredAppearance = UINavigationBarAppearance()
+        //        coloredAppearance.configureWithTransparentBackground()
+        //        coloredAppearance.backgroundColor = .yellow
+        coloredAppearance.titleTextAttributes = [.foregroundColor: textColor]
+        coloredAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
+        
+        
+        let appearance = UINavigationBar.appearance()
+        appearance.standardAppearance = coloredAppearance
+        appearance.compactAppearance = coloredAppearance
+        appearance.scrollEdgeAppearance = coloredAppearance
+        appearance.tintColor = textColor
+        //        appearance.backgroundColor = .red
+        //        appearance.isTranslucent = true
+    }
+    
+    func body(content: Content) -> some View {
+        //        ZStack{
+        content
+        //            VStack {
+        //                GeometryReader { geometry in
+        //                    Color(self.backgroundColor)
+        //                        .frame(height: geometry.safeAreaInsets.top)
+        //                        .edgesIgnoringSafeArea(.top)
+        //                    Spacer()
+        //                }
+        //            }
+        //        }
+    }
+}
+
+extension View {
+    func navigationBarColor(_ backgroundColor: UIColor, textColor: UIColor) -> some View {
+        self.modifier(NavigationBarModifier(backgroundColor: backgroundColor, textColor: textColor))
     }
 }
