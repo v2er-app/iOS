@@ -20,6 +20,7 @@ import SwiftUI
 struct UpdatableView<Content: View>: View {
     let onRefresh: RefreshAction
     let onLoadMore: LoadMoreAction
+    let onScroll: ScrollAction?
     let content: Content
     @State var scrollY: CGFloat = 0
     @State var lastScrollY: CGFloat = 0
@@ -40,9 +41,11 @@ struct UpdatableView<Content: View>: View {
     
     fileprivate init(onRefresh: RefreshAction,
                      onLoadMore: LoadMoreAction,
+                     onScroll: ScrollAction?,
                      @ViewBuilder content: () -> Content) {
         self.onRefresh = onRefresh
         self.onLoadMore = onLoadMore
+        self.onScroll = onScroll
         self.content = content()
         log("refreshable: \(refreshable), loadMoreable: \(loadMoreable)")
     }
@@ -82,7 +85,8 @@ struct UpdatableView<Content: View>: View {
     
     private func onScroll(point: CGPoint) {
         scrollY = point.y
-//        log("scrollY: \(scrollY), lastScrollY: \(lastScrollY), isRefreshing: \(isRefreshing), boundsDelta:\(boundsDelta)")
+        onScroll?(scrollY)
+        //        log("scrollY: \(scrollY), lastScrollY: \(lastScrollY), isRefreshing: \(isRefreshing), boundsDelta:\(boundsDelta)")
         progress = min(1, max(scrollY / threshold, 0))
         if refreshable && !isRefreshing
             && scrollY <= threshold
@@ -158,17 +162,19 @@ struct FrameContentBoundsDeltaKey: PreferenceKey {
 
 extension View {
     public func updatable(refresh: RefreshAction = nil,
-                          loadMore: LoadMoreAction = nil) -> some View {
-        self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore))
+                          loadMore: LoadMoreAction = nil,
+                          onScroll: ScrollAction? = nil) -> some View {
+        self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll))
     }
 }
 
 struct UpdatableModifier: ViewModifier {
     let onRefresh: RefreshAction
     let onLoadMore: LoadMoreAction
+    let onScroll: ScrollAction?
     
     func body(content: Content) -> some View {
-        UpdatableView(onRefresh: onRefresh, onLoadMore: onLoadMore) {
+        UpdatableView(onRefresh: onRefresh, onLoadMore: onLoadMore, onScroll: onScroll) {
             content
         }
     }
@@ -184,6 +190,8 @@ struct RefreshableView_Previews: PreviewProvider {
                     .background(i % 5 == 0 ? Color.blue : Color.clear)
             }
         }
-        .updatable(refresh: { print("refresh...")}, loadMore: { "loadMore..."; return true})
+        .updatable(refresh: { print("refresh...")},
+                   loadMore: { print("loadMore..."); return true},
+                   onScroll: {print("onScroll\($0)")})
     }
 }

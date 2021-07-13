@@ -223,10 +223,10 @@
 		5DE5B4C826845F4F00569684 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				5D436FEC24791C2C00FFA37E /* MainPage.swift */,
 				5D5DA26924A4939B005BC60F /* Extension.swift */,
 				5D6AAAAD2692034700F42A13 /* News */,
 				5DCDE3922695D02D00261385 /* NewsDetail */,
-				5D436FEC24791C2C00FFA37E /* MainPage.swift */,
 				5D71DF56247C153C00B53ED4 /* ExplorePage.swift */,
 				5D71DF58247C155400B53ED4 /* MessagePage.swift */,
 				5D71DF5A247C155D00B53ED4 /* MePage.swift */,

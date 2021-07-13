@@ -26,9 +26,9 @@ extension View {
     }
     
     public func debug() -> some View {
-        #if DEBUG
+#if DEBUG
         self.modifier(DebugModifier())
-        #endif
+#endif
     }
     
     public func roundedEdge(radius: CGFloat = -1,
@@ -87,48 +87,3 @@ extension UINavigationController: UIGestureRecognizerDelegate {
     }
 }
 
-// Mark -- NavigationBar Modifiter
-
-struct NavigationBarModifier: ViewModifier {
-    var backgroundColor: UIColor
-    var textColor: UIColor
-    
-    init(backgroundColor: UIColor, textColor: UIColor) {
-        self.backgroundColor = backgroundColor
-        self.textColor = textColor
-        let coloredAppearance = UINavigationBarAppearance()
-        //        coloredAppearance.configureWithTransparentBackground()
-        //        coloredAppearance.backgroundColor = .yellow
-        coloredAppearance.titleTextAttributes = [.foregroundColor: textColor]
-        coloredAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
-        
-        
-        let appearance = UINavigationBar.appearance()
-        appearance.standardAppearance = coloredAppearance
-        appearance.compactAppearance = coloredAppearance
-        appearance.scrollEdgeAppearance = coloredAppearance
-        appearance.tintColor = textColor
-        //        appearance.backgroundColor = .red
-        //        appearance.isTranslucent = true
-    }
-    
-    func body(content: Content) -> some View {
-        //        ZStack{
-        content
-        //            VStack {
-        //                GeometryReader { geometry in
-        //                    Color(self.backgroundColor)
-        //                        .frame(height: geometry.safeAreaInsets.top)
-        //                        .edgesIgnoringSafeArea(.top)
-        //                    Spacer()
-        //                }
-        //            }
-        //        }
-    }
-}
-
-extension View {
-    func navigationBarColor(_ backgroundColor: UIColor, textColor: UIColor) -> some View {
-        self.modifier(NavigationBarModifier(backgroundColor: backgroundColor, textColor: textColor))
-    }
-}

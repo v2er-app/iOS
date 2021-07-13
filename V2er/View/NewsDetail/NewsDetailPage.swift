@@ -9,17 +9,56 @@
 import SwiftUI
 
 struct NewsDetailPage: View {
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @State var hideTitleViews = true
+    
     var body: some View {
         LazyVStack(spacing: 0) {
             AuthorInfoView()
             NewsContentView()
                 .padding(.horizontal, 10)
+            Image("demo")
             replayListView
         }
-        .navigationBarTitle(Text("话题"), displayMode: .inline)
-        .updatable(refresh: {},
-                   loadMore: { return true}
-        )
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                HStack(alignment: .center) {
+                    Button {
+                        self.presentationMode.wrappedValue.dismiss()
+                    } label: {
+                        Image(systemName: "chevron.backward")
+                            .foregroundColor(.black)
+                    }
+                    Group {
+                        NavigationLink(destination: UserDetailPage()) {
+                            Image(systemName: "wave.3.backward.circle.fill")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        }
+                        VStack(alignment: .leading) {
+                            Text("Title")
+                                .font(.headline)
+                            Text("Subtitle3eeeeeeeeeeeeeeeee3333333333")
+                                .font(.subheadline)
+                        }
+                        .padding(.trailing, 8)
+                    }
+                    .opacity(hideTitleViews ? 0.0 : 1.0)
+                }
+            }
+        }
+        .updatable {
+            // do refresh...
+        } loadMore: {
+            return true
+        } onScroll: { scrollY in
+            print("scrollY: \(scrollY)")
+            withAnimation {
+                hideTitleViews = !(scrollY <= -100)
+            }
+        }
         
     }
     

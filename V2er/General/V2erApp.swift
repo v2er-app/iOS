@@ -18,16 +18,17 @@ struct V2erApp: App {
     }
     
     private func setupApperance() {
-        let coloredAppearance = UINavigationBarAppearance()
-        let textColor = UIColor.black
-        coloredAppearance.titleTextAttributes = [.foregroundColor: textColor]
-        coloredAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
+        let navbarAppearance = UINavigationBarAppearance()
+        let tintColor = UIColor.black
+        navbarAppearance.titleTextAttributes = [.foregroundColor: tintColor]
+        navbarAppearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
         
         let navAppearance = UINavigationBar.appearance()
-        navAppearance.standardAppearance = coloredAppearance
-        navAppearance.compactAppearance = coloredAppearance
-        navAppearance.scrollEdgeAppearance = coloredAppearance
-        navAppearance.tintColor = textColor
+        navAppearance.isTranslucent = true
+        navAppearance.standardAppearance = navbarAppearance
+        navAppearance.compactAppearance = navbarAppearance
+        navAppearance.scrollEdgeAppearance = navbarAppearance
+        navAppearance.tintColor = tintColor
     }
     
     var body: some Scene {

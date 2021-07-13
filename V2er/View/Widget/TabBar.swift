@@ -48,7 +48,7 @@ struct TabBar: View {
             }
         }
         .padding(.bottom, safeAreaInsets().bottom)
-        .background(VEBlur(style: .systemMaterial))
+        .background(VEBlur())
     }
     
     
