@@ -7,24 +7,25 @@
 //
 
 import SwiftUI
+import Combine
+
+
+public func safeAreaInsets() -> UIEdgeInsets {
+    var result: UIEdgeInsets
+    if let insets = UIApplication.shared.windows.first?.safeAreaInsets {
+        result = insets
+    } else {
+        let isIPhoneMini = V2erApp.deviceType == .iPhone12Mini
+        let defaultInsetTop = isIPhoneMini ? 50.0 : 47.0
+        let defaultInsetBottom = 34.0
+        result = UIEdgeInsets.init(top: defaultInsetTop, left: 0,
+                                   bottom: defaultInsetBottom, right: 0)
+    }
+    print("insets: \(result)")
+    return result;
+}
 
 extension View {
-    
-    public func safeAreaInsets() -> UIEdgeInsets {
-        var result: UIEdgeInsets
-        if let insets = UIApplication.shared.windows.first?.safeAreaInsets {
-            result = insets
-        } else {
-            let isIPhoneMini = V2erApp.deviceType == .iPhone12Mini
-            let defaultInsetTop = isIPhoneMini ? 50.0 : 47.0
-            let defaultInsetBottom = 34.0
-            result = UIEdgeInsets.init(top: defaultInsetTop, left: 0,
-                                       bottom: defaultInsetBottom, right: 0)
-        }
-        print("insets: \(result)")
-        return result;
-    }
-    
     public func debug() -> some View {
 #if DEBUG
         self.modifier(DebugModifier())
@@ -39,6 +40,7 @@ extension View {
     }
     
 }
+
 
 struct DebugModifier: ViewModifier {
     func body(content: Content) -> some View {
@@ -87,3 +89,34 @@ extension UINavigationController: UIGestureRecognizerDelegate {
     }
 }
 
+
+struct KeyboardResponsiveModifier: ViewModifier {
+    @State private var offset: CGFloat = 0
+    
+    func body(content: Content) -> some View {
+        content
+            .padding(.bottom, offset)
+            .onAppear {
+                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notif in
+                    let value = notif.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
+                    let height = value.height
+                    let bottomInset = safeAreaInsets().bottom
+                    withAnimation {
+                        self.offset = height - (bottomInset ?? 0)
+                    }
+                }
+                
+                NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { notif in
+                    withAnimation {
+                        self.offset = 0
+                    }
+                }
+            }
+    }
+}
+
+extension View {
+    func keyboardAware() -> ModifiedContent<Self, KeyboardResponsiveModifier> {
+        return modifier(KeyboardResponsiveModifier())
+    }
+}

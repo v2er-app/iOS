@@ -28,6 +28,7 @@ extension Color {
     
     public static let lightGray = hex(0xF5F5F5)
     public static let almostClear = hex(0xFFFFFF, alpha: 0.000001)
+    public static let debugColor = hex(0xFF0000, alpha: 0.1)
     public static let bodyText = hex(0x555555)
 }
 
