@@ -46,7 +46,10 @@ struct TopBar: View {
             .background(VEBlur())
             
             Divider()
-                .frame(height: 0.1)
+                .light()
+        }
+        .readSize {
+            print("size: \($0))")
         }
     }
 }

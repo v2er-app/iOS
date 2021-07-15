@@ -47,7 +47,7 @@ struct UpdatableView<Content: View>: View {
         self.onLoadMore = onLoadMore
         self.onScroll = onScroll
         self.content = content()
-        log("refreshable: \(refreshable), loadMoreable: \(loadMoreable)")
+//        log("refreshable: \(refreshable), loadMoreable: \(loadMoreable)")
     }
     
     var body: some View {
@@ -106,7 +106,7 @@ struct UpdatableView<Content: View>: View {
             && scrollY < -boundsDelta
             && !isLoadingMore {
             isLoadingMore = true
-            print("isLoadMoreing...")
+//            print("isLoadMoreing...")
             async {
                 let optionalNoMoreData = await onLoadMore?()
                 noMoreData = optionalNoMoreData ?? true

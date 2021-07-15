@@ -14,7 +14,7 @@ struct NewsDetailPage: View {
     @State var replyContent = ""
     
     var body: some View {
-        ZStack {
+        VStack {
             LazyVStack(spacing: 0) {
                 AuthorInfoView()
                 NewsContentView()
@@ -22,40 +22,7 @@ struct NewsDetailPage: View {
                 Image("demo")
                 replayListView
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    ZStack {
-                        HStack(alignment: .center) {
-                            Button {
-                                self.presentationMode.wrappedValue.dismiss()
-                            } label: {
-                                Image(systemName: "chevron.backward")
-                                    .foregroundColor(.black)
-                            }
-                            Group {
-                                NavigationLink(destination: UserDetailPage()) {
-                                    Image(systemName: "wave.3.backward.circle.fill")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                }
-                                VStack(alignment: .leading) {
-                                    Text("话题")
-                                        .font(.headline)
-                                    Text("Subtitle3eeeeeeeeeeeeeeeee3333333333")
-                                        .font(.subheadline)
-                                }
-                                .padding(.trailing, 8)
-                            }
-                            .opacity(hideTitleViews ? 0.0 : 1.0)
-                        }
-                        Text("话题")
-                            .font(.headline)
-                            .opacity(hideTitleViews ? 1.0 : 0.0)
-                    }
-                }
-            }
+            
             .updatable {
                 // do refresh...
             } loadMore: {
@@ -66,23 +33,72 @@ struct NewsDetailPage: View {
                     hideTitleViews = !(scrollY <= -100)
                 }
             }
-            
-            VStack(spacing: 0) {
-                Spacer()
-                Divider()
-                Group {
-                    TextField("发表回复", text: $replyContent)
-//                    TextEditor(text: $replyContent)
-                        .submitLabel(.send)
-                        .textFieldStyle(OvalTextFieldStyle())
+            .overlay {
+                VStack(spacing: 0) {
+                    Spacer()
+                    Divider()
+                    Group {
+                        TextField("发表回复", text: $replyContent)
+                        //                    TextEditor(text: $replyContent)
+                            .submitLabel(.send)
+                            .textFieldStyle(OvalTextFieldStyle())
+                    }
+                    .padding(.bottom, safeAreaInsets().bottom)
+                    .padding(.top, 16)
+                    .padding(.horizontal, 20)
+                    .background(Color.white)
                 }
-                .padding(.bottom, safeAreaInsets().bottom)
-                .padding(.top, 16)
-                .padding(.horizontal, 20)
-                .background(Color.white)
+                
             }
         }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            navBar
+        }
         .ignoresSafeArea(.container)
+        .navigationBarHidden(true)
+    }
+    
+    private var navBar: some View  {
+        NavbarHostView(paddingH: 0) {
+            HStack(alignment: .center, spacing: 8) {
+                Button {
+                    self.presentationMode.wrappedValue.dismiss()
+                } label: {
+                    Image(systemName: "chevron.backward")
+                        .padding(.leading, 12)
+                        .padding(.trailing, 8)
+                        .padding(.vertical, 10)
+                        .foregroundColor(.black)
+                }
+                Group {
+                    NavigationLink(destination: UserDetailPage()) {
+                        Image(systemName: "wave.3.backward.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 36)
+                            .fixedSize()
+                            .foregroundColor(.black)
+                    }
+                    VStack(alignment: .leading) {
+                        Text("话题")
+                            .font(.headline)
+                        Text("Subtitle3eeeeeeeeeeeeeeeee3333333333")
+                            .font(.subheadline)
+                    }
+                    .lineLimit(1)
+                    .padding(.trailing, 8)
+                }
+                .opacity(hideTitleViews ? 0.0 : 1.0)
+            }
+            .padding(.vertical, 5)
+            .padding(.trailing, 6)
+            .overlay {
+                Text("话题")
+                    .font(.headline)
+                    .opacity(hideTitleViews ? 1.0 : 0.0)
+            }
+            .greedyWidth()
+        }
     }
     
     private var replayListView: some View {
@@ -90,6 +106,7 @@ struct NewsDetailPage: View {
             ReplyItemView()
         }
     }
+    
 }
 
 struct NewsDetailPage_Previews: PreviewProvider {

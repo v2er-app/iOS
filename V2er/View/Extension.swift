@@ -45,7 +45,7 @@ extension View {
 struct DebugModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .border(.green, width: 3)
+            .border(.green, width: 1)
     }
 }
 
@@ -118,5 +118,42 @@ struct KeyboardResponsiveModifier: ViewModifier {
 extension View {
     func keyboardAware() -> ModifiedContent<Self, KeyboardResponsiveModifier> {
         return modifier(KeyboardResponsiveModifier())
+    }
+}
+
+
+
+struct SizePreferenceKey: PreferenceKey {
+    static var defaultValue: CGSize = .zero
+    static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
+}
+
+extension View {
+    func readSize(onChange: @escaping (CGSize) -> Void) -> some View {
+        background{
+            GeometryReader { geometryProxy in
+                Color.clear
+                    .preference(key: SizePreferenceKey.self, value: geometryProxy.size)
+            }
+        }
+        .onPreferenceChange(SizePreferenceKey.self, perform: onChange)
+    }
+    
+    func greedyWidth(_ alignment: Alignment = .center) -> some View {
+        frame(maxWidth: .infinity, alignment: alignment)
+    }
+    
+    func greedyHeight(_ alignment: Alignment = .center) -> some View {
+        frame(maxHeight: .infinity, alignment: alignment)
+    }
+    
+    func greedyFrame(_ alignment: Alignment = .center) -> some View {
+        frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
+    }
+}
+
+extension Divider {
+    func light() -> some View {
+        frame(height: 0.1)
     }
 }

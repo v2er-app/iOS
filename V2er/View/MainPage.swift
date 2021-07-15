@@ -27,9 +27,8 @@ struct MainPage: View {
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 TabBar(selectedTab: $selecedTab)
             }
-            .edgesIgnoringSafeArea([.bottom, .top])
+            .ignoresSafeArea(.container)
             .navigationBarHidden(true)
-            .statusBar(hidden: true)
             .buttonStyle(.plain)
         }
         
