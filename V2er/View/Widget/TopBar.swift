@@ -24,15 +24,12 @@ struct TopBar: View {
                             .padding(3)
                     }
                     Spacer()
-                    Button (action: {
-                        //
-                    }) {
+                    NavigationLink(destination: SearchPage()) {
                         Image(systemName: "magnifyingglass")
                             .foregroundColor(.primary)
                             .font(.system(size: 22))
                             .padding(3)
                     }
-                    
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 8)
@@ -42,7 +39,7 @@ struct TopBar: View {
                     .foregroundColor(.primary)
                     .fontWeight(.heavy)
             }
-            .padding(.top, safeAreaInsets().top)
+            .padding(.top, topSafeAreaInset().top)
             .background(VEBlur())
             
             Divider()

@@ -14,6 +14,7 @@ struct VEBlur: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIVisualEffectView {
         let effectView = UIVisualEffectView(effect: UIBlurEffect(style: style))
+//        effectView.backgroundColor = Color.lightGray.toUIColor()
         return effectView
     }
 

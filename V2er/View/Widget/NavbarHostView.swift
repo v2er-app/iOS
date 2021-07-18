@@ -19,7 +19,7 @@ struct NavbarHostView<Content: View>: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            Color.clear.frame(height: safeAreaInsets().top)
+            Color.clear.frame(height: topSafeAreaInset().top)
             HStack(alignment: .center, spacing: 0) {
                 self.content
             }

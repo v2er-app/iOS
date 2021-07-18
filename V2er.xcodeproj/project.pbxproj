@@ -28,6 +28,7 @@
 		5D71DF57247C153C00B53ED4 /* ExplorePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF56247C153C00B53ED4 /* ExplorePage.swift */; };
 		5D71DF59247C155400B53ED4 /* MessagePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF58247C155400B53ED4 /* MessagePage.swift */; };
 		5D71DF5B247C155D00B53ED4 /* MePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF5A247C155D00B53ED4 /* MePage.swift */; };
+		5D843E9526A4537C00C47D95 /* SearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D843E9426A4537C00C47D95 /* SearchPage.swift */; };
 		5D9D5221269542E600D80D6B /* UserDetailPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9D5220269542E600D80D6B /* UserDetailPage.swift */; };
 		5D9D5223269543DA00D80D6B /* TagDetailPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D9D5222269543DA00D80D6B /* TagDetailPage.swift */; };
 		5DA69A4924ACBC8D00F8B77A /* V2erApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA69A4824ACBC8D00F8B77A /* V2erApp.swift */; };
@@ -87,6 +88,7 @@
 		5D71DF56247C153C00B53ED4 /* ExplorePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePage.swift; sourceTree = "<group>"; };
 		5D71DF58247C155400B53ED4 /* MessagePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePage.swift; sourceTree = "<group>"; };
 		5D71DF5A247C155D00B53ED4 /* MePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MePage.swift; sourceTree = "<group>"; };
+		5D843E9426A4537C00C47D95 /* SearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPage.swift; sourceTree = "<group>"; };
 		5D9D5220269542E600D80D6B /* UserDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailPage.swift; sourceTree = "<group>"; };
 		5D9D5222269543DA00D80D6B /* TagDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailPage.swift; sourceTree = "<group>"; };
 		5DA69A4824ACBC8D00F8B77A /* V2erApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2erApp.swift; sourceTree = "<group>"; };
@@ -210,6 +212,14 @@
 			path = News;
 			sourceTree = "<group>";
 		};
+		5D843E9326A4536400C47D95 /* Explore */ = {
+			isa = PBXGroup;
+			children = (
+				5D843E9426A4537C00C47D95 /* SearchPage.swift */,
+			);
+			path = Explore;
+			sourceTree = "<group>";
+		};
 		5DCDE3922695D02D00261385 /* NewsDetail */ = {
 			isa = PBXGroup;
 			children = (
@@ -236,6 +246,7 @@
 				5DD440D2269F1F5E00EE0FAB /* Syles.swift */,
 				5D6AAAAD2692034700F42A13 /* News */,
 				5DCDE3922695D02D00261385 /* NewsDetail */,
+				5D843E9326A4536400C47D95 /* Explore */,
 				5D71DF56247C153C00B53ED4 /* ExplorePage.swift */,
 				5D71DF58247C155400B53ED4 /* MessagePage.swift */,
 				5D71DF5A247C155D00B53ED4 /* MePage.swift */,
@@ -415,6 +426,7 @@
 				5DE5B4CA2684601A00569684 /* TopBar.swift in Sources */,
 				5D71DF55247C0FFE00B53ED4 /* NewsPage.swift in Sources */,
 				5D436FED24791C2C00FFA37E /* MainPage.swift in Sources */,
+				5D843E9526A4537C00C47D95 /* SearchPage.swift in Sources */,
 				5DF1B36D2698A39E0046DB20 /* Device.swift in Sources */,
 				5DD440D3269F1F5E00EE0FAB /* Syles.swift in Sources */,
 				5D9D5221269542E600D80D6B /* UserDetailPage.swift in Sources */,

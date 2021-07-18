@@ -21,16 +21,15 @@ struct NewsPage: View {
         }
         .updatable(
             refresh:{
-            print("onRefresh...")
-            let result = await fetchData()
-            print("onRefresh ended...")
-        }
-            ,
+                print("onRefresh...")
+                let result = await fetchData()
+                print("onRefresh ended...")
+            },
             loadMore: {
-            print("onLoadMore...")
-            let result = await fetchData()
-            return true
-        }
+                print("onLoadMore...")
+                let result = await fetchData()
+                return true
+            }
             
         )
     }

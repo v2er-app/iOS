@@ -10,7 +10,7 @@ import SwiftUI
 import Combine
 
 
-public func safeAreaInsets() -> UIEdgeInsets {
+public func topSafeAreaInset() -> UIEdgeInsets {
     var result: UIEdgeInsets
     if let insets = UIApplication.shared.windows.first?.safeAreaInsets {
         result = insets
@@ -38,6 +38,11 @@ extension View {
         self.modifier(RoundedEdgeModifier(radius: radius,
                                           width: borderWidth, color: color))
     }
+    
+//    public func fillTopInset() -> some View {
+//        return self.edgesIgnoringSafeArea(.top)
+//            .padding(.top, safeAreaInsets().top)
+//    }
     
 }
 
@@ -104,7 +109,7 @@ struct KeyboardResponsiveModifier: ViewModifier {
                 NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) { notif in
                     let value = notif.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
                     let height = value.height
-                    let bottomInset = safeAreaInsets().bottom
+                    let bottomInset = topSafeAreaInset().bottom
                     withAnimation {
                         self.offset = height - (bottomInset ?? 0)
                     }

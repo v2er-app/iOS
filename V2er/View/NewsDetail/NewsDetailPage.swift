@@ -120,7 +120,7 @@ struct NewsDetailPage: View, KeyboardReadable {
                         .debug()
                 }
             }
-            .padding(.bottom, isKeyboardVisiable ? 0 : safeAreaInsets().bottom * 0.9)
+            .padding(.bottom, isKeyboardVisiable ? 0 : topSafeAreaInset().bottom * 0.9)
             .padding(.top, 10)
             .padding(.horizontal, 10)
             .background(Color.white)
