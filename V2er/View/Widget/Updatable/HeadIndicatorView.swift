@@ -30,9 +30,10 @@ struct HeadIndicatorView: View {
                     ActivityIndicator()
                 } else {
                     Image(systemName: "arrow.down")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .fixedSize()
+                        .font(.title2.weight(.regular))
+//                        .resizable()
+//                        .aspectRatio(contentMode: .fit)
+//                        .fixedSize()
                 }
             }
             VStack {

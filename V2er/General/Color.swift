@@ -30,7 +30,7 @@ extension Color {
     public static let almostClear = hex(0xFFFFFF, alpha: 0.000001)
     public static let debugColor = hex(0xFF0000, alpha: 0.1)
     public static let bodyText = hex(0x555555)
-    public static let tintColor = hex(0x545454)
+    public static let tintColor = hex(0x383838)
     
     public func toUIColor() -> UIColor {
         return UIColor(self)
@@ -60,6 +60,7 @@ struct Color_Previews: PreviewProvider {
             Color.hex(0xFBFBFB).frame(width: 100, height: 100)
             Color.hex(0x00FF00, alpha: 0.2).frame(width: 100, height: 100)
             Color.hex(0xFF00FF).frame(width: 100, height: 100)
+            Color.tintColor.frame(width: 100, height: 100)
         }
         
     }

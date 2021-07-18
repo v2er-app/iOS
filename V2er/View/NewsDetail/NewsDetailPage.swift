@@ -25,8 +25,9 @@ struct NewsDetailPage: View, KeyboardReadable {
                 AuthorInfoView()
                 NewsContentView()
                     .padding(.horizontal, 10)
-                Image("demo")
+                actionItems
                 replayListView
+                    .padding(.top, 8)
             }
             .updatable {
                 // do refresh...
@@ -52,6 +53,36 @@ struct NewsDetailPage: View, KeyboardReadable {
         }
     }
     
+    private var actionItems: some View {
+        VStack {
+            HStack(spacing: 16) {
+                // 收藏，忽略，感谢，举报, up, down
+                
+                Button("收藏") {
+                    
+                }
+                Button("感谢") {
+                    
+                }
+                
+                Button("忽略") {
+                    
+                }
+                
+                Button("举报") {
+                    
+                }
+                
+                Spacer()
+            }
+            .padding(.top, 4)
+            .padding(.horizontal, 16)
+            .foregroundColor(.black)
+            .font(.body)
+            Divider()
+        }
+    }
+    
     
     private var replyBar: some View {
         VStack(spacing: 0) {
@@ -64,7 +95,12 @@ struct NewsDetailPage: View, KeyboardReadable {
                         }
                         .focused($replyIsFocused)
                         .debug()
-                    Button(action: { replyIsFocused = false}) {
+                    
+                    
+                    
+                    Button(action: {
+                        // Do submit
+                    }) {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.title.weight(.regular))
                             .foregroundColor(Color.bodyText.opacity(hasReplyContent ? 1.0 : 0.6))
@@ -76,6 +112,8 @@ struct NewsDetailPage: View, KeyboardReadable {
                 }
                 .background(Color.lightGray)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                
+                
                 if isKeyboardVisiable {
                     actionBar
                         .transition(.opacity)
@@ -104,24 +142,24 @@ struct NewsDetailPage: View, KeyboardReadable {
     
     private var navBar: some View  {
         NavbarHostView(paddingH: 0) {
-            HStack(alignment: .center, spacing: 8) {
+            HStack(alignment: .center, spacing: 4) {
                 Button {
                     self.presentationMode.wrappedValue.dismiss()
                 } label: {
                     Image(systemName: "chevron.backward")
                         .font(.title2.weight(.regular))
-                        .padding(.leading, 12)
+                        .padding(.leading, 8)
                         .padding(.vertical, 10)
-                        .foregroundColor(.black)
+                        .foregroundColor(.tintColor)
                 }
                 Group {
                     NavigationLink(destination: UserDetailPage()) {
                         Image(systemName: "wave.3.backward.circle.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 36)
+                            .frame(width: 32)
                             .fixedSize()
-                            .foregroundColor(.black)
+                            .foregroundColor(.tintColor)
                     }
                     VStack(alignment: .leading) {
                         Text("话题")
@@ -130,9 +168,19 @@ struct NewsDetailPage: View, KeyboardReadable {
                             .font(.subheadline)
                     }
                     .lineLimit(1)
-                    .padding(.trailing, 8)
                 }
                 .opacity(hideTitleViews ? 0.0 : 1.0)
+                
+                Button {
+                    // Show more actions
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .padding(8)
+                    //                        .rotationEffect(.degrees(90))
+                        .font(.title3.weight(.regular))
+                        .foregroundColor(.tintColor)
+                        .debug()
+                }
             }
             .padding(.vertical, 5)
             .padding(.trailing, 5)

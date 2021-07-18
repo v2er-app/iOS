@@ -17,6 +17,7 @@ struct NewsContentView: View {
         VStack {
             Text(content)
                 .font(.subheadline)
+            Image("demo")
             Divider()
         }
         .padding(.vertical, 10)
