@@ -30,6 +30,11 @@ extension Color {
     public static let almostClear = hex(0xFFFFFF, alpha: 0.000001)
     public static let debugColor = hex(0xFF0000, alpha: 0.1)
     public static let bodyText = hex(0x555555)
+    public static let tintColor = hex(0x545454)
+    
+    public func toUIColor() -> UIColor {
+        return UIColor(self)
+    }
 }
 
 

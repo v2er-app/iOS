@@ -44,8 +44,12 @@ extension View {
 
 struct DebugModifier: ViewModifier {
     func body(content: Content) -> some View {
-        content
-            .border(.green, width: 1)
+        if !isSimulator() {
+            content
+        } else {
+            content
+                .border(.green, width: 1)
+        }
     }
 }
 
