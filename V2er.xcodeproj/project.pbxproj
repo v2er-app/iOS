@@ -215,9 +215,18 @@
 		5D843E9326A4536400C47D95 /* Explore */ = {
 			isa = PBXGroup;
 			children = (
+				5D71DF56247C153C00B53ED4 /* ExplorePage.swift */,
 				5D843E9426A4537C00C47D95 /* SearchPage.swift */,
 			);
 			path = Explore;
+			sourceTree = "<group>";
+		};
+		5D843E9626A46CB800C47D95 /* Message */ = {
+			isa = PBXGroup;
+			children = (
+				5D71DF58247C155400B53ED4 /* MessagePage.swift */,
+			);
+			path = Message;
 			sourceTree = "<group>";
 		};
 		5DCDE3922695D02D00261385 /* NewsDetail */ = {
@@ -247,9 +256,8 @@
 				5D6AAAAD2692034700F42A13 /* News */,
 				5DCDE3922695D02D00261385 /* NewsDetail */,
 				5D843E9326A4536400C47D95 /* Explore */,
-				5D71DF56247C153C00B53ED4 /* ExplorePage.swift */,
-				5D71DF58247C155400B53ED4 /* MessagePage.swift */,
 				5D71DF5A247C155D00B53ED4 /* MePage.swift */,
+				5D843E9626A46CB800C47D95 /* Message */,
 				5D179BFD2496F6EC00E40E90 /* Widget */,
 			);
 			path = View;

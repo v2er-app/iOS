@@ -35,7 +35,7 @@ struct TabBar: View {
                                 .padding(.top, 8)
                                 .padding(.bottom, 2.5)
                             Text(tab.text)
-                                .font(.footnote)
+                                .font(.caption)
                                 .padding(.bottom, 8)
                         }
                         .foregroundColor(Color(self.selectedTab == tab.id ? "selected" : "unselected"))

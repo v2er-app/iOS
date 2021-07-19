@@ -11,6 +11,23 @@ import SwiftUI
 struct TopBar: View {
     @Binding var selectedTab : TabId
     
+    private var isHomePage: Bool {
+        return selectedTab == .feed
+    }
+    
+    private var title: String {
+        switch selectedTab {
+            case .feed:
+                return "V2EX"
+            case .explore:
+                return "发现"
+            case .message:
+                return "通知"
+            case .me:
+                return "我"
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -33,11 +50,10 @@ struct TopBar: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 8)
-                
-                Text("V2EX")
-                    .font(.title2)
+                Text(title)
+                    .font(isHomePage ? .title2 : .headline)
                     .foregroundColor(.primary)
-                    .fontWeight(.heavy)
+                    .fontWeight(isHomePage ? .heavy : .regular)
             }
             .padding(.top, topSafeAreaInset().top)
             .background(VEBlur())
@@ -52,9 +68,14 @@ struct TopBar: View {
 }
 
 struct TopBar_Previews: PreviewProvider {
-    @State static var selecedTab = TabId.feed
+//    @State static var selecedTab = TabId.feed
+    @State static var selecedTab = TabId.explore
     
     static var previews: some View {
-        TopBar(selectedTab: $selecedTab)
+        VStack {
+            TopBar(selectedTab: $selecedTab)
+            Spacer()
+        }
+        .ignoresSafeArea(.container)
     }
 }
