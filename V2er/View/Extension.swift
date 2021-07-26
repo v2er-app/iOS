@@ -28,7 +28,8 @@ public func topSafeAreaInset() -> UIEdgeInsets {
 extension View {
     public func debug() -> some View {
 #if DEBUG
-        self.modifier(DebugModifier())
+        print(Mirror(reflecting: self).subjectType)
+        return self.modifier(DebugModifier())
 #endif
     }
     

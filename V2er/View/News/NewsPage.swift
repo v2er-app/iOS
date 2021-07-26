@@ -28,7 +28,6 @@ struct NewsPage: View {
                 let result = await fetchData()
                 return true
             }
-            
         )
     }
     

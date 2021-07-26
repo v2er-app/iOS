@@ -13,6 +13,14 @@ struct V2erApp: App {
     
     public static let deviceType = UIDevice().type
     
+    public static let viewController: UIHostingController = UIHostingController(rootView: Text(""))
+    
+    public static func measureSize(view: Text) -> CGSize {
+        viewController.rootView = view
+        return viewController.view.intrinsicContentSize
+    }
+
+    
     init() {
         setupApperance()
     }
