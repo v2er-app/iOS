@@ -40,10 +40,10 @@ extension View {
                                           width: borderWidth, color: color))
     }
     
-//    public func fillTopInset() -> some View {
-//        return self.edgesIgnoringSafeArea(.top)
-//            .padding(.top, safeAreaInsets().top)
-//    }
+    //    public func fillTopInset() -> some View {
+    //        return self.edgesIgnoringSafeArea(.top)
+    //            .padding(.top, safeAreaInsets().top)
+    //    }
     
 }
 
@@ -172,3 +172,5 @@ extension Divider {
         frame(height: 0.1)
     }
 }
+
+

@@ -27,7 +27,7 @@ struct MePage: View {
     @ViewBuilder
     private var topBannerView: some View {
         HStack(spacing: 10) {
-            AvatarView(size: 50)
+            AvatarView(size: 60)
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("ghui")
@@ -39,7 +39,7 @@ struct MePage: View {
             }
             HStack {
                 Text("个人主页")
-                    .font(.callout)
+                    .font(.subheadline)
                     .foregroundColor(Color.bodyText)
                 Image(systemName: "chevron.right")
                     .font(.body.weight(.regular))
@@ -62,10 +62,28 @@ struct MePage: View {
                 SectionItemView("发贴", icon: "pencil", showDivider: false)
                     .padding(.bottom, 8)
             }
-            SectionItemView("主题", icon: "paperplane")
-            SectionItemView("收藏", icon: "star.fill")
-            SectionItemView("关注", icon: "suit.heart.fill")
-            SectionItemView("最近浏览", icon: "clock", showDivider: false)
+            NavigationLink {
+                CreateTopicPage()
+            } label: {
+                SectionItemView("主题", icon: "paperplane")
+            }
+            
+            NavigationLink {
+                CreateTopicPage()
+            } label: {
+                SectionItemView("收藏", icon: "bookmark")
+            }
+            NavigationLink {
+                CreateTopicPage()
+            } label: {
+                SectionItemView("关注", icon: "heart")
+            }
+            NavigationLink {
+                CreateTopicPage()
+            } label: {
+                SectionItemView("最近浏览", icon: "clock", showDivider: false)
+            }
+            
             NavigationLink {
                 CreateTopicPage()
             } label: {
@@ -91,9 +109,11 @@ struct SectionItemView: View {
     var body: some View {
         HStack {
             Image(systemName: icon)
+                .font(.body.weight(.semibold))
                 .padding(.leading, 16)
                 .padding(.trailing, 5)
                 .foregroundColor(.tintColor)
+            
             HStack {
                 Text(title)
                 Spacer()
