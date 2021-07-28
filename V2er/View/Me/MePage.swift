@@ -59,17 +59,17 @@ struct MePage: View {
             NavigationLink {
                 CreateTopicPage()
             } label: {
-                SectionItemView(title: "发贴", showDivider: false)
+                SectionItemView("发贴", icon: "pencil", showDivider: false)
                     .padding(.bottom, 8)
             }
-            SectionItemView(title: "主题")
-            SectionItemView(title: "收藏")
-            SectionItemView(title: "关注")
-            SectionItemView(title: "最近浏览", showDivider: false)
+            SectionItemView("主题", icon: "paperplane")
+            SectionItemView("收藏", icon: "star.fill")
+            SectionItemView("关注", icon: "suit.heart.fill")
+            SectionItemView("最近浏览", icon: "clock", showDivider: false)
             NavigationLink {
                 CreateTopicPage()
             } label: {
-                SectionItemView(title: "设置", showDivider: false)
+                SectionItemView("设置", icon: "gearshape", showDivider: false)
                     .padding(.top, 8)
             }
         }
@@ -80,16 +80,20 @@ struct MePage: View {
 struct SectionItemView: View {
     let title: String
     var showDivider: Bool = true
+    let icon: String
     
-    public init(title: String, showDivider: Bool = true) {
+    public init(_ title: String, icon: String, showDivider: Bool = true) {
         self.title = title
+        self.icon = icon
         self.showDivider = showDivider
     }
     
     var body: some View {
         HStack {
-            Image(systemName: "pencil")
+            Image(systemName: icon)
                 .padding(.leading, 16)
+                .padding(.trailing, 5)
+                .foregroundColor(.tintColor)
             HStack {
                 Text(title)
                 Spacer()
@@ -104,7 +108,7 @@ struct SectionItemView: View {
                     Spacer()
                     Divider()
                         .foregroundColor(.lightGray)
-                        .opacity(showDivider ? 1.0 : 0.0)
+                        .opacity(showDivider ? 0.5 : 0.0)
                 }
             }
         }
