@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct MessagePage: View {
+    @Binding var selecedTab: TabId
+    
     var body: some View {
         LazyVStack(spacing: 0) {
             ForEach( 0...20, id: \.self) { i in
@@ -25,8 +27,8 @@ struct MessagePage: View {
                 print("onLoadMore...")
                 return true
             }
-            
         )
+        .opacity(selecedTab == .message ? 1.0 : 0.0)
     }
 }
 
@@ -59,6 +61,7 @@ fileprivate struct MessageItemView: View {
 }
 
 struct MessagePage_Previews: PreviewProvider {
+    @State static var selected = TabId.message
     static var previews: some View {
         MainPage(selecedTab: .message)
     }

@@ -13,13 +13,11 @@ struct MainPage: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                switch selecedTab {
-                    case TabId.feed: NewsPage()
-                    case TabId.explore: ExplorePage()
-                    case TabId.message: MessagePage()
-                    case TabId.me: MePage()
-                }
+            ZStack {
+                NewsPage(selecedTab: $selecedTab)
+                ExplorePage(selecedTab: $selecedTab)
+                MessagePage(selecedTab: $selecedTab)
+                MePage(selecedTab: $selecedTab)
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 TopBar(selectedTab: $selecedTab)
@@ -31,7 +29,6 @@ struct MainPage: View {
             .navigationBarHidden(true)
             .buttonStyle(.plain)
         }
-        
     }
     
 }

@@ -9,47 +9,54 @@
 import SwiftUI
 
 struct NewsPage: View {
+    @Binding var selecedTab: TabId
+    
     var body: some View {
-        LazyVStack(spacing: 0) {
-            ForEach( 0...20, id: \.self) { i in
-                NavigationLink(destination: NewsDetailPage()) {
-                    NewsItemView()
-                }
-            }
-        }
-        .updatable(
-            refresh:{
-                print("onRefresh...")
-                let result = await fetchData()
-                print("onRefresh ended...")
-            },
-            loadMore: {
-                print("onLoadMore...")
-                let result = await fetchData()
-                return true
-            }
-        )
+        contentView
+            .opacity(selecedTab == .feed ? 1.0 : 0.0)
     }
-    
-    
-    private func fetchData() async -> [String] {
-        await withCheckedContinuation { continuation in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                let persons = [
-                    "new Person 1",
-                    "new Person 2",
-                    "new Person 3",
-                    "new Person 4"
-                ]
-                continuation.resume(returning: persons)
+}
+
+@ViewBuilder
+private var contentView: some View {
+    LazyVStack(spacing: 0) {
+        ForEach( 0...20, id: \.self) { i in
+            NavigationLink(destination: NewsDetailPage()) {
+                NewsItemView()
             }
-            
         }
     }
-    
-    struct HomePage_Previews: PreviewProvider {
-        static var previews: some View {
-            NewsPage()
+    .updatable {
+        print("onRefresh...")
+        let result = await fetchData()
+        print("onRefresh ended...")
+    } loadMore: {
+        print("onLoadMore...")
+        return true
+    } onScroll: { offset in
+//        print("onScroll.Y: \(offset)")
+    }
+}
+
+
+private func fetchData() async -> [String] {
+    await withCheckedContinuation { continuation in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            let persons = [
+                "new Person 1",
+                "new Person 2",
+                "new Person 3",
+                "new Person 4"
+            ]
+            continuation.resume(returning: persons)
         }
+    }
+}
+
+struct HomePage_Previews: PreviewProvider {
+    @State static var selected = TabId.feed
+    
+    static var previews: some View {
+        NewsPage(selecedTab: $selected)
     }
 }

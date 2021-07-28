@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct ExplorePage: View {
+    @Binding var selecedTab: TabId
+    
     var body: some View {
         let todayHotList = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("今日热议")
@@ -85,32 +87,20 @@ struct ExplorePage: View {
         }
         .padding(.top, 4)
         .padding(.horizontal, 10)
-        .updatable(
-            refresh:{
-                print("onRefresh...")
-            }
-        )
+        .updatable {
+            print("onRefresh...")
+        }
+        .opacity(selecedTab == .explore ? 1.0 : 0.0)
     }
     
-}
-
-
-struct FloatingButtonText: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .fixedSize()
-            .padding([.horizontal], 6)
-            .padding([.vertical], 3)
-            .foregroundColor(.black)
-            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.blue, lineWidth: 2))
-            .padding([.horizontal], 3)
-    }
 }
 
 //fileprivate struct 
 
 struct ExplorePage_Previews: PreviewProvider {
+    @State static var selected = TabId.explore
+    
     static var previews: some View {
-        ExplorePage()
+        ExplorePage(selecedTab: $selected)
     }
 }
