@@ -1,8 +1,8 @@
 //
 //  UserDetailPage.swift
-//  V2er
+//  UserDetailPage
 //
-//  Created by Seth on 2021/7/7.
+//  Created by Seth on 2021/7/28.
 //  Copyright © 2021 lessmore.io. All rights reserved.
 //
 

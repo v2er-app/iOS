@@ -35,7 +35,9 @@ struct MainPage: View {
 
 
 struct MainPage_Previews: PreviewProvider {
+//    @State static var selecedTab: TabId = TabId.me
+    
     static var previews: some View {
-        MainPage()
+        MainPage(selecedTab: .me)
     }
 }
