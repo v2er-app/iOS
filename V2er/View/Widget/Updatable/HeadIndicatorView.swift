@@ -38,7 +38,7 @@ struct HeadIndicatorView: View {
             }
             VStack {
                 Spacer()
-                Divider()
+//                Divider()
             }
         }
         .frame(height: height)

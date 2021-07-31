@@ -53,6 +53,7 @@ struct NewsDetailPage: View, KeyboardReadable {
         }
     }
     
+    @ViewBuilder
     private var actionItems: some View {
         VStack {
             HStack(spacing: 16) {
@@ -127,6 +128,7 @@ struct NewsDetailPage: View, KeyboardReadable {
         }
     }
     
+    @ViewBuilder
     private var actionBar: some View {
         HStack (spacing: 10) {
             Image(systemName: "photo.on.rectangle")
@@ -140,6 +142,7 @@ struct NewsDetailPage: View, KeyboardReadable {
         .padding(.horizontal, 16)
     }
     
+    @ViewBuilder
     private var navBar: some View  {
         NavbarHostView(paddingH: 0) {
             HStack(alignment: .center, spacing: 4) {
@@ -152,6 +155,7 @@ struct NewsDetailPage: View, KeyboardReadable {
                         .padding(.vertical, 10)
                         .foregroundColor(.tintColor)
                 }
+                .debug()
                 Group {
                     NavigationLink(destination: UserDetailPage()) {
                         Image(systemName: "wave.3.backward.circle.fill")
@@ -191,8 +195,10 @@ struct NewsDetailPage: View, KeyboardReadable {
             }
             .greedyWidth()
         }
+        .visualBlur()
     }
     
+    @ViewBuilder
     private var replayListView: some View {
         ForEach( 0...20, id: \.self) { index in
             ReplyItemView()

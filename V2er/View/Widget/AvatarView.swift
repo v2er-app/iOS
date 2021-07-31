@@ -9,13 +9,14 @@
 import SwiftUI
 
 struct AvatarView: View {
+    var src: String = "avar"
     var size: CGFloat = 48.0
     
     var body: some View {
-        Image("avar")
+        Image(src)
             .resizable()
             .scaledToFit()
-            .frame(width: size)
+            .frame(width: size, height: size)
             .roundedEdge()
     }
 }

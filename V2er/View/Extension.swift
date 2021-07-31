@@ -28,7 +28,7 @@ public func topSafeAreaInset() -> UIEdgeInsets {
 extension View {
     public func debug(_ force: Bool = false) -> some View {
 #if DEBUG
-        print(Mirror(reflecting: self).subjectType)
+//        print(Mirror(reflecting: self).subjectType)
         return self.modifier(DebugModifier(force))
 #endif
     }
@@ -84,10 +84,13 @@ struct RoundedEdgeModifier: ViewModifier {
             
         } else {
             content
-                .cornerRadius(cornerRadius - width)
+                .clipShape(Capsule())
                 .padding(width)
-                .background(color)
-                .cornerRadius(cornerRadius)
+                .overlay(Capsule().stroke(color, lineWidth: width))
+//                .cornerRadius(cornerRadius - width)
+//                .padding(width)
+//                .background(color)
+//                .cornerRadius(cornerRadius)
         }
     }
 }
@@ -164,6 +167,10 @@ extension View {
     
     func greedyFrame(_ alignment: Alignment = .center) -> some View {
         frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
+    }
+    
+    func visualBlur(alpha: CGFloat = 1.0) -> some View {
+        self.background(VEBlur().opacity(alpha))
     }
 }
 

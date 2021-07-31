@@ -166,6 +166,11 @@ extension View {
                           onScroll: ScrollAction? = nil) -> some View {
         self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll))
     }
+    
+    public func loadMore(_ loadMore: LoadMoreAction = nil, onScroll: ScrollAction? = nil) -> some View {
+        self.modifier(UpdatableModifier(onRefresh: nil, onLoadMore: loadMore, onScroll: onScroll))
+    }
+    
 }
 
 struct UpdatableModifier: ViewModifier {
@@ -178,8 +183,8 @@ struct UpdatableModifier: ViewModifier {
             content
         }
     }
-    
 }
+
 
 
 struct RefreshableView_Previews: PreviewProvider {
