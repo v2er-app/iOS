@@ -146,6 +146,17 @@ struct SizePreferenceKey: PreferenceKey {
     static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
 }
 
+struct RoundedCorner: Shape {
+    
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}
+
 extension View {
     func readSize(onChange: @escaping (CGSize) -> Void) -> some View {
         background{
@@ -170,8 +181,17 @@ extension View {
     }
     
     func visualBlur(alpha: CGFloat = 1.0) -> some View {
-        self.background(VEBlur().opacity(alpha))
+        return self.background(VEBlur().opacity(alpha))
     }
+    
+    func forceClickable() -> some View {
+        return self.background(Color.almostClear)
+    }
+    
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape( RoundedCorner(radius: radius, corners: corners) )
+    }
+    
 }
 
 extension Divider {

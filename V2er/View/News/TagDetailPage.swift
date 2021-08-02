@@ -15,6 +15,7 @@ struct TagDetailPage: View {
     
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
+    @State private var bannerViewHeight: CGFloat = 0
     private var shouldHideNavbar: Bool {
         let hideNavbar =  scrollY > -heightOfNodeImage * 1.0
         statusBarConfigurator.statusBarStyle = hideNavbar ? .lightContent : .darkContent
@@ -29,14 +30,27 @@ struct TagDetailPage: View {
         ZStack(alignment: .top) {
             navBar
                 .zIndex(1)
-            VStack {
+            VStack(spacing: 0) {
                 topBannerView
+                    .readSize {
+                        bannerViewHeight = $0.height
+                    }
                 nodeListView
             }
             .loadMore {
                 return true
             } onScroll: {
                 self.scrollY = $0
+            }
+            .background {
+                VStack(spacing: 0) {
+                    Image("share_node_v2ex")
+                        .resizable()
+                        .blur(radius: 80, opaque: true)
+                        .overlay(Color.black.opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
+                        .frame(height: bannerViewHeight + max(scrollY, 0))
+                    Spacer()
+                }
             }
         }
         .prepareStatusBarConfigurator(statusBarConfigurator)
@@ -56,8 +70,8 @@ struct TagDetailPage: View {
                         .font(.title2.weight(.regular))
                         .padding(.leading, 8)
                         .padding(.vertical, 10)
-//                        .foregroundColor(.tintColor)
                 }
+                .forceClickable()
                 
                 Group {
                     AvatarView(src: "share_node_v2ex", size: 36)
@@ -79,9 +93,9 @@ struct TagDetailPage: View {
                     Image(systemName: "bookmark")
                         .padding(8)
                         .font(.title3.weight(.regular))
-//                        .foregroundColor(.tintColor)
                 }
                 .opacity(shouldHideNavbar ? 0.0 : 1.0)
+                .forceClickable()
                 
                 Button {
                     // Show more actions
@@ -89,20 +103,20 @@ struct TagDetailPage: View {
                     Image(systemName: "ellipsis")
                         .padding(8)
                         .font(.title3.weight(.regular))
-//                        .foregroundColor(.tintColor)
                 }
+                .forceClickable()
             }
             .padding(.vertical, 5)
         }
         .hideDivider(hide: shouldHideNavbar)
-        .visualBlur(alpha: shouldHideNavbar ? 0.0 : 1.0)
         .foregroundColor(foreGroundColor)
+        .visualBlur(alpha: shouldHideNavbar ? 0.0 : 1.0)
     }
     
     
     @ViewBuilder
     private var topBannerView: some View {
-        VStack (spacing: 12) {
+        VStack (spacing: 14) {
             Color.clear.frame(height: topSafeAreaInset().top)
             AvatarView(src: "share_node_v2ex", size: heightOfNodeImage)
             Text("分享创造")
@@ -128,28 +142,27 @@ struct TagDetailPage: View {
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 8)
-            Divider()
+            Color.white
+                .frame(height: 20)
+                .cornerRadius(10, corners: [.topLeft, .topRight])
         }
         .foregroundColor(foreGroundColor)
         .foregroundColor(.bodyText)
         .padding(.top, 8)
-        .background {
-            Image("share_node_v2ex")
-                .resizable()
-                .blur(radius: 80, opaque: true)
-                .overlay(Color.black.opacity(0.3))
-        }
-        
     }
     
     
     @ViewBuilder
     private var nodeListView: some View {
-        ForEach( 0...20, id: \.self) { i in
-            NavigationLink(destination: NewsDetailPage()) {
-                NewsItemView()
+        LazyVStack(spacing: 0) {
+            ForEach( 0...20, id: \.self) { i in
+                NavigationLink(destination: NewsDetailPage()) {
+                    NewsItemView()
+                }
             }
         }
+        .background(.white)
+//        .cornerRadius(20, corners: [.topLeft, .topRight])
     }
     
 }
