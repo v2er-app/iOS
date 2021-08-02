@@ -37,51 +37,8 @@ struct UserDetailPage: View {
                     .readSize {
                         bannerViewHeight = $0.height
                     }
-                HStack(spacing: 4) {
-                    Text("主题")
-                        .font(.body.weight(tabIndex == 0 ? .heavy : .regular))
-                        .padding(.bottom, 4)
-                        .background {
-                            VStack(spacing: 0) {
-                                Spacer()
-                                Color.tintColor.frame(height: 3)
-                            }
-                            .opacity(self.tabIndex == 0 ? 1.0 : 0.0)
-                        }
-                        .onTapGesture {
-                            withAnimation {
-                                self.tabIndex = 0
-                            }
-                        }
-                    Text("回复")
-                        .font(.body.weight(tabIndex == 1 ? .heavy : .regular))
-                        .padding(.bottom, 4)
-                        .background {
-                            VStack(spacing: 0) {
-                                Spacer()
-                                Color.tintColor.frame(height: 3)
-                            }
-                            .opacity(self.tabIndex == 1 ? 1.0 : 0.0)
-                        }
-                        .onTapGesture {
-                            withAnimation {
-                                self.tabIndex = 1
-                            }
-                        }
-                    Spacer()
-                }
-                .padding(.leading, 10)
-                .background(.white)
-                
+                tabsTitleView
                 topicDetailView
-                //                TabView(selection: $tabIndex) {
-                //                    topicDetailView
-                //                        .tag(0)
-                //                    Text("World")
-                //                        .tag(1)
-                //                }
-                //                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                //                .debug()
             }
             .loadMore {
                 return true
@@ -197,17 +154,43 @@ struct UserDetailPage: View {
         .padding(.top, 8)
     }
     
-    
-    //    @ViewBuilder
-    //    private var detailTabListView: some View {
-    //        VStack(spacing: 0) {
-    //            // TabTitleViews
-    //
-    //            // Tab Content views
-    //
-    //        }
-    //        .greedyFrame()
-    //    }
+    private var tabsTitleView: some View {
+        HStack(spacing: 4) {
+            Text("主题")
+                .font(.body.weight(tabIndex == 0 ? .heavy : .regular))
+                .padding(.bottom, 4)
+                .background {
+                    VStack(spacing: 0) {
+                        Spacer()
+                        Color.tintColor.frame(height: 3)
+                    }
+                    .opacity(self.tabIndex == 0 ? 1.0 : 0.0)
+                }
+                .onTapGesture {
+                    withAnimation {
+                        self.tabIndex = 0
+                    }
+                }
+            Text("回复")
+                .font(.body.weight(tabIndex == 1 ? .heavy : .regular))
+                .padding(.bottom, 4)
+                .background {
+                    VStack(spacing: 0) {
+                        Spacer()
+                        Color.tintColor.frame(height: 3)
+                    }
+                    .opacity(self.tabIndex == 1 ? 1.0 : 0.0)
+                }
+                .onTapGesture {
+                    withAnimation {
+                        self.tabIndex = 1
+                    }
+                }
+            Spacer()
+        }
+        .padding(.leading, 10)
+        .background(.white)
+    }
     
     @ViewBuilder
     private var topicDetailView: some View {
