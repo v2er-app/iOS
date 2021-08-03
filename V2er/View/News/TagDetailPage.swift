@@ -48,7 +48,7 @@ struct TagDetailPage: View {
                         .resizable()
                         .blur(radius: 80, opaque: true)
                         .overlay(Color.black.opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
-                        .frame(height: bannerViewHeight + max(scrollY, 0))
+                        .frame(height: bannerViewHeight * 1.2 + max(scrollY, 0))
                     Spacer()
                 }
             }
@@ -141,10 +141,7 @@ struct TagDetailPage: View {
                     .font(.callout)
             }
             .padding(.horizontal, 12)
-            .padding(.bottom, 8)
-            Color.white
-                .frame(height: 20)
-                .cornerRadius(10, corners: [.topLeft, .topRight])
+            .padding(.bottom, 16)
         }
         .foregroundColor(foreGroundColor)
         .foregroundColor(.bodyText)
@@ -162,7 +159,7 @@ struct TagDetailPage: View {
             }
         }
         .background(.white)
-//        .cornerRadius(20, corners: [.topLeft, .topRight])
+        .cornerRadius(12, corners: [.topLeft, .topRight])
     }
     
 }

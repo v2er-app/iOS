@@ -57,7 +57,7 @@ struct UpdatableView<Content: View>: View {
                 if refreshable {
                     HeadIndicatorView(threshold: threshold, progress: $progress, isRefreshing: $isRefreshing).zIndex(9)
                 }
-                VStack {
+                VStack(spacing: 0) {
                     content
                         .anchorPreference(key: ContentBoundsKey.self, value: .bounds) { $0 }
                     if loadMoreable {

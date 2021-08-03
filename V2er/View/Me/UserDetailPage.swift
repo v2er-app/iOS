@@ -16,7 +16,8 @@ struct UserDetailPage: View {
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
-    @State private var tabIndex: Int = 0
+    @State private var currentTab: TabButton.ID = .topic
+    @Namespace var animation
     
     private var shouldHideNavbar: Bool {
         let hideNavbar =  scrollY > -heightOfNodeImage * 1.0
@@ -24,7 +25,7 @@ struct UserDetailPage: View {
         return hideNavbar
     }
     
-    private var foreGroundColor: Color {
+    var foreGroundColor: Color {
         shouldHideNavbar ? .white.opacity(0.9) : .tintColor
     }
     
@@ -51,8 +52,8 @@ struct UserDetailPage: View {
                         .resizable()
                         .blur(radius: 80, opaque: true)
                         .overlay(Color.black.opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
-                        .frame(height: bannerViewHeight + max(scrollY, 0))
-                    Spacer()
+                        .frame(height: bannerViewHeight * 1.2 + max(scrollY, 0))
+                    Spacer().background(.clear)
                 }
             }
         }
@@ -123,7 +124,6 @@ struct UserDetailPage: View {
         .visualBlur(alpha: shouldHideNavbar ? 0.0 : 1.0)
     }
     
-    
     @ViewBuilder
     private var topBannerView: some View {
         VStack (spacing: 14) {
@@ -145,51 +145,21 @@ struct UserDetailPage: View {
             }
             Text("V2EX 第 269646 号会员，加入于 2017-11-23 16:28:09 +08:00")
                 .font(.callout)
-            Color.white
-                .frame(height: 20)
-                .cornerRadius(10, corners: [.topLeft, .topRight])
         }
         .foregroundColor(foreGroundColor)
-        .foregroundColor(.bodyText)
-        .padding(.top, 8)
+        .padding(.vertical, 8)
     }
     
     private var tabsTitleView: some View {
-        HStack(spacing: 4) {
-            Text("主题")
-                .font(.body.weight(tabIndex == 0 ? .heavy : .regular))
-                .padding(.bottom, 4)
-                .background {
-                    VStack(spacing: 0) {
-                        Spacer()
-                        Color.tintColor.frame(height: 3)
-                    }
-                    .opacity(self.tabIndex == 0 ? 1.0 : 0.0)
-                }
-                .onTapGesture {
-                    withAnimation {
-                        self.tabIndex = 0
-                    }
-                }
-            Text("回复")
-                .font(.body.weight(tabIndex == 1 ? .heavy : .regular))
-                .padding(.bottom, 4)
-                .background {
-                    VStack(spacing: 0) {
-                        Spacer()
-                        Color.tintColor.frame(height: 3)
-                    }
-                    .opacity(self.tabIndex == 1 ? 1.0 : 0.0)
-                }
-                .onTapGesture {
-                    withAnimation {
-                        self.tabIndex = 1
-                    }
-                }
-            Spacer()
+        HStack(spacing: 0) {
+            TabButton(title: "主题", id: .topic, selectedID: $currentTab, animation: self.animation)
+            TabButton(title: "回复", id: .reply, selectedID: $currentTab, animation: self.animation)
         }
-        .padding(.leading, 10)
+        .background(Color.lightGray, in: RoundedRectangle(cornerRadius: 10))
+        .padding(.horizontal, 10)
+        .padding(.vertical, 10)
         .background(.white)
+        .cornerRadius(12, corners: [.topLeft, .topRight])
     }
     
     @ViewBuilder
@@ -203,6 +173,48 @@ struct UserDetailPage: View {
         }
         .background(.white)
     }
+}
+
+struct TabButton: View {
+    
+    public enum ID: String {
+        case topic, reply
+    }
+    
+    var title: String
+    var id: ID
+    @Binding var selectedID: ID
+    var animation: Namespace.ID
+    
+    
+    var isSelected: Bool {
+        return id == selectedID
+    }
+    
+    var body: some View {
+        Button {
+            withAnimation(.spring()) {
+                selectedID = id
+            }
+        } label: {
+            Text(title)
+                .fontWeight(.bold)
+                .foregroundColor(isSelected ? .white.opacity(0.9) : .tintColor)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .background {
+                    VStack {
+                        if isSelected {
+                            RoundedRectangle(cornerRadius: 10)
+                                .fill(.black)
+                                .matchedGeometryEffect(id: "TAB", in: animation)
+                        }
+                    }
+                }
+                .forceClickable()
+        }
+    }
+    
 }
 
 struct UserDetailPage_Previews: PreviewProvider {
