@@ -63,29 +63,29 @@ struct MePage: View {
                     .padding(.bottom, 8)
             }
             NavigationLink {
-                CreateTopicPage()
+                MyTopicPage()
             } label: {
                 SectionItemView("主题", icon: "paperplane")
             }
             
             NavigationLink {
-                CreateTopicPage()
+                StarPage()
             } label: {
                 SectionItemView("收藏", icon: "bookmark")
             }
             NavigationLink {
-                CreateTopicPage()
+                SpecailCarePage()
             } label: {
                 SectionItemView("关注", icon: "heart")
             }
             NavigationLink {
-                CreateTopicPage()
+                HistoryPage()
             } label: {
                 SectionItemView("最近浏览", icon: "clock", showDivider: false)
             }
             
             NavigationLink {
-                CreateTopicPage()
+                SettingsPage()
             } label: {
                 SectionItemView("设置", icon: "gearshape", showDivider: false)
                     .padding(.top, 8)
