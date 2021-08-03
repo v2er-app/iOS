@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,6 +14,7 @@
 		5D0CFA7E26B992D6001A8A7F /* StarPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7D26B992D6001A8A7F /* StarPage.swift */; };
 		5D0CFA8026B992FC001A8A7F /* HistoryPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */; };
 		5D0CFA8226B9935B001A8A7F /* MyTopicPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA8126B9935B001A8A7F /* MyTopicPage.swift */; };
+		5D0CFA8526B994F5001A8A7F /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 5D0CFA8426B994F5001A8A7F /* SwiftSoup */; };
 		5D1D8E2226B1969B0040C418 /* CreateTopicPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D8E2126B1969B0040C418 /* CreateTopicPage.swift */; };
 		5D1D8E2426B19A640040C418 /* UserDetailPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D8E2326B19A640040C418 /* UserDetailPage.swift */; };
 		5D1F4265249713640043F604 /* VEBlur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1F4264249713640043F604 /* VEBlur.swift */; };
@@ -128,6 +129,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D0CFA8526B994F5001A8A7F /* SwiftSoup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,6 +343,7 @@
 			);
 			name = V2er;
 			packageProductDependencies = (
+				5D0CFA8426B994F5001A8A7F /* SwiftSoup */,
 			);
 			productName = V2er;
 			productReference = 5D436FE524791C2C00FFA37E /* V2er.app */;
@@ -415,6 +418,7 @@
 			);
 			mainGroup = 5D436FDC24791C2C00FFA37E;
 			packageReferences = (
+				5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 			);
 			productRefGroup = 5D436FE624791C2C00FFA37E /* Products */;
 			projectDirPath = "";
@@ -813,6 +817,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5D0CFA8426B994F5001A8A7F /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5D436FDD24791C2C00FFA37E /* Project object */;
 }
