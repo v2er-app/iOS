@@ -8,7 +8,11 @@
 
 import SwiftUI
 
-struct NewsPage: View {
+struct NewsPage: StateView {
+    @EnvironmentObject private var store: Store
+    var state: Binding<FeedState> {
+        $store.appState.feedState
+    }
     @Binding var selecedTab: TabId
     
     var body: some View {
@@ -27,9 +31,8 @@ private var contentView: some View {
         }
     }
     .updatable {
-        print("onRefresh...")
-        let result = await fetchData()
-        print("onRefresh ended...")
+        await run(action: FeedActions.FetchData.Start())
+//        await fetchData()
     } loadMore: {
         print("onLoadMore...")
         return true

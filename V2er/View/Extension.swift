@@ -21,7 +21,7 @@ public func topSafeAreaInset() -> UIEdgeInsets {
         result = UIEdgeInsets.init(top: defaultInsetTop, left: 0,
                                    bottom: defaultInsetBottom, right: 0)
     }
-    print("insets: \(result)")
+//    print("insets: \(result)")
     return result;
 }
 

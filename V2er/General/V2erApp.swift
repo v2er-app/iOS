@@ -10,7 +10,6 @@ import SwiftUI
 
 @main
 struct V2erApp: App {
-    
     public static let deviceType = UIDevice().type
     
     public static let viewController: UIHostingController = UIHostingController(rootView: Text(""))
@@ -42,8 +41,10 @@ struct V2erApp: App {
     var body: some Scene {
         WindowGroup {
             MainPage()
+                .environmentObject(Store.shared)
         }
     }
+
 }
 
 

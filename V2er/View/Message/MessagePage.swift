@@ -63,6 +63,7 @@ fileprivate struct MessageItemView: View {
 struct MessagePage_Previews: PreviewProvider {
     @State static var selected = TabId.message
     static var previews: some View {
-        MainPage(selecedTab: .message)
+        MainPage()
+            .environmentObject(Store.shared)
     }
 }

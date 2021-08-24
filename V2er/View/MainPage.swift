@@ -8,22 +8,25 @@
 
 import SwiftUI
 
-struct MainPage: View {
-    @State var selecedTab = TabId.feed
-    
+struct MainPage: StateView {
+    @EnvironmentObject private var store: Store
+    var state: Binding<MainPageState> {
+        $store.appState.mainPageState
+    }
+
     var body: some View {
         NavigationView {
             ZStack {
-                NewsPage(selecedTab: $selecedTab)
-                ExplorePage(selecedTab: $selecedTab)
-                MessagePage(selecedTab: $selecedTab)
-                MePage(selecedTab: $selecedTab)
+                NewsPage(selecedTab: state.selectedTab)
+                ExplorePage(selecedTab: state.selectedTab)
+                MessagePage(selecedTab: state.selectedTab)
+                MePage(selecedTab: state.selectedTab)
             }
             .safeAreaInset(edge: .top, spacing: 0) {
-                TopBar(selectedTab: $selecedTab)
+                TopBar(selectedTab: state.selectedTab)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                TabBar(selectedTab: $selecedTab)
+                TabBar(selectedTab: state.selectedTab)
             }
             .ignoresSafeArea(.container)
             .navigationBarHidden(true)
@@ -36,8 +39,9 @@ struct MainPage: View {
 
 struct MainPage_Previews: PreviewProvider {
 //    @State static var selecedTab: TabId = TabId.me
-    
+
     static var previews: some View {
-        MainPage(selecedTab: .me)
+        MainPage()
+            .environmentObject(Store.shared)
     }
 }

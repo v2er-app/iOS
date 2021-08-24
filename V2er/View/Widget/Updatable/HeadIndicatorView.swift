@@ -24,25 +24,18 @@ struct HeadIndicatorView: View {
     }
     
     var body: some View {
-        ZStack {
-            Group {
-                if progress == 1 || isRefreshing {
-                    ActivityIndicator()
-                } else {
-                    Image(systemName: "arrow.down")
-                        .font(.title2.weight(.regular))
-//                        .resizable()
-//                        .aspectRatio(contentMode: .fit)
-//                        .fixedSize()
-                }
-            }
-            VStack {
-                Spacer()
-//                Divider()
+        Group {
+            if progress == 1 || isRefreshing {
+                ActivityIndicator()
+            } else {
+                Image(systemName: "arrow.down")
+                    .font(.title2.weight(.regular))
             }
         }
         .frame(height: height)
+        .debug()
         .offset(y: offset)
+
     }
 }
 

@@ -92,12 +92,11 @@ struct UpdatableView<Content: View>: View {
             && scrollY <= threshold
             && lastScrollY > threshold {
             isRefreshing = true
-            async {
+            Task {
                 await onRefresh?()
                 withAnimation(.easeInOut(duration: 0.3)) {
                     isRefreshing = false
                 }
-                
             }
         }
         
@@ -106,8 +105,7 @@ struct UpdatableView<Content: View>: View {
             && scrollY < -boundsDelta
             && !isLoadingMore {
             isLoadingMore = true
-//            print("isLoadMoreing...")
-            async {
+            Task {
                 let optionalNoMoreData = await onLoadMore?()
                 noMoreData = optionalNoMoreData ?? true
                 isLoadingMore = false
