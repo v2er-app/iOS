@@ -17,7 +17,7 @@ struct MainPage: StateView {
     var body: some View {
         NavigationView {
             ZStack {
-                NewsPage(selecedTab: state.selectedTab)
+                FeedPage(selecedTab: state.selectedTab)
                 ExplorePage(selecedTab: state.selectedTab)
                 MessagePage(selecedTab: state.selectedTab)
                 MePage(selecedTab: state.selectedTab)

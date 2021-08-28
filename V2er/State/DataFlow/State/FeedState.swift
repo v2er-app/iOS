@@ -10,5 +10,6 @@ import Foundation
 
 struct FeedState: FluxState {
     var loading: Bool = false
-    var newsInfo: NewsListInfo?
+    var autoLoad: Bool = false
+    var newsInfo: FeedInfo = FeedInfo()
 }

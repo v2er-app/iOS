@@ -10,15 +10,17 @@ import SwiftUI
 
 struct HeadIndicatorView: View {
     let height: CGFloat
+    var scrollY: CGFloat
     @Binding var progress: CGFloat
     @Binding var isRefreshing: Bool
     
     var offset: CGFloat {
-        return isRefreshing ? 0 : -height
+        return isRefreshing ? (0 - scrollY) : -height
     }
     
-    init(threshold: CGFloat, progress: Binding<CGFloat>, isRefreshing: Binding<Bool>) {
+    init(threshold: CGFloat, progress: Binding<CGFloat>, scrollY: CGFloat,isRefreshing: Binding<Bool>) {
         self.height = threshold
+        self.scrollY = scrollY
         self._progress = progress
         self._isRefreshing = isRefreshing
     }
@@ -33,7 +35,6 @@ struct HeadIndicatorView: View {
             }
         }
         .frame(height: height)
-        .debug()
         .offset(y: offset)
 
     }
@@ -44,7 +45,7 @@ struct HeadView_Previews: PreviewProvider {
     @State static var isRefreshing = false
     
     static var previews: some View {
-        HeadIndicatorView(threshold: 80, progress: $progress,
+        HeadIndicatorView(threshold: 80, progress: $progress, scrollY: 0,
                           isRefreshing: $isRefreshing)
         //            .border(.red)
     }

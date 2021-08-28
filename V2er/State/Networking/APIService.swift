@@ -14,13 +14,14 @@ struct APIService {
     static let shared = APIService()
     private var session: URLSession
     private let jsonDecoder: JSONDecoder
+
     private init(){
         // TODO: support multi accounts
         self.session = URLSession.shared;
         jsonDecoder = JSONDecoder()
     }
 
-    func htmlGet<T: HtmlParsable>(endpoint: Endpoint,
+    func htmlGet<T: BaseModel>(endpoint: Endpoint,
                                   params: [String: String]?) async -> APIResult<T> {
         let rawResult = await get(endpoint: endpoint, params: params)
         guard rawResult.error == nil else {
@@ -51,7 +52,7 @@ struct APIService {
         }
     }
 
-    func POST<T: HtmlParsable>(endpoint: Endpoint,
+    func POST<T: BaseModel>(endpoint: Endpoint,
                                params: [String: String]? = nil,
                                requestHeaders: [String: String]? = nil) async throws -> APIResult<T> {
         let rawResult = await post(endpoint: endpoint, params: params, requestHeaders: requestHeaders)
@@ -66,16 +67,27 @@ struct APIService {
     }
 
     private func get(endpoint: Endpoint,
-                     params: [String: String]?) async -> RawResult {
+                     params: [String: String]?,
+                     requestHeaders: [String: String]? = nil) async -> RawResult {
         let url = baseURL.appendingPathComponent(endpoint.path())
         var componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
+
         if let params = params {
             for (_, value) in params.enumerated() {
                 componets.queryItems?.append(URLQueryItem(name: value.key, value: value.value))
             }
         }
+
         var request = URLRequest(url: componets.url!)
         request.httpMethod = "GET"
+        request.addValue(UA.wap.value(), forHTTPHeaderField: UA.key)
+
+        if requestHeaders != nil {
+            for (key, value) in requestHeaders! {
+                request.addValue(value, forHTTPHeaderField: key)
+            }
+        }
+
         let result: RawResult
         do {
             let (data, response) = try await session.data(for: request, delegate: nil)
@@ -130,11 +142,11 @@ struct APIService {
         return result
     }
 
-    private func parse<T: HtmlParsable>(from htmlData: Data) async -> (T?, APIError?) {
+    private func parse<T: BaseModel>(from htmlData: Data) async -> (T?, APIError?) {
         let parseTask = Task { () -> T in
             let html = String(decoding: htmlData, as: UTF8.self)
             let doc: Document = try SwiftSoup.parse(html)
-            return T(from: doc)!
+            return T(from: doc)
         }
         let result: (data: T?, error: APIError?)
         do {
@@ -162,3 +174,4 @@ struct HttpError: Error {
 
 typealias APIResult<T> = Result<T?, APIError>
 typealias RawResult = (data: Data?, error: APIError?)
+

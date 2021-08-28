@@ -9,30 +9,26 @@
 import SwiftUI
 
 struct NewsItemView: View {
-    
+    @Binding var data: FeedInfo.Item
     
     var body: some View {
         VStack(spacing: 0) {
             VStack {
                 HStack(alignment: .top) {
                     NavigationLink(destination: UserDetailPage()) {
-                        Image("avar")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 48)
-                            .roundedEdge()
+                        AvatarView(url: data.avatar, size: 48)
                     }
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("ghui")
+                        Text(data.userName)
                             .lineLimit(1)
                             .font(.body)
-                        Text("51分钟前 评论3")
+                        Text(data.time)
                             .lineLimit(1)
                             .font(.footnote)
                     }
                     Spacer()
                     NavigationLink(destination: TagDetailPage()) {
-                        Text("问与答")
+                        Text(data.tagName)
                             .font(.footnote)
                             .foregroundColor(.black)
                             .lineLimit(1)
@@ -41,8 +37,10 @@ struct NewsItemView: View {
                             .background(Color.lightGray)
                     }
                 }
-                Text("有人用非等宽字体来写代码的吗？等宽字体显示代码有什么特殊的好处吗？")
+                Text(data.title )
+                    .greedyWidth(.leading)
                     .lineLimit(2)
+                    .debug()
             }
             .padding(10)
             Divider()
@@ -51,8 +49,8 @@ struct NewsItemView: View {
     }
 }
 
-struct NewsItemView_Previews: PreviewProvider {
-    static var previews: some View {
-        NewsItemView()
-    }
-}
+//struct NewsItemView_Previews: PreviewProvider {
+//    static var previews: some View {
+////        NewsItemView()
+//    }
+//}

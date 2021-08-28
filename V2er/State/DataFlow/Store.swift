@@ -23,6 +23,10 @@ final public class Store: ObservableObject {
             appState = result.0
             if let asyncAction = result.1 as? AsyncAction {
                 asyncAction.execute(in: self)
+            } else if let awaitAction = result.1 as? AwaitAction {
+                Task {
+                    await awaitAction.execute(in: self)
+                }
             }
         }
     }

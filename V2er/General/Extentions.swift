@@ -8,8 +8,21 @@
 
 import Foundation
 
-public extension String {
+extension String {
+    static let `default`: String = ""
+
     func toInt() -> Int {
         return Int(self) ?? 0
+    }
+
+}
+
+extension Int {
+    static let `default`: Int = 0
+}
+
+extension Collection where Indices.Iterator.Element == Index {
+    public subscript(safe index: Index) -> Iterator.Element? {
+        return (startIndex <= index && index < endIndex) ? self[index] : nil
     }
 }

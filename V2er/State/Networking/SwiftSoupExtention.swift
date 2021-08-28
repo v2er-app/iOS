@@ -11,11 +11,19 @@ import SwiftSoup
 
 
 public extension Element {
-    func pick(_ selector: String, _ attr: HtmlAttr = .text) -> String {
-        if let result = try? self.select(selector).attr(attr.rawValue) {
-            return result
+    func pick(_ selector: String, at index:Int = 0, _ attr: HtmlAttr = .text, regex: String? = nil) -> String {
+        let e : Element? = pickAll(selector)?[safe: index]
+        guard let e = e else { return .default }
+        let result: String?
+        if attr == .text {
+            result = try? e.text()
+        } else if attr == .ownText {
+            result = e.ownText()
+        } else {
+            result = try? e.attr(attr.value)
         }
-        return ""
+        // TODO use reg
+        return result ?? .default
     }
 
     func pickAll(_ selector: String) -> Elements? {
@@ -25,13 +33,12 @@ public extension Element {
         return nil
     }
 
-    func pickOne(_ selector: String) -> Element? {
-        if let result = pickAll(selector)?[0] {
+    func pickOne(_ selector: String, at index:Int = 0) -> Element? {
+        if let result = pickAll(selector)?[safe: index] {
             return result
         }
         return nil
     }
-
 }
 
 public enum HtmlAttr: String {
@@ -42,4 +49,10 @@ public enum HtmlAttr: String {
     case value = "value"
     case html = "html"
     case innerHtml = "inner_html"
+
+    var value: String {
+        get { self.rawValue }
+    }
 }
+
+

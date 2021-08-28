@@ -165,11 +165,11 @@ struct UserDetailPage: View {
     @ViewBuilder
     private var topicDetailView: some View {
         VStack(spacing: 0) {
-            ForEach( 0...20, id: \.self) { i in
-                NavigationLink(destination: NewsDetailPage()) {
-                    NewsItemView()
-                }
-            }
+//            ForEach( 0...20, id: \.self) { i in
+//                NavigationLink(destination: NewsDetailPage()) {
+//                    NewsItemView()
+//                }
+//            }
         }
         .background(.white)
     }

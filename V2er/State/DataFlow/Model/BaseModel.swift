@@ -7,8 +7,14 @@
 //
 
 import Foundation
+import SwiftSoup
 
-protocol BaseModel {
-    
+protocol HtmlParsable {
+    init(from htmlDoc: Document)
 }
+
+protocol BaseModel: HtmlParsable {
+    init()
+}
+
 

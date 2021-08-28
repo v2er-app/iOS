@@ -74,7 +74,7 @@ struct TagDetailPage: View {
                 .forceClickable()
                 
                 Group {
-                    AvatarView(src: "share_node_v2ex", size: 36)
+//                    AvatarView(url: "share_node_v2ex", size: 36)
                     VStack(alignment: .leading) {
                         Text("分享创造")
                             .font(.headline)
@@ -118,7 +118,7 @@ struct TagDetailPage: View {
     private var topBannerView: some View {
         VStack (spacing: 14) {
             Color.clear.frame(height: topSafeAreaInset().top)
-            AvatarView(src: "share_node_v2ex", size: heightOfNodeImage)
+//            AvatarView(src: "share_node_v2ex", size: heightOfNodeImage)
             Text("分享创造")
                 .font(.headline.weight(.semibold))
             Text("欢迎你在这里发布你的新作品")
@@ -152,11 +152,11 @@ struct TagDetailPage: View {
     @ViewBuilder
     private var nodeListView: some View {
         LazyVStack(spacing: 0) {
-            ForEach( 0...20, id: \.self) { i in
-                NavigationLink(destination: NewsDetailPage()) {
-                    NewsItemView()
-                }
-            }
+//            ForEach( 0...20, id: \.self) { i in
+//                NavigationLink(destination: NewsDetailPage()) {
+//                    NewsItemView()
+//                }
+//            }
         }
         .background(.white)
         .cornerRadius(12, corners: [.topLeft, .topRight])

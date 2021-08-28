@@ -7,22 +7,26 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct AvatarView: View {
-    var src: String = "avar"
+    var url: String = "https://cdn.v2ex.com/avatar/c6f7/ffa0/161290_large.png?m=1506764621"
     var size: CGFloat = 48.0
     
     var body: some View {
-        Image(src)
+        KFImage.url(URL(string: url))
+            .loadDiskFileSynchronously()
+            .placeholder{ Color.lightGray.frame(width: size, height: size) }
+//            .fade(duration: 0.25)
             .resizable()
-            .scaledToFit()
+            .aspectRatio(contentMode: .fill)
             .frame(width: size, height: size)
             .roundedEdge()
     }
 }
 
-struct AvatarView_Previews: PreviewProvider {
-    static var previews: some View {
-        AvatarView(size: 48)
-    }
-}
+//struct AvatarView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        AvatarView(size: 48)
+//    }
+//}
