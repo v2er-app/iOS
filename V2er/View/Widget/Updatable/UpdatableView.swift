@@ -27,7 +27,7 @@ struct UpdatableView<Content: View>: View {
     let threshold: CGFloat = 60
     @State var boundsDelta = 0.0
     @State var isLoadingMore: Bool = false
-    @State var noMoreData: Bool = false
+    @State var hasMoreData: Bool = true
     @Binding var autoRefresh: Bool
 
     private var refreshable: Bool {
@@ -59,7 +59,7 @@ struct UpdatableView<Content: View>: View {
                         content
                             .anchorPreference(key: ContentBoundsKey.self, value: .bounds) { $0 }
                         if loadMoreable {
-                            LoadmoreIndicatorView(isLoading: $isLoadingMore, noMoreData: $noMoreData)
+                            LoadmoreIndicatorView(isLoading: $isLoadingMore, hasMoreData: $hasMoreData)
                         }
                     }
                 }
@@ -67,7 +67,6 @@ struct UpdatableView<Content: View>: View {
                 .alignmentGuide(.top, computeValue: { d in (self.isRefreshing ? (-self.threshold + scrollY) : 0.0) })
                 if refreshable {
                     HeadIndicatorView(threshold: threshold, progress: $progress, scrollY: scrollY, isRefreshing: $isRefreshing)
-                        .id(0)
                 }
             }
         }
@@ -112,15 +111,18 @@ struct UpdatableView<Content: View>: View {
             }
         }
         
-        if loadMoreable && !noMoreData
+        if loadMoreable
+            && hasMoreData
             && boundsDelta >= 0
-            && scrollY < -boundsDelta
+            && Int(scrollY) < Int(-boundsDelta)
             && !isLoadingMore {
             isLoadingMore = true
             Task {
-                let optionalNoMoreData = await onLoadMore?()
-                noMoreData = optionalNoMoreData ?? true
-                isLoadingMore = false
+                log("loadingMore...")
+                hasMoreData = await onLoadMore!()
+                runInMain {
+                    isLoadingMore = false
+                }
             }
         }
         

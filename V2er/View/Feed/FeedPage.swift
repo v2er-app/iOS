@@ -35,7 +35,7 @@ struct FeedPage: StateView {
         .updatable(autoRefresh: state.autoLoad) {
             await run(action: FeedActions.FetchData.Start())
         } loadMore: {
-            return true
+            return false
         }
     }
 
