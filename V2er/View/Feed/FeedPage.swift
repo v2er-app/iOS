@@ -35,7 +35,8 @@ struct FeedPage: StateView {
         .updatable(autoRefresh: state.autoLoad) {
             await run(action: FeedActions.FetchData.Start())
         } loadMore: {
-            return false
+            await run(action: FeedActions.LoadMore.Start(state.willLoadPage.wrappedValue))
+            return state.hasMoreData.wrappedValue
         }
     }
 

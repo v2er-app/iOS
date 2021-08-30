@@ -28,4 +28,24 @@ struct FeedActions {
         }
     }
 
+    struct LoadMore {
+        struct Start: AwaitAction {
+            var willLoadPage: Int = 1
+
+            init(_ willLoadPage: Int) {
+                self.willLoadPage = willLoadPage
+            }
+
+            func execute(in store: Store) async {
+                let result: APIResult<FeedInfo> = await APIService.shared
+                    .htmlGet(endpoint: .tab, params: ["p": willLoadPage.toString()])
+                dispatch(action: FeedActions.LoadMore.Done(result: result))
+            }
+        }
+
+        struct Done: Action {
+            let result: APIResult<FeedInfo>
+        }
+    }
+
 }

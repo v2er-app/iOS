@@ -73,6 +73,7 @@ struct APIService {
         var componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
 
         if let params = params {
+            componets.queryItems = []
             for (_, value) in params.enumerated() {
                 componets.queryItems?.append(URLQueryItem(name: value.key, value: value.value))
             }

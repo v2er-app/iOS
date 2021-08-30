@@ -14,17 +14,33 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
     if action is AsyncAction || action is AwaitAction { followingAction = action }
     switch action {
         case let action as FeedActions.FetchData.Start:
-            guard !state.loading else { break }
+            guard !state.refreshing else { break }
             state.autoLoad = action.autoStart
-            state.loading = true
+            state.refreshing = true
         case let action as FeedActions.FetchData.Done:
-            state.loading = false
+            state.refreshing = false
             state.autoLoad = false
             if case let .success(newsInfo) = action.result {
                 state.newsInfo = newsInfo ?? FeedInfo()
+                state.willLoadPage = 1
             } else {
                 // Loaded failed
             }
+        case let action as FeedActions.LoadMore.Start:
+            guard !state.refreshing else { break }
+            guard !state.loadingMore else { break }
+            state.loadingMore = true
+            break
+        case let action as FeedActions.LoadMore.Done:
+            state.loadingMore = false
+            state.hasMoreData = true // todo check vary tabs
+            if case let .success(newsInfo) = action.result {
+                state.newsInfo.append(feedInfo: newsInfo!)
+                state.willLoadPage += 1
+            } else {
+                // failed
+            }
+            break
         default:
             break
     }

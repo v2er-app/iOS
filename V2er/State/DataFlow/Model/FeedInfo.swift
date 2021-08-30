@@ -18,6 +18,12 @@ struct FeedInfo: BaseModel {
     // @Pick("div.cell.item")
     var items: [Item] = []
 
+    mutating func append(feedInfo: FeedInfo) {
+        self.unReadNums = feedInfo.unReadNums
+        self.twoStepStr = feedInfo.twoStepStr
+        self.items.append(contentsOf: feedInfo.items)
+    }
+
     struct Item: Identifiable {
         let id = UUID()
         let feedId: String
@@ -70,7 +76,7 @@ struct FeedInfo: BaseModel {
                             tagLink: tagLink, replies: replies)
             items.append(item)
         }
-        log("FeedInfo: \(self)")
+//        log("FeedInfo: \(self)")
     }
 
 }

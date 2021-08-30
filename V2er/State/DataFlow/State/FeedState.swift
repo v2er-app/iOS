@@ -9,7 +9,10 @@
 import Foundation
 
 struct FeedState: FluxState {
-    var loading: Bool = false
     var autoLoad: Bool = false
+    var refreshing: Bool = false
+    var loadingMore: Bool = false
+    var willLoadPage: Int = 0
+    var hasMoreData: Bool = false
     var newsInfo: FeedInfo = FeedInfo()
 }

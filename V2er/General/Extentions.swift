@@ -19,6 +19,10 @@ extension String {
 
 extension Int {
     static let `default`: Int = 0
+
+    func toString() -> String {
+        return String(self)
+    }
 }
 
 extension Collection where Indices.Iterator.Element == Index {
