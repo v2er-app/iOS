@@ -34,7 +34,7 @@ extension View {
     }
     
     public func roundedEdge(radius: CGFloat = -1,
-                            borderWidth: CGFloat = 0.4,
+                            borderWidth: CGFloat = 0.2,
                             color: Color = Color.gray) -> some View {
         self.modifier(RoundedEdgeModifier(radius: radius,
                                           width: borderWidth, color: color))

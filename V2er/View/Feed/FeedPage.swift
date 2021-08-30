@@ -25,7 +25,7 @@ struct FeedPage: StateView {
         LazyVStack(spacing: 0) {
             ForEach(state.newsInfo.items) { item in
                 NavigationLink(destination: NewsDetailPage()) {
-                    NewsItemView(data: item)
+                    FeedItemView(data: item)
                 }
             }
         }

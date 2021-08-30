@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct NewsItemView: View {
+struct FeedItemView: View {
     @Binding var data: FeedInfo.Item
     
     var body: some View {
@@ -16,7 +16,7 @@ struct NewsItemView: View {
             VStack {
                 HStack(alignment: .top) {
                     NavigationLink(destination: UserDetailPage()) {
-                        AvatarView(url: data.avatar, size: 48)
+                        AvatarView(url: data.avatar)
                     }
                     VStack(alignment: .leading, spacing: 5) {
                         Text(data.userName)
