@@ -104,8 +104,10 @@ struct UpdatableView<Content: View>: View {
             isRefreshing = true
             Task {
                 await onRefresh?()
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    isRefreshing = false
+                runInMain {
+                    withAnimation {
+                        isRefreshing = false
+                    }
                 }
             }
         }
