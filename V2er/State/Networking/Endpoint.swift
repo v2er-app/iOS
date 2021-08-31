@@ -14,7 +14,7 @@ enum Endpoint {
         case json
     }
 
-    case tab, recent
+    case tab, recent, explore
     case signin, topic(topicId: String), notifications
     case myFollowing, myTopics, myNodes, nodesNav
     case nodeListDetail(nodeName: String)
@@ -29,80 +29,86 @@ enum Endpoint {
     case checkin, twoFA, downMyTopic(id: String), pinTopic(id: String)
 
     func path() -> String {
-        return info().0
+        return info().path
     }
 
     func type() -> ResourceType {
-        return info().1
+        return info().type
     }
 
-    private func info() -> (String, ResourceType) {
+    typealias Info = (path: String, type: ResourceType, ua: UA)
+
+    private func info() -> Info {
+        var info: Info = ("", .html, .wap)
         switch self {
             case .tab:
-                return ("/", .html)
+                info.path = "/"
             case .recent:
-                return ("/recent", .html)
+                info.path = "/recent"
+            case .explore:
+                info.path = "/"
             case .signin:
-                return ("/signin", .html)
+                info.path = "/signin"
             case let .topic(id):
-                return ("/t\(id)", .html)
+                info.path = "/t\(id)"
             case .notifications:
-                return ("/notifications", .html)
+                info.path = "/notifications"
             case .myFollowing:
-                return ("/my/following", .html)
+                info.path = "/my/following"
             case .myTopics:
-                return ("/my/topics", .html)
+                info.path = "/my/topics"
             case .myNodes:
-                return ("/my/nodes", .html)
+                info.path = "/my/nodes"
             case .nodesNav:
-                return ("/", .html)
+                info.path = "/"
             case let .nodeListDetail(nodeName):
-                return ("/go/\(nodeName)", .html)
+                info.path = "/go/\(nodeName)"
             case let .userPage(userName):
-                return ("/member/\(userName)", .html)
+                info.path = "/member/\(userName)"
             case .createTopic:
-                return ("/new", .html)
+                info.path = "/new"
             case let .appendTopic(id):
-                return ("/append/topic/\(id)", .html)
+                info.path = "/append/topic/\(id)"
             case let .thanksReply(id):
-                return ("/thank/reply/\(id)", .html)
+                info.path = "/thank/reply/\(id)"
             case let .thanksAuthor(id):
-                return ("/thank/topic/\(id)", .html)
+                info.path = "/thank/topic/\(id)"
             case let .starTopic(id):
-                return ("/favorite/topic/\(id)", .html)
+                info.path = "/favorite/topic/\(id)"
             case let .unStarTopic(id):
-                return ("/unfavorite/topic/\(id)", .html)
+                info.path = "/unfavorite/topic/\(id)"
             case let .ignoreTopic(id):
-                return ("/ignore/topic/\(id)", .html)
+                info.path = "/ignore/topic/\(id)"
             case let .ignoreReply(id):
-                return ("ignore/reply/\(id)", .html)
+                info.path = "/ignore/reply/\(id)"
             case let .ignoreNode(id):
-                return ("/settings/ignore/node/\(id)", .html)
+                info.path = "/settings/ignore/node/\(id)"
             case let .unIgnoreNode(id):
-                return ("/settings/unignore/node/\(id)", .html)
+                info.path = "/settings/unignore/node/\(id)"
             case let .upTopic(id):
-                return ("/up/topic/\(id)", .html)
+                info.path = "/up/topic/\(id)"
             case let .downTopic(id):
-                return ("/down/topic/\(id)", .html)
+                info.path = "/down/topic/\(id)"
             case let .replyTopic(id):
-                return ("/t/\(id)", .html)
+                info.path = "/t/\(id)"
             case let .blockUser(id):
-                return ("/block/\(id)", .html)
+                info.path = "/block/\(id)"
             case let .followUser(id):
-                return ("/follow/\(id)", .html)
+                info.path = "/follow/\(id)"
             case let .starNode(id):
-                return ("/favorite/node/\(id)", .html)
+                info.path = "/favorite/node/\(id)"
             case .dailyMission:
-                return ("/mission/daily", .html)
+                info.path = "/mission/daily"
             case .checkin:
-                return ("mission/daily/redeem", .html)
+                info.path = "/mission/daily/redeem"
             case .twoFA:
-                return ("/2fa?next=/mission/daily", .html)
+                info.path = "/2fa?next=/mission/daily"
             case let .downMyTopic(id):
-                return ("/fade/topic/\(id)", .html)
+                info.path = "/fade/topic/\(id)"
             case let .pinTopic(id):
-                return ("/sticky/topic/\(id)", .html)
+                info.path = "/sticky/topic/\(id)"
         }
+        return info
     }
 
 }

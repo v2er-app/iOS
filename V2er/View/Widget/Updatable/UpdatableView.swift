@@ -175,7 +175,7 @@ struct FrameContentBoundsDeltaKey: PreferenceKey {
 
 
 extension View {
-    public func updatable(autoRefresh: Binding<Bool> = .constant(true),
+    public func updatable(autoRefresh: Binding<Bool> = .constant(false),
                           refresh: RefreshAction = nil,
                           loadMore: LoadMoreAction = nil,
                           onScroll: ScrollAction? = nil) -> some View {
