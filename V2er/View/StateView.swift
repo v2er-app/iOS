@@ -11,7 +11,7 @@ import SwiftUI
 public protocol StateView: View {
     associatedtype ViewState: FluxState
 
-    var state: Binding<ViewState> { get }
+    var state: ViewState { get }
 }
 
 public extension StateView {

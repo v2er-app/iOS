@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MePage: View {
-    @Binding var selecedTab: TabId
+    var selecedTab: TabId
     
     var body: some View {
         ScrollView {
@@ -137,9 +137,9 @@ struct SectionItemView: View {
 }
 
 struct AccountPage_Previews: PreviewProvider {
-    @State static var selected = TabId.me
+    static var selected = TabId.me
     
     static var previews: some View {
-        MePage(selecedTab: $selected)
+        MePage(selecedTab: selected)
     }
 }

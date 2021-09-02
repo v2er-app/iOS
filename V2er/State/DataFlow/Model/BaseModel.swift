@@ -16,5 +16,3 @@ protocol HtmlParsable {
 protocol BaseModel: HtmlParsable {
     init()
 }
-
-

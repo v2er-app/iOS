@@ -8,6 +8,6 @@
 
 import Foundation
 
-func messageStateReducer(_ state: MessageState, _ action: Action) -> MessageState {
-    return MessageState()
-}
+//func messageStateReducer(_ state: MessageState, _ action: Action) -> (MessageState, Action?) {
+//    return MessageState()
+//}

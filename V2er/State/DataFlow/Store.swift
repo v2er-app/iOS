@@ -35,11 +35,11 @@ final public class Store: ObservableObject {
     // and generates a new state
     private func reduce(initialState: AppState, action: Action) -> (AppState, Action?) {
         var appState = initialState
-        let followingAction: Action?
+        var followingAction: Action?
         (appState.feedState, followingAction) = feedStateReducer(appState.feedState, action)
-        appState.exploreState = exploreStateReducer(appState.exploreState, action)
-        appState.messageState = messageStateReducer(appState.messageState, action)
-        appState.meState = meStateReducer(appState.meState, action)
+        (appState.exploreState, followingAction) = exploreStateReducer(appState.exploreState, action)
+//        (appState.messageState) = messageStateReducer(appState.messageState, action)
+//        (appState.meState) = meStateReducer(appState.meState, action)
         return (appState, followingAction)
     }
 

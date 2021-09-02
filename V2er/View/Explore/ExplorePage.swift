@@ -8,20 +8,22 @@
 
 import SwiftUI
 
-struct ExplorePage: View {
-    @Binding var selecedTab: TabId
+struct ExplorePage: StateView {
+    @EnvironmentObject private var store: Store
+    var state: ExploreState {
+        store.appState.exploreState
+    }
+    var selecedTab: TabId
     
     var body: some View {
         let todayHotList = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("今日热议")
-            ForEach(0...6, id: \.self) {_ in
+            ForEach(state.exploreInfo.dailyHotInfo) { item in
                 HStack {
-                    Image("avar")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 40)
-                        .roundedEdge()
-                    Text("有人用非等宽字体来写代码的吗？等宽字体显示代码有什么特殊的好处吗？")
+                    NavigationLink(destination: UserDetailPage()) {
+                        AvatarView(url: item.avatar, size: 24)
+                    }
+                    Text(item.title)
                         .font(.callout)
                         .lineLimit(2)
                 }
@@ -32,10 +34,8 @@ struct ExplorePage: View {
         
         let hotNodesItem = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("最热节点")
-            FlowStack(data: ["问与答1", "问与答2",
-                             "问与答333", "问与答4", "问与答55", "问与答6", "问与答77", "问与答888", "9", "10", "11",
-                             "问与答222"]) {
-                Text($0)
+            FlowStack(data: state.exploreInfo.hottestNodeInfo) {
+                Text($0.name)
                     .font(.footnote)
                     .foregroundColor(.black)
                     .lineLimit(1)
@@ -47,10 +47,8 @@ struct ExplorePage: View {
         
         let newlyAddedItem = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("新增节点")
-            FlowStack(data: ["问与答1", "问与答2",
-                             "问与答333", "问与答4", "问与答55", "问与答6", "问与答77", "问与答888", "9", "10", "11",
-                             "问与答222"]) {
-                Text($0)
+            FlowStack(data: state.exploreInfo.recentNodeInfo) {
+                Text($0.name)
                     .font(.footnote)
                     .foregroundColor(.black)
                     .lineLimit(1)
@@ -62,14 +60,8 @@ struct ExplorePage: View {
         
         let navNodesItem = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("节点导航")
-            FlowStack(data: ["问与答1", "问与答2",
-                             "问与答333", "问与答4", "问与答55", "问与答6", "问与答77", "问与答888", "9", "10", "11",
-                             "问与答4", "问与答55", "问与答6", "问与答77", "问与答888", "9", "10", "11",
-                             "问与答4", "问与答55", "问与答6", "问与答77", "问与答888", "9", "10", "11",
-                             "问与答4", "问与答55", "问与答6", "问与答77", "问与答888", "9", "10", "11",
-                             "问与答4", "问与答55", "问与答6", "问与答77", "问与答888", "9", "10", "11",
-                             "问与答222"]) {
-                Text($0)
+            FlowStack(data: state.exploreInfo.nodeNavInfo) {
+                Text($0.category)
                     .font(.footnote)
                     .foregroundColor(.black)
                     .lineLimit(1)
@@ -87,8 +79,11 @@ struct ExplorePage: View {
         }
         .padding(.top, 4)
         .padding(.horizontal, 10)
-        .updatable {
-            print("onRefresh...")
+        .onAppear {
+            dispatch(action: ExploreActions.FetchData.Start(autoStart: true))
+        }
+        .updatable(autoRefresh: state.autoLoad) {
+            await run(action: ExploreActions.FetchData.Start())
         }
         .opacity(selecedTab == .explore ? 1.0 : 0.0)
     }
@@ -98,9 +93,9 @@ struct ExplorePage: View {
 //fileprivate struct 
 
 struct ExplorePage_Previews: PreviewProvider {
-    @State static var selected = TabId.explore
+    static var selected = TabId.explore
     
     static var previews: some View {
-        ExplorePage(selecedTab: $selected)
+        ExplorePage(selecedTab: selected)
     }
 }

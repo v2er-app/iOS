@@ -9,5 +9,7 @@
 import Foundation
 
 struct ExploreState: FluxState {
-    
+    var autoLoad: Bool = false
+    var refreshing: Bool = false
+    var exploreInfo: ExploreInfo = ExploreInfo()
 }

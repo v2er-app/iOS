@@ -36,6 +36,10 @@ enum Endpoint {
         return info().type
     }
 
+    func ua() -> UA {
+        return info().ua
+    }
+
     typealias Info = (path: String, type: ResourceType, ua: UA)
 
     private func info() -> Info {
@@ -47,6 +51,7 @@ enum Endpoint {
                 info.path = "/recent"
             case .explore:
                 info.path = "/"
+                info.ua = .web
             case .signin:
                 info.path = "/signin"
             case let .topic(id):

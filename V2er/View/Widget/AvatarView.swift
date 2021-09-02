@@ -10,7 +10,7 @@ import SwiftUI
 import Kingfisher
 
 struct AvatarView: View {
-    var url: String = "https://cdn.v2ex.com/avatar/c6f7/ffa0/161290_large.png?m=1506764621"
+    var url: String = ""
     var size: CGFloat = 38.0
     
     var body: some View {

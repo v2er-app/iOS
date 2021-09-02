@@ -10,10 +10,10 @@ import SwiftUI
 
 struct FeedPage: StateView {
     @EnvironmentObject private var store: Store
-    var state: Binding<FeedState> {
-        $store.appState.feedState
+    var state: FeedState {
+        store.appState.feedState
     }
-    @Binding var selecedTab: TabId
+   var selecedTab: TabId
     
     var body: some View {
         contentView
@@ -35,8 +35,8 @@ struct FeedPage: StateView {
         .updatable(autoRefresh: state.autoLoad) {
             await run(action: FeedActions.FetchData.Start())
         } loadMore: {
-            await run(action: FeedActions.LoadMore.Start(state.willLoadPage.wrappedValue))
-            return state.hasMoreData.wrappedValue
+            await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
+            return state.hasMoreData
         }
     }
 
@@ -58,9 +58,9 @@ struct FeedPage: StateView {
 //}
 
 struct HomePage_Previews: PreviewProvider {
-    @State static var selected = TabId.feed
+    static var selected = TabId.feed
     
     static var previews: some View {
-        FeedPage(selecedTab: $selected)
+        FeedPage(selecedTab: selected)
     }
 }

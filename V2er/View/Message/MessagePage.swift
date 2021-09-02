@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MessagePage: View {
-    @Binding var selecedTab: TabId
+    var selecedTab: TabId
     
     var body: some View {
         LazyVStack(spacing: 0) {
@@ -61,7 +61,7 @@ fileprivate struct MessageItemView: View {
 }
 
 struct MessagePage_Previews: PreviewProvider {
-    @State static var selected = TabId.message
+    static var selected = TabId.message
     static var previews: some View {
         MainPage()
             .environmentObject(Store.shared)

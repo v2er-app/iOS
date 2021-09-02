@@ -55,9 +55,6 @@ struct FeedInfo: BaseModel {
         unReadNums = root.pick("input.super.special.button", .value)
         twoStepStr = root.pick("form[action=/2fa]")
         let elements = root.pickAll("div.cell.item")
-        guard let elements = elements else {
-            return
-        }
         for e in elements {
             let feedId = ""
             let title = e.pick("span.item_title > a")

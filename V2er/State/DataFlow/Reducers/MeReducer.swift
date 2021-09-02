@@ -8,6 +8,6 @@
 
 import Foundation
 
-func meStateReducer(_ state: MeState, _ action: Action) -> MeState {
-    return MeState()
-}
+//func meStateReducer(_ state: MeState, _ action: Action) -> (MeState, Action?) {
+//    return MeState()
+//}

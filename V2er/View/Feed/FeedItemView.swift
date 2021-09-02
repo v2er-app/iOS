@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct FeedItemView: View {
-    @Binding var data: FeedInfo.Item
+    var data: FeedInfo.Item
     
     var body: some View {
         VStack(spacing: 0) {

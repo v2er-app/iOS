@@ -11,8 +11,9 @@ import SwiftSoup
 
 
 public extension Element {
-    func pick(_ selector: String, at index:Int = 0, _ attr: HtmlAttr = .text, regex: String? = nil) -> String {
-        let e : Element? = pickAll(selector)?[safe: index]
+    func pick(_ selector: String, at index:Int = 0,
+              _ attr: HtmlAttr = .text, regex: String? = nil) -> String {
+        let e : Element? = pickAll(selector)[safe: index]
         guard let e = e else { return .default }
         let result: String?
         if attr == .text {
@@ -26,19 +27,32 @@ public extension Element {
         return result ?? .default
     }
 
-    func pickAll(_ selector: String) -> Elements? {
+    func pickAll(_ selector: String) -> Elements {
         if let result = try? self.select(selector) {
+            return result
+        }
+        return Elements()
+    }
+
+    func pickOne(_ selector: String, at index:Int = 0) -> Element? {
+        if let result = pickAll(selector)[safe: index] {
             return result
         }
         return nil
     }
 
-    func pickOne(_ selector: String, at index:Int = 0) -> Element? {
-        if let result = pickAll(selector)?[safe: index] {
-            return result
+    func value(_ attr: HtmlAttr = .text) -> String {
+        let result: String?
+        if attr == .text {
+            result = try? self.text()
+        } else if attr == .ownText {
+            result = self.ownText()
+        } else {
+            result = try? self.attr(attr.value)
         }
-        return nil
+        return result ?? .default
     }
+
 }
 
 public enum HtmlAttr: String {

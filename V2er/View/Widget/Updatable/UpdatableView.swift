@@ -28,7 +28,7 @@ struct UpdatableView<Content: View>: View {
     @State var boundsDelta = 0.0
     @State var isLoadingMore: Bool = false
     @State var hasMoreData: Bool = true
-    @Binding var autoRefresh: Bool
+    var autoRefresh: Bool
 
     private var refreshable: Bool {
         return onRefresh != nil
@@ -41,13 +41,13 @@ struct UpdatableView<Content: View>: View {
     fileprivate init(onRefresh: RefreshAction,
                      onLoadMore: LoadMoreAction,
                      onScroll: ScrollAction?,
-                     autoRefresh: Binding<Bool>,
+                     autoRefresh: Bool,
                      @ViewBuilder content: () -> Content) {
         self.onRefresh = onRefresh
         self.onLoadMore = onLoadMore
         self.onScroll = onScroll
         self.content = content()
-        self._autoRefresh = autoRefresh
+        self.autoRefresh = autoRefresh
     }
 
     var body: some View {
@@ -175,7 +175,7 @@ struct FrameContentBoundsDeltaKey: PreferenceKey {
 
 
 extension View {
-    public func updatable(autoRefresh: Binding<Bool> = .constant(false),
+    public func updatable(autoRefresh: Bool = false,
                           refresh: RefreshAction = nil,
                           loadMore: LoadMoreAction = nil,
                           onScroll: ScrollAction? = nil) -> some View {
@@ -183,7 +183,7 @@ extension View {
     }
     
     public func loadMore(_ loadMore: LoadMoreAction = nil, onScroll: ScrollAction? = nil) -> some View {
-        self.modifier(UpdatableModifier(onRefresh: nil, onLoadMore: loadMore, onScroll: onScroll, autoRefresh: .constant(false)))
+        self.modifier(UpdatableModifier(onRefresh: nil, onLoadMore: loadMore, onScroll: onScroll, autoRefresh: false))
     }
     
 }
@@ -192,10 +192,11 @@ struct UpdatableModifier: ViewModifier {
     let onRefresh: RefreshAction
     let onLoadMore: LoadMoreAction
     let onScroll: ScrollAction?
-    let autoRefresh: Binding<Bool>
+    let autoRefresh: Bool
     
     func body(content: Content) -> some View {
-        UpdatableView(onRefresh: onRefresh, onLoadMore: onLoadMore, onScroll: onScroll, autoRefresh: autoRefresh) {
+        UpdatableView(onRefresh: onRefresh, onLoadMore: onLoadMore,
+                      onScroll: onScroll, autoRefresh: autoRefresh) {
             content
         }
     }

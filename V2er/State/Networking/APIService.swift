@@ -22,7 +22,7 @@ struct APIService {
     }
 
     func htmlGet<T: BaseModel>(endpoint: Endpoint,
-                                  params: [String: String]?) async -> APIResult<T> {
+                                  params: [String: String]? = nil) async -> APIResult<T> {
         let rawResult = await get(endpoint: endpoint, params: params)
         guard rawResult.error == nil else {
             return .failure(rawResult.error!)
@@ -81,7 +81,7 @@ struct APIService {
 
         var request = URLRequest(url: componets.url!)
         request.httpMethod = "GET"
-        request.addValue(UA.wap.value(), forHTTPHeaderField: UA.key)
+        request.addValue(endpoint.ua().value(), forHTTPHeaderField: UA.key)
 
         if requestHeaders != nil {
             for (key, value) in requestHeaders! {

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct TopBar: View {
-    @Binding var selectedTab : TabId
+    var selectedTab : TabId
     
     private var isHomePage: Bool {
         return selectedTab == .feed
@@ -69,11 +69,11 @@ struct TopBar: View {
 
 struct TopBar_Previews: PreviewProvider {
 //    @State static var selecedTab = TabId.feed
-    @State static var selecedTab = TabId.explore
+    static var selecedTab = TabId.explore
     
     static var previews: some View {
         VStack {
-            TopBar(selectedTab: $selecedTab)
+            TopBar(selectedTab: selecedTab)
             Spacer()
         }
         .ignoresSafeArea(.container)
