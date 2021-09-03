@@ -14,10 +14,18 @@ struct FeedPage: StateView {
         store.appState.feedState
     }
    var selecedTab: TabId
+
+    var isSelected: Bool {
+        let selected = selecedTab == .feed
+        if selected && !state.hasLoadedOnce {
+            dispatch(action: FeedActions.FetchData.Start(autoLoad: true))
+        }
+        return selected
+    }
     
     var body: some View {
         contentView
-            .opacity(selecedTab == .feed ? 1.0 : 0.0)
+            .opacity(isSelected ? 1.0 : 0.0)
     }
 
     @ViewBuilder
@@ -29,10 +37,7 @@ struct FeedPage: StateView {
                 }
             }
         }
-        .onAppear {
-            dispatch(action: FeedActions.FetchData.Start(autoStart: true))
-        }
-        .updatable(autoRefresh: state.autoLoad) {
+        .updatable(autoRefresh: state.showProgressView) {
             await run(action: FeedActions.FetchData.Start())
         } loadMore: {
             await run(action: FeedActions.LoadMore.Start(state.willLoadPage))

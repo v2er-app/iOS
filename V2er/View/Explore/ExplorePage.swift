@@ -14,6 +14,14 @@ struct ExplorePage: StateView {
         store.appState.exploreState
     }
     var selecedTab: TabId
+
+    var isSelected: Bool {
+        let selected = selecedTab == .explore
+        if selected && !state.hasLoadedOnce {
+            dispatch(action: ExploreActions.FetchData.Start(autoLoad: true))
+        }
+        return selected
+    }
     
     var body: some View {
         let todayHotList = VStack(alignment: .leading, spacing: 0) {
@@ -60,14 +68,14 @@ struct ExplorePage: StateView {
         }
         
         let navNodesItem =
-        VStack {
+        VStack(spacing: 0) {
             SectionTitleView("节点导航")
             ForEach(state.exploreInfo.nodeNavInfo) {
                 NodeNavItemView(data: $0)
             }
         }
         
-        VStack {
+        VStack(spacing: 0) {
             todayHotList
             hotNodesItem
             newlyAddedItem
@@ -76,34 +84,36 @@ struct ExplorePage: StateView {
         .padding(.top, 4)
         .padding(.horizontal, 10)
         .onAppear {
-            dispatch(action: ExploreActions.FetchData.Start(autoStart: true))
+//            dispatch(action: ExploreActions.FetchData.Start(autoStart: true))
         }
-        .updatable(autoRefresh: state.autoLoad) {
+        .updatable(autoRefresh: state.showProgressView) {
             await run(action: ExploreActions.FetchData.Start())
         }
-        .opacity(selecedTab == .explore ? 1.0 : 0.0)
+        .opacity(isSelected ? 1.0 : 0.0)
     }
 
-    struct NodeNavItemView: View {
+}
 
-        let data: ExploreInfo.NodeNavItem
 
-        var body: some View {
-            VStack(alignment: .leading, spacing: 0) {
-                SectionTitleView(data.category, style: .small)
-                FlowStack(data: data.nodes) {
-                    Text($0.name)
-                        .font(.footnote)
-                        .foregroundColor(.black)
-                        .lineLimit(1)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(Color.lightGray)
-                }
+struct NodeNavItemView: View {
+
+    let data: ExploreInfo.NodeNavItem
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SectionTitleView(data.category, style: .small)
+            FlowStack(data: data.nodes) {
+                Text($0.name)
+                    .font(.footnote)
+                    .foregroundColor(.black)
+                    .lineLimit(1)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Color.lightGray)
             }
         }
-
     }
+
 }
 
 //fileprivate struct

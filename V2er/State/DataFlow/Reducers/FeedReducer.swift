@@ -15,11 +15,12 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
     switch action {
         case let action as FeedActions.FetchData.Start:
             guard !state.refreshing else { break }
-            state.autoLoad = action.autoStart
+            state.showProgressView = action.autoLoad
+            state.hasLoadedOnce = true
             state.refreshing = true
         case let action as FeedActions.FetchData.Done:
             state.refreshing = false
-            state.autoLoad = false
+            state.showProgressView = false
             if case let .success(newsInfo) = action.result {
                 state.newsInfo = newsInfo ?? FeedInfo()
                 state.willLoadPage = 1

@@ -18,12 +18,13 @@ func exploreStateReducer(_ state: ExploreState, _ action: Action) -> (ExploreSta
     switch action {
         case let action as ExploreActions.FetchData.Start:
             guard !state.refreshing else { break }
-            state.autoLoad = action.autoStart
+            state.showProgressView = action.autoLoad
+            state.hasLoadedOnce = true
             state.refreshing = true
             break
         case let action as ExploreActions.FetchData.Done:
             state.refreshing = false
-            state.autoLoad = false
+            state.showProgressView = false
             if case let .success(exploreState) = action.result {
                 state.exploreInfo = exploreState ?? ExploreInfo()
             } else {

@@ -14,7 +14,7 @@ struct FeedActions {
         struct Start: AwaitAction {
             let tab: Tab = .all
             var page: Int = 0
-            var autoStart: Bool = false
+            var autoLoad: Bool = false
 
             func execute(in store: Store) async {
                 let result: APIResult<FeedInfo> = await APIService.shared

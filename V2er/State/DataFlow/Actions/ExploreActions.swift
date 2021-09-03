@@ -12,7 +12,7 @@ struct ExploreActions {
 
     struct FetchData {
         struct Start: AwaitAction {
-            var autoStart: Bool = false
+            var autoLoad: Bool = false
             
             func execute(in store: Store) async {
                 let result: APIResult<ExploreInfo> = await APIService.shared
