@@ -10,26 +10,37 @@ import SwiftUI
 
 struct SectionTitleView: View {
     var title: String = "Title"
+    var style: Style
+    enum Style {
+        case normal
+        case small
+    }
     
-    public init(_ title: String) {
+    public init(_ title: String, style: Style = .normal) {
         self.title = title
+        self.style = style
     }
     
     var body: some View {
         Text(title)
-            .font(.body)
+            .font(style == .normal ? .headline : .subheadline)
             .fontWeight(.heavy)
             .foregroundColor(.bodyText)
-            .padding(8)
+            .padding(.vertical, 8)
+            .padding(.horizontal, style == .normal ? 2 : 8)
             .background {
-                HStack (spacing: 0) {
-                    RoundedRectangle(cornerRadius: 99)
-                        .foregroundColor(.tintColor.opacity(0.9))
-                        .padding(.vertical, 8)
-                        .frame(width: 3)
-                    Spacer()
+                if style == .small {
+                    HStack (spacing: 0) {
+                        RoundedRectangle(cornerRadius: 99)
+                            .foregroundColor(.tintColor.opacity(0.9))
+                            .padding(.vertical, 8)
+                            .frame(width: 3)
+                        Spacer()
+                    }
                 }
             }
+            .greedyWidth(.leading)
+            .debug()
     }
 }
 

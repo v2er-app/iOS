@@ -10,9 +10,11 @@ import Foundation
 import SwiftSoup
 
 protocol HtmlParsable {
-    init(from htmlDoc: Document)
+    init(from html: Document)
 }
 
 protocol BaseModel: HtmlParsable {
+    var rawData: String? { get set }
+
     init()
 }

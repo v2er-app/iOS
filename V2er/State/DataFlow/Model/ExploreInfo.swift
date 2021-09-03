@@ -10,6 +10,8 @@ import Foundation
 import SwiftSoup
 
 struct ExploreInfo: BaseModel {
+    var rawData: String?
+
     // div#Bottom div.inner strong -> 关于 · 帮助文档 · FAQ · API · 我们的愿景 · 广告投放 · 感谢 · 实用小工具 · 2408 人在线
     var onlineNum: Int = 0
     // div#TopicsHot.box table
@@ -92,7 +94,9 @@ struct ExploreInfo: BaseModel {
             self.recentNodeInfo.append(node)
         }
         // 5. nodeNavInfo
-        let nodeNavElements = root.pickAll("div.box:last-child div > table")
+        let navRoot = root.pickOne("div#Main div.box", at: 1)
+        let nodeNavElements = navRoot?.pickAll("div > table")
+        guard let nodeNavElements = nodeNavElements else { return }
         for e in nodeNavElements {
             let category = e.pick("span.fade")
             let nodeElements = e.pickAll("a")

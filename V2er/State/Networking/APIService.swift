@@ -111,6 +111,7 @@ struct APIService {
         let componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         var request = URLRequest(url: componets.url!)
         request.httpMethod = "POST"
+        request.addValue(endpoint.ua().value(), forHTTPHeaderField: UA.key)
         if requestHeaders != nil {
             for (key, value) in requestHeaders! {
                 request.addValue(value, forHTTPHeaderField: key)
@@ -146,8 +147,10 @@ struct APIService {
     private func parse<T: BaseModel>(from htmlData: Data) async -> (T?, APIError?) {
         let parseTask = Task { () -> T in
             let html = String(decoding: htmlData, as: UTF8.self)
-            let doc: Document = try SwiftSoup.parse(html)
-            return T(from: doc)
+            let parseResult = try SwiftSoup.parse(html)
+            var result = T(from: parseResult)
+            result.rawData = html
+            return result
         }
         let result: (data: T?, error: APIError?)
         do {

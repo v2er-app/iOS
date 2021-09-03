@@ -19,16 +19,17 @@ struct ExplorePage: StateView {
         let todayHotList = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("今日热议")
             ForEach(state.exploreInfo.dailyHotInfo) { item in
-                HStack {
+                HStack(spacing: 14) {
                     NavigationLink(destination: UserDetailPage()) {
-                        AvatarView(url: item.avatar, size: 24)
+                        AvatarView(url: item.avatar, size: 36)
                     }
                     Text(item.title)
-                        .font(.callout)
+                        .font(.headline)
+                        .foregroundColor(.bodyText)
                         .lineLimit(2)
                 }
                 .padding(.vertical, 12)
-                Divider()
+                Divider().opacity(0.6)
             }
         }
         
@@ -58,16 +59,11 @@ struct ExplorePage: StateView {
             }
         }
         
-        let navNodesItem = VStack(alignment: .leading, spacing: 0) {
+        let navNodesItem =
+        VStack {
             SectionTitleView("节点导航")
-            FlowStack(data: state.exploreInfo.nodeNavInfo) {
-                Text($0.category)
-                    .font(.footnote)
-                    .foregroundColor(.black)
-                    .lineLimit(1)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color.lightGray)
+            ForEach(state.exploreInfo.nodeNavInfo) {
+                NodeNavItemView(data: $0)
             }
         }
         
@@ -87,14 +83,34 @@ struct ExplorePage: StateView {
         }
         .opacity(selecedTab == .explore ? 1.0 : 0.0)
     }
-    
+
+    struct NodeNavItemView: View {
+
+        let data: ExploreInfo.NodeNavItem
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 0) {
+                SectionTitleView(data.category, style: .small)
+                FlowStack(data: data.nodes) {
+                    Text($0.name)
+                        .font(.footnote)
+                        .foregroundColor(.black)
+                        .lineLimit(1)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Color.lightGray)
+                }
+            }
+        }
+
+    }
 }
 
-//fileprivate struct 
+//fileprivate struct
 
 struct ExplorePage_Previews: PreviewProvider {
     static var selected = TabId.explore
-    
+
     static var previews: some View {
         ExplorePage(selecedTab: selected)
     }

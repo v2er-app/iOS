@@ -55,6 +55,11 @@ public extension Element {
 
 }
 
+//func soupParse(_ html: String) throws-> (doc: Document, rawResult: String) {
+//    let doc: Document = try SwiftSoup.parse(html)
+//    return (doc, html)
+//}
+
 public enum HtmlAttr: String {
     case text = "text"
     case ownText = "ownText"

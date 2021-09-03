@@ -11,6 +11,8 @@ import SwiftSoup
 
 // @Pick("div#Wrapper")
 struct FeedInfo: BaseModel {
+    var rawData: String?
+
     // @Pick(value = "input.super.special.button", attr = "value")
     var unReadNums: String?
     // @Pick("form[action=/2fa]")
