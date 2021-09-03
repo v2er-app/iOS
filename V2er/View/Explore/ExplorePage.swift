@@ -83,13 +83,12 @@ struct ExplorePage: StateView {
         }
         .padding(.top, 4)
         .padding(.horizontal, 10)
-        .onAppear {
-//            dispatch(action: ExploreActions.FetchData.Start(autoStart: true))
-        }
+        .background(Color.pageLight)
+        .hide(state.refreshing)
         .updatable(autoRefresh: state.showProgressView) {
             await run(action: ExploreActions.FetchData.Start())
         }
-        .opacity(isSelected ? 1.0 : 0.0)
+        .hide(!isSelected)
     }
 
 }

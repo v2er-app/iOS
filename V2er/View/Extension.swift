@@ -191,7 +191,11 @@ extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape( RoundedCorner(radius: radius, corners: corners) )
     }
-    
+
+    func hide(_ shouldHide: Bool = true) -> some View {
+        self.opacity(shouldHide ? 0.0 : 1.0)
+    }
+
 }
 
 extension Divider {

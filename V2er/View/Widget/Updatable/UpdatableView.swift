@@ -29,6 +29,7 @@ struct UpdatableView<Content: View>: View {
     @State var isLoadingMore: Bool = false
     @State var hasMoreData: Bool = true
     var autoRefresh: Bool
+    let damper: Float = 1.2
 
     private var refreshable: Bool {
         return onRefresh != nil
@@ -63,7 +64,6 @@ struct UpdatableView<Content: View>: View {
                         }
                     }
                 }
-                .background(.white)
                 .alignmentGuide(.top, computeValue: { d in (self.isRefreshing ? (-self.threshold + scrollY) : 0.0) })
                 if refreshable {
                     HeadIndicatorView(threshold: threshold, progress: $progress, scrollY: scrollY, isRefreshing: $isRefreshing)
@@ -75,7 +75,7 @@ struct UpdatableView<Content: View>: View {
                 ZStack {
                     Color.almostClear
                     ProgressView()
-                        .scaleEffect(1.5)
+                        .scaleEffect(1.3)
                 }
             }
         }

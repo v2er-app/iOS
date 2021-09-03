@@ -25,7 +25,7 @@ struct FeedPage: StateView {
     
     var body: some View {
         contentView
-            .opacity(isSelected ? 1.0 : 0.0)
+            .hide(!isSelected)
     }
 
     @ViewBuilder
@@ -37,6 +37,7 @@ struct FeedPage: StateView {
                 }
             }
         }
+        .background(Color.pageLight)
         .updatable(autoRefresh: state.showProgressView) {
             await run(action: FeedActions.FetchData.Start())
         } loadMore: {
