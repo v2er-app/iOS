@@ -22,7 +22,7 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             state.refreshing = false
             state.showProgressView = false
             if case let .success(newsInfo) = action.result {
-                state.newsInfo = newsInfo ?? FeedInfo()
+                state.feedInfo = newsInfo ?? FeedInfo()
                 state.willLoadPage = 1
             } else {
                 // Loaded failed
@@ -36,7 +36,7 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             state.loadingMore = false
             state.hasMoreData = true // todo check vary tabs
             if case let .success(newsInfo) = action.result {
-                state.newsInfo.append(feedInfo: newsInfo!)
+                state.feedInfo.append(feedInfo: newsInfo!)
                 state.willLoadPage += 1
             } else {
                 // failed

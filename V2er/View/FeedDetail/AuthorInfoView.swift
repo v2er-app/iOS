@@ -9,15 +9,38 @@
 import SwiftUI
 
 struct AuthorInfoView: View {
+    var initData: FeedInfo.Item? = nil
+//    var data
+
+    private var title: String {
+        initData?.title ?? .empty
+    }
+
+    private var tag: String {
+        initData?.tagName ?? .empty
+    }
+
+    private var tagId: String {
+        initData?.tagId ?? .empty
+    }
+
+    private var userName: String {
+        initData?.userName ?? .empty
+    }
+
+    private var avatar: String {
+        initData?.avatar ?? .empty
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             VStack {
                 HStack(alignment: .top) {
                     NavigationLink(destination: UserDetailPage()) {
-                        AvatarView(size: 48)
+                        AvatarView(url: avatar, size: 48)
                     }
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("ghui")
+                        Text(userName)
                             .lineLimit(1)
                             .font(.body)
                         Text("51分钟前 评论3 点击667")
@@ -25,8 +48,8 @@ struct AuthorInfoView: View {
                             .font(.caption2)
                     }
                     Spacer()
-                    NavigationLink(destination: TagDetailPage()) {
-                        Text("问与答")
+                    NavigationLink(destination: TagDetailPage(tag: tag, tagId: tagId)) {
+                        Text(tag)
                             .font(.footnote)
                             .foregroundColor(.black)
                             .lineLimit(1)
@@ -35,8 +58,10 @@ struct AuthorInfoView: View {
                             .background(Color.lightGray)
                     }
                 }
-                Text("计算机经历几十年 CURD，难道没有一个大而全的解决方案吗？")
-                    .font(.subheadline)
+                Text(title)
+                    .font(.headline)
+                    .foregroundColor(.bodyText)
+                    .greedyWidth(.leading)
             }
             .padding(10)
             Divider()

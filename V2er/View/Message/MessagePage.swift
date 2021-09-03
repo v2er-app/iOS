@@ -14,7 +14,7 @@ struct MessagePage: View {
     var body: some View {
         LazyVStack(spacing: 0) {
             ForEach( 0...20, id: \.self) { i in
-                NavigationLink(destination: NewsDetailPage()) {
+                NavigationLink(destination: FeedDetailPage()) {
                     MessageItemView()
                 }
             }

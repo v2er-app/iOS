@@ -200,7 +200,7 @@ extension View {
 
 extension Divider {
     func light() -> some View {
-        frame(height: 0.1)
+        frame(height: 0.2)
     }
 }
 

@@ -16,6 +16,10 @@ struct TagDetailPage: View {
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
+
+    var tag: String?
+    var tagId: String?
+
     private var shouldHideNavbar: Bool {
         let hideNavbar =  scrollY > -heightOfNodeImage * 1.0
         statusBarConfigurator.statusBarStyle = hideNavbar ? .lightContent : .darkContent

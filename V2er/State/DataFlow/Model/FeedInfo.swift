@@ -43,7 +43,7 @@ struct FeedInfo: BaseModel {
         // @Pick(value = "span.small.fade > a")
         let tagName: String
         // @Pick(value = "span.small.fade > a", attr = "href")
-        let tagLink: String
+        let tagId: String
         // @Pick("a[class^=count_]")
         let replies: Int
     }
@@ -65,14 +65,15 @@ struct FeedInfo: BaseModel {
             let userName = e.pick("span.small.fade > strong > a")
             let time = e.pick("span.small.fade", at: 1, .text)
             let tagName = e.pick("span.small.fade > a")
-            let tagLink = e.pick("span.small.fade > a", .href)
+            let tagId = e.pick("span.small.fade > a", .href)
+                .segment(separatedBy: "/")
             let replies = e.pick("a[class^=count_]").toInt()
 
             let item = Item(feedId: feedId, title: title,
                             linkPath: linkPath, avatar: avatar,
                             userName: userName,
                             time: time, tagName: tagName,
-                            tagLink: tagLink, replies: replies)
+                            tagId: tagId, replies: replies)
             items.append(item)
         }
 //        log("FeedInfo: \(self)")

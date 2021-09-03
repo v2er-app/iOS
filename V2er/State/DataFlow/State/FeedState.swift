@@ -15,5 +15,5 @@ struct FeedState: FluxState {
     var loadingMore: Bool = false
     var willLoadPage: Int = 0
     var hasMoreData: Bool = false
-    var newsInfo: FeedInfo = FeedInfo()
+    var feedInfo: FeedInfo = FeedInfo()
 }

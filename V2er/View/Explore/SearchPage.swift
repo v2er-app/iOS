@@ -16,7 +16,7 @@ struct SearchPage: View {
     var body: some View {
         LazyVStack (alignment: .leading ,spacing: 0) {
             ForEach( 0...20, id: \.self) { i in
-                NavigationLink(destination: NewsDetailPage()) {
+                NavigationLink(destination: FeedDetailPage()) {
                     SearchResultItemView()
                 }
             }

@@ -25,7 +25,7 @@ struct NavbarHostView<Content: View>: View {
                 self.content
             }
             Divider()
-                .light()
+//                .light()
                 .opacity(shouldHideDivider ? 0.0 : 1.0)
         }
         .greedyWidth()

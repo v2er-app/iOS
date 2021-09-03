@@ -31,8 +31,8 @@ struct FeedPage: StateView {
     @ViewBuilder
     private var contentView: some View {
         LazyVStack(spacing: 0) {
-            ForEach(state.newsInfo.items) { item in
-                NavigationLink(destination: NewsDetailPage()) {
+            ForEach(state.feedInfo.items) { item in
+                NavigationLink(destination: FeedDetailPage(initData: item)) {
                     FeedItemView(data: item)
                 }
             }

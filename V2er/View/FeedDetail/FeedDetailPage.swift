@@ -8,13 +8,14 @@
 
 import SwiftUI
 
-struct NewsDetailPage: View, KeyboardReadable {
+struct FeedDetailPage: View, KeyboardReadable {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @State var hideTitleViews = true
     @State var replyContent = ""
     @State var isKeyboardVisiable = false
     @FocusState private var replyIsFocused: Bool
-    
+    var initData: FeedInfo.Item? = nil
+
     private var hasReplyContent: Bool {
         !replyContent.isEmpty
     }
@@ -22,13 +23,14 @@ struct NewsDetailPage: View, KeyboardReadable {
     var body: some View {
         VStack (spacing: 0) {
             LazyVStack(spacing: 0) {
-                AuthorInfoView()
+                AuthorInfoView(initData: initData)
                 NewsContentView()
                     .padding(.horizontal, 10)
                 actionItems
                 replayListView
                     .padding(.top, 8)
             }
+            .background(Color.pageLight)
             .updatable {
                 // do refresh...
             } loadMore: {
@@ -40,7 +42,6 @@ struct NewsDetailPage: View, KeyboardReadable {
                 }
                 replyIsFocused = false
             }
-            
             replyBar
         }
         .safeAreaInset(edge: .top, spacing: 0) {
@@ -210,7 +211,7 @@ struct NewsDetailPage: View, KeyboardReadable {
 struct NewsDetailPage_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            NewsDetailPage()
+            FeedDetailPage()
         }
     }
 }
