@@ -13,9 +13,8 @@ enum Endpoint {
         case html
         case json
     }
-
     case tab, recent, explore
-    case signin, topic(topicId: String), notifications
+    case signin, topic(id: String), notifications
     case myFollowing, myTopics, myNodes, nodesNav
     case nodeListDetail(nodeName: String)
     case userPage(userName: String), createTopic
@@ -55,7 +54,7 @@ enum Endpoint {
             case .signin:
                 info.path = "/signin"
             case let .topic(id):
-                info.path = "/t\(id)"
+                info.path = "/t/\(id)"
             case .notifications:
                 info.path = "/notifications"
             case .myFollowing:

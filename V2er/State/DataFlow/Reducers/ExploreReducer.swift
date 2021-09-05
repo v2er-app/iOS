@@ -11,10 +11,7 @@ import Foundation
 func exploreStateReducer(_ state: ExploreState, _ action: Action) -> (ExploreState, Action?) {
     var state = state
     var followingAction: Action?
-    if action is AsyncAction || action is AwaitAction {
-        followingAction = action
-    }
-
+    
     switch action {
         case let action as ExploreActions.FetchData.Start:
             guard !state.refreshing else { break }

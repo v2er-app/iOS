@@ -16,10 +16,18 @@ extension String {
         return Int(self) ?? 0
     }
 
-    func segment(at index: Int = .last, separatedBy separator: String) -> String {
+    func segment(separatedBy separator: String, at index: Int = .last) -> String {
         let segments = components(separatedBy: separator)
         let realIndex = min(index, segments.count - 1)
         return String(segments[realIndex])
+    }
+
+    func remove(_ seg: String) -> String {
+        return replacingOccurrences(of: seg, with: "")
+    }
+
+    func notEmpty()-> Bool {
+        return !isEmpty
     }
 
 }

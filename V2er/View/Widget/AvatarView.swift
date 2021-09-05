@@ -15,8 +15,8 @@ struct AvatarView: View {
     
     var body: some View {
         KFImage.url(URL(string: url))
-            .loadDiskFileSynchronously()
-            .placeholder{ Color.lightGray.frame(width: size, height: size) }
+//            .loadDiskFileSynchronously()
+            .placeholder { Color.lightGray.frame(width: size, height: size) }
             .fade(duration: 0.25)
             .resizable()
             .aspectRatio(contentMode: .fill)

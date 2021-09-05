@@ -54,14 +54,14 @@ struct ExploreInfo: BaseModel {
 
     init() {}
 
-    init(from htmlDoc: Document) {
-        guard let root = htmlDoc.pickOne("body") else {
+    init(from html: Element?) {
+        guard let root = html?.pickOne("body") else {
             return;
         }
         // 1. onlineNum
         onlineNum = root.pick("div#Bottom div.inner strong")
             .segment(separatedBy: " · ")
-            .segment(at: .first, separatedBy: " ")
+            .segment(separatedBy: " ", at: .first)
             .toInt()
         // 2. dailyHotInfo
         let dailyHotElements = root.pickAll("div#TopicsHot.box table")

@@ -8,8 +8,12 @@
 
 import SwiftUI
 
-struct FeedDetailPage: View, KeyboardReadable {
+struct FeedDetailPage: StateView, KeyboardReadable {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @EnvironmentObject private var store: Store
+    var state: FeedDetailState {
+        store.appState.feedDetailState
+    }
     @State var hideTitleViews = true
     @State var replyContent = ""
     @State var isKeyboardVisiable = false
@@ -23,18 +27,18 @@ struct FeedDetailPage: View, KeyboardReadable {
     var body: some View {
         VStack (spacing: 0) {
             LazyVStack(spacing: 0) {
-                AuthorInfoView(initData: initData)
-                NewsContentView()
+                AuthorInfoView(initData: initData, data: state.detailInfo.headerInfo)
+                NewsContentView(state.detailInfo.contentInfo)
                     .padding(.horizontal, 10)
                 actionItems
                 replayListView
                     .padding(.top, 8)
             }
             .background(Color.pageLight)
-            .updatable {
-                // do refresh...
+            .updatable(autoRefresh: state.showProgressView) {
+                await run(action: FeedDetailActions.FetchData.Start(id: initData?.id))
             } loadMore: {
-                return true
+                return false
             } onScroll: { scrollY in
                 print("scrollY: \(scrollY)")
                 withAnimation {
@@ -51,6 +55,9 @@ struct FeedDetailPage: View, KeyboardReadable {
         .navigationBarHidden(true)
         .onTapGesture {
             replyIsFocused = false
+        }
+        .onAppear {
+            dispatch(action: FeedDetailActions.FetchData.Start(id: initData?.id, autoLoad: !state.hasLoadedOnce))
         }
     }
     
@@ -201,8 +208,8 @@ struct FeedDetailPage: View, KeyboardReadable {
     
     @ViewBuilder
     private var replayListView: some View {
-        ForEach( 0...20, id: \.self) { index in
-            ReplyItemView()
+        ForEach(state.detailInfo.replyInfo.items) { item in
+            ReplyItemView(info: item)
         }
     }
     

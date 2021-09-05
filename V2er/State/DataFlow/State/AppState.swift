@@ -10,6 +10,7 @@ import Foundation
 
 struct AppState: FluxState {
     var feedState = FeedState()
+    var feedDetailState = FeedDetailState()
     var exploreState = ExploreState()
     var messageState = MessageState()
     var meState = MeState()

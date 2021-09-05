@@ -10,7 +10,7 @@ import Foundation
 import SwiftSoup
 
 protocol HtmlParsable {
-    init(from html: Document)
+    init(from html: Element?)
 }
 
 protocol BaseModel: HtmlParsable {

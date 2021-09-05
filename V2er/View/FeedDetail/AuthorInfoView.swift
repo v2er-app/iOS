@@ -10,26 +10,26 @@ import SwiftUI
 
 struct AuthorInfoView: View {
     var initData: FeedInfo.Item? = nil
-//    var data
+    var data: FeedDetailInfo.HeaderInfo? = nil
 
     private var title: String {
-        initData?.title ?? .empty
+        data?.title ?? initData?.title ?? .default
     }
 
     private var tag: String {
-        initData?.tagName ?? .empty
+        data?.tagName ?? initData?.tagName ?? .default
     }
 
     private var tagId: String {
-        initData?.tagId ?? .empty
+        data?.tagId ?? initData?.tagId ?? .default
     }
 
     private var userName: String {
-        initData?.userName ?? .empty
+        data?.userName ?? initData?.userName ?? .default
     }
 
     private var avatar: String {
-        initData?.avatar ?? .empty
+        data?.avatar ?? initData?.avatar ?? .default
     }
 
     var body: some View {

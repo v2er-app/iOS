@@ -27,9 +27,7 @@ struct FeedInfo: BaseModel {
     }
 
     struct Item: Identifiable {
-        let id = UUID()
-        let feedId: String
-
+        let id: String
         // @Pick(value = "span.item_title > a")
         let title: String
         // @Pick(value = "span.item_title > a", attr = "href")
@@ -50,15 +48,15 @@ struct FeedInfo: BaseModel {
 
     init() {}
 
-    init(from htmlDoc: Document) {
-        guard let root = htmlDoc.pickOne("div#Wrapper") else {
-            return;
-        }
+    init(from html: Element?) {
+        guard let root = html?.pickOne("div#Wrapper") else { return }
         unReadNums = root.pick("input.super.special.button", .value)
         twoStepStr = root.pick("form[action=/2fa]")
         let elements = root.pickAll("div.cell.item")
         for e in elements {
-            let feedId = ""
+            let id = e.pick("span.item_title > a", .href)
+                .remove("/t/")
+                .segment(separatedBy: "#", at: .first)
             let title = e.pick("span.item_title > a")
             let linkPath = e.pick("span.item_title > a", .href)
             let avatar = e.pick("td > a > img", .src)
@@ -69,7 +67,7 @@ struct FeedInfo: BaseModel {
                 .segment(separatedBy: "/")
             let replies = e.pick("a[class^=count_]").toInt()
 
-            let item = Item(feedId: feedId, title: title,
+            let item = Item(id: id, title: title,
                             linkPath: linkPath, avatar: avatar,
                             userName: userName,
                             time: time, tagName: tagName,

@@ -18,7 +18,7 @@ final public class Store: ObservableObject {
 
     func dispatch(_ action: Action) {
         DispatchQueue.main.async { [self] in
-            log("====> dispatch action: \(action)")
+//            log("====> dispatch action: \(action)")
             let result = self.reduce(initialState: self.appState, action: action)
             appState = result.0
             if let asyncAction = result.1 as? AsyncAction {
@@ -38,8 +38,12 @@ final public class Store: ObservableObject {
         var followingAction: Action?
         (appState.feedState, followingAction) = feedStateReducer(appState.feedState, action)
         (appState.exploreState, followingAction) = exploreStateReducer(appState.exploreState, action)
+        (appState.feedDetailState, followingAction) = feedDetailStateReducer(appState.feedDetailState, action)
 //        (appState.messageState) = messageStateReducer(appState.messageState, action)
 //        (appState.meState) = meStateReducer(appState.meState, action)
+        if followingAction == nil && action is Executable {
+            followingAction = action
+        }
         return (appState, followingAction)
     }
 

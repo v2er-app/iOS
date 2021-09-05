@@ -11,7 +11,6 @@ import Foundation
 func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Action?) {
     var state = state
     var followingAction: Action?
-    if action is AsyncAction || action is AwaitAction { followingAction = action }
     switch action {
         case let action as FeedActions.FetchData.Start:
             guard !state.refreshing else { break }

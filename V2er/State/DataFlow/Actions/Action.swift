@@ -11,10 +11,12 @@ import Foundation
 
 protocol Action {}
 
-protocol AsyncAction: Action {
+protocol Executable { }
+
+protocol AsyncAction: Action, Executable {
     func execute(in store: Store)
 }
 
-protocol AwaitAction: Action {
+protocol AwaitAction: Action, Executable {
     func execute(in store: Store) async
 }

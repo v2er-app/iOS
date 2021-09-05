@@ -20,6 +20,8 @@ public extension Element {
             result = try? e.text()
         } else if attr == .ownText {
             result = e.ownText()
+        } else if attr == .innerHtml {
+            result = try? e.html()
         } else {
             result = try? e.attr(attr.value)
         }
@@ -47,6 +49,8 @@ public extension Element {
             result = try? self.text()
         } else if attr == .ownText {
             result = self.ownText()
+        } else if attr == .html {
+            result = try? self.html()
         } else {
             result = try? self.attr(attr.value)
         }
@@ -68,6 +72,9 @@ public enum HtmlAttr: String {
     case value = "value"
     case html = "html"
     case innerHtml = "inner_html"
+    case content = "content"
+    case onclick = "onclick"
+    case id = "id"
 
     var value: String {
         get { self.rawValue }

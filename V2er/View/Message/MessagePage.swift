@@ -19,6 +19,7 @@ struct MessagePage: View {
                 }
             }
         }
+        .background(Color.pageLight)
         .updatable(
             refresh:{
                 print("onRefresh...")
