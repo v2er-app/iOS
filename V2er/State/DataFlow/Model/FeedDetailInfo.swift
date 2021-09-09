@@ -63,6 +63,8 @@ struct FeedDetailInfo: BaseModel {
         init(from html: Element?) {
             guard let root = html else { return }
             avatar = root.pick("div.box img.avatar", .src)
+                .replace(segs: "_normal.png", "_mini.png", "_xxlarge.png",
+                         with: "_large.png")
             userName = root.pick("div.box small.gray a")
             time = root.pick("div.box small.gray", .ownText)
             tagName = root.pick("div.box a[href^=/go]")

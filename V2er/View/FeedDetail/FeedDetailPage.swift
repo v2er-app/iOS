@@ -31,12 +31,13 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
     private var hasReplyContent: Bool {
         !replyContent.isEmpty
     }
+
     
     var body: some View {
         VStack (spacing: 0) {
             LazyVStack(spacing: 0) {
-                AuthorInfoView(initData: initData, data: state.detailInfo.headerInfo)
-                NewsContentView(state.detailInfo.contentInfo)
+                AuthorInfoView(initData: initData, data: state.model.headerInfo)
+                NewsContentView(state.model.contentInfo)
                     .padding(.horizontal, 10)
                     .hide(state.showProgressView)
                 actionItems
@@ -46,7 +47,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
                     .hide(state.showProgressView)
             }
             .background(state.showProgressView ? .clear : Color.pageLight)
-            .debug()
             .updatable(autoRefresh: state.showProgressView) {
                 await run(action: FeedDetailActions.FetchData.Start(id: pageId, feedId: initData?.id))
             } loadMore: {
@@ -121,10 +121,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
                             self.isKeyboardVisiable = isKeyboardVisiable
                         }
                         .focused($replyIsFocused)
-                        .debug()
-                    
-                    
-                    
+
                     Button(action: {
                         // Do submit
                     }) {
@@ -135,7 +132,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
                             .padding(.vertical, 3)
                     }
                     .disabled(!hasReplyContent)
-                    .debug()
                 }
                 .background(Color.lightGray)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -144,7 +140,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
                 if isKeyboardVisiable {
                     actionBar
                         .transition(.opacity)
-                        .debug()
                 }
             }
             .padding(.bottom, isKeyboardVisiable ? 0 : topSafeAreaInset().bottom * 0.9)
@@ -181,35 +176,27 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
                         .padding(.vertical, 10)
                         .foregroundColor(.tintColor)
                 }
-                .debug()
                 Group {
                     NavigationLink(destination: UserDetailPage()) {
-                        Image(systemName: "wave.3.backward.circle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 32)
-                            .fixedSize()
-                            .foregroundColor(.tintColor)
+                        AvatarView(url: state.model.headerInfo?.avatar ?? .empty, size: 32)
                     }
                     VStack(alignment: .leading) {
                         Text("话题")
                             .font(.headline)
-                        Text("Subtitle3eeeeeeeeeeeeeeeee3333333333")
+                        Text(state.model.headerInfo?.title ?? .empty)
                             .font(.subheadline)
+                            .greedyWidth(.leading)
                     }
                     .lineLimit(1)
                 }
                 .opacity(hideTitleViews ? 0.0 : 1.0)
-                
                 Button {
                     // Show more actions
                 } label: {
                     Image(systemName: "ellipsis")
                         .padding(8)
-                    //                        .rotationEffect(.degrees(90))
                         .font(.title3.weight(.regular))
                         .foregroundColor(.tintColor)
-                        .debug()
                 }
             }
             .padding(.vertical, 5)
@@ -227,7 +214,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
     @ViewBuilder
     private var replayListView: some View {
         //        LazyVStack(spacing: 0) {
-        ForEach(state.detailInfo.replyInfo.items) { item in
+        ForEach(state.model.replyInfo.items) { item in
             ReplyItemView(info: item)
         }
         //        }

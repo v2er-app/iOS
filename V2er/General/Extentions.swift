@@ -30,6 +30,14 @@ extension String {
         return !isEmpty
     }
 
+    func replace(segs: String..., with replacement: String) -> String {
+        var result: String = self
+        for seg in segs {
+            result = result.replacingOccurrences(of: seg, with: replacement)
+        }
+        return result
+    }
+
 }
 
 extension Int {

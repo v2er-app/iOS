@@ -17,7 +17,7 @@ struct FeedDetailState: FluxState {
     var loadingMore: Bool = false
     var willLoadPage: Int = 0
     var hasMoreData: Bool = false
-    var detailInfo: FeedDetailInfo = FeedDetailInfo()
+    var model: FeedDetailInfo = FeedDetailInfo()
 }
 
 typealias FeedDetailStates=[String : FeedDetailState]

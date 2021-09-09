@@ -40,9 +40,8 @@ struct FeedItemView: View {
                 Text(data.title )
                     .greedyWidth(.leading)
                     .lineLimit(2)
-                    .debug()
             }
-            .padding(10)
+            .padding(12)
             Divider()
         }
         .background(Color.almostClear)
