@@ -40,7 +40,8 @@ final public class Store: ObservableObject {
             case .feed:
                 (appState.feedState, followingAction) = feedStateReducer(appState.feedState, action)
             case .feeddetail:
-                (appState.feedDetailStates, followingAction) = feedDetailStateReducer(appState.feedDetailStates, action)
+                let id = action.id!
+                (appState.feedDetailStates[id], followingAction) = feedDetailStateReducer(appState.feedDetailStates[id]!, action)
             case .explore:
                 (appState.exploreState, followingAction) = exploreStateReducer(appState.exploreState, action)
             case .message:
