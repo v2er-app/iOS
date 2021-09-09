@@ -63,6 +63,7 @@ struct FeedDetailInfo: BaseModel {
         init(from html: Element?) {
             guard let root = html else { return }
             avatar = root.pick("div.box img.avatar", .src)
+                .segment(separatedBy: "?", at: .first)
                 .replace(segs: "_normal.png", "_mini.png", "_xxlarge.png",
                          with: "_large.png")
             userName = root.pick("div.box small.gray a")

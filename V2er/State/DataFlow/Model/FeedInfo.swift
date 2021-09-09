@@ -60,6 +60,7 @@ struct FeedInfo: BaseModel {
             let title = e.pick("span.item_title > a")
             let linkPath = e.pick("span.item_title > a", .href)
             let avatar = e.pick("td > a > img", .src)
+                .segment(separatedBy: "?", at: .first)
                 .replace(segs: "_normal.png", "_mini.png", "_xxlarge.png",
                          with: "_large.png")
             let userName = e.pick("span.small.fade > strong > a")
@@ -76,7 +77,7 @@ struct FeedInfo: BaseModel {
                             tagId: tagId, replies: replies)
             items.append(item)
         }
-        //        log("FeedInfo: \(self)")
+        log("FeedInfo: \(self)")
     }
 
 }
