@@ -83,11 +83,18 @@ struct FeedDetailInfo: BaseModel {
 
     struct ContentInfo: HtmlParsable {
         // .html
-        var html: String = .default
+        var html: String? = .default
 
-        init(from html: Element?) {
-            guard let root = html else { return }
-            self.html = root.value(.html)
+        init(from doc: Element?) {
+            guard var root = doc else { return }
+            root.remove(selector: ".header")
+                .remove(selector: ".inner")
+            if root.value() == .empty
+                && !root.hasClass("embedded_video_wrapper") {
+                self.html = .default
+            } else {
+                self.html = try? root.html()
+            }
         }
     }
 

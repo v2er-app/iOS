@@ -57,12 +57,12 @@ public extension Element {
         return result ?? .default
     }
 
-}
+    func remove(selector: String) -> Element {
+        try? pickAll(selector).remove()
+        return self
+    }
 
-//func soupParse(_ html: String) throws-> (doc: Document, rawResult: String) {
-//    let doc: Document = try SwiftSoup.parse(html)
-//    return (doc, html)
-//}
+}
 
 public enum HtmlAttr: String {
     case text = "text"
