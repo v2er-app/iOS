@@ -9,9 +9,18 @@
 
 import Foundation
 
-protocol Action {}
+protocol Action {
+    var id: String? { get }
+    var target: Reducer { get }
+}
 
-protocol Executable { }
+extension Action {
+    var id: String? {
+        nil
+    }
+}
+
+protocol Executable {}
 
 protocol AsyncAction: Action, Executable {
     func execute(in store: Store)
@@ -19,4 +28,18 @@ protocol AsyncAction: Action, Executable {
 
 protocol AwaitAction: Action, Executable {
     func execute(in store: Store) async
+}
+
+protocol PageIdentifiable {
+    var pageId: String {
+        get
+    }
+}
+
+enum Reducer {
+    case feed
+    case feeddetail
+    case explore
+    case message
+    case me
 }

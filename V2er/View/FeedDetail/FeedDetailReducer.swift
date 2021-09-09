@@ -8,8 +8,13 @@
 
 import Foundation
 
-func feedDetailStateReducer(_ state: FeedDetailState, _ action: Action) -> (FeedDetailState, Action?) {
-    var state = state
+func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (FeedDetailStates, Action?) {
+    guard let id = action.id else {
+        fatalError("Action in FeedDetail couldn't be null")
+        return (states, action)
+    }
+    var states = states
+    var state = states[id]!
     var followingAction: Action?
     switch action {
         case let action as FeedDetailActions.FetchData.Start:
@@ -31,5 +36,6 @@ func feedDetailStateReducer(_ state: FeedDetailState, _ action: Action) -> (Feed
         default:
             break;
     }
-    return (state, followingAction)
+    states[id] = state
+    return (states, followingAction)
 }

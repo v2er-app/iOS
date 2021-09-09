@@ -8,11 +8,19 @@
 
 import SwiftUI
 
-struct FeedDetailPage: StateView, KeyboardReadable {
+struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
+//    let pageId: String = UUID().uuidString
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @EnvironmentObject private var store: Store
     var state: FeedDetailState {
-        store.appState.feedDetailState
+        if store.appState.feedDetailStates[pageId] == nil {
+            store.appState.feedDetailStates[pageId] = FeedDetailState()
+        }
+        return store.appState.feedDetailStates[pageId]!
+    }
+
+    var pageId: String {
+        initData?.id ?? .default
     }
     @State var hideTitleViews = true
     @State var replyContent = ""
@@ -36,7 +44,7 @@ struct FeedDetailPage: StateView, KeyboardReadable {
             }
             .background(Color.pageLight)
             .updatable(autoRefresh: state.showProgressView) {
-                await run(action: FeedDetailActions.FetchData.Start(id: initData?.id))
+                await run(action: FeedDetailActions.FetchData.Start(id: pageId, feedId: initData?.id))
             } loadMore: {
                 return false
             } onScroll: { scrollY in
@@ -57,7 +65,7 @@ struct FeedDetailPage: StateView, KeyboardReadable {
             replyIsFocused = false
         }
         .onAppear {
-            dispatch(action: FeedDetailActions.FetchData.Start(id: initData?.id, autoLoad: !state.hasLoadedOnce))
+            dispatch(action: FeedDetailActions.FetchData.Start(id: pageId, feedId: initData?.id, autoLoad: !state.hasLoadedOnce))
         }
     }
     

@@ -36,11 +36,22 @@ final public class Store: ObservableObject {
     private func reduce(initialState: AppState, action: Action) -> (AppState, Action?) {
         var appState = initialState
         var followingAction: Action?
-        (appState.feedState, followingAction) = feedStateReducer(appState.feedState, action)
-        (appState.exploreState, followingAction) = exploreStateReducer(appState.exploreState, action)
-        (appState.feedDetailState, followingAction) = feedDetailStateReducer(appState.feedDetailState, action)
-//        (appState.messageState) = messageStateReducer(appState.messageState, action)
-//        (appState.meState) = meStateReducer(appState.meState, action)
+        switch action.target {
+            case .feed:
+                (appState.feedState, followingAction) = feedStateReducer(appState.feedState, action)
+            case .feeddetail:
+                (appState.feedDetailStates, followingAction) = feedDetailStateReducer(appState.feedDetailStates, action)
+            case .explore:
+                (appState.exploreState, followingAction) = exploreStateReducer(appState.exploreState, action)
+            case .message:
+                //        (appState.messageState) = messageStateReducer(appState.messageState, action)
+                break
+            case .me:
+                //        (appState.meState) = meStateReducer(appState.meState, action)
+                break
+            default:
+                break
+        }
         if followingAction == nil && action is Executable {
             followingAction = action
         }

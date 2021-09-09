@@ -9,9 +9,10 @@
 import Foundation
 
 struct FeedActions {
-
+    static let reducer: Reducer = .feed
     struct FetchData {
         struct Start: AwaitAction {
+            var target: Reducer = reducer
             let tab: Tab = .all
             var page: Int = 0
             var autoLoad: Bool = false
@@ -24,12 +25,14 @@ struct FeedActions {
         }
 
         struct Done: Action {
+            var target: Reducer = reducer
             let result: APIResult<FeedInfo>
         }
     }
 
     struct LoadMore {
         struct Start: AwaitAction {
+            var target: Reducer = reducer
             var willLoadPage: Int = 1
 
             init(_ willLoadPage: Int) {
@@ -45,6 +48,7 @@ struct FeedActions {
         }
 
         struct Done: Action {
+            var target: Reducer = reducer
             let result: APIResult<FeedInfo>
         }
     }

@@ -17,3 +17,5 @@ struct FeedDetailState: FluxState {
     var hasMoreData: Bool = false
     var detailInfo: FeedDetailInfo = FeedDetailInfo()
 }
+
+typealias FeedDetailStates=[String : FeedDetailState]

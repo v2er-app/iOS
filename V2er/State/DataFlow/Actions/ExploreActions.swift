@@ -9,9 +9,12 @@
 import Foundation
 
 struct ExploreActions {
+    static let reducer: Reducer = .explore
 
     struct FetchData {
         struct Start: AwaitAction {
+            var target: Reducer = reducer
+
             var autoLoad: Bool = false
             
             func execute(in store: Store) async {
@@ -22,6 +25,8 @@ struct ExploreActions {
         }
 
         struct Done: Action {
+            var target: Reducer = reducer
+
             let result: APIResult<ExploreInfo>
         }
     }
