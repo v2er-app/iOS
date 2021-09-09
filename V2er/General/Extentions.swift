@@ -33,6 +33,7 @@ extension String {
     func replace(segs: String..., with replacement: String) -> String {
         var result: String = self
         for seg in segs {
+            guard result.contains(seg) else { continue }
             result = result.replacingOccurrences(of: seg, with: replacement)
         }
         return result

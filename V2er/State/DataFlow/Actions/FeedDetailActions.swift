@@ -15,7 +15,7 @@ struct FeedDetailActions {
         struct Start: AwaitAction {
             var target: Reducer = R
 
-            var id: String?
+            var id: String
             let feedId: String?
             var autoLoad: Bool = false
 
@@ -28,33 +28,42 @@ struct FeedDetailActions {
 
         struct Done: Action {
             var target: Reducer = R
-            var id: String?
+            var id: String
 
             let result: APIResult<FeedDetailInfo>
         }
     }
 
     struct LoadMore {
-//        struct Start: AwaitAction {
-//            func execute(in store: Store) async {
-//
-//            }
-//        }
-//
-//        struct Done: Action {
-//
-//        }
+        struct Start: AwaitAction {
+            var target: Reducer = R
+            var id: String
+            let feedId: String?
+            var willLoadPage: Int = 2
+
+            func execute(in store: Store) async {
+                let result: APIResult<FeedDetailInfo> = await APIService.shared
+                    .htmlGet(endpoint: .topic(id: feedId ?? .default), params: ["p" : willLoadPage.toString()])
+                dispatch(action: LoadMore.Done(id: id, result: result))
+            }
+        }
+
+        struct Done: Action {
+            var target: Reducer = R
+            var id: String
+            let result: APIResult<FeedDetailInfo>
+        }
     }
 
     struct OnPageClosed: Action {
         var target: Reducer = R
-        var id: String?
+        var id: String
         // state refAccounts - 1
     }
 
     struct OnAppearChange: Action {
         var target: Reducer = R
-        var id: String?
+        var id: String
         var isAppear: Bool
     }
 

@@ -10,13 +10,13 @@
 import Foundation
 
 protocol Action {
-    var id: String? { get }
+    var id: String { get }
     var target: Reducer { get }
 }
 
 extension Action {
-    var id: String? {
-        nil
+    var id: String {
+        .default
     }
 }
 

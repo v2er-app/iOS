@@ -50,7 +50,9 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
             .updatable(autoRefresh: state.showProgressView) {
                 await run(action: FeedDetailActions.FetchData.Start(id: pageId, feedId: initData?.id))
             } loadMore: {
-                return false
+                guard state.hasMoreData else { return false }
+                await run(action: FeedDetailActions.LoadMore.Start(id: pageId, feedId: initData?.id))
+                return state.hasMoreData
             } onScroll: { scrollY in
                 withAnimation {
                     hideTitleViews = !(scrollY <= -100)
