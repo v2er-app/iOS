@@ -86,7 +86,7 @@ struct FeedDetailInfo: BaseModel {
         var html: String? = .default
 
         init(from doc: Element?) {
-            guard var root = doc else { return }
+            guard let root = doc else { return }
             root.remove(selector: ".header")
                 .remove(selector: ".inner")
             if root.value() == .empty

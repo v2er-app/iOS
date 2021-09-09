@@ -57,7 +57,7 @@ public extension Element {
         return result ?? .default
     }
 
-    func remove(selector: String) -> Element {
+    @discardableResult func remove(selector: String) -> Element {
         try? pickAll(selector).remove()
         return self
     }
