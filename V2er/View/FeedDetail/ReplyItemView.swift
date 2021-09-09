@@ -14,7 +14,7 @@ struct ReplyItemView: View {
 
     var body: some View {
         HStack(alignment: .top) {
-            AvatarView(size: 40)
+            AvatarView(url: info.avatar, size: 40)
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     VStack (alignment: .leading, spacing: 4) {

@@ -9,6 +9,8 @@
 import Foundation
 
 struct FeedDetailState: FluxState {
+    var refCounts = 0
+    var reseted: Bool = false
     var hasLoadedOnce = false
     var showProgressView: Bool = false
     var refreshing: Bool = false

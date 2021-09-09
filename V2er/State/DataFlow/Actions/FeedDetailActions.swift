@@ -9,11 +9,11 @@
 import Foundation
 
 struct FeedDetailActions {
-    static let reducer: Reducer = .feeddetail
+    static let R: Reducer = .feeddetail
 
     struct FetchData {
         struct Start: AwaitAction {
-            var target: Reducer = reducer
+            var target: Reducer = R
 
             var id: String?
             let feedId: String?
@@ -27,7 +27,7 @@ struct FeedDetailActions {
         }
 
         struct Done: Action {
-            var target: Reducer = reducer
+            var target: Reducer = R
             var id: String?
 
             let result: APIResult<FeedDetailInfo>
@@ -44,6 +44,18 @@ struct FeedDetailActions {
 //        struct Done: Action {
 //
 //        }
+    }
+
+    struct OnPageClosed: Action {
+        var target: Reducer = R
+        var id: String?
+        // state refAccounts - 1
+    }
+
+    struct OnAppearChange: Action {
+        var target: Reducer = R
+        var id: String?
+        var isAppear: Bool
     }
 
 }

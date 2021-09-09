@@ -81,7 +81,6 @@ struct RoundedEdgeModifier: ViewModifier {
                 .clipShape(Circle())
                 .padding(width)
                 .overlay(Circle().stroke(color, lineWidth: width))
-            
         } else {
             content
                 .clipShape(Capsule())

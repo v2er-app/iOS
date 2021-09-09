@@ -9,8 +9,8 @@
 import SwiftUI
 
 struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
-//    let pageId: String = UUID().uuidString
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.isPresented) private var isPresented
+    @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var store: Store
     var state: FeedDetailState {
         if store.appState.feedDetailStates[pageId] == nil {
@@ -38,17 +38,20 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
                 AuthorInfoView(initData: initData, data: state.detailInfo.headerInfo)
                 NewsContentView(state.detailInfo.contentInfo)
                     .padding(.horizontal, 10)
+                    .hide(state.showProgressView)
                 actionItems
+                    .hide(state.showProgressView)
                 replayListView
                     .padding(.top, 8)
+                    .hide(state.showProgressView)
             }
-            .background(Color.pageLight)
+            .background(state.showProgressView ? .clear : Color.pageLight)
+            .debug()
             .updatable(autoRefresh: state.showProgressView) {
                 await run(action: FeedDetailActions.FetchData.Start(id: pageId, feedId: initData?.id))
             } loadMore: {
                 return false
             } onScroll: { scrollY in
-                print("scrollY: \(scrollY)")
                 withAnimation {
                     hideTitleViews = !(scrollY <= -100)
                 }
@@ -66,6 +69,13 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
         }
         .onAppear {
             dispatch(action: FeedDetailActions.FetchData.Start(id: pageId, feedId: initData?.id, autoLoad: !state.hasLoadedOnce))
+            
+        }
+        .onDisappear {
+            if !isPresented {
+                log("onPageClosed----->")
+                dispatch(action: FeedDetailActions.OnPageClosed(id: pageId))
+            }
         }
     }
     
@@ -163,7 +173,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
         NavbarHostView(paddingH: 0) {
             HStack(alignment: .center, spacing: 4) {
                 Button {
-                    self.presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 } label: {
                     Image(systemName: "chevron.backward")
                         .font(.title2.weight(.regular))
@@ -216,9 +226,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
     
     @ViewBuilder
     private var replayListView: some View {
+        //        LazyVStack(spacing: 0) {
         ForEach(state.detailInfo.replyInfo.items) { item in
             ReplyItemView(info: item)
         }
+        //        }
     }
     
 }

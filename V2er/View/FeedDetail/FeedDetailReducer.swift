@@ -8,12 +8,13 @@
 
 import Foundation
 
-func feedDetailStateReducer(_ state: FeedDetailState, _ action: Action) -> (FeedDetailState, Action?) {
+func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (FeedDetailStates, Action?) {
     guard let id = action.id else {
-        fatalError("Action in FeedDetail couldn't be null")
-        return (state, action)
+        fatalError("action in FeedDetail must have id")
+        return (states, action)
     }
-    var state = state
+    var states = states
+    var state = states[id]!
     var followingAction: Action?
     switch action {
         case let action as FeedDetailActions.FetchData.Start:
@@ -21,7 +22,6 @@ func feedDetailStateReducer(_ state: FeedDetailState, _ action: Action) -> (Feed
             state.showProgressView = action.autoLoad
             state.hasLoadedOnce = true
             state.refreshing = true
-            break;
         case let action as FeedDetailActions.FetchData.Done:
             state.refreshing = false
             state.showProgressView = false
@@ -31,9 +31,23 @@ func feedDetailStateReducer(_ state: FeedDetailState, _ action: Action) -> (Feed
             } else {
                 // failed
             }
-            break;
+        case let action as FeedDetailActions.OnAppearChange:
+            if action.isAppear {
+                state.refCounts += 1
+            } else {
+                state.refCounts -= 1
+            }
+        case let action as FeedDetailActions.OnPageClosed:
+            if state.refCounts == 0 {
+                state.reseted = true
+            }
         default:
             break;
     }
-    return (state, followingAction)
+    if state.reseted {
+        states.removeValue(forKey: id)
+    } else {
+        states[id] = state
+    }
+    return (states, followingAction)
 }
