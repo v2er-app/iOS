@@ -31,7 +31,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
     private var hasReplyContent: Bool {
         !replyContent.isEmpty
     }
-
     
     var body: some View {
         VStack (spacing: 0) {

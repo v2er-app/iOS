@@ -10,9 +10,10 @@ import SwiftUI
 
 struct UserDetailPage: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.isPresented) private var isPresented
     
     @StateObject var statusBarConfigurator = StatusBarConfigurator()
-    
+
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
@@ -61,6 +62,12 @@ struct UserDetailPage: View {
         .buttonStyle(.plain)
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
+        .onDisappear {
+            if !isPresented {
+                log("onPageClosed----->")
+                statusBarConfigurator.statusBarStyle = .darkContent
+            }
+        }
     }
     
     @ViewBuilder
