@@ -10,7 +10,7 @@ import SwiftUI
 
 struct TagDetailPage: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    
+    @Environment(\.isPresented) private var isPresented
     @StateObject var statusBarConfigurator = StatusBarConfigurator()
     
     @State private var scrollY: CGFloat = 0.0
@@ -115,6 +115,12 @@ struct TagDetailPage: View {
         .hideDivider(hide: shouldHideNavbar)
         .foregroundColor(foreGroundColor)
         .visualBlur(alpha: shouldHideNavbar ? 0.0 : 1.0)
+        .onDisappear {
+            if !isPresented {
+                log("onPageClosed----->")
+                statusBarConfigurator.statusBarStyle = .darkContent
+            }
+        }
     }
     
     
