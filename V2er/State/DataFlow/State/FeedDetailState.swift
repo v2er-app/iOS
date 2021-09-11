@@ -13,10 +13,10 @@ struct FeedDetailState: FluxState {
     var reseted: Bool = false
     var hasLoadedOnce = false
     var showProgressView: Bool = false
-    var refreshing: Bool = false
-    var loadingMore: Bool = false
-    var willLoadPage: Int = 0
-    var hasMoreData: Bool = false
+    var refreshing = false
+    var loadingMore = false
+    var willLoadPage = 0
+    var hasMoreData = false
     var model: FeedDetailInfo = FeedDetailInfo()
 }
 

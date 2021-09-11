@@ -27,23 +27,31 @@ struct FeedInfo: BaseModel {
     }
 
     struct Item: Identifiable {
-        let id: String
+        var id: String = .default
         // @Pick(value = "span.item_title > a")
-        let title: String
+        var title: String = .default
         // @Pick(value = "span.item_title > a", attr = "href")
-        let linkPath: String
+        var linkPath: String = .default
         // @Pick(value = "td > a > img", attr = "src")
-        let avatar: String
+        var avatar: String = .default
         // @Pick(value = "span.small.fade > strong > a")
-        let userName: String
+        var userName: String = .default
         // @Pick(value = "span.small.fade:last-child", attr = "ownText")
-        let time: String
+        var time: String = .default
         // @Pick(value = "span.small.fade > a")
-        let tagName: String
+        var tagName: String = .default
         // @Pick(value = "span.small.fade > a", attr = "href")
-        let tagId: String
+        var tagId: String = .default
         // @Pick("a[class^=count_]")
-        let replies: Int
+        var replies: Int = 0
+
+        init() {}
+
+        static func create(from id: String) -> Item {
+            var item = Item()
+            item.id = id
+            return item
+        }
     }
 
     init() {}
@@ -54,27 +62,17 @@ struct FeedInfo: BaseModel {
         twoStepStr = root.pick("form[action=/2fa]")
         let elements = root.pickAll("div.cell.item")
         for e in elements {
-            let id = e.pick("span.item_title > a", .href)
-                .remove("/t/")
-                .segment(separatedBy: "#", at: .first)
-            let title = e.pick("span.item_title > a")
-            let linkPath = e.pick("span.item_title > a", .href)
-            let avatar = e.pick("td > a > img", .src)
-                .segment(separatedBy: "?m", at: .first)
-                .replace(segs: "_normal.png", "_mini.png", "_xxlarge.png",
-                         with: "_large.png")
-            let userName = e.pick("span.small.fade > strong > a")
-            let time = e.pick("span.small.fade", at: 1, .text)
-            let tagName = e.pick("span.small.fade > a")
-            let tagId = e.pick("span.small.fade > a", .href)
+            var item = Item()
+            item.id = parseFeedId(e.pick("span.item_title > a", .href))
+            item.title = e.pick("span.item_title > a")
+            item.linkPath = e.pick("span.item_title > a", .href)
+            item.avatar = parseAvatar(e.pick("td > a > img", .src))
+            item.userName = e.pick("span.small.fade > strong > a")
+            item.time = e.pick("span.small.fade", at: 1, .text)
+            item.tagName = e.pick("span.small.fade > a")
+            item.tagId = e.pick("span.small.fade > a", .href)
                 .segment(separatedBy: "/")
-            let replies = e.pick("a[class^=count_]").toInt()
-
-            let item = Item(id: id, title: title,
-                            linkPath: linkPath, avatar: avatar,
-                            userName: userName,
-                            time: time, tagName: tagName,
-                            tagId: tagId, replies: replies)
+            item.replies = e.pick("a[class^=count_]").toInt()
             items.append(item)
         }
         log("FeedInfo: \(self)")

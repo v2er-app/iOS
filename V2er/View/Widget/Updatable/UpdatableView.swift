@@ -81,7 +81,7 @@ struct UpdatableView<Content: View>: View {
         }
         .backgroundPreferenceValue(ContentBoundsKey.self) { pref in
             GeometryReader { geometry in
-                Color.bgColor
+                Color.clear
                     .preference(key: FrameContentBoundsDeltaKey.self,
                                 value: geometry[pref!].height - geometry.size.height)
             }

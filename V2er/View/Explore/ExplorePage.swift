@@ -28,13 +28,15 @@ struct ExplorePage: StateView {
             SectionTitleView("今日热议")
             ForEach(state.exploreInfo.dailyHotInfo) { item in
                 HStack(spacing: 14) {
-                    NavigationLink(destination: UserDetailPage()) {
+                    NavigationLink(destination: UserDetailPage(userId: item.member)) {
                         AvatarView(url: item.avatar, size: 36)
                     }
+                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item.create(from: item.id))) {
                     Text(item.title)
                         .font(.headline)
                         .foregroundColor(.bodyText)
                         .lineLimit(2)
+                    }
                 }
                 .padding(.vertical, 12)
                 Divider().opacity(0.6)

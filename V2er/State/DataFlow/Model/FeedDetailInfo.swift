@@ -63,10 +63,7 @@ struct FeedDetailInfo: BaseModel {
 
         init(from html: Element?) {
             guard let root = html else { return }
-            avatar = root.pick("div.box img.avatar", .src)
-                .segment(separatedBy: "?m", at: .first)
-                .replace(segs: "_normal.png", "_mini.png", "_xxlarge.png",
-                         with: "_large.png")
+            avatar = parseAvatar(root.pick("div.box img.avatar", .src))
             userName = root.pick("div.box small.gray a")
             time = root.pick("div.box small.gray", .ownText)
             tagName = root.pick("div.box a[href^=/go]")
@@ -122,7 +119,7 @@ struct FeedDetailInfo: BaseModel {
     struct ReplyInfo {
         var items: [Item] = []
 
-        struct Item: Identifiable, HtmlParsable {
+        struct Item: HtmlItemModel {
             // span.no
             var floor: Int = 0
             var id: Int { floor }

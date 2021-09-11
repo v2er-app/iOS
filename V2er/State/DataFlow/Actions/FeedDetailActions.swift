@@ -55,16 +55,4 @@ struct FeedDetailActions {
         }
     }
 
-    struct OnPageClosed: Action {
-        var target: Reducer = R
-        var id: String
-        // state refAccounts - 1
-    }
-
-    struct OnAppearChange: Action {
-        var target: Reducer = R
-        var id: String
-        var isAppear: Bool
-    }
-
 }

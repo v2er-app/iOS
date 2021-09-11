@@ -15,7 +15,7 @@ struct FeedItemView: View {
         VStack(spacing: 0) {
             VStack {
                 HStack(alignment: .top) {
-                    NavigationLink(destination: UserDetailPage()) {
+                    NavigationLink(destination: UserDetailPage(userId: data.userName)) {
                         AvatarView(url: data.avatar)
                     }
                     VStack(alignment: .leading, spacing: 5) {

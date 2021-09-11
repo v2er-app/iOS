@@ -27,7 +27,7 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             state.refreshing = false
             state.showProgressView = false
             if case let .success(result) = action.result {
-                state.model = result ?? FeedDetailInfo()
+                state.model = result!
                 state.willLoadPage = 2
                 state.hasMoreData = state.willLoadPage <= result?.headerInfo?.totalPage ?? 1
             } else {
@@ -41,7 +41,6 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
                 break
             }
             state.loadingMore = true
-            break
         case let action as FeedDetailActions.LoadMore.Done:
             state.loadingMore = false
             if case let .success(result) = action.result {
@@ -51,14 +50,13 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             } else {
                 state.hasMoreData = true
             }
-            break
-        case let action as FeedDetailActions.OnAppearChange:
+        case let action as OnAppearChangeAction:
             if action.isAppear {
                 state.refCounts += 1
             } else {
                 state.refCounts -= 1
             }
-        case let action as FeedDetailActions.OnPageClosed:
+        case let action as InstanceDestoryAction:
             if state.refCounts == 0 {
                 state.reseted = true
             }

@@ -44,10 +44,14 @@ final public class Store: ObservableObject {
             case .explore:
                 (appState.exploreState, followingAction) = exploreStateReducer(appState.exploreState, action)
             case .message:
-                //        (appState.messageState) = messageStateReducer(appState.messageState, action)
+                // (appState.messageState) = messageStateReducer(appState.messageState, action)
                 break
             case .me:
-                //        (appState.meState) = meStateReducer(appState.meState, action)
+                // (appState.meState) = meStateReducer(appState.meState, action)
+                break
+            case .userdetail:
+                (appState.userDetailStates, followingAction) = userDetailReducer(appState.userDetailStates, action)
+            case .tagdetail:
                 break
             default:
                 break

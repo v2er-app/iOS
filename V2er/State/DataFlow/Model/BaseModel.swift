@@ -18,3 +18,7 @@ protocol BaseModel: HtmlParsable {
 
     init()
 }
+
+protocol HtmlItemModel: HtmlParsable, Identifiable {
+
+}

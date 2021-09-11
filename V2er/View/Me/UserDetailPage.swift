@@ -7,18 +7,34 @@
 //
 
 import SwiftUI
+import Kingfisher
 
-struct UserDetailPage: View {
+struct UserDetailPage: StateView, InstanceIdentifiable {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.isPresented) private var isPresented
-    
+    @EnvironmentObject private var store: Store
     @StateObject var statusBarConfigurator = StatusBarConfigurator()
-
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
     @State private var currentTab: TabButton.ID = .topic
     @Namespace var animation
+    // FIXME: couldn't be null
+    var userId: String?
+    var instanceId: String {
+        userId ?? .default
+    }
+
+    var state: UserDetailState {
+        if store.appState.userDetailStates[instanceId] == nil {
+            store.appState.userDetailStates[instanceId] = UserDetailState()
+        }
+        return store.appState.userDetailStates[instanceId]!
+    }
+
+    var model: UserDetailInfo {
+        state.model
+    }
     
     private var shouldHideNavbar: Bool {
         let hideNavbar =  scrollY > -heightOfNodeImage * 1.0
@@ -42,13 +58,15 @@ struct UserDetailPage: View {
                 tabsTitleView
                 topicDetailView
             }
-            .loadMore {
-                return true
+            .updatable(autoRefresh: state.showProgressView) {
+                await run(action: UserDetailActions.FetchData.Start(id: instanceId, userId: self.userId))
             } onScroll: {
                 self.scrollY = $0
             }
             .background {
                 VStack(spacing: 0) {
+//                    KFImage
+//                        .url(URL(string: model.avatar))
                     Image("avar")
                         .resizable()
                         .blur(radius: 80, opaque: true)
@@ -56,16 +74,21 @@ struct UserDetailPage: View {
                         .frame(height: bannerViewHeight * 1.2 + max(scrollY, 0))
                     Spacer().background(.clear)
                 }
+//                .debug()
             }
         }
         .prepareStatusBarConfigurator(statusBarConfigurator)
         .buttonStyle(.plain)
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
+        .onAppear {
+            dispatch(action: UserDetailActions.FetchData.Start(id: instanceId, userId: userId))
+        }
         .onDisappear {
             if !isPresented {
                 log("onPageClosed----->")
                 statusBarConfigurator.statusBarStyle = .darkContent
+                dispatch(action: InstanceDestoryAction(target: .userdetail, id: instanceId))
             }
         }
     }
@@ -85,7 +108,7 @@ struct UserDetailPage: View {
                 .forceClickable()
                 
                 Group {
-                    AvatarView(size: 36)
+                    AvatarView(url: model.avatar, size: 36)
                         .overlay {
                             Circle()
                                 .fill(.green)
@@ -93,9 +116,9 @@ struct UserDetailPage: View {
                                 .offset(x: 9, y: 36/2 - 2)
                         }
                     VStack(alignment: .leading, spacing: 0) {
-                        Text("ghui")
+                        Text(model.userName)
                             .font(.headline)
-                        Text("V2EX第269646 号会员，加入于 2017-11-23 16:28:09 +08:00")
+                        Text(model.desc)
                             .font(.subheadline)
                         //                        Circle().fill(.green).frame(width: 8, height: 8)
                     }
@@ -135,10 +158,10 @@ struct UserDetailPage: View {
     private var topBannerView: some View {
         VStack (spacing: 14) {
             Color.clear.frame(height: topSafeAreaInset().top)
-            AvatarView(size: heightOfNodeImage)
+            AvatarView(url: model.avatar, size: heightOfNodeImage)
             HStack(alignment: .center,spacing: 4) {
                 Circle().fill(.green).frame(width: 8, height: 8)
-                Text("ghui")
+                Text(model.userName)
                     .font(.headline.weight(.semibold))
             }
             Button {
@@ -150,7 +173,7 @@ struct UserDetailPage: View {
                     .padding(.vertical, 2)
                     .roundedEdge(radius: 99, borderWidth: 1, color: foreGroundColor)
             }
-            Text("V2EX 第 269646 号会员，加入于 2017-11-23 16:28:09 +08:00")
+            Text(model.desc)
                 .font(.callout)
         }
         .foregroundColor(foreGroundColor)
@@ -224,8 +247,8 @@ struct TabButton: View {
     
 }
 
-struct UserDetailPage_Previews: PreviewProvider {
-    static var previews: some View {
-        UserDetailPage()
-    }
-}
+//struct UserDetailPage_Previews: PreviewProvider {
+//    static var previews: some View {
+//        UserDetailPage()
+//    }
+//}

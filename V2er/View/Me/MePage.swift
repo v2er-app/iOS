@@ -14,7 +14,8 @@ struct MePage: View {
     var body: some View {
         ScrollView {
             NavigationLink {
-                UserDetailPage()
+                //FIXME: use real userId
+                UserDetailPage(userId: .default)
             } label: {
                 topBannerView
             }

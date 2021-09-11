@@ -30,16 +30,12 @@ protocol AwaitAction: Action, Executable {
     func execute(in store: Store) async
 }
 
-protocol PageIdentifiable {
-    var pageId: String {
-        get
-    }
-}
-
 enum Reducer {
     case feed
     case feeddetail
     case explore
     case message
     case me
+    case userdetail
+    case tagdetail
 }

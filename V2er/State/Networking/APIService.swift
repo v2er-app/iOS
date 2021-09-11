@@ -28,7 +28,7 @@ struct APIService {
             return .failure(rawResult.error!)
         }
         let result: (model: T?, error: APIError?) = await self.parse(from: rawResult.data!)
-        guard result.error == nil else {
+        guard result.error == nil && result.model != nil else {
             return .failure(result.error!)
         }
         return .success(result.model)

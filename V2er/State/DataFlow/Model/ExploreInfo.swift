@@ -68,6 +68,7 @@ struct ExploreInfo: BaseModel {
         for e in dailyHotElements {
             let avatar = e.pick("a[href^=/member] img", .src)
             let member = e.pick("a[href^=/member]", .href)
+                .segment(separatedBy: "/")
             let title = e.pick("span.item_hot_topic_title")
             let topicId = e.pick("span.item_hot_topic_title a[href^=/t/]", .href)
                 .segment(separatedBy: "/")

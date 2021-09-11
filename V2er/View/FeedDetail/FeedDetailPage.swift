@@ -8,18 +8,18 @@
 
 import SwiftUI
 
-struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
+struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Environment(\.isPresented) private var isPresented
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var store: Store
     var state: FeedDetailState {
-        if store.appState.feedDetailStates[pageId] == nil {
-            store.appState.feedDetailStates[pageId] = FeedDetailState()
+        if store.appState.feedDetailStates[instanceId] == nil {
+            store.appState.feedDetailStates[instanceId] = FeedDetailState()
         }
-        return store.appState.feedDetailStates[pageId]!
+        return store.appState.feedDetailStates[instanceId]!
     }
 
-    var pageId: String {
+    var instanceId: String {
         initData?.id ?? .default
     }
     @State var hideTitleViews = true
@@ -47,10 +47,10 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
             }
             .background(state.showProgressView ? .clear : Color.pageLight)
             .updatable(autoRefresh: state.showProgressView) {
-                await run(action: FeedDetailActions.FetchData.Start(id: pageId, feedId: initData?.id))
+                await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
             } loadMore: {
                 guard state.hasMoreData else { return false }
-                await run(action: FeedDetailActions.LoadMore.Start(id: pageId, feedId: initData?.id))
+                await run(action: FeedDetailActions.LoadMore.Start(id: instanceId, feedId: initData?.id))
                 return state.hasMoreData
             } onScroll: { scrollY in
                 withAnimation {
@@ -69,13 +69,12 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
             replyIsFocused = false
         }
         .onAppear {
-            dispatch(action: FeedDetailActions.FetchData.Start(id: pageId, feedId: initData?.id, autoLoad: !state.hasLoadedOnce))
-            
+            dispatch(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id, autoLoad: !state.hasLoadedOnce))
         }
         .onDisappear {
             if !isPresented {
                 log("onPageClosed----->")
-                dispatch(action: FeedDetailActions.OnPageClosed(id: pageId))
+                dispatch(action: InstanceDestoryAction(target: .feeddetail, id: instanceId))
             }
         }
     }
@@ -178,7 +177,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, PageIdentifiable {
                         .foregroundColor(.tintColor)
                 }
                 Group {
-                    NavigationLink(destination: UserDetailPage()) {
+                    // FIXME: use real value
+                    NavigationLink(destination: UserDetailPage(userId: initData?.id)) {
                         AvatarView(url: state.model.headerInfo?.avatar ?? .empty, size: 32)
                     }
                     VStack(alignment: .leading) {
