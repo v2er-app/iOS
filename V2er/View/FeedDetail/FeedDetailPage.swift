@@ -74,7 +74,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .onDisappear {
             if !isPresented {
                 log("onPageClosed----->")
-                dispatch(action: InstanceDestoryAction(target: .feeddetail, id: instanceId))
+//                dispatch(action: InstanceDestoryAction(target: .feeddetail, id: instanceId))
             }
         }
     }

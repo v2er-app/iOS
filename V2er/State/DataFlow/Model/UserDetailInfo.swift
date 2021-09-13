@@ -24,10 +24,10 @@ struct UserDetailInfo: BaseModel {
     var followUrl: String = .default
     var hasBlocked: Bool = false
     var blockUrl: String = .default
-    var topicInfo: TopicInfo?
-    var replyInfo: ReplyInfo?
+    var topicInfo: TopicInfo = TopicInfo()
+    var replyInfo: ReplyInfo = ReplyInfo()
 
-    struct TopicInfo: HtmlParsable {
+    struct TopicInfo {
         // div.box:has(div.cell_tabs) > div.cell.item
         var items: [Item] = []
 
@@ -55,10 +55,12 @@ struct UserDetailInfo: BaseModel {
                 tagId = root.pick("a.node", .href)
                     .segment(separatedBy: "/")
                 title = root.pick("span.item_title")
-                time = root.pick("span.small.fade:last-child")
+                time = root.pick("span.small.fade", at: 1)
                 replyNum = root.pick("a[class^=count_]").toInt()
             }
         }
+
+        init() {}
 
         init(from html: Element?) {
             guard let elements = html?
@@ -72,7 +74,9 @@ struct UserDetailInfo: BaseModel {
 
     }
 
-    struct ReplyInfo: HtmlParsable {
+    struct ReplyInfo: BaseModel {
+        var rawData: String?
+
         var items: [Item] = []
         struct Item: Identifiable {
             // span.gray > a, .href
@@ -85,16 +89,18 @@ struct UserDetailInfo: BaseModel {
             var content: String = .default
         }
 
+        init(){}
+
         init(from html: Element?) {
             guard let root = html else { return }
-            let dockElements = root.pickAll("div.box:last-child > div.dock_area")
-            let contentElements = root.pickAll("div.box:last-child div.reply_content")
+            let dockElements = root.pickAll("div.dock_area")
+            let contentElements = root.pickAll("div.reply_content")
             // combine
             for (dock, content) in zip(dockElements, contentElements) {
                 var item = Item()
                 item.id = parseFeedId(dock.pick("span.gray > a", .href))
-                item.title = root.pick("span.gray")
-                item.time = root.pick("span.fade")
+                item.title = dock.pick("span.gray")
+                item.time = dock.pick("span.fade")
                 item.content = content.value(.innerHtml)
                 items.append(item)
             }

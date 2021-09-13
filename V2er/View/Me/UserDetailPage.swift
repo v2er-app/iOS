@@ -13,7 +13,6 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.isPresented) private var isPresented
     @EnvironmentObject private var store: Store
-    @StateObject var statusBarConfigurator = StatusBarConfigurator()
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
@@ -22,7 +21,8 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
     // FIXME: couldn't be null
     var userId: String?
     var instanceId: String {
-        userId ?? .default
+//        userId ?? .default
+        "ghui"
     }
 
     var state: UserDetailState {
@@ -35,10 +35,14 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
     var model: UserDetailInfo {
         state.model
     }
+
+    var statusBarConfig: StatusBarConfigurator {
+        store.appState.globalState.statusBarState
+    }
     
     private var shouldHideNavbar: Bool {
         let hideNavbar =  scrollY > -heightOfNodeImage * 1.0
-        statusBarConfigurator.statusBarStyle = hideNavbar ? .lightContent : .darkContent
+        statusBarConfig.statusBarStyle = hideNavbar ? .lightContent : .darkContent
         return hideNavbar
     }
     
@@ -56,7 +60,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                         bannerViewHeight = $0.height
                     }
                 tabsTitleView
-                topicDetailView
+                bottomDetailView
             }
             .updatable(autoRefresh: state.showProgressView) {
                 await run(action: UserDetailActions.FetchData.Start(id: instanceId, userId: self.userId))
@@ -65,19 +69,20 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
             }
             .background {
                 VStack(spacing: 0) {
-//                    KFImage
-//                        .url(URL(string: model.avatar))
-                    Image("avar")
+                    let height = bannerViewHeight * 1.2 + max(scrollY, 0)
+                    KFImage
+                        .url(URL(string: model.avatar))
+                        .fade(duration: 0.25)
                         .resizable()
                         .blur(radius: 80, opaque: true)
                         .overlay(Color.black.opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
-                        .frame(height: bannerViewHeight * 1.2 + max(scrollY, 0))
+                        .frame(maxWidth: .infinity, maxHeight: height)
                     Spacer().background(.clear)
                 }
-//                .debug()
+                .debug()
             }
         }
-        .prepareStatusBarConfigurator(statusBarConfigurator)
+        .prepareStatusBarConfigurator(store.appState.globalState.statusBarState)
         .buttonStyle(.plain)
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
@@ -87,8 +92,8 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
         .onDisappear {
             if !isPresented {
                 log("onPageClosed----->")
-                statusBarConfigurator.statusBarStyle = .darkContent
-                dispatch(action: InstanceDestoryAction(target: .userdetail, id: instanceId))
+                statusBarConfig.statusBarStyle = .darkContent
+//                dispatch(action: InstanceDestoryAction(target: .userdetail, id: instanceId))
             }
         }
     }
@@ -193,20 +198,101 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
     }
     
     @ViewBuilder
-    private var topicDetailView: some View {
+    private var bottomDetailView: some View {
         VStack(spacing: 0) {
-//            ForEach( 0...20, id: \.self) { i in
-//                NavigationLink(destination: NewsDetailPage()) {
-//                    NewsItemView()
-//                }
-//            }
+            if currentTab == .topic {
+                ForEach(model.topicInfo.items) { item in
+                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item.create(from: item.id))) {
+                        TopicItemView(data: item)
+                    }
+                }
+                if model.topicInfo.items.count > 0 {
+                    NavigationLink(destination: FeedDetailPage()) {
+                        Text("\(userId ?? .default)创建的更多主题")
+                            .font(.subheadline)
+                            .padding()
+                    }
+                } else {
+                    Text("根据 \(userId ?? .default) 的设置，主题列表被隐藏")
+                        .font(.subheadline)
+                        .padding()
+                }
+            } else {
+                ForEach(model.replyInfo.items) { item in
+                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item.create(from: item.id))) {
+                        ReplyItemView(data: item)
+                    }
+                }
+            }
         }
         .background(.white)
+    }
+
+
+struct ReplyItemView: View {
+    var data: UserDetailInfo.ReplyInfo.Item
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Text(data.title)
+                .font(.footnote)
+            Text(data.content)
+                .greedyWidth(.leading)
+                .font(.footnote)
+                .padding(10)
+                .background {
+                    HStack(spacing: 0) {
+                        Color.tintColor.opacity(0.8)
+                            .frame(width: 3)
+                        Color.lightGray
+                    }
+                }
+            Text(data.time)
+                .font(.footnote)
+                .greedyWidth(.trailing)
+        }
+    }
+}
+
+
+struct TopicItemView: View {
+    var data: UserDetailInfo.TopicInfo.Item
+
+    var body: some View {
+        VStack(spacing: 0) {
+            VStack {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(data.userName)
+                            .lineLimit(1)
+                            .font(.body)
+                        Text(data.time)
+                            .lineLimit(1)
+                            .font(.footnote)
+                    }
+                    Spacer()
+                    NavigationLink(destination: TagDetailPage()) {
+                        Text(data.tag)
+                            .font(.footnote)
+                            .foregroundColor(.black)
+                            .lineLimit(1)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Color.lightGray)
+                    }
+                }
+                Text(data.title )
+                    .greedyWidth(.leading)
+                    .lineLimit(2)
+            }
+            .padding(12)
+            Divider()
+        }
+        .background(Color.almostClear)
     }
 }
 
 struct TabButton: View {
-    
     public enum ID: String {
         case topic, reply
     }
@@ -245,6 +331,8 @@ struct TabButton: View {
         }
     }
     
+}
+
 }
 
 //struct UserDetailPage_Previews: PreviewProvider {

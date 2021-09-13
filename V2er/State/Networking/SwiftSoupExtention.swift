@@ -50,6 +50,8 @@ public extension Element {
         } else if attr == .ownText {
             result = self.ownText()
         } else if attr == .html {
+            result = try? self.outerHtml()
+        } else if attr == .innerHtml {
             result = try? self.html()
         } else {
             result = try? self.attr(attr.value)
