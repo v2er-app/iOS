@@ -67,6 +67,7 @@ enum Endpoint {
                 info.path = "/"
             case let .nodeListDetail(nodeName):
                 info.path = "/go/\(nodeName)"
+                info.ua = .web
             case let .userPage(userName):
                 info.path = "/member/\(userName)"
             case .createTopic:

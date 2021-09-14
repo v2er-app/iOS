@@ -79,6 +79,7 @@
 		5DA2AD4826C18232007FB1EF /* MessageState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA2AD4726C18232007FB1EF /* MessageState.swift */; };
 		5DA2DC8826ADAD6400022C31 /* FlowStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA2DC8726ADAD6400022C31 /* FlowStack.swift */; };
 		5DA69A4924ACBC8D00F8B77A /* V2erApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA69A4824ACBC8D00F8B77A /* V2erApp.swift */; };
+		5DAA50A626F0D8DD00CB63DE /* TagDetailInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAA50A526F0D8DD00CB63DE /* TagDetailInfo.swift */; };
 		5DB622A026DE8BCD0026C4A8 /* ExploreInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB6229F26DE8BCD0026C4A8 /* ExploreInfo.swift */; };
 		5DCDE3942695D16B00261385 /* AuthorInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE3932695D16B00261385 /* AuthorInfoView.swift */; };
 		5DD440D3269F1F5E00EE0FAB /* Syles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD440D2269F1F5E00EE0FAB /* Syles.swift */; };
@@ -188,6 +189,7 @@
 		5DA2AD4726C18232007FB1EF /* MessageState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageState.swift; sourceTree = "<group>"; };
 		5DA2DC8726ADAD6400022C31 /* FlowStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowStack.swift; sourceTree = "<group>"; };
 		5DA69A4824ACBC8D00F8B77A /* V2erApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2erApp.swift; sourceTree = "<group>"; };
+		5DAA50A526F0D8DD00CB63DE /* TagDetailInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailInfo.swift; sourceTree = "<group>"; };
 		5DB6229F26DE8BCD0026C4A8 /* ExploreInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreInfo.swift; sourceTree = "<group>"; };
 		5DCDE3932695D16B00261385 /* AuthorInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorInfoView.swift; sourceTree = "<group>"; };
 		5DD440D2269F1F5E00EE0FAB /* Syles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Syles.swift; sourceTree = "<group>"; };
@@ -354,7 +356,6 @@
 			children = (
 				5D71DF54247C0FFE00B53ED4 /* FeedPage.swift */,
 				5D6AAAAE2692036100F42A13 /* FeedItemView.swift */,
-				5D9D5222269543DA00D80D6B /* TagDetailPage.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -408,6 +409,7 @@
 				5D0A513A26E26505006F3D9B /* FeedDetailInfo.swift */,
 				5D1D8C0126EBA88C009DF65A /* UserDetailInfo.swift */,
 				5D1D8C0526ECA457009DF65A /* ModelUtils.swift */,
+				5DAA50A526F0D8DD00CB63DE /* TagDetailInfo.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -436,6 +438,14 @@
 			path = Networking;
 			sourceTree = "<group>";
 		};
+		5DAA50A426F0D8A400CB63DE /* Tag */ = {
+			isa = PBXGroup;
+			children = (
+				5D9D5222269543DA00D80D6B /* TagDetailPage.swift */,
+			);
+			path = Tag;
+			sourceTree = "<group>";
+		};
 		5DCDE3922695D02D00261385 /* FeedDetail */ = {
 			isa = PBXGroup;
 			children = (
@@ -457,6 +467,7 @@
 				5D7B78F526C2BB490037D000 /* StateView.swift */,
 				5D6AAAAD2692034700F42A13 /* Feed */,
 				5DCDE3922695D02D00261385 /* FeedDetail */,
+				5DAA50A426F0D8A400CB63DE /* Tag */,
 				5D843E9326A4536400C47D95 /* Explore */,
 				5D1D8E2026B1967B0040C418 /* Me */,
 				5D843E9626A46CB800C47D95 /* Message */,
@@ -679,6 +690,7 @@
 				5DA2AD4026C180D9007FB1EF /* MainPageState.swift in Sources */,
 				5DA2DC8826ADAD6400022C31 /* FlowStack.swift in Sources */,
 				5DCDE3942695D16B00261385 /* AuthorInfoView.swift in Sources */,
+				5DAA50A626F0D8DD00CB63DE /* TagDetailInfo.swift in Sources */,
 				5D4E43FC2699E20400650714 /* AvatarView.swift in Sources */,
 				5D1D8C0026EBA875009DF65A /* UserDetailState.swift in Sources */,
 				5D4E43FA2699DDE200650714 /* ReplyItemView.swift in Sources */,
