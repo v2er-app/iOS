@@ -21,8 +21,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
     // FIXME: couldn't be null
     var userId: String?
     var instanceId: String {
-//        userId ?? .default
-        "ghui"
+        userId ?? .default
     }
 
     var state: UserDetailState {
@@ -100,7 +99,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
     
     @ViewBuilder
     private var navBar: some View  {
-        NavbarHostView(paddingH: 0) {
+        NavbarHostView(paddingH: 0, hideDivider: shouldHideNavbar) {
             HStack(alignment: .center, spacing: 4) {
                 Button {
                     self.presentationMode.wrappedValue.dismiss()
@@ -154,7 +153,6 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
             }
             .padding(.vertical, 5)
         }
-        .hideDivider(hide: shouldHideNavbar)
         .foregroundColor(foreGroundColor)
         .visualBlur(alpha: shouldHideNavbar ? 0.0 : 1.0)
     }

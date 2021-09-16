@@ -11,11 +11,11 @@ import Foundation
 struct AppState: FluxState {
     var globalState = GlobalState()
     var feedState = FeedState()
-//    var feedDetailState = FeedDetailState()
     var feedDetailStates: FeedDetailStates = [:]
     var exploreState = ExploreState()
     var messageState = MessageState()
     var meState = MeState()
     var mainPageState = MainPageState()
     var userDetailStates: UserDetailStates = [:]
+    var tagDetailStates: TagDetailStates = [:]
 }

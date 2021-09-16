@@ -10,7 +10,8 @@ import Foundation
 import SwiftSoup
 
 struct APIService {
-    let baseURL = URL(string: "https://v2ex.com")!
+    static let baseUrlString = "https://v2ex.com"
+    let baseURL = URL(string: baseUrlString)!
     static let shared = APIService()
     private var session: URLSession
     private let jsonDecoder: JSONDecoder

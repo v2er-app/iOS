@@ -11,11 +11,12 @@ import SwiftUI
 struct NavbarHostView<Content: View>: View {
     let content: Content
     let paddingH: CGFloat
-    @State var shouldHideDivider: Bool = false
+    let hideDivider: Bool
     
-    init(paddingH: CGFloat = 2, @ViewBuilder content: () -> Content) {
+    init(paddingH: CGFloat = 2, hideDivider: Bool = true, @ViewBuilder content: () -> Content) {
         self.content = content()
         self.paddingH = paddingH
+        self.hideDivider = hideDivider
     }
     
     var body: some View {
@@ -25,17 +26,12 @@ struct NavbarHostView<Content: View>: View {
                 self.content
             }
             Divider()
-                .opacity(shouldHideDivider ? 0.0 : 1.0)
+                .opacity(hideDivider ? 0.0 : 1.0)
         }
         .greedyWidth()
         .padding(.horizontal, self.paddingH)
     }
-    
-    func hideDivider(hide: Bool = true) -> some View {
-        self.shouldHideDivider = hide
-        return self
-    }
-    
+
 }
 
 struct NavHostView_Previews: PreviewProvider {

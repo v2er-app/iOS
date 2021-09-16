@@ -52,6 +52,7 @@ final public class Store: ObservableObject {
             case .userdetail:
                 (appState.userDetailStates, followingAction) = userDetailReducer(appState.userDetailStates, action)
             case .tagdetail:
+                (appState.tagDetailStates, followingAction) = tagDetailStateReducer(appState.tagDetailStates, action)
                 break
             default:
                 break

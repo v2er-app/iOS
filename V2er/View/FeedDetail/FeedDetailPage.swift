@@ -50,7 +50,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
             } loadMore: {
                 guard state.hasMoreData else { return false }
-                await run(action: FeedDetailActions.LoadMore.Start(id: instanceId, feedId: initData?.id))
+                await run(action: FeedDetailActions.LoadMore.Start(id: instanceId, feedId: initData?.id, willLoadPage: state.willLoadPage))
                 return state.hasMoreData
             } onScroll: { scrollY in
                 withAnimation {

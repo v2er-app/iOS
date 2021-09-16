@@ -21,3 +21,4 @@ func parseFeedId(_ link: String) -> String {
         .remove("/t/")
         .segment(separatedBy: "#", at: .first)
 }
+

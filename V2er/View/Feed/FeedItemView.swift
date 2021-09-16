@@ -27,7 +27,7 @@ struct FeedItemView: View {
                             .font(.footnote)
                     }
                     Spacer()
-                    NavigationLink(destination: TagDetailPage()) {
+                    NavigationLink(destination: TagDetailPage(tagId: data.tagId)) {
                         Text(data.tagName)
                             .font(.footnote)
                             .foregroundColor(.black)

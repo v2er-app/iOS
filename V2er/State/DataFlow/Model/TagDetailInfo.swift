@@ -22,9 +22,10 @@ struct TagDetailInfo: BaseModel {
     // div.cell.page-content-header img
     var tagImage: String = .default
     // div.cell.flex-one-row div:not(div#money)
-    var countOfStaredPeople: Int = 0
+    var countOfStaredPeople: String = .default
     // span.topic-count strong
-    var topicsCount: Int = 0
+    var topicsCount: String = .default
+    var totalPage: Int = 0
     // a[href*=favorite/], .href
     var starLink: String = .default
     // div.box div.cell:has(table)
@@ -39,14 +40,16 @@ struct TagDetailInfo: BaseModel {
         var title: String = .default
         // span.small.fade strong
         var userName: String = .default
+        var replyCount: Int = 0
 
         init() {}
         init(from html: Element?) {
             guard let root = html else { return }
-            id = parseFeedId(root.pick("span.item_title a"))
+            id = parseFeedId(root.pick("span.item_title a", .href))
             avatar = root.pick("img.avatar", .src)
             title = root.pick("span.item_title")
-            userName = root.pick("span.small.fade strong")
+            userName = root.pick("span.topic_info strong a", at: .first)
+            replyCount = root.pick("a.count_livid").toInt()
         }
     }
 
@@ -59,9 +62,14 @@ struct TagDetailInfo: BaseModel {
         let imgNode = root.pickOne("div.cell.page-content-header img")
         tagId = imgNode?.value(.alt) ?? .default
         tagImage = imgNode?.value(.src) ?? .default
-        countOfStaredPeople = root.pick("div.cell.flex-one-row div:not(div#money)").toInt()
-        topicsCount = root.pick("span.topic-count strong").toInt()
-        starLink = root.pick("a[href*=favorite/]", .href)
+        countOfStaredPeople = root.pick("div.cell.flex-one-row div:not(div#money)")
+            .segment(separatedBy: " ", at: .first)
+        topicsCount = root.pick("span.topic-count strong")
+        let lastNormalpage = root.pick("div.box a.page_normal", at: .last).toInt()
+        let currentPage = root.pick("div.box span.page_current").toInt()
+        totalPage = max(lastNormalpage, currentPage)
+        let favoritePath = root.pick("a[href*=/favorite/]", .href)
+        starLink = APIService.baseUrlString.appending(favoritePath)
 
         let elements = root.pickAll("div#TopicsNode div.cell:has(table)")
         for e in elements {

@@ -45,10 +45,6 @@ struct FeedDetailInfo: BaseModel {
         var tagId: String = .empty
         // div.cell span.gray:contains(回复)
         var comment: String = .empty
-        // div.box a.page_normal:last-child
-        private var page: Int = 0
-        // div.box span.page_current
-        private var currentPage: Int = 0
         var totalPage: Int = 1
         // div.box h1
         var title: String = .empty
@@ -70,9 +66,9 @@ struct FeedDetailInfo: BaseModel {
             tagId = root.pick("div.box a[href^=/go]", .href)
                 .segment(separatedBy: "/")
             comment = root.pick("div.cell span.gray:contains(回复)")
-            page = root.pick("div.box a.page_normal:last-child").toInt()
-            currentPage = root.pick("div.box span.page_current").toInt()
-            totalPage = max(page, currentPage)
+            let lastNormalpage = root.pick("div.box a.page_normal:last-child").toInt()
+            let currentPage = root.pick("div.box span.page_current").toInt()
+            totalPage = max(lastNormalpage, currentPage)
             title = root.pick("div.box h1")
             favoriteLink = root.pick("div.box a[href*=favorite/]", .href)
             hadThanked = root.pick("div.box div[id=topic_thank]")

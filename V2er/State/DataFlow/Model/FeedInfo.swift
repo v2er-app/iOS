@@ -47,9 +47,11 @@ struct FeedInfo: BaseModel {
 
         init() {}
 
-        static func create(from id: String) -> Item {
+        static func create(from id: String, title: String = .default, avatar: String = .default) -> Item {
             var item = Item()
             item.id = id
+            item.title = title
+            item.avatar = avatar
             return item
         }
     }

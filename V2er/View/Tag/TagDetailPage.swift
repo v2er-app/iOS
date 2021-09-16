@@ -7,12 +7,31 @@
 //
 
 import SwiftUI
+import Kingfisher
 
-struct TagDetailPage: View {
+struct TagDetailPage: StateView, InstanceIdentifiable {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.isPresented) private var isPresented
-    @StateObject var statusBarConfigurator = StatusBarConfigurator()
-    
+    @EnvironmentObject private var store: Store
+    var instanceId: String {
+        tagId ?? .default
+    }
+
+    var state: TagDetailState {
+        if store.appState.tagDetailStates[instanceId] == nil {
+            store.appState.tagDetailStates[instanceId] = TagDetailState()
+        }
+        return store.appState.tagDetailStates[instanceId]!
+    }
+
+    var model: TagDetailInfo {
+        state.model
+    }
+
+    var statusBarConfig: StatusBarConfigurator {
+        store.appState.globalState.statusBarState
+    }
+
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
@@ -22,7 +41,7 @@ struct TagDetailPage: View {
 
     private var shouldHideNavbar: Bool {
         let hideNavbar =  scrollY > -heightOfNodeImage * 1.0
-        statusBarConfigurator.statusBarStyle = hideNavbar ? .lightContent : .darkContent
+        statusBarConfig.statusBarStyle = hideNavbar ? .lightContent : .darkContent
         return hideNavbar
     }
     
@@ -42,13 +61,17 @@ struct TagDetailPage: View {
                 nodeListView
             }
             .loadMore {
-                return true
+                guard state.hasMoreData else { return false }
+                await run(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, willLoadPage: state.willLoadPage))
+                return state.hasMoreData
             } onScroll: {
                 self.scrollY = $0
             }
             .background {
                 VStack(spacing: 0) {
-                    Image("share_node_v2ex")
+                    KFImage
+                        .url(URL(string: model.tagImage))
+                        .fade(duration: 0.25)
                         .resizable()
                         .blur(radius: 80, opaque: true)
                         .overlay(Color.black.opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
@@ -57,15 +80,25 @@ struct TagDetailPage: View {
                 }
             }
         }
-        .prepareStatusBarConfigurator(statusBarConfigurator)
+        .prepareStatusBarConfigurator(statusBarConfig)
         .buttonStyle(.plain)
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
+        .onAppear {
+            dispatch(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId))
+        }
+        .onDisappear {
+            if !isPresented {
+                log("onPageClosed----->")
+                statusBarConfig.statusBarStyle = .darkContent
+                // dispatch(action: InstanceDestoryAction(target: .userdetail, id: instanceId))
+            }
+        }
     }
     
     @ViewBuilder
     private var navBar: some View  {
-        NavbarHostView(paddingH: 0) {
+        NavbarHostView(paddingH: 0, hideDivider: shouldHideNavbar) {
             HStack(alignment: .center, spacing: 4) {
                 Button {
                     self.presentationMode.wrappedValue.dismiss()
@@ -78,11 +111,11 @@ struct TagDetailPage: View {
                 .forceClickable()
                 
                 Group {
-//                    AvatarView(url: "share_node_v2ex", size: 36)
+                    AvatarView(url: model.tagImage, size: 36)
                     VStack(alignment: .leading) {
-                        Text("分享创造")
+                        Text(model.tagName)
                             .font(.headline)
-                        Text("欢迎你在这里发布你的新作品")
+                        Text(model.tagDesc)
                             .font(.subheadline)
                     }
                     .lineLimit(1)
@@ -112,13 +145,12 @@ struct TagDetailPage: View {
             }
             .padding(.vertical, 5)
         }
-        .hideDivider(hide: shouldHideNavbar)
         .foregroundColor(foreGroundColor)
         .visualBlur(alpha: shouldHideNavbar ? 0.0 : 1.0)
         .onDisappear {
             if !isPresented {
                 log("onPageClosed----->")
-                statusBarConfigurator.statusBarStyle = .darkContent
+                statusBarConfig.statusBarStyle = .darkContent
             }
         }
     }
@@ -128,13 +160,13 @@ struct TagDetailPage: View {
     private var topBannerView: some View {
         VStack (spacing: 14) {
             Color.clear.frame(height: topSafeAreaInset().top)
-//            AvatarView(src: "share_node_v2ex", size: heightOfNodeImage)
-            Text("分享创造")
+            AvatarView(url: model.tagImage, size: heightOfNodeImage)
+            Text(model.tagName)
                 .font(.headline.weight(.semibold))
-            Text("欢迎你在这里发布你的新作品")
+            Text(model.tagDesc)
                 .font(.callout)
             HStack {
-                Text("16492个主题")
+                Text("\(model.topicsCount)个主题")
                     .font(.callout)
                 Spacer()
                 Button {
@@ -147,7 +179,7 @@ struct TagDetailPage: View {
                         .roundedEdge(radius: 99, borderWidth: 1, color: foreGroundColor)
                 }
                 Spacer()
-                Text("4001个收藏")
+                Text("\(model.countOfStaredPeople)个收藏")
                     .font(.callout)
             }
             .padding(.horizontal, 12)
@@ -162,17 +194,52 @@ struct TagDetailPage: View {
     @ViewBuilder
     private var nodeListView: some View {
         LazyVStack(spacing: 0) {
-//            ForEach( 0...20, id: \.self) { i in
-//                NavigationLink(destination: NewsDetailPage()) {
-//                    NewsItemView()
-//                }
-//            }
+            ForEach(model.topics) { item in
+                let data = FeedInfo.Item.create(
+                    from: item.id,
+                    title: item.title,
+                    avatar: item.avatar)
+                NavigationLink(destination: FeedDetailPage(initData: data)) {
+                    TagFeedItemView(data: item)
+                }
+            }
         }
         .background(.white)
         .cornerRadius(12, corners: [.topLeft, .topRight])
     }
-    
+
+    struct TagFeedItemView: View {
+        var data: TagDetailInfo.Item
+
+        var body: some View {
+            VStack(spacing: 0) {
+                VStack {
+                    HStack(alignment: .top) {
+                        NavigationLink(destination: UserDetailPage(userId: data.userName)) {
+                            AvatarView(url: data.avatar)
+                        }
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(data.userName)
+                                .lineLimit(1)
+                                .font(.body)
+                            Text(data.userName)
+                                .lineLimit(1)
+                                .font(.footnote)
+                        }
+                        Spacer()
+                    }
+                    Text(data.title )
+                        .greedyWidth(.leading)
+                        .lineLimit(2)
+                }
+                .padding(12)
+                Divider()
+            }
+            .background(Color.almostClear)
+        }
+    }
 }
+
 
 struct TagDetailPage_Previews: PreviewProvider {
     static var previews: some View {

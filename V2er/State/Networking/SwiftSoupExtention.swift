@@ -13,7 +13,9 @@ import SwiftSoup
 public extension Element {
     func pick(_ selector: String, at index:Int = 0,
               _ attr: HtmlAttr = .text, regex: String? = nil) -> String {
-        let e : Element? = pickAll(selector)[safe: index]
+        let es: Elements = pickAll(selector)
+        let index = min(index, es.count - 1)
+        let e : Element? = es[safe: index]
         guard let e = e else { return .default }
         let result: String?
         if attr == .text {

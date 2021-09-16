@@ -16,7 +16,7 @@ enum Endpoint {
     case tab, recent, explore
     case signin, topic(id: String), notifications
     case myFollowing, myTopics, myNodes, nodesNav
-    case nodeListDetail(nodeName: String)
+    case tagDetail(tagId: String)
     case userPage(userName: String), createTopic
     case appendTopic(id: String), thanksReply(id: String)
     case thanksAuthor(id: String), starTopic(id: String)
@@ -65,7 +65,7 @@ enum Endpoint {
                 info.path = "/my/nodes"
             case .nodesNav:
                 info.path = "/"
-            case let .nodeListDetail(nodeName):
+            case let .tagDetail(nodeName):
                 info.path = "/go/\(nodeName)"
                 info.ua = .web
             case let .userPage(userName):
