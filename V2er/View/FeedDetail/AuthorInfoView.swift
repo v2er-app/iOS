@@ -29,7 +29,7 @@ struct AuthorInfoView: View {
     }
 
     private var avatar: String {
-        data?.avatar ?? initData?.avatar ?? .default
+        initData?.avatar ?? data?.avatar ?? .default
     }
 
     var body: some View {
