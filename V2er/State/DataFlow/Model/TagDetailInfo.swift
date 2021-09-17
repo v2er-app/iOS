@@ -40,7 +40,8 @@ struct TagDetailInfo: BaseModel {
         var title: String = .default
         // span.small.fade strong
         var userName: String = .default
-        var replyCount: Int = 0
+        var replyCount: String = .default
+        var timeAndReplier: String = .default
 
         init() {}
         init(from html: Element?) {
@@ -49,7 +50,10 @@ struct TagDetailInfo: BaseModel {
             avatar = root.pick("img.avatar", .src)
             title = root.pick("span.item_title")
             userName = root.pick("span.topic_info strong a", at: .first)
-            replyCount = root.pick("a.count_livid").toInt()
+            replyCount = root.pick("a.count_livid")
+            timeAndReplier = root.pick("span.topic_info")
+                .segment(from: "•")
+                .trim()
         }
     }
 

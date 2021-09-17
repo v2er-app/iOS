@@ -222,15 +222,19 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                             Text(data.userName)
                                 .lineLimit(1)
                                 .font(.body)
-                            Text(data.userName)
-                                .lineLimit(1)
+                            Text(data.timeAndReplier)
                                 .font(.footnote)
+                                .greedyWidth(.leading)
                         }
                         Spacer()
                     }
                     Text(data.title )
                         .greedyWidth(.leading)
                         .lineLimit(2)
+                    Text("评论\(data.replyCount)")
+                        .lineLimit(1)
+                        .font(.footnote)
+                        .greedyWidth(.trailing)
                 }
                 .padding(12)
                 Divider()
