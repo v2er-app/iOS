@@ -25,7 +25,6 @@ struct SearchPage: View {
         .buttonStyle(.plain)
         .updatable(
             loadMore: {
-                return true
             })
         .safeAreaInset(edge: .top, spacing: 0) {
             searchView

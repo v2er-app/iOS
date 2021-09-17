@@ -10,5 +10,5 @@ import Foundation
 import SwiftUI
 
 public typealias RefreshAction = (() async-> Void)?
-public typealias LoadMoreAction = (() async-> Bool)?
+public typealias LoadMoreAction = (() async-> Void)?
 public typealias ScrollAction = (CGFloat)->Void

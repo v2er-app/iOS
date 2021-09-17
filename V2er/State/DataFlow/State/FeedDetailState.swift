@@ -16,7 +16,7 @@ struct FeedDetailState: FluxState {
     var refreshing = false
     var loadingMore = false
     var willLoadPage = 0
-    var hasMoreData = false
+    var hasMoreData = true
     var model: FeedDetailInfo = FeedDetailInfo()
 }
 

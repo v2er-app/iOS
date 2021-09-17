@@ -9,12 +9,12 @@
 import SwiftUI
 
 struct LoadmoreIndicatorView: View {
-    @Binding var isLoading: Bool
-    @Binding var hasMoreData: Bool
+    var isLoading: Bool
+    var hasMoreData: Bool
 
-    init(isLoading: Binding<Bool>, hasMoreData: Binding<Bool>) {
-        self._isLoading = isLoading
-        self._hasMoreData = hasMoreData
+    init(isLoading: Bool, hasMoreData: Bool) {
+        self.isLoading = isLoading
+        self.hasMoreData = hasMoreData
     }
     
     var body: some View {
@@ -33,10 +33,10 @@ struct LoadmoreIndicatorView: View {
 }
 
 struct LoadmoreIndicatorView_Previews: PreviewProvider {
-    @State static var isloading = true
-    @State static var hasMoreData = true
+    static var isloading = true
+    static var hasMoreData = true
     
     static var previews: some View {
-        LoadmoreIndicatorView(isLoading: $isloading, hasMoreData: $hasMoreData)
+        LoadmoreIndicatorView(isLoading: isloading, hasMoreData: hasMoreData)
     }
 }

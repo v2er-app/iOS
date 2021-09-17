@@ -12,7 +12,7 @@ struct TagDetailState: FluxState {
     var refCounts = 0
     var reseted: Bool = false
     var hasLoadedOnce = false
-    var showProgressView: Bool = false
+    var showProgressView: Bool = true
     var loadingMore = false
     var willLoadPage = 1
     var hasMoreData = true

@@ -27,7 +27,7 @@ struct UpdatableView<Content: View>: View {
     let threshold: CGFloat = 60
     @State var boundsDelta = 0.0
     @State var isLoadingMore: Bool = false
-    @State var hasMoreData: Bool = true
+    var hasMoreData: Bool = true
     var autoRefresh: Bool
     let damper: Float = 1.2
 
@@ -43,12 +43,14 @@ struct UpdatableView<Content: View>: View {
                      onLoadMore: LoadMoreAction,
                      onScroll: ScrollAction?,
                      autoRefresh: Bool,
+                     hasMoreData: Bool,
                      @ViewBuilder content: () -> Content) {
         self.onRefresh = onRefresh
         self.onLoadMore = onLoadMore
         self.onScroll = onScroll
         self.content = content()
         self.autoRefresh = autoRefresh
+        self.hasMoreData = hasMoreData
     }
 
     var body: some View {
@@ -60,7 +62,7 @@ struct UpdatableView<Content: View>: View {
                         content
                             .anchorPreference(key: ContentBoundsKey.self, value: .bounds) { $0 }
                         if loadMoreable {
-                            LoadmoreIndicatorView(isLoading: $isLoadingMore, hasMoreData: $hasMoreData)
+                            LoadmoreIndicatorView(isLoading: isLoadingMore, hasMoreData: hasMoreData)
                         }
                     }
                 }
@@ -120,7 +122,7 @@ struct UpdatableView<Content: View>: View {
             isLoadingMore = true
             Task {
                 log("loadingMore...")
-                hasMoreData = await onLoadMore!()
+                await onLoadMore!()
                 runInMain {
                     isLoadingMore = false
                 }
@@ -177,14 +179,18 @@ struct FrameContentBoundsDeltaKey: PreferenceKey {
 
 extension View {
     public func updatable(autoRefresh: Bool = false,
+                          hasMoreData: Bool = true,
                           refresh: RefreshAction = nil,
                           loadMore: LoadMoreAction = nil,
                           onScroll: ScrollAction? = nil) -> some View {
-        self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, autoRefresh: autoRefresh))
+        self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, autoRefresh: autoRefresh, hasMoreData: hasMoreData))
     }
     
-    public func loadMore(_ loadMore: LoadMoreAction = nil, onScroll: ScrollAction? = nil) -> some View {
-        self.modifier(UpdatableModifier(onRefresh: nil, onLoadMore: loadMore, onScroll: onScroll, autoRefresh: false))
+    public func loadMore(autoRefresh: Bool = false,
+                         hasMoreData: Bool = true,
+                         _ loadMore: LoadMoreAction = nil,
+                         onScroll: ScrollAction? = nil) -> some View {
+        self.updatable(autoRefresh: autoRefresh, hasMoreData: hasMoreData, refresh: nil, loadMore: loadMore, onScroll: onScroll)
     }
     
 }
@@ -194,10 +200,11 @@ struct UpdatableModifier: ViewModifier {
     let onLoadMore: LoadMoreAction
     let onScroll: ScrollAction?
     let autoRefresh: Bool
+    let hasMoreData: Bool
     
     func body(content: Content) -> some View {
         UpdatableView(onRefresh: onRefresh, onLoadMore: onLoadMore,
-                      onScroll: onScroll, autoRefresh: autoRefresh) {
+                      onScroll: onScroll, autoRefresh: autoRefresh, hasMoreData: hasMoreData) {
             content
         }
     }

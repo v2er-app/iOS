@@ -60,10 +60,8 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     }
                 nodeListView
             }
-            .loadMore {
-                guard state.hasMoreData else { return false }
+            .loadMore(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData) {
                 await run(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, willLoadPage: state.willLoadPage))
-                return state.hasMoreData
             } onScroll: {
                 self.scrollY = $0
             }
@@ -85,7 +83,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
         .onAppear {
-            dispatch(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId))
+            dispatch(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, autoLoad: !state.hasLoadedOnce))
         }
         .onDisappear {
             if !isPresented {

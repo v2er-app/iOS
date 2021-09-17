@@ -17,6 +17,7 @@ struct TagDetailActions {
             var id: String
             let tagId: String?
             var willLoadPage: Int = 1
+            var autoLoad: Bool = false
 
             func execute(in store: Store) async {
                 let result: APIResult<TagDetailInfo> = await APIService.shared

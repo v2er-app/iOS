@@ -26,7 +26,6 @@ struct MessagePage: View {
             },
             loadMore: {
                 print("onLoadMore...")
-                return true
             }
         )
         .opacity(selecedTab == .message ? 1.0 : 0.0)

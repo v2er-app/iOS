@@ -38,11 +38,10 @@ struct FeedPage: StateView {
             }
         }
         .background(Color.pageLight)
-        .updatable(autoRefresh: state.showProgressView) {
+        .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData) {
             await run(action: FeedActions.FetchData.Start())
         } loadMore: {
             await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
-            return state.hasMoreData
         }
     }
 

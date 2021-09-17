@@ -21,10 +21,13 @@ func tagDetailStateReducer(_ states: TagDetailStates, _ action: Action) -> (TagD
         case let action as TagDetailActions.LoadMore.Start:
             guard !state.loadingMore else { break }
             guard state.hasMoreData else { break }
+            state.showProgressView = action.autoLoad
+            state.hasLoadedOnce = true
             state.loadingMore = true
             break;
         case let action as TagDetailActions.LoadMore.Done:
             state.loadingMore = false
+            state.showProgressView = false
             if case let .success(result) = action.result {
                 state.willLoadPage += 1
                 state.hasMoreData = state.willLoadPage <= result?.totalPage ?? 1
