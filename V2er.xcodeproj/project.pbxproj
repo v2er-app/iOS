@@ -48,7 +48,7 @@
 		5D4E43FA2699DDE200650714 /* ReplyItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4E43F92699DDE200650714 /* ReplyItemView.swift */; };
 		5D4E43FC2699E20400650714 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4E43FB2699E20400650714 /* AvatarView.swift */; };
 		5D54903326AB9E2200BB0CC0 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D54903226AB9E2200BB0CC0 /* SwiftUIView.swift */; };
-		5D5DA26A24A4939B005BC60F /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5DA26924A4939B005BC60F /* Extension.swift */; };
+		5D5DA26A24A4939B005BC60F /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5DA26924A4939B005BC60F /* ViewExtension.swift */; };
 		5D612FA126C7C34E0009B8F9 /* NetworkException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D612FA026C7C34E0009B8F9 /* NetworkException.swift */; };
 		5D612FA326C7C61C0009B8F9 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D612FA226C7C61C0009B8F9 /* Endpoint.swift */; };
 		5D6AAAAA26917E7B00F42A13 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6AAAA926917E7B00F42A13 /* Helper.swift */; };
@@ -86,6 +86,7 @@
 		5DB622A026DE8BCD0026C4A8 /* ExploreInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB6229F26DE8BCD0026C4A8 /* ExploreInfo.swift */; };
 		5DCDE3942695D16B00261385 /* AuthorInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE3932695D16B00261385 /* AuthorInfoView.swift */; };
 		5DD440D3269F1F5E00EE0FAB /* Syles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD440D2269F1F5E00EE0FAB /* Syles.swift */; };
+		5DD4639E26F70CE800A1FBA1 /* LoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD4639D26F70CE800A1FBA1 /* LoginPage.swift */; };
 		5DE5B4CA2684601A00569684 /* TopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE5B4C92684601A00569684 /* TopBar.swift */; };
 		5DE5B4CD268466D800569684 /* UpdatableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE5B4CC268466D800569684 /* UpdatableView.swift */; };
 		5DE5C579249D90AD0004DCC6 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE5C578249D90AD0004DCC6 /* Color.swift */; };
@@ -161,7 +162,7 @@
 		5D4E43F92699DDE200650714 /* ReplyItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyItemView.swift; sourceTree = "<group>"; };
 		5D4E43FB2699E20400650714 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		5D54903226AB9E2200BB0CC0 /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
-		5D5DA26924A4939B005BC60F /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		5D5DA26924A4939B005BC60F /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		5D612FA026C7C34E0009B8F9 /* NetworkException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkException.swift; sourceTree = "<group>"; };
 		5D612FA226C7C61C0009B8F9 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		5D6AAAA926917E7B00F42A13 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
@@ -199,6 +200,7 @@
 		5DB6229F26DE8BCD0026C4A8 /* ExploreInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreInfo.swift; sourceTree = "<group>"; };
 		5DCDE3932695D16B00261385 /* AuthorInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorInfoView.swift; sourceTree = "<group>"; };
 		5DD440D2269F1F5E00EE0FAB /* Syles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Syles.swift; sourceTree = "<group>"; };
+		5DD4639D26F70CE800A1FBA1 /* LoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
 		5DE5B4C92684601A00569684 /* TopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBar.swift; sourceTree = "<group>"; };
 		5DE5B4CC268466D800569684 /* UpdatableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatableView.swift; sourceTree = "<group>"; };
 		5DE5C578249D90AD0004DCC6 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
@@ -264,6 +266,7 @@
 				5D0CFA7D26B992D6001A8A7F /* StarPage.swift */,
 				5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */,
 				5D0CFA8126B9935B001A8A7F /* MyTopicPage.swift */,
+				5DD4639D26F70CE800A1FBA1 /* LoginPage.swift */,
 			);
 			path = Me;
 			sourceTree = "<group>";
@@ -471,7 +474,7 @@
 			isa = PBXGroup;
 			children = (
 				5D436FEC24791C2C00FFA37E /* MainPage.swift */,
-				5D5DA26924A4939B005BC60F /* Extension.swift */,
+				5D5DA26924A4939B005BC60F /* ViewExtension.swift */,
 				5DD440D2269F1F5E00EE0FAB /* Syles.swift */,
 				5D7B78F526C2BB490037D000 /* StateView.swift */,
 				5D6AAAAD2692034700F42A13 /* Feed */,
@@ -690,6 +693,7 @@
 				5D0A513726E0CBFC006F3D9B /* ExploreActions.swift in Sources */,
 				5D368C8826C419D000794B8E /* APIService.swift in Sources */,
 				5D88D5E026C2017E00302265 /* MeReducer.swift in Sources */,
+				5DD4639E26F70CE800A1FBA1 /* LoginPage.swift in Sources */,
 				5DA2AD4426C18121007FB1EF /* FeedState.swift in Sources */,
 				5D843E9526A4537C00C47D95 /* SearchPage.swift in Sources */,
 				5D612FA326C7C61C0009B8F9 /* Endpoint.swift in Sources */,
@@ -706,7 +710,7 @@
 				5D1D8C0026EBA875009DF65A /* UserDetailState.swift in Sources */,
 				5D4E43FA2699DDE200650714 /* ReplyItemView.swift in Sources */,
 				5D1D8E2426B19A640040C418 /* UserDetailPage.swift in Sources */,
-				5D5DA26A24A4939B005BC60F /* Extension.swift in Sources */,
+				5D5DA26A24A4939B005BC60F /* ViewExtension.swift in Sources */,
 				5D1D8C0626ECA457009DF65A /* ModelUtils.swift in Sources */,
 				5DB622A026DE8BCD0026C4A8 /* ExploreInfo.swift in Sources */,
 				5D6AAAAF2692036100F42A13 /* FeedItemView.swift in Sources */,

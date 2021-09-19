@@ -21,7 +21,7 @@ struct AvatarView: View {
             .resizable()
             .aspectRatio(contentMode: .fill)
             .frame(width: size, height: size)
-            .roundedEdge()
+            .cornerBorder()
     }
 }
 

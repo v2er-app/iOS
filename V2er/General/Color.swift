@@ -31,7 +31,7 @@ extension Color {
     public static let debugColor = hex(0xFF0000, alpha: 0.1)
     public static let bodyText = hex(0x555555)
     public static let tintColor = hex(0x383838)
-    public static let bgColor = hex(0xEDEDED)
+    public static let bgColor = hex(0xE2E2E2)
     public static let pageLight: Color = .white
     
     public func toUIColor() -> UIColor {

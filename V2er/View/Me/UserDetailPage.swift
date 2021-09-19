@@ -174,7 +174,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                     .font(.callout)
                     .padding(.horizontal, 15)
                     .padding(.vertical, 2)
-                    .roundedEdge(radius: 99, borderWidth: 1, color: foreGroundColor)
+                    .cornerBorder(radius: 99, borderWidth: 1, color: foreGroundColor)
             }
             Text(model.desc)
                 .font(.callout)
@@ -192,7 +192,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
         .padding(.horizontal, 10)
         .padding(.vertical, 10)
         .background(.white)
-        .cornerRadius(12, corners: [.topLeft, .topRight])
+        .clipCorner(12, corners: [.topLeft, .topRight])
     }
     
     @ViewBuilder

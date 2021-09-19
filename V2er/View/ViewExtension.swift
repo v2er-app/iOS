@@ -21,30 +21,19 @@ public func topSafeAreaInset() -> UIEdgeInsets {
         result = UIEdgeInsets.init(top: defaultInsetTop, left: 0,
                                    bottom: defaultInsetBottom, right: 0)
     }
-//    print("insets: \(result)")
+    //    print("insets: \(result)")
     return result;
 }
 
 extension View {
     public func debug(_ force: Bool = false) -> some View {
 #if DEBUG
-//        print(Mirror(reflecting: self).subjectType)
+        //        print(Mirror(reflecting: self).subjectType)
         return self.modifier(DebugModifier(force))
 #endif
     }
     
-    public func roundedEdge(radius: CGFloat = -1,
-                            borderWidth: CGFloat = 0.2,
-                            color: Color = Color.gray) -> some View {
-        self.modifier(RoundedEdgeModifier(radius: radius,
-                                          width: borderWidth, color: color))
-    }
-    
-    //    public func fillTopInset() -> some View {
-    //        return self.edgesIgnoringSafeArea(.top)
-    //            .padding(.top, safeAreaInsets().top)
-    //    }
-    
+
 }
 
 
@@ -83,13 +72,12 @@ struct RoundedEdgeModifier: ViewModifier {
                 .overlay(Circle().stroke(color, lineWidth: width))
         } else {
             content
-                .clipShape(Capsule())
-                .padding(width)
-                .overlay(Capsule().stroke(color, lineWidth: width))
-//                .cornerRadius(cornerRadius - width)
-//                .padding(width)
-//                .background(color)
-//                .cornerRadius(cornerRadius)
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                .overlay {
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .stroke(color, lineWidth: width)
+                        .padding(width/2)
+                }
         }
     }
 }
@@ -145,8 +133,7 @@ struct SizePreferenceKey: PreferenceKey {
     static func reduce(value: inout CGSize, nextValue: () -> CGSize) {}
 }
 
-struct RoundedCorner: Shape {
-    
+struct ClipCornerShape: Shape {
     var radius: CGFloat = .infinity
     var corners: UIRectCorner = .allCorners
     
@@ -186,9 +173,16 @@ extension View {
     func forceClickable() -> some View {
         return self.background(Color.almostClear)
     }
-    
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape( RoundedCorner(radius: radius, corners: corners) )
+
+    public func cornerBorder(radius: CGFloat = -1,
+                             borderWidth: CGFloat = 0.2,
+                             color: Color = Color.gray) -> some View {
+        self.modifier(RoundedEdgeModifier(radius: radius,
+                                          width: borderWidth, color: color))
+    }
+
+    func clipCorner(_ radius: CGFloat, corners: UIRectCorner = [.topLeft, .topRight, .bottomLeft, .bottomRight]) -> some View {
+        clipShape( ClipCornerShape(radius: radius, corners: corners) )
     }
 
     func hide(_ shouldHide: Bool = true) -> some View {

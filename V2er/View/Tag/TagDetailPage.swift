@@ -174,7 +174,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                         .font(.callout)
                         .padding(.horizontal, 15)
                         .padding(.vertical, 2)
-                        .roundedEdge(radius: 99, borderWidth: 1, color: foreGroundColor)
+                        .cornerBorder(radius: 99, borderWidth: 1, color: foreGroundColor)
                 }
                 Spacer()
                 Text("\(model.countOfStaredPeople)个收藏")
@@ -203,7 +203,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             }
         }
         .background(.white)
-        .cornerRadius(12, corners: [.topLeft, .topRight])
+        .clipCorner(12, corners: [.topLeft, .topRight])
     }
 
     struct TagFeedItemView: View {
