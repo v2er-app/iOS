@@ -7,18 +7,20 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct LoginPage: View {
     var selecedTab: TabId
     @State var username: String = .default
     @State var password: String = .default
     @State var captcha: String = .default
+    @State var showPassword = false
     
     var body: some View {
         VStack(alignment: .center) {
             Image("logo")
-            //                .roundedEdge(radius: 5)
-                .cornerRadius(20)
+                .cornerBorder(radius: 10)
+                .padding(.top, 10)
             Text("Login to V2EX")
                 .font(.title2)
                 .foregroundColor(.primary)
@@ -27,21 +29,62 @@ struct LoginPage: View {
             //                .padding(.bottom, 30)
             VStack(spacing: 10) {
                 let radius: CGFloat = 8
-                let padding: CGFloat = 14
+                let padding: CGFloat = 16
+                let height: CGFloat = 50
                 TextField("Username", text: $username)
-                    .padding(padding)
+                    .padding(.horizontal, padding)
+                    .frame(maxWidth: .infinity, maxHeight: height)
                     .background(Color.lightGray)
                     .cornerRadius(radius)
-                SecureField("Password", text: $password)
-                    .padding(padding)
-                    .background(Color.lightGray)
-                    .cornerRadius(radius)
-                TextField("Captcha", text: $captcha)
-                    .padding(padding)
-                    .background(Color.lightGray)
-                    .cornerRadius(radius)
+                HStack(spacing: 0) {
+                    Group {
+                        if !showPassword {
+                            SecureField("Password", text: $password)
+                        } else {
+                            TextField("Password", text: $password)
+                        }
+                    }
+                    .padding(.horizontal, padding)
+                    .frame(maxWidth: .infinity, maxHeight: height)
+                    Color.gray
+                        .opacity(0.2)
+                        .padding(.vertical, 14)
+                        .frame(width: 1.5, height: height)
+                        .padding(.horizontal, 2)
+                    Button(action: {
+                        withAnimation {
+                            showPassword.toggle()
+                        }
+                    }) {
+                        Image(systemName: showPassword ? "eye.slash" : "eye")
+                            .foregroundColor(.tintColor)
+                            .font(.body.weight(.light))
+                            .padding(.horizontal, 10)
+                    }
+                }
+                .background(Color.lightGray)
+                .cornerRadius(radius)
+                HStack(spacing: 0) {
+                    TextField("Captcha", text: $captcha)
+                        .padding(.horizontal, padding)
+                        .frame(maxWidth: .infinity, maxHeight: height)
+                    Color.gray
+                        .opacity(0.2)
+                        .padding(.vertical, 14)
+                        .frame(width: 1.5, height: height)
+                        .padding(.horizontal, 2)
+                    let url = "https://www.v2ex.com/_captcha?once=49628"
+//                    KFImage.url(URL(string: url))
+                    Image("captcha")
+//                        .placeholder { ProgressView().debug() }
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 100, height: height)
+                }
+                .background(Color.lightGray)
+                .cornerRadius(radius)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             .padding(.bottom, 10)
             HStack {
                 Button(action: {
@@ -66,16 +109,12 @@ struct LoginPage: View {
                         .cornerRadius(15)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 20)
             Text("Sign in with Google")
                 .font(.headline)
                 .greedyWidth(.trailing)
-                .padding()
-//            Text("Forget password ?")
-//                .font(.headline)
-//                .greedyWidth(.trailing)
-//                .padding(.bottom, 10)
-//                .padding(.trailing, 10)
+                .padding(.trailing, 20)
+                .padding(.vertical)
             Spacer()
             HStack {
                 Text("FAQ")

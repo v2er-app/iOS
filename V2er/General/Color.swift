@@ -63,6 +63,7 @@ struct Color_Previews: PreviewProvider {
             Color.hex(0x00FF00, alpha: 0.2).frame(width: 100, height: 100)
             Color.hex(0xFF00FF).frame(width: 100, height: 100)
             Color.tintColor.frame(width: 100, height: 100)
+            Color.lightGray.frame(width: 100, height: 100)
         }
         
     }
