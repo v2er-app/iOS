@@ -8,14 +8,27 @@
 
 import SwiftUI
 
-struct MePage: View {
+struct MePage: StateView {
+    @EnvironmentObject private var store: Store
+    var state: MeState {
+        store.appState.meState
+    }
     var selecedTab: TabId
+
+    var isSelected: Bool {
+        let selected = selecedTab == .me
+        return selected
+    }
     
     var body: some View {
         ScrollView {
             NavigationLink {
                 //FIXME: use real userId
-                UserDetailPage(userId: .default)
+                if state.hasLogined {
+                    UserDetailPage(userId: .default)
+                } else {
+                    LoginPage()
+                }
             } label: {
                 topBannerView
             }
@@ -31,10 +44,11 @@ struct MePage: View {
             AvatarView(size: 60)
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("ghui")
+                    Text(state.hasLogined ? "ghui" : "请登录")
                         .font(.headline)
                     Text("已签到666天")
                         .font(.footnote)
+                        .hide(!state.hasLogined)
                 }
                 Spacer()
             }

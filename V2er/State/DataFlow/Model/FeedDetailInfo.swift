@@ -38,7 +38,7 @@ struct FeedDetailInfo: BaseModel {
         // div.box small.gray a
         var userName: String = .empty
         // div.box small.gray, .ownText
-        var time: String = .empty
+        var timeAndClickedNum: String = .empty
         // div.box a[href^=/go]
         var tagName: String = .empty
         // div.box a[href^=/go], .href
@@ -61,7 +61,8 @@ struct FeedDetailInfo: BaseModel {
             guard let root = html else { return }
             avatar = parseAvatar(root.pick("div.box img.avatar", .src))
             userName = root.pick("div.box small.gray a")
-            time = root.pick("div.box small.gray", .ownText)
+            timeAndClickedNum = root.pick("div.box small.gray", .ownText)
+                .remove("By at")
             tagName = root.pick("div.box a[href^=/go]")
             tagId = root.pick("div.box a[href^=/go]", .href)
                 .segment(separatedBy: "/")

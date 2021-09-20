@@ -32,6 +32,10 @@ struct AuthorInfoView: View {
         initData?.avatar ?? data?.avatar ?? .default
     }
 
+    private var timeAndClickedNum: String {
+        data?.timeAndClickedNum ?? .default
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             VStack {
@@ -43,7 +47,7 @@ struct AuthorInfoView: View {
                         Text(userName)
                             .lineLimit(1)
                             .font(.body)
-                        Text("51分钟前 评论3 点击667")
+                        Text(timeAndClickedNum)
                             .lineLimit(1)
                             .font(.caption2)
                     }

@@ -23,8 +23,7 @@ struct MainPage: StateView {
                 FeedPage(selecedTab: state.selectedTab)
                 ExplorePage(selecedTab: state.selectedTab)
                 MessagePage(selecedTab: state.selectedTab)
-//                MePage(selecedTab: state.selectedTab)
-                LoginPage(selecedTab: state.selectedTab)
+                MePage(selecedTab: state.selectedTab)
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 TopBar(selectedTab: state.selectedTab)

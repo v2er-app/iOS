@@ -10,7 +10,6 @@ import SwiftUI
 import Kingfisher
 
 struct LoginPage: View {
-    var selecedTab: TabId
     @State var username: String = .default
     @State var password: String = .default
     @State var captcha: String = .default
@@ -33,9 +32,10 @@ struct LoginPage: View {
                 let height: CGFloat = 50
                 TextField("Username", text: $username)
                     .padding(.horizontal, padding)
-                    .frame(maxWidth: .infinity, maxHeight: height)
+                    .frame(height: height)
                     .background(Color.lightGray)
                     .cornerRadius(radius)
+                    .submitLabel(.next)
                 HStack(spacing: 0) {
                     Group {
                         if !showPassword {
@@ -44,6 +44,7 @@ struct LoginPage: View {
                             TextField("Password", text: $password)
                         }
                     }
+                    .submitLabel(.continue)
                     .padding(.horizontal, padding)
                     .frame(maxWidth: .infinity, maxHeight: height)
                     Color.gray
@@ -51,11 +52,11 @@ struct LoginPage: View {
                         .padding(.vertical, 14)
                         .frame(width: 1.5, height: height)
                         .padding(.horizontal, 2)
-                    Button(action: {
+                    Button {
                         withAnimation {
                             showPassword.toggle()
                         }
-                    }) {
+                    } label: {
                         Image(systemName: showPassword ? "eye.slash" : "eye")
                             .foregroundColor(.tintColor)
                             .font(.body.weight(.light))
@@ -68,15 +69,16 @@ struct LoginPage: View {
                     TextField("Captcha", text: $captcha)
                         .padding(.horizontal, padding)
                         .frame(maxWidth: .infinity, maxHeight: height)
+                        .submitLabel(.go)
                     Color.gray
                         .opacity(0.2)
                         .padding(.vertical, 14)
                         .frame(width: 1.5, height: height)
                         .padding(.horizontal, 2)
                     let url = "https://www.v2ex.com/_captcha?once=49628"
-//                    KFImage.url(URL(string: url))
+                    //                    KFImage.url(URL(string: url))
                     Image("captcha")
-//                        .placeholder { ProgressView().debug() }
+                    //                        .placeholder { ProgressView().debug() }
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 100, height: height)
@@ -119,17 +121,19 @@ struct LoginPage: View {
             HStack {
                 Text("FAQ")
                 Text("About")
-                Text("Forget password?")
+                Text("Password")
             }
             .font(.callout)
         }
         .greedyHeight()
         .background(Color.bgColor)
+//        .ignoresSafeArea(.container)
+        .navigationBarHidden(true)
     }
 }
 
 struct LoginPage_Previews: PreviewProvider {
     static var previews: some View {
-        LoginPage(selecedTab: .me)
+        LoginPage()
     }
 }
