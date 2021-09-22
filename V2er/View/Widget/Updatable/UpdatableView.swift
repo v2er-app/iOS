@@ -30,6 +30,8 @@ struct UpdatableView<Content: View>: View {
     var hasMoreData: Bool = true
     var autoRefresh: Bool
     let damper: Float = 1.2
+    var scrollToTop: Bool = false
+    @State var hapticed = false
 
     private var refreshable: Bool {
         return onRefresh != nil
@@ -44,6 +46,7 @@ struct UpdatableView<Content: View>: View {
                      onScroll: ScrollAction?,
                      autoRefresh: Bool,
                      hasMoreData: Bool,
+                     scrollToTop: Bool,
                      @ViewBuilder content: () -> Content) {
         self.onRefresh = onRefresh
         self.onLoadMore = onLoadMore
@@ -51,25 +54,34 @@ struct UpdatableView<Content: View>: View {
         self.content = content()
         self.autoRefresh = autoRefresh
         self.hasMoreData = hasMoreData
+        self.scrollToTop = scrollToTop
     }
 
     var body: some View {
-        ScrollView {
-            ZStack(alignment: .top) {
-                AncorView()
-                    .id(0)
-                ZStack {
-                    VStack(spacing: 0) {
-                        content
-                            .anchorPreference(key: ContentBoundsKey.self, value: .bounds) { $0 }
-                        if loadMoreable {
-                            LoadmoreIndicatorView(isLoading: isLoadingMore, hasMoreData: hasMoreData)
+        ScrollViewReader { reader in
+            ScrollView {
+                ZStack(alignment: .top) {
+                    AncorView()
+                        .id(0)
+                    ZStack {
+                        VStack(spacing: 0) {
+                            content
+                                .anchorPreference(key: ContentBoundsKey.self, value: .bounds) { $0 }
+                            if loadMoreable {
+                                LoadmoreIndicatorView(isLoading: isLoadingMore, hasMoreData: hasMoreData)
+                            }
                         }
                     }
+                    .alignmentGuide(.top, computeValue: { d in (self.isRefreshing ? (-self.threshold + scrollY) : 0.0) })
+                    if refreshable {
+                        HeadIndicatorView(threshold: threshold, progress: $progress, scrollY: scrollY, isRefreshing: $isRefreshing)
+                    }
                 }
-                .alignmentGuide(.top, computeValue: { d in (self.isRefreshing ? (-self.threshold + scrollY) : 0.0) })
-                if refreshable {
-                    HeadIndicatorView(threshold: threshold, progress: $progress, scrollY: scrollY, isRefreshing: $isRefreshing)
+            }
+            .onChange(of: scrollToTop) { scrollToTop in
+                guard scrollToTop else { return }
+                withAnimation {
+                    reader.scrollTo(0, anchor: .top)
                 }
             }
         }
@@ -101,10 +113,17 @@ struct UpdatableView<Content: View>: View {
         onScroll?(scrollY)
         //        log("scrollY: \(scrollY), lastScrollY: \(lastScrollY), isRefreshing: \(isRefreshing), boundsDelta:\(boundsDelta)")
         progress = min(1, max(scrollY / threshold, 0))
+
+        if progress == 1 && scrollY > lastScrollY && !hapticed {
+            hapticed = true
+            hapticFeedback(.soft)
+        }
+
         if refreshable && !isRefreshing
             && scrollY <= threshold
             && lastScrollY > threshold {
             isRefreshing = true
+            hapticed = false
             Task {
                 await onRefresh?()
                 runInMain {
@@ -114,7 +133,7 @@ struct UpdatableView<Content: View>: View {
                 }
             }
         }
-        
+
         if loadMoreable
             && hasMoreData
             && boundsDelta >= 0
@@ -139,7 +158,7 @@ private struct AncorView: View {
     static let coordinateSpaceName = "coordinateSpace.UpdatableView"
 
     var body: some View {
-        GeometryReader{ geometry in
+        GeometryReader { geometry in
             Color.clear
                 .preference(
                     key: ScrollOffsetKey.self,
@@ -181,10 +200,11 @@ struct FrameContentBoundsDeltaKey: PreferenceKey {
 extension View {
     public func updatable(autoRefresh: Bool = false,
                           hasMoreData: Bool = true,
+                          _ scrollToTop: Bool = false,
                           refresh: RefreshAction = nil,
                           loadMore: LoadMoreAction = nil,
                           onScroll: ScrollAction? = nil) -> some View {
-        self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, autoRefresh: autoRefresh, hasMoreData: hasMoreData))
+        self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, autoRefresh: autoRefresh, hasMoreData: hasMoreData, scrollToTop: scrollToTop))
     }
     
     public func loadMore(autoRefresh: Bool = false,
@@ -202,10 +222,11 @@ struct UpdatableModifier: ViewModifier {
     let onScroll: ScrollAction?
     let autoRefresh: Bool
     let hasMoreData: Bool
+    let scrollToTop: Bool
     
     func body(content: Content) -> some View {
         UpdatableView(onRefresh: onRefresh, onLoadMore: onLoadMore,
-                      onScroll: onScroll, autoRefresh: autoRefresh, hasMoreData: hasMoreData) {
+                      onScroll: onScroll, autoRefresh: autoRefresh, hasMoreData: hasMoreData, scrollToTop: scrollToTop) {
             content
         }
     }

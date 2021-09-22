@@ -22,6 +22,14 @@ struct FeedPage: StateView {
         }
         return selected
     }
+
+    var scrollToTop: Bool {
+        if store.appState.globalState.scrollTop == .feed {
+            store.appState.globalState.scrollTop = .none
+            return true
+        }
+        return false
+    }
     
     var body: some View {
         contentView
@@ -30,28 +38,18 @@ struct FeedPage: StateView {
 
     @ViewBuilder
     private var contentView: some View {
-        ScrollViewReader { reader in
-            LazyVStack(spacing: 0) {
-                ForEach(state.feedInfo.items) { item in
-                    NavigationLink(destination: FeedDetailPage(initData: item)) {
-                        FeedItemView(data: item)
-                    }
+        LazyVStack(spacing: 0) {
+            ForEach(state.feedInfo.items) { item in
+                NavigationLink(destination: FeedDetailPage(initData: item)) {
+                    FeedItemView(data: item)
                 }
             }
-            .background(Color.pageLight)
-            .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData) {
-                await run(action: FeedActions.FetchData.Start())
-            } loadMore: {
-                await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
-            }
-            .onChange(of: store.appState.globalState.scrollTop) { newValue in
-                if newValue == .feed {
-                    withAnimation {
-                        reader.scrollTo(0, anchor: .top)
-                    }
-                    store.appState.globalState.scrollTop = .none
-                }
-            }
+        }
+        .background(Color.pageLight)
+        .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, scrollToTop) {
+            await run(action: FeedActions.FetchData.Start())
+        } loadMore: {
+            await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
         }
     }
 
