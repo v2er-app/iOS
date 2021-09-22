@@ -37,13 +37,13 @@ struct FeedInfo: BaseModel {
         // @Pick(value = "span.small.fade > strong > a")
         var userName: String = .default
         // @Pick(value = "span.small.fade:last-child", attr = "ownText")
-        var time: String = .default
+        var replyUpdate: String = .default
         // @Pick(value = "span.small.fade > a")
         var tagName: String = .default
         // @Pick(value = "span.small.fade > a", attr = "href")
         var tagId: String = .default
         // @Pick("a[class^=count_]")
-        var replies: Int = 0
+        var replies: String = .default
 
         init() {}
 
@@ -70,11 +70,20 @@ struct FeedInfo: BaseModel {
             item.linkPath = e.pick("span.item_title > a", .href)
             item.avatar = parseAvatar(e.pick("td > a > img", .src))
             item.userName = e.pick("span.small.fade > strong > a")
-            item.time = e.pick("span.small.fade", at: 1, .text)
+            let timeReplier = e.pick("span.small.fade", at: 1, .text)
+            if timeReplier.contains("来自") {
+                let time = timeReplier.segment(separatedBy: "•", at: .first)
+                    .trim()
+                let replier = timeReplier.segment(separatedBy: "来自").trim()
+                item.replyUpdate = time.appending(" \(replier) ")
+                                       .appending("回复了")
+            } else {
+                item.replyUpdate = timeReplier
+            }
             item.tagName = e.pick("span.small.fade > a")
             item.tagId = e.pick("span.small.fade > a", .href)
                 .segment(separatedBy: "/")
-            item.replies = e.pick("a[class^=count_]").toInt()
+            item.replies = e.pick("a[class^=count_]")
             items.append(item)
         }
         log("FeedInfo: \(self)")

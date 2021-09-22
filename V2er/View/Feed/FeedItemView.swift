@@ -13,7 +13,7 @@ struct FeedItemView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            VStack {
+            VStack(spacing: 0) {
                 HStack(alignment: .top) {
                     NavigationLink(destination: UserDetailPage(userId: data.userName)) {
                         AvatarView(url: data.avatar)
@@ -22,9 +22,10 @@ struct FeedItemView: View {
                         Text(data.userName)
                             .lineLimit(1)
                             .font(.body)
-                        Text(data.time)
+                        Text(data.replyUpdate)
                             .lineLimit(1)
                             .font(.footnote)
+                            .foregroundColor(Color.tintColor)
                     }
                     Spacer()
                     NavigationLink(destination: TagDetailPage(tagId: data.tagId)) {
@@ -40,6 +41,10 @@ struct FeedItemView: View {
                 Text(data.title )
                     .greedyWidth(.leading)
                     .lineLimit(2)
+                    .padding(.vertical, 3)
+                Text("评论\(data.replies)")
+                    .font(.footnote)
+                    .greedyWidth(.trailing)
             }
             .padding(12)
             Divider()

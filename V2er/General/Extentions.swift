@@ -17,6 +17,7 @@ extension String {
     }
 
     func segment(separatedBy separator: String, at index: Int = .last) -> String {
+        guard self.contains(separator) else { return .default }
         let segments = components(separatedBy: separator)
         let realIndex = min(index, segments.count - 1)
         return String(segments[realIndex])

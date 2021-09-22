@@ -15,7 +15,6 @@ struct AppState: FluxState {
     var exploreState = ExploreState()
     var messageState = MessageState()
     var meState = MeState()
-    var mainPageState = MainPageState()
     var userDetailStates: UserDetailStates = [:]
     var tagDetailStates: TagDetailStates = [:]
 }

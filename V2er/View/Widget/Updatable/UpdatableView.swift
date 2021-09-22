@@ -57,6 +57,7 @@ struct UpdatableView<Content: View>: View {
         ScrollView {
             ZStack(alignment: .top) {
                 AncorView()
+                    .id(0)
                 ZStack {
                     VStack(spacing: 0) {
                         content

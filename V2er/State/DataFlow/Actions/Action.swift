@@ -31,6 +31,7 @@ protocol AwaitAction: Action, Executable {
 }
 
 enum Reducer {
+    case global
     case feed
     case feeddetail
     case explore

@@ -27,18 +27,19 @@ struct ExplorePage: StateView {
         let todayHotList = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("今日热议")
             ForEach(state.exploreInfo.dailyHotInfo) { item in
-                HStack(spacing: 14) {
+                HStack(spacing: 12) {
                     NavigationLink(destination: UserDetailPage(userId: item.member)) {
-                        AvatarView(url: item.avatar, size: 36)
+                        AvatarView(url: item.avatar, size: 30)
                     }
                     NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item.create(from: item.id))) {
                     Text(item.title)
-                        .font(.headline)
-                        .foregroundColor(.bodyText)
-                        .lineLimit(2)
+                            .font(.system(size: 15))
+                            .fontWeight(.semibold)
+                            .foregroundColor(.bodyText)
+                            .lineLimit(2)
                     }
                 }
-                .padding(.vertical, 12)
+                .padding(.vertical, 8)
                 Divider().opacity(0.6)
             }
         }

@@ -13,7 +13,7 @@ struct FeedPage: StateView {
     var state: FeedState {
         store.appState.feedState
     }
-   var selecedTab: TabId
+    var selecedTab: TabId
 
     var isSelected: Bool {
         let selected = selecedTab == .feed
@@ -30,18 +30,28 @@ struct FeedPage: StateView {
 
     @ViewBuilder
     private var contentView: some View {
-        LazyVStack(spacing: 0) {
-            ForEach(state.feedInfo.items) { item in
-                NavigationLink(destination: FeedDetailPage(initData: item)) {
-                    FeedItemView(data: item)
+        ScrollViewReader { reader in
+            LazyVStack(spacing: 0) {
+                ForEach(state.feedInfo.items) { item in
+                    NavigationLink(destination: FeedDetailPage(initData: item)) {
+                        FeedItemView(data: item)
+                    }
                 }
             }
-        }
-        .background(Color.pageLight)
-        .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData) {
-            await run(action: FeedActions.FetchData.Start())
-        } loadMore: {
-            await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
+            .background(Color.pageLight)
+            .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData) {
+                await run(action: FeedActions.FetchData.Start())
+            } loadMore: {
+                await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
+            }
+            .onChange(of: store.appState.globalState.scrollTop) { newValue in
+                if newValue == .feed {
+                    withAnimation {
+                        reader.scrollTo(0, anchor: .top)
+                    }
+                    store.appState.globalState.scrollTop = .none
+                }
+            }
         }
     }
 

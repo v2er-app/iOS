@@ -10,11 +10,11 @@ import SwiftUI
 
 struct MainPage: StateView {
     @EnvironmentObject private var store: Store
-    var state: MainPageState {
-        store.appState.mainPageState
+    var state: GlobalState {
+        store.appState.globalState
     }
     var selectedTab: Binding<TabId> {
-        $store.appState.mainPageState.selectedTab
+        $store.appState.globalState.selectedTab
     }
 
     var body: some View {
@@ -29,7 +29,7 @@ struct MainPage: StateView {
                 TopBar(selectedTab: state.selectedTab)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                TabBar(selectedTab: selectedTab)
+                TabBar()
             }
             .ignoresSafeArea(.container)
             .navigationBarHidden(true)

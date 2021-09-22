@@ -9,7 +9,10 @@
 import SwiftUI
 
 struct TabBar: View {
-    @Binding var selectedTab : TabId
+    @EnvironmentObject private var store: Store
+    var selectedTab : TabId {
+        store.appState.globalState.selectedTab
+    }
     
     var tabs = [TabItem(id: TabId.feed, text: "Feed", icon: "feed_tab"),
                 TabItem(id: TabId.explore, text: "Explore", icon: "explore_tab"),
@@ -21,9 +24,9 @@ struct TabBar: View {
             Divider().frame(height: 0.1)
             HStack(spacing: 0) {
                 ForEach (self.tabs, id: \.self) { tab in
-                    Button(action: {
-                        self.selectedTab = tab.id
-                    }){
+                    Button {
+                        dispatch(action: TabbarClickAction(selectedTab: tab.id))
+                    } label: {
                         VStack (spacing: 0) {
                             Color(self.selectedTab == tab.id ? "indictor" : "clear")
                                 .frame(height: 3)
@@ -65,6 +68,7 @@ struct TabBar: View {
 
 
 enum TabId: String {
+    case none
     case feed, explore, message, me
 }
 
@@ -90,12 +94,12 @@ class TabItem : Hashable {
 }
 
 struct TabBar_Previews : PreviewProvider {
-    @State static var selected = TabId.feed
+//    @State static var selected = TabId.feed
     
     static var previews: some View {
         VStack {
             Spacer()
-            TabBar(selectedTab: $selected)
+            TabBar()
                 .background(VEBlur())
         }.edgesIgnoringSafeArea(.bottom)
     }

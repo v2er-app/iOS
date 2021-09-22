@@ -25,6 +25,8 @@ struct TopBar: View {
                 return "通知"
             case .me:
                 return "我"
+            case .none:
+                return .empty
         }
     }
     
