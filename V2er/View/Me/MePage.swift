@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct MePage: StateView {
+struct MePage: BaseHomePageView {
     @EnvironmentObject private var store: Store
     var state: MeState {
         store.appState.meState

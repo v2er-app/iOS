@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct ExplorePage: StateView {
+struct ExplorePage: BaseHomePageView {
     @EnvironmentObject private var store: Store
     var state: ExploreState {
         store.appState.exploreState
@@ -21,6 +21,14 @@ struct ExplorePage: StateView {
             dispatch(action: ExploreActions.FetchData.Start(autoLoad: true))
         }
         return selected
+    }
+
+    var scrollToTop: Bool {
+        if store.appState.globalState.scrollTop == .explore {
+            store.appState.globalState.scrollTop = .none
+            return true
+        }
+        return false
     }
     
     var body: some View {
@@ -88,7 +96,7 @@ struct ExplorePage: StateView {
         .padding(.horizontal, 10)
         .background(Color.pageLight)
         .hide(state.refreshing)
-        .updatable(autoRefresh: state.showProgressView) {
+        .updatable(autoRefresh: state.showProgressView, scrollTop(tab: .explore)) {
             await run(action: ExploreActions.FetchData.Start())
         }
         .hide(!isSelected)

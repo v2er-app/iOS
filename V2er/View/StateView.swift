@@ -14,6 +14,21 @@ public protocol StateView: View {
     var state: ViewState { get }
 }
 
-public extension StateView {
-//    @EnvironmentObject private var store: Store
+protocol BasePageView: StateView {
+
+}
+
+protocol BaseHomePageView: BasePageView {
+
+}
+
+extension BaseHomePageView {
+    func scrollTop(tab: TabId) -> Bool {
+        if Store.shared.appState.globalState.scrollTop == tab {
+            Store.shared.appState.globalState.scrollTop = .none
+            return true
+        }
+        return false
+    }
+
 }

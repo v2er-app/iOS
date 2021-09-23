@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct FeedPage: StateView {
+struct FeedPage: BaseHomePageView {
     @EnvironmentObject private var store: Store
     var state: FeedState {
         store.appState.feedState
@@ -23,13 +23,13 @@ struct FeedPage: StateView {
         return selected
     }
 
-    var scrollToTop: Bool {
-        if store.appState.globalState.scrollTop == .feed {
-            store.appState.globalState.scrollTop = .none
-            return true
-        }
-        return false
-    }
+//    var scrollToTop: Bool {
+//        if store.appState.globalState.scrollTop == .feed {
+//            store.appState.globalState.scrollTop = .none
+//            return true
+//        }
+//        return false
+//    }
     
     var body: some View {
         contentView
@@ -46,7 +46,7 @@ struct FeedPage: StateView {
             }
         }
         .background(Color.pageLight)
-        .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, scrollToTop) {
+        .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, scrollTop(tab: .feed)) {
             await run(action: FeedActions.FetchData.Start())
         } loadMore: {
             await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
