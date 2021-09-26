@@ -58,7 +58,7 @@ struct LoginActions {
 
     struct LoginDone: Action {
         var target: Reducer = R
-        
+
         let result: APIResult<DailyInfo>
     }
 

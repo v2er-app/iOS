@@ -10,7 +10,8 @@ import Foundation
 import SwiftSoup
 
 struct APIService {
-    static let baseUrlString = "https://v2ex.com"
+    static let baseUrlString = "https://www.v2ex.com"
+//    static let baseUrlWww= "https://www.v2ex.com"
     let baseURL = URL(string: baseUrlString)!
     static let shared = APIService()
     private var session: URLSession
@@ -72,12 +73,11 @@ struct APIService {
                      requestHeaders: Params? = nil) async -> RawResult {
         let url = baseURL.appendingPathComponent(endpoint.path())
         var componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-
-        if let params = params {
-            componets.queryItems = []
-            for (_, value) in params.enumerated() {
-                componets.queryItems?.append(URLQueryItem(name: value.key, value: value.value))
-            }
+        var queries = endpoint.queries()
+        queries.merge(params)
+        componets.queryItems = []
+        for (_, value) in queries.enumerated() {
+            componets.queryItems?.append(URLQueryItem(name: value.key, value: value.value))
         }
 
         var request = URLRequest(url: componets.url!)
@@ -97,6 +97,7 @@ struct APIService {
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
                 let httpError = HttpError(code: httpResponse.statusCode, msg: httpResponse.description)
                 result.error = .networkError(httpError)
+                log("request: \(request) ---> error: \(httpError)")
             } else { result.error = nil }
         } catch {
             result.error = .networkError(error)

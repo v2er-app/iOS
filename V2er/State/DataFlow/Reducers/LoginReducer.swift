@@ -22,6 +22,7 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                 state.captchaUrl = APIService.baseUrlString
                     .appending("/_captcha?once=")
                     .appending(loginParams!.once)
+                log("captcha:\(state.captchaUrl)")
             } else {
                 // Load captcha failed
             }

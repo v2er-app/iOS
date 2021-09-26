@@ -12,8 +12,6 @@ public protocol StateView: View {
     associatedtype ViewState: FluxState
 
     var state: ViewState { get }
-    var state: Binding<ViewState> { get }
-
 }
 
 protocol BasePageView: StateView {

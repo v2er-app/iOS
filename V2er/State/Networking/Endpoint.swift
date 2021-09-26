@@ -40,10 +40,14 @@ enum Endpoint {
         return info().ua
     }
 
-    typealias Info = (path: String, type: ResourceType, ua: UA)
+    func queries() -> Params {
+        info().queries
+    }
+
+    typealias Info = (path: String, type: ResourceType, ua: UA, queries: Params)
 
     private func info() -> Info {
-        var info: Info = ("", .html, .wap)
+        var info: Info = ("", .html, .wap, [:])
         switch self {
             case .tab:
                 info.path = "/"
@@ -53,7 +57,8 @@ enum Endpoint {
                 info.path = "/"
                 info.ua = .web
             case .captcha:
-                info.path = "/signin?next=/mission/daily"
+                info.path = "/signin"
+                info.queries["next"] = "/mission/daily"
             case .signin:
                 info.path = "/signin"
             case let .topic(id):

@@ -11,16 +11,28 @@ import Kingfisher
 
 struct LoginPage: StateView {
     @EnvironmentObject private var store: Store
-//    @State var username: String = .default
+    //    @State var username: String = .default
     @State var password: String = .default
     @State var captcha: String = .default
     @State var showPassword = false
-    var state: LoginState {
-        store.appState.loginState
+    var bindingState: Binding<LoginState> {
+        $store.appState.loginState
     }
-    
+
+    var state: LoginState {
+        bindingState.raw
+    }
+
     var body: some View {
-        VStack(alignment: .center) {
+        contentView
+            .onAppear {
+                dispatch(action: LoginActions.FetchCaptchaAction.Start())
+            }
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
+        return VStack(alignment: .center) {
             Image("logo")
                 .cornerBorder(radius: 10)
                 .padding(.top, 10)
@@ -33,7 +45,7 @@ struct LoginPage: StateView {
                 let radius: CGFloat = 8
                 let padding: CGFloat = 16
                 let height: CGFloat = 50
-                TextField("Username", text: $store.appState.loginState.username)
+                TextField("Username", text: bindingState.username)
                     .padding(.horizontal, padding)
                     .frame(height: height)
                     .background(Color.lightGray)
@@ -42,9 +54,9 @@ struct LoginPage: StateView {
                 HStack(spacing: 0) {
                     Group {
                         if !showPassword {
-                            SecureField("Password", text: $password)
+                            SecureField("Password", text: bindingState.password)
                         } else {
-                            TextField("Password", text: $password)
+                            TextField("Password", text: bindingState.password)
                         }
                     }
                     .submitLabel(.continue)
@@ -69,7 +81,7 @@ struct LoginPage: StateView {
                 .background(Color.lightGray)
                 .cornerRadius(radius)
                 HStack(spacing: 0) {
-                    TextField("Captcha", text: $captcha)
+                    TextField("Captcha", text: bindingState.captcha)
                         .padding(.horizontal, padding)
                         .frame(maxWidth: .infinity, maxHeight: height)
                         .submitLabel(.go)
@@ -79,9 +91,8 @@ struct LoginPage: StateView {
                         .frame(width: 1.5, height: height)
                         .padding(.horizontal, 2)
                     let url = "https://www.v2ex.com/_captcha?once=49628"
-                    //                    KFImage.url(URL(string: url))
-                    Image("captcha")
-                    //                        .placeholder { ProgressView().debug() }
+                    KFImage.url(URL(string: state.captchaUrl))
+                        .placeholder { ProgressView().debug() }
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 100, height: height)
@@ -130,11 +141,7 @@ struct LoginPage: StateView {
         }
         .greedyHeight()
         .background(Color.bgColor)
-//        .ignoresSafeArea(.container)
         .navigationBarHidden(true)
-        .onAppear {
-
-        }
     }
 }
 

@@ -106,3 +106,15 @@ extension StringProtocol {
         return result
     }
 }
+
+extension Dictionary {
+    mutating func merge(_ dict: [Key: Value]?){
+        guard let dict = dict else {
+            return
+        }
+
+        for (k, v) in dict {
+            updateValue(v, forKey: k)
+        }
+    }
+}
