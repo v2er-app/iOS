@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct GlobalState: FluxState {
     var statusBarState = StatusBarConfigurator()
@@ -14,3 +15,4 @@ struct GlobalState: FluxState {
     var lastSelectedTab: TabId = .none
     var scrollTop: TabId = .none
 }
+

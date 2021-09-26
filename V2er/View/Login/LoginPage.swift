@@ -9,11 +9,15 @@
 import SwiftUI
 import Kingfisher
 
-struct LoginPage: View {
-    @State var username: String = .default
+struct LoginPage: StateView {
+    @EnvironmentObject private var store: Store
+//    @State var username: String = .default
     @State var password: String = .default
     @State var captcha: String = .default
     @State var showPassword = false
+    var state: LoginState {
+        store.appState.loginState
+    }
     
     var body: some View {
         VStack(alignment: .center) {
@@ -25,12 +29,11 @@ struct LoginPage: View {
                 .foregroundColor(.primary)
                 .fontWeight(.heavy)
                 .padding(.vertical, 20)
-            //                .padding(.bottom, 30)
             VStack(spacing: 10) {
                 let radius: CGFloat = 8
                 let padding: CGFloat = 16
                 let height: CGFloat = 50
-                TextField("Username", text: $username)
+                TextField("Username", text: $store.appState.loginState.username)
                     .padding(.horizontal, padding)
                     .frame(height: height)
                     .background(Color.lightGray)
@@ -129,6 +132,9 @@ struct LoginPage: View {
         .background(Color.bgColor)
 //        .ignoresSafeArea(.container)
         .navigationBarHidden(true)
+        .onAppear {
+
+        }
     }
 }
 

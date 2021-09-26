@@ -80,6 +80,7 @@ public enum HtmlAttr: String {
     case onclick = "onclick"
     case id = "id"
     case alt = "alt"
+    case name = "name"
 
     var value: String {
         get { self.rawValue }

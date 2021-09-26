@@ -23,14 +23,6 @@ struct FeedPage: BaseHomePageView {
         return selected
     }
 
-//    var scrollToTop: Bool {
-//        if store.appState.globalState.scrollTop == .feed {
-//            store.appState.globalState.scrollTop = .none
-//            return true
-//        }
-//        return false
-//    }
-    
     var body: some View {
         contentView
             .hide(!isSelected)

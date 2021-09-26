@@ -19,13 +19,14 @@ struct FeedActions {
 
             func execute(in store: Store) async {
                 let result: APIResult<FeedInfo> = await APIService.shared
-                    .htmlGet(endpoint: .tab, params: ["tab": tab.rawValue])
+                    .htmlGet(endpoint: .tab, ["tab": tab.rawValue])
                 dispatch(action: FetchData.Done(result: result))
             }
         }
 
         struct Done: Action {
             var target: Reducer = reducer
+            
             let result: APIResult<FeedInfo>
         }
     }
@@ -41,8 +42,9 @@ struct FeedActions {
 
             func execute(in store: Store) async {
                 // TODO: change endpoint to .recent
+
                 let result: APIResult<FeedInfo> = await APIService.shared
-                    .htmlGet(endpoint: .tab, params: ["p": willLoadPage.toString()])
+                    .htmlGet(endpoint: .tab, ["p": willLoadPage.toString()])
                 dispatch(action: FeedActions.LoadMore.Done(result: result))
             }
         }

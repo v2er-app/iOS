@@ -23,7 +23,7 @@ struct APIService {
     }
 
     func htmlGet<T: BaseModel>(endpoint: Endpoint,
-                                  params: [String: String]? = nil) async -> APIResult<T> {
+                                  _ params: Params? = nil) async -> APIResult<T> {
         let rawResult = await get(endpoint: endpoint, params: params)
         guard rawResult.error == nil else {
             return .failure(rawResult.error!)
@@ -36,7 +36,7 @@ struct APIService {
     }
 
     func jsonGet<T: Codable>(endpoint: Endpoint,
-                             params: [String: String]?) async -> APIResult<T> {
+                             params: Params?) async -> APIResult<T> {
         let rawResult = await get(endpoint: endpoint, params: params)
         guard rawResult.error == nil else {
             return .failure(rawResult.error!)
@@ -54,8 +54,8 @@ struct APIService {
     }
 
     func POST<T: BaseModel>(endpoint: Endpoint,
-                               params: [String: String]? = nil,
-                               requestHeaders: [String: String]? = nil) async throws -> APIResult<T> {
+                               params: Params? = nil,
+                               requestHeaders: Params? = nil) async throws -> APIResult<T> {
         let rawResult = await post(endpoint: endpoint, params: params, requestHeaders: requestHeaders)
         guard rawResult.error == nil else {
             return .failure(rawResult.error!)
@@ -68,8 +68,8 @@ struct APIService {
     }
 
     private func get(endpoint: Endpoint,
-                     params: [String: String]?,
-                     requestHeaders: [String: String]? = nil) async -> RawResult {
+                     params: Params?,
+                     requestHeaders: Params? = nil) async -> RawResult {
         let url = baseURL.appendingPathComponent(endpoint.path())
         var componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
 
@@ -106,8 +106,8 @@ struct APIService {
     }
 
     private func post(endpoint: Endpoint,
-                      params: [String: String]? = nil,
-                      requestHeaders: [String: String]? = nil) async -> RawResult {
+                      params: Params? = nil,
+                      requestHeaders: Params? = nil) async -> RawResult {
         let url = baseURL.appendingPathComponent(endpoint.path())
         let componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         var request = URLRequest(url: componets.url!)
@@ -156,7 +156,11 @@ struct APIService {
         let result: (data: T?, error: APIError?)
         do {
             result.data = try await parseTask.value
-            result.error = nil
+            if !result.data!.isValid() {
+                result.error = APIError.invalid
+            } else {
+                result.error = nil
+            }
         } catch {
             result.error = APIError.decodingError(error)
             result.data = nil
@@ -170,6 +174,7 @@ enum APIError: Error {
     case noResponse
     case decodingError(_ error: Error?)
     case networkError(_ error: Error?)
+    case invalid
 }
 
 struct HttpError: Error {
@@ -179,4 +184,4 @@ struct HttpError: Error {
 
 typealias APIResult<T> = Result<T?, APIError>
 typealias RawResult = (data: Data?, error: APIError?)
-
+typealias Params = [String : String]

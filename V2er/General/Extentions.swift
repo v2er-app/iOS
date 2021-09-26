@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 extension String {
     static let `default`: String = ""
@@ -53,6 +54,16 @@ extension String {
         return result
     }
 
+    func extractDigits() -> String {
+        guard !self.isEmpty else { return .default }
+        return self.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+    }
+}
+
+extension Binding {
+    var raw: Value {
+        return self.wrappedValue
+    }
 }
 
 extension Int {

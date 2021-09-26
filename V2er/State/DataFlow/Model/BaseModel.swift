@@ -13,12 +13,34 @@ protocol HtmlParsable {
     init(from html: Element?)
 }
 
+protocol HtmlItemModel: HtmlParsable, Identifiable {
+
+}
+
 protocol BaseModel: HtmlParsable {
     var rawData: String? { get set }
 
     init()
+
+    func isValid() -> Bool
 }
 
-protocol HtmlItemModel: HtmlParsable, Identifiable {
+extension BaseModel {
 
+    var rawData: String? {
+        get {
+            return .empty
+        }
+        set {
+
+        }
+    }
+
+    func isValid() -> Bool {
+        return true
+    }
 }
+
+
+
+

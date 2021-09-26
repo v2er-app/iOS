@@ -21,6 +21,10 @@
 		5D0CFA8026B992FC001A8A7F /* HistoryPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */; };
 		5D0CFA8226B9935B001A8A7F /* MyTopicPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA8126B9935B001A8A7F /* MyTopicPage.swift */; };
 		5D0CFA8526B994F5001A8A7F /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 5D0CFA8426B994F5001A8A7F /* SwiftSoup */; };
+		5D1D7B8426FC8323008E0C08 /* LoginState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8326FC8323008E0C08 /* LoginState.swift */; };
+		5D1D7B8726FC9B61008E0C08 /* LoginReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8626FC9B61008E0C08 /* LoginReducer.swift */; };
+		5D1D7B8926FC9C48008E0C08 /* LoginActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8826FC9C48008E0C08 /* LoginActions.swift */; };
+		5D1D7B8B26FD7FCE008E0C08 /* DailyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8A26FD7FCE008E0C08 /* DailyInfo.swift */; };
 		5D1D8BFE26EBA857009DF65A /* UserDetailReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D8BFD26EBA857009DF65A /* UserDetailReducer.swift */; };
 		5D1D8C0026EBA875009DF65A /* UserDetailState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D8BFF26EBA875009DF65A /* UserDetailState.swift */; };
 		5D1D8C0226EBA88C009DF65A /* UserDetailInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D8C0126EBA88C009DF65A /* UserDetailInfo.swift */; };
@@ -31,6 +35,10 @@
 		5D1D8E2426B19A640040C418 /* UserDetailPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D8E2326B19A640040C418 /* UserDetailPage.swift */; };
 		5D1F4265249713640043F604 /* VEBlur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1F4264249713640043F604 /* VEBlur.swift */; };
 		5D22A26D26AF16D700F769E2 /* SectionTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D22A26C26AF16D700F769E2 /* SectionTitleView.swift */; };
+		5D2B2B3826FF336600446F93 /* TwoStepLoginInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3726FF336600446F93 /* TwoStepLoginInfo.swift */; };
+		5D2B2B3A26FF5DF800446F93 /* AccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */; };
+		5D2B2B3C26FF754F00446F93 /* Persist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3B26FF754F00446F93 /* Persist.swift */; };
+		5D2B2B3E26FF797600446F93 /* AccountUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3D26FF797600446F93 /* AccountUtil.swift */; };
 		5D2DD00826FB353C0001C85A /* DefaultReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2DD00726FB353C0001C85A /* DefaultReducer.swift */; };
 		5D2DD00A26FB443D0001C85A /* GlobalActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2DD00926FB443D0001C85A /* GlobalActions.swift */; };
 		5D32B19B26B587CB00E72E65 /* StatusBarConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D32B19A26B587CB00E72E65 /* StatusBarConfigurator.swift */; };
@@ -129,6 +137,10 @@
 		5D0CFA7D26B992D6001A8A7F /* StarPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarPage.swift; sourceTree = "<group>"; };
 		5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryPage.swift; sourceTree = "<group>"; };
 		5D0CFA8126B9935B001A8A7F /* MyTopicPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTopicPage.swift; sourceTree = "<group>"; };
+		5D1D7B8326FC8323008E0C08 /* LoginState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginState.swift; sourceTree = "<group>"; };
+		5D1D7B8626FC9B61008E0C08 /* LoginReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginReducer.swift; sourceTree = "<group>"; };
+		5D1D7B8826FC9C48008E0C08 /* LoginActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginActions.swift; sourceTree = "<group>"; };
+		5D1D7B8A26FD7FCE008E0C08 /* DailyInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyInfo.swift; sourceTree = "<group>"; };
 		5D1D8BFD26EBA857009DF65A /* UserDetailReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailReducer.swift; sourceTree = "<group>"; };
 		5D1D8BFF26EBA875009DF65A /* UserDetailState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailState.swift; sourceTree = "<group>"; };
 		5D1D8C0126EBA88C009DF65A /* UserDetailInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailInfo.swift; sourceTree = "<group>"; };
@@ -139,6 +151,10 @@
 		5D1D8E2326B19A640040C418 /* UserDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailPage.swift; sourceTree = "<group>"; };
 		5D1F4264249713640043F604 /* VEBlur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VEBlur.swift; sourceTree = "<group>"; };
 		5D22A26C26AF16D700F769E2 /* SectionTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionTitleView.swift; sourceTree = "<group>"; };
+		5D2B2B3726FF336600446F93 /* TwoStepLoginInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepLoginInfo.swift; sourceTree = "<group>"; };
+		5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfo.swift; sourceTree = "<group>"; };
+		5D2B2B3B26FF754F00446F93 /* Persist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persist.swift; sourceTree = "<group>"; };
+		5D2B2B3D26FF797600446F93 /* AccountUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountUtil.swift; sourceTree = "<group>"; };
 		5D2DD00726FB353C0001C85A /* DefaultReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultReducer.swift; sourceTree = "<group>"; };
 		5D2DD00926FB443D0001C85A /* GlobalActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalActions.swift; sourceTree = "<group>"; };
 		5D32B19A26B587CB00E72E65 /* StatusBarConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarConfigurator.swift; sourceTree = "<group>"; };
@@ -255,6 +271,14 @@
 			path = Widget;
 			sourceTree = "<group>";
 		};
+		5D1D7B8526FC9AF6008E0C08 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				5DD4639D26F70CE800A1FBA1 /* LoginPage.swift */,
+			);
+			path = Login;
+			sourceTree = "<group>";
+		};
 		5D1D8E2026B1967B0040C418 /* Me */ = {
 			isa = PBXGroup;
 			children = (
@@ -266,7 +290,6 @@
 				5D0CFA7D26B992D6001A8A7F /* StarPage.swift */,
 				5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */,
 				5D0CFA8126B9935B001A8A7F /* MyTopicPage.swift */,
-				5DD4639D26F70CE800A1FBA1 /* LoginPage.swift */,
 			);
 			path = Me;
 			sourceTree = "<group>";
@@ -284,6 +307,7 @@
 				5D1D8BFF26EBA875009DF65A /* UserDetailState.swift */,
 				5D1D8C0926EDEC96009DF65A /* GlobalState.swift */,
 				5D91F8D426F22A6F0089D72E /* TagDetailState.swift */,
+				5D1D7B8326FC8323008E0C08 /* LoginState.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -298,6 +322,7 @@
 				5D1D8C0326EBAC07009DF65A /* UserDetailActions.swift */,
 				5D91F8D626F22B560089D72E /* TagDetailActions.swift */,
 				5D2DD00926FB443D0001C85A /* GlobalActions.swift */,
+				5D1D7B8826FC9C48008E0C08 /* LoginActions.swift */,
 			);
 			path = Actions;
 			sourceTree = "<group>";
@@ -398,6 +423,7 @@
 				5D1D8BFD26EBA857009DF65A /* UserDetailReducer.swift */,
 				5D91F8D826F22CEC0089D72E /* TagDetailReducer.swift */,
 				5D2DD00726FB353C0001C85A /* DefaultReducer.swift */,
+				5D1D7B8626FC9B61008E0C08 /* LoginReducer.swift */,
 			);
 			path = Reducers;
 			sourceTree = "<group>";
@@ -422,6 +448,9 @@
 				5D1D8C0126EBA88C009DF65A /* UserDetailInfo.swift */,
 				5D1D8C0526ECA457009DF65A /* ModelUtils.swift */,
 				5DAA50A526F0D8DD00CB63DE /* TagDetailInfo.swift */,
+				5D1D7B8A26FD7FCE008E0C08 /* DailyInfo.swift */,
+				5D2B2B3726FF336600446F93 /* TwoStepLoginInfo.swift */,
+				5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -482,6 +511,7 @@
 				5DAA50A426F0D8A400CB63DE /* Tag */,
 				5D843E9326A4536400C47D95 /* Explore */,
 				5D1D8E2026B1967B0040C418 /* Me */,
+				5D1D7B8526FC9AF6008E0C08 /* Login */,
 				5D843E9626A46CB800C47D95 /* Message */,
 				5D179BFD2496F6EC00E40E90 /* Widget */,
 			);
@@ -509,6 +539,8 @@
 				5DF1B36C2698A39E0046DB20 /* Device.swift */,
 				5D32B19A26B587CB00E72E65 /* StatusBarConfigurator.swift */,
 				5DE62A2826CEB20E0082161A /* Extentions.swift */,
+				5D2B2B3B26FF754F00446F93 /* Persist.swift */,
+				5D2B2B3D26FF797600446F93 /* AccountUtil.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -674,6 +706,7 @@
 				5D88D5DA26C200FB00302265 /* FeedReducer.swift in Sources */,
 				5D6EE28B2693DC470053B637 /* FeedDetailPage.swift in Sources */,
 				5D88D5DC26C2016000302265 /* ExploreReducer.swift in Sources */,
+				5D2B2B3A26FF5DF800446F93 /* AccountInfo.swift in Sources */,
 				5D6AAAAA26917E7B00F42A13 /* Helper.swift in Sources */,
 				5D0A513D26E36AB9006F3D9B /* FeedDetailState.swift in Sources */,
 				5D1D8BFE26EBA857009DF65A /* UserDetailReducer.swift in Sources */,
@@ -681,6 +714,7 @@
 				5D6AAAAC2691851100F42A13 /* Utils.swift in Sources */,
 				5D612FA126C7C34E0009B8F9 /* NetworkException.swift in Sources */,
 				5DE5B4CA2684601A00569684 /* TopBar.swift in Sources */,
+				5D2B2B3E26FF797600446F93 /* AccountUtil.swift in Sources */,
 				5D71DF55247C0FFE00B53ED4 /* FeedPage.swift in Sources */,
 				5DA2AD4226C18112007FB1EF /* ExploreState.swift in Sources */,
 				5D91F8D526F22A6F0089D72E /* TagDetailState.swift in Sources */,
@@ -696,10 +730,13 @@
 				5D368C8826C419D000794B8E /* APIService.swift in Sources */,
 				5D88D5E026C2017E00302265 /* MeReducer.swift in Sources */,
 				5DD4639E26F70CE800A1FBA1 /* LoginPage.swift in Sources */,
+				5D1D7B8B26FD7FCE008E0C08 /* DailyInfo.swift in Sources */,
 				5DA2AD4426C18121007FB1EF /* FeedState.swift in Sources */,
 				5D843E9526A4537C00C47D95 /* SearchPage.swift in Sources */,
 				5D612FA326C7C61C0009B8F9 /* Endpoint.swift in Sources */,
+				5D2B2B3C26FF754F00446F93 /* Persist.swift in Sources */,
 				5D1D8C0A26EDEC96009DF65A /* GlobalState.swift in Sources */,
+				5D1D7B8426FC8323008E0C08 /* LoginState.swift in Sources */,
 				5DF1B36D2698A39E0046DB20 /* Device.swift in Sources */,
 				5DD440D3269F1F5E00EE0FAB /* Syles.swift in Sources */,
 				5DA2AD3926C17ECC007FB1EF /* Action.swift in Sources */,
@@ -725,10 +762,13 @@
 				5D1F4265249713640043F604 /* VEBlur.swift in Sources */,
 				5D22A26D26AF16D700F769E2 /* SectionTitleView.swift in Sources */,
 				5DF80E3626A2D045002ADC79 /* MultilineTextField.swift in Sources */,
+				5D2B2B3826FF336600446F93 /* TwoStepLoginInfo.swift in Sources */,
 				5D3CD31D26D0BFC600B3C2D3 /* FeedActions.swift in Sources */,
 				5D6B67B726D54BA1003A246B /* UA.swift in Sources */,
 				5D71DF5B247C155D00B53ED4 /* MePage.swift in Sources */,
 				5DA2AD3526C17EA5007FB1EF /* Store.swift in Sources */,
+				5D1D7B8926FC9C48008E0C08 /* LoginActions.swift in Sources */,
+				5D1D7B8726FC9B61008E0C08 /* LoginReducer.swift in Sources */,
 				5DA2AD4826C18232007FB1EF /* MessageState.swift in Sources */,
 				5D0CFA8226B9935B001A8A7F /* MyTopicPage.swift in Sources */,
 				5D096A08247ABF5E00EF3E47 /* TabBar.swift in Sources */,

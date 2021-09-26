@@ -39,4 +39,5 @@ enum Reducer {
     case me
     case userdetail
     case tagdetail
+    case login
 }

@@ -61,3 +61,17 @@ func hapticFeedback(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) 
     let impactHeavy = UIImpactFeedbackGenerator(style: style)
     impactHeavy.impactOccurred()
 }
+
+func parseQueryParam(from url: String, param: String) -> String? {
+    guard let url = URLComponents(string: url) else { return nil }
+    return url.queryItems?.first(where: { $0.name == param })?.value
+}
+
+func notEmpty(_ strs: String?...) -> Bool {
+    for str in strs {
+        if let str = str {
+            if str.isEmpty { return false }
+        } else { return false }
+    }
+    return true
+}

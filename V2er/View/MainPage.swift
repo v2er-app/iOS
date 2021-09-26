@@ -10,8 +10,8 @@ import SwiftUI
 
 struct MainPage: StateView {
     @EnvironmentObject private var store: Store
-    var state: GlobalState {
-        store.appState.globalState
+    var state: Binding<GlobalState> {
+        $store.appState.globalState
     }
     var selectedTab: Binding<TabId> {
         $store.appState.globalState.selectedTab
@@ -20,7 +20,7 @@ struct MainPage: StateView {
     var body: some View {
         NavigationView {
             ZStack {
-                FeedPage(selecedTab: state.selectedTab)
+                FeedPage(selecedTab: state.selectedTab.raw)
                 ExplorePage(selecedTab: state.selectedTab)
                 MessagePage(selecedTab: state.selectedTab)
                 MePage(selecedTab: state.selectedTab)
