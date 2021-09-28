@@ -14,6 +14,7 @@ struct AccountUtil {
         do {
             let jsonData = try JSONEncoder().encode(account)
             Persist.save(value: jsonData, forkey: ACCOUNT_KEY)
+            log("account: \(account) saved")
         } catch {
             log("Save account failed")
         }

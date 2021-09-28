@@ -58,7 +58,7 @@ enum Endpoint {
                 info.ua = .web
             case .captcha:
                 info.path = "/signin"
-                info.queries["next"] = "/mission/daily"
+//                info.queries["next"] = "/mission/daily"
             case .signin:
                 info.path = "/signin"
             case let .topic(id):

@@ -18,7 +18,7 @@ final public class Store: ObservableObject {
 
     func dispatch(_ action: Action) {
         DispatchQueue.main.async { [self] in
-//            log("====> dispatch action: \(action)")
+            log("====> dispatch action: \(action)")
             let result = self.reduce(initialState: self.appState, action: action)
             appState = result.0
             if let asyncAction = result.1 as? AsyncAction {

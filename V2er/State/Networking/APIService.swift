@@ -8,10 +8,11 @@
 
 import Foundation
 import SwiftSoup
+import Kingfisher
 
 struct APIService {
     static let baseUrlString = "https://www.v2ex.com"
-//    static let baseUrlWww= "https://www.v2ex.com"
+    //    static let baseUrlWww= "https://www.v2ex.com"
     let baseURL = URL(string: baseUrlString)!
     static let shared = APIService()
     private var session: URLSession
@@ -21,10 +22,11 @@ struct APIService {
         // TODO: support multi accounts
         self.session = URLSession.shared;
         jsonDecoder = JSONDecoder()
+        KingfisherManager.shared.downloader.sessionConfiguration = session.configuration
     }
 
     func htmlGet<T: BaseModel>(endpoint: Endpoint,
-                                  _ params: Params? = nil) async -> APIResult<T> {
+                               _ params: Params? = nil) async -> APIResult<T> {
         let rawResult = await get(endpoint: endpoint, params: params)
         guard rawResult.error == nil else {
             return .failure(rawResult.error!)
@@ -33,6 +35,7 @@ struct APIService {
         guard result.error == nil && result.model != nil else {
             return .failure(result.error!)
         }
+        log("htmlGet: \(result)")
         return .success(result.model)
     }
 
@@ -54,29 +57,36 @@ struct APIService {
         }
     }
 
-    func POST<T: BaseModel>(endpoint: Endpoint,
-                               params: Params? = nil,
-                               requestHeaders: Params? = nil) async throws -> APIResult<T> {
+    func post<T: BaseModel>(endpoint: Endpoint,
+                            _ params: Params? = nil,
+                            requestHeaders: Params? = nil) async -> APIResult<T> {
         let rawResult = await post(endpoint: endpoint, params: params, requestHeaders: requestHeaders)
         guard rawResult.error == nil else {
             return .failure(rawResult.error!)
         }
         let result: (model: T?, error: APIError?) = await self.parse(from: rawResult.data!)
         guard result.error == nil else {
+            log("error: \(String(describing: result.model?.rawData))")
             return .failure(result.error!)
         }
+        log("post.Result: \(result)")
         return .success(result.model)
     }
 
     private func get(endpoint: Endpoint,
                      params: Params?,
                      requestHeaders: Params? = nil) async -> RawResult {
+        printCookies()
         let url = baseURL.appendingPathComponent(endpoint.path())
         var componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         var queries = endpoint.queries()
-        queries.merge(params)
-        componets.queryItems = []
+        if let params = params {
+            queries.merge(params)
+        }
         for (_, value) in queries.enumerated() {
+            if componets.queryItems == nil {
+                componets.queryItems = []
+            }
             componets.queryItems?.append(URLQueryItem(name: value.key, value: value.value))
         }
 
@@ -109,28 +119,18 @@ struct APIService {
     private func post(endpoint: Endpoint,
                       params: Params? = nil,
                       requestHeaders: Params? = nil) async -> RawResult {
+        printCookies()
         let url = baseURL.appendingPathComponent(endpoint.path())
         let componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         var request = URLRequest(url: componets.url!)
-        request.httpMethod = "POST"
+//        request.httpMethod = "POST"
         request.addValue(endpoint.ua().value(), forHTTPHeaderField: UA.key)
-        if requestHeaders != nil {
-            for (key, value) in requestHeaders! {
+        if let requestHeaders = requestHeaders  {
+            for (key, value) in requestHeaders {
                 request.addValue(value, forHTTPHeaderField: key)
             }
         }
-        if params != nil {
-            let parseTask = Task { () -> Data in
-                return try JSONSerialization
-                    .data(withJSONObject: params!, options: .prettyPrinted)
-            }
-            do {
-                request.httpBody = try await parseTask.value
-            } catch {
-                return (nil, .decodingError(error))
-            }
-        }
-
+        request.encodeParameters(params: params)
         let result: RawResult
         do {
             let (data, response) = try await session.data(for: request, delegate: nil)
@@ -148,7 +148,7 @@ struct APIService {
 
     private func parse<T: BaseModel>(from htmlData: Data) async -> (T?, APIError?) {
         let parseTask = Task { () -> T in
-            let html = String(decoding: htmlData, as: UTF8.self)
+            let html = htmlData.string
             let parseResult = try SwiftSoup.parse(html)
             var result = T(from: parseResult)
             result.rawData = html
@@ -167,6 +167,39 @@ struct APIService {
             result.data = nil
         }
         return result
+    }
+
+    private func printCookies(tag: String = .empty) {
+        let storage = HTTPCookieStorage.shared
+        if let cookies = storage.cookies {
+            for cookie in cookies {
+                log("\(tag) --> cookie: \(cookie.name), \(cookie.value)")
+            }
+        }
+    }
+
+}
+
+extension URLRequest {
+
+    mutating func encodeParameters(params: Params?) {
+        guard let params = params else { return }
+        httpMethod = "POST"
+        let parameterArray = params.map { (param) -> String in
+            let (key, value) = param
+            return "\(key)=\(self.percentEscapeString(value))"
+        }
+        httpBody = parameterArray.joined(separator: "&")
+            .data(using: String.Encoding.utf8)
+    }
+
+    private func percentEscapeString(_ string: String) -> String {
+        var characterSet = CharacterSet.alphanumerics
+        characterSet.insert(charactersIn: "-._* ")
+        return string
+            .addingPercentEncoding(withAllowedCharacters: characterSet)!
+            .replacingOccurrences(of: " ", with: "+")
+            .replacingOccurrences(of: " ", with: "+", options: [], range: nil)
     }
 
 }

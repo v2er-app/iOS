@@ -26,13 +26,13 @@ struct LoginPage: StateView {
     var body: some View {
         contentView
             .onAppear {
-                dispatch(action: LoginActions.FetchCaptchaAction.Start())
+                dispatch(action: LoginActions.FetchCaptchaStart())
             }
     }
 
     @ViewBuilder
     private var contentView: some View {
-        return VStack(alignment: .center) {
+        VStack(alignment: .center) {
             Image("logo")
                 .cornerBorder(radius: 10)
                 .padding(.top, 10)
@@ -51,6 +51,9 @@ struct LoginPage: StateView {
                     .background(Color.lightGray)
                     .cornerRadius(radius)
                     .submitLabel(.next)
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+                    .keyboardType(.asciiCapable)
                 HStack(spacing: 0) {
                     Group {
                         if !showPassword {
@@ -59,6 +62,9 @@ struct LoginPage: StateView {
                             TextField("Password", text: bindingState.password)
                         }
                     }
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+                    .keyboardType(.asciiCapable)
                     .submitLabel(.continue)
                     .padding(.horizontal, padding)
                     .frame(maxWidth: .infinity, maxHeight: height)
@@ -85,12 +91,13 @@ struct LoginPage: StateView {
                         .padding(.horizontal, padding)
                         .frame(maxWidth: .infinity, maxHeight: height)
                         .submitLabel(.go)
+                        .keyboardType(.asciiCapable)
+                        .disableAutocorrection(true)
                     Color.gray
                         .opacity(0.2)
                         .padding(.vertical, 14)
                         .frame(width: 1.5, height: height)
                         .padding(.horizontal, 2)
-                    let url = "https://www.v2ex.com/_captcha?once=49628"
                     KFImage.url(URL(string: state.captchaUrl))
                         .placeholder { ProgressView().debug() }
                         .resizable()
@@ -103,9 +110,9 @@ struct LoginPage: StateView {
             .padding(.horizontal, 20)
             .padding(.bottom, 10)
             HStack {
-                Button(action: {
-                    // Do submit
-                }) {
+                Button {
+                    // start register
+                } label: {
                     Text("Register")
                         .font(.headline)
                         .foregroundColor(Color.tintColor)
@@ -113,9 +120,9 @@ struct LoginPage: StateView {
                         .greedyWidth()
                         .cornerBorder(radius: 15, borderWidth: 2, color: Color.tintColor)
                 }
-                Button(action: {
-                    // Do submit
-                }) {
+                Button {
+                    dispatch(action: LoginActions.StartLogin())
+                } label: {
                     Text("Login")
                         .font(.headline)
                         .foregroundColor(.white)
@@ -124,6 +131,9 @@ struct LoginPage: StateView {
                         .background(Color.tintColor)
                         .cornerRadius(15)
                 }
+                .disabled(!notEmpty(state.username,
+                                    state.password,
+                                    state.captcha))
             }
             .padding(.horizontal, 20)
             Text("Sign in with Google")

@@ -118,3 +118,9 @@ extension Dictionary {
         }
     }
 }
+
+extension Data {
+    var string: String {
+        return String(decoding: self, as: UTF8.self)
+    }
+}

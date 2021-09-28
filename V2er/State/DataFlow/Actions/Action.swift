@@ -23,10 +23,12 @@ extension Action {
 protocol Executable {}
 
 protocol AsyncAction: Action, Executable {
+    // Side Effect
     func execute(in store: Store)
 }
 
 protocol AwaitAction: Action, Executable {
+    // Side Effect
     func execute(in store: Store) async
 }
 

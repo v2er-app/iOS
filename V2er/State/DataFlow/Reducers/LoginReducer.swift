@@ -12,10 +12,10 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
     var state = state
     var followingAction: Action?
     switch action {
-        case _ as LoginActions.FetchCaptchaAction.Start:
+        case _ as LoginActions.FetchCaptchaStart:
             guard !state.loading else { break }
             state.loading = true
-        case let action as LoginActions.FetchCaptchaAction.Done:
+        case let action as LoginActions.FetchCaptchaDone:
             state.loading = false
             if case let .success(loginParams) = action.result {
                 state.loginParams = loginParams
@@ -27,10 +27,9 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                 // Load captcha failed
             }
         case _ as LoginActions.StartLogin:
-            guard !state.loading else { break }
+            guard !state.loading && !state.logining else { break }
             state.logining = true
         case let action as LoginActions.LoginDone:
-            guard !state.logining else { break }
             state.logining = false
             if case let .success(dailyInfo) = action.result {
                 // login success
