@@ -13,6 +13,9 @@ struct MePage: BaseHomePageView {
     var state: MeState {
         store.appState.meState
     }
+
+    @State var showSheet = false
+
     var selecedTab: TabId
 
     var isSelected: Bool {
@@ -22,19 +25,35 @@ struct MePage: BaseHomePageView {
     
     var body: some View {
         ScrollView {
-            NavigationLink {
-                //FIXME: use real userId
-                if state.hasLogined {
-                    UserDetailPage(userId: .default)
-                } else {
-                    LoginPage()
-                }
-            } label: {
-                topBannerView
-            }
+            topBannerView
             sectionViews
         }
         .background(Color.bgColor)
+        .overlay {
+            if !state.hasLogined {
+                VStack {
+                    Text("登录查看更多")
+                        .foregroundColor(.white)
+                        .font(.title2)
+                    Button {
+                        showSheet = true
+                    } label: {
+                        Text("登录")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding()
+                            .padding(.horizontal, 50)
+                            .background(Color.black)
+                            .cornerRadius(15)
+                    }
+                }
+                .greedyFrame()
+                .background(Color.dim)
+                .sheet(isPresented: $showSheet) {
+                    LoginPage()
+                }
+            }
+        }
         .opacity(selecedTab == .me ? 1.0 : 0.0)
     }
     
@@ -44,9 +63,9 @@ struct MePage: BaseHomePageView {
             AvatarView(size: 60)
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(state.hasLogined ? "ghui" : "请登录")
+                    Text("")
                         .font(.headline)
-                    Text("已签到666天")
+                    Text("")
                         .font(.footnote)
                         .hide(!state.hasLogined)
                 }
@@ -60,7 +79,6 @@ struct MePage: BaseHomePageView {
                     .font(.body.weight(.regular))
                     .foregroundColor(Color.gray)
             }
-            
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 16)
@@ -156,5 +174,6 @@ struct AccountPage_Previews: PreviewProvider {
     
     static var previews: some View {
         MePage(selecedTab: selected)
+            .environmentObject(Store.shared)
     }
 }

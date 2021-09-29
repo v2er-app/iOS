@@ -175,8 +175,8 @@ extension View {
     }
 
     public func cornerBorder(radius: CGFloat = -1,
-                             borderWidth: CGFloat = 0.2,
-                             color: Color = Color.gray) -> some View {
+                             borderWidth: CGFloat = 1,
+                             color: Color = Color.border) -> some View {
         self.modifier(RoundedEdgeModifier(radius: radius,
                                           width: borderWidth, color: color))
     }

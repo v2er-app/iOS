@@ -34,18 +34,19 @@ struct LoginPage: StateView {
     private var contentView: some View {
         VStack(alignment: .center) {
             Image("logo")
-                .cornerBorder(radius: 10)
-                .padding(.top, 10)
+                .cornerBorder(radius: 25)
+                .padding(.top, 20)
             Text("Login to V2EX")
                 .font(.title2)
                 .foregroundColor(.primary)
                 .fontWeight(.heavy)
                 .padding(.vertical, 20)
             VStack(spacing: 10) {
-                let radius: CGFloat = 8
+                let radius: CGFloat = 12
                 let padding: CGFloat = 16
-                let height: CGFloat = 50
+                let height: CGFloat = 46
                 TextField("Username", text: bindingState.username)
+                    .debug()
                     .padding(.horizontal, padding)
                     .frame(height: height)
                     .background(Color.lightGray)
@@ -54,6 +55,7 @@ struct LoginPage: StateView {
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
                     .keyboardType(.asciiCapable)
+                    .debug()
                 HStack(spacing: 0) {
                     Group {
                         if !showPassword {
@@ -89,7 +91,7 @@ struct LoginPage: StateView {
                 HStack(spacing: 0) {
                     TextField("Captcha", text: bindingState.captcha)
                         .padding(.horizontal, padding)
-                        .frame(maxWidth: .infinity, maxHeight: height)
+                        .frame(height: height)
                         .submitLabel(.go)
                         .keyboardType(.asciiCapable)
                         .disableAutocorrection(true)
@@ -103,6 +105,9 @@ struct LoginPage: StateView {
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 100, height: height)
+                        .onTapGesture {
+                            dispatch(action: LoginActions.FetchCaptchaStart())
+                        }
                 }
                 .background(Color.lightGray)
                 .cornerRadius(radius)
@@ -158,5 +163,6 @@ struct LoginPage: StateView {
 struct LoginPage_Previews: PreviewProvider {
     static var previews: some View {
         LoginPage()
+            .environmentObject(Store.shared)
     }
 }

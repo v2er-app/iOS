@@ -26,13 +26,15 @@ extension Color {
         self.frame(width: .infinity)
     }
     
-    public static let lightGray = hex(0xF5F5F5)
-    public static let almostClear = hex(0xFFFFFF, alpha: 0.000001)
-    public static let debugColor = hex(0xFF0000, alpha: 0.1)
-    public static let bodyText = hex(0x555555)
-    public static let tintColor = hex(0x383838)
-    public static let bgColor = hex(0xE2E2E2)
-    public static let pageLight: Color = .white
+    static let lightGray = hex(0xF5F5F5)
+    static let almostClear = hex(0xFFFFFF, alpha: 0.000001)
+    static let debugColor = hex(0xFF0000, alpha: 0.1)
+    static let bodyText = hex(0x555555)
+    static let tintColor = hex(0x383838)
+    static let bgColor = hex(0xE2E2E2)
+    static let pageLight: Color = .white
+    static let dim = hex(0x000000, alpha: 0.6)
+    public static let border = hex(0x383838, alpha: 0.25)
     
     public func toUIColor() -> UIColor {
         return UIColor(self)

@@ -94,8 +94,8 @@ struct APIService {
         request.httpMethod = "GET"
         request.addValue(endpoint.ua().value(), forHTTPHeaderField: UA.key)
 
-        if requestHeaders != nil {
-            for (key, value) in requestHeaders! {
+        if let requestHeaders = requestHeaders {
+            for (key, value) in requestHeaders {
                 request.addValue(value, forHTTPHeaderField: key)
             }
         }

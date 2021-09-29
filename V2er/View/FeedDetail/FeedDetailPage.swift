@@ -115,6 +115,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             VStack(spacing: 0) {
                 HStack(alignment: .bottom, spacing: 0) {
                     MultilineTextField("发表回复", text: $replyContent)
+                        .debug()
                         .onReceive(keyboardPublisher) { isKeyboardVisiable in
                             self.isKeyboardVisiable = isKeyboardVisiable
                         }
