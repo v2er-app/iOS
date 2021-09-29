@@ -10,8 +10,8 @@ import SwiftUI
 
 struct ExplorePage: BaseHomePageView {
     @EnvironmentObject private var store: Store
-    var state: ExploreState {
-        store.appState.exploreState
+    var bindingState: Binding<ExploreState> {
+        $store.appState.exploreState
     }
     var selecedTab: TabId
 

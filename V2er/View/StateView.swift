@@ -8,15 +8,20 @@
 
 import SwiftUI
 
-public protocol StateView: View {
+protocol StateView: View {
     associatedtype ViewState: FluxState
 
     var state: ViewState { get }
+    var bindingState: Binding<ViewState> { get }
 }
 
-protocol BasePageView: StateView {
-
+extension StateView {
+    var state: ViewState {
+        bindingState.raw
+    }
 }
+
+protocol BasePageView: StateView {}
 
 protocol BaseHomePageView: BasePageView {
 

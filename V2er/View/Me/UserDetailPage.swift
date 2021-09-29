@@ -24,11 +24,11 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
         userId ?? .default
     }
 
-    var state: UserDetailState {
+    var bindingState: Binding<UserDetailState> {
         if store.appState.userDetailStates[instanceId] == nil {
             store.appState.userDetailStates[instanceId] = UserDetailState()
         }
-        return store.appState.userDetailStates[instanceId]!
+        return $store.appState.userDetailStates[instanceId]
     }
 
     var model: UserDetailInfo {

@@ -10,14 +10,10 @@ import SwiftUI
 
 struct MePage: BaseHomePageView {
     @EnvironmentObject private var store: Store
-    var state: MeState {
-        store.appState.meState
+    var bindingState: Binding<MeState> {
+        $store.appState.meState
     }
-
-    @State var showSheet = false
-
     var selecedTab: TabId
-
     var isSelected: Bool {
         let selected = selecedTab == .me
         return selected
@@ -36,7 +32,7 @@ struct MePage: BaseHomePageView {
                         .foregroundColor(.white)
                         .font(.title2)
                     Button {
-                        showSheet = true
+                        dispatch(action: MeActions.ShowLoginPageAction())
                     } label: {
                         Text("登录")
                             .font(.headline)
@@ -49,7 +45,7 @@ struct MePage: BaseHomePageView {
                 }
                 .greedyFrame()
                 .background(Color.dim)
-                .sheet(isPresented: $showSheet) {
+                .sheet(isPresented: bindingState.showLoginView) {
                     LoginPage()
                 }
             }
@@ -67,7 +63,7 @@ struct MePage: BaseHomePageView {
                         .font(.headline)
                     Text("")
                         .font(.footnote)
-                        .hide(!state.hasLogined)
+                        .hide(!bindingState.hasLogined.raw)
                 }
                 Spacer()
             }

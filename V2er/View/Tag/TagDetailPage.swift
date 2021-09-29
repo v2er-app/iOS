@@ -17,11 +17,11 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         tagId ?? .default
     }
 
-    var state: TagDetailState {
+    var bindingState: Binding<TagDetailState> {
         if store.appState.tagDetailStates[instanceId] == nil {
             store.appState.tagDetailStates[instanceId] = TagDetailState()
         }
-        return store.appState.tagDetailStates[instanceId]!
+        return $store.appState.tagDetailStates[instanceId]
     }
 
     var model: TagDetailInfo {

@@ -17,6 +17,7 @@ struct LoginState: FluxState {
     var username: String = .empty
     var password: String = .empty
     var captcha: String = .empty
+    var dismiss = false
 }
 
 

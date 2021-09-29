@@ -8,6 +8,16 @@
 
 import Foundation
 
-//func meStateReducer(_ state: MeState, _ action: Action) -> (MeState, Action?) {
-//    return MeState()
-//}
+func meStateReducer(_ state: MeState, _ action: Action) -> (MeState, Action?) {
+    var state = state
+    var followingAction: Action?
+
+    switch action {
+        case let action as MeActions.ShowLoginPageAction:
+            guard !state.showLoginView else { break }
+            state.showLoginView = true
+        default:
+            break
+    }
+    return (state, followingAction)
+}

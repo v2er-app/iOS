@@ -64,6 +64,24 @@ extension Binding {
     var raw: Value {
         return self.wrappedValue
     }
+
+//    subscript<T>(_ key: Int) -> Binding<T> where Value == [T] {
+//        .init(get: {
+//            self.wrappedValue[key]
+//        },
+//              set: {
+//            self.wrappedValue[key] = $0
+//        })
+//    }
+
+    subscript<K, V>(_ key: K) -> Binding<V> where Value == [K:V], K: Hashable {
+        .init(get: {
+            self.wrappedValue[key]!
+        },
+              set: {
+            self.wrappedValue[key] = $0
+        })
+    }
 }
 
 extension Int {

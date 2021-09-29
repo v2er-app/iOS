@@ -10,8 +10,8 @@ import SwiftUI
 
 struct FeedPage: BaseHomePageView {
     @EnvironmentObject private var store: Store
-    var state: FeedState {
-        store.appState.feedState
+    var bindingState: Binding<FeedState> {
+        $store.appState.feedState
     }
     var selecedTab: TabId
 

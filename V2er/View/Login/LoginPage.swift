@@ -15,6 +15,7 @@ struct LoginPage: StateView {
     @State var password: String = .default
     @State var captcha: String = .default
     @State var showPassword = false
+
     var bindingState: Binding<LoginState> {
         $store.appState.loginState
     }
@@ -46,7 +47,6 @@ struct LoginPage: StateView {
                 let padding: CGFloat = 16
                 let height: CGFloat = 46
                 TextField("Username", text: bindingState.username)
-                    .debug()
                     .padding(.horizontal, padding)
                     .frame(height: height)
                     .background(Color.lightGray)
@@ -82,7 +82,7 @@ struct LoginPage: StateView {
                     } label: {
                         Image(systemName: showPassword ? "eye.slash" : "eye")
                             .foregroundColor(.tintColor)
-                            .font(.body.weight(.light))
+                            .font(.footnote.weight(.light))
                             .padding(.horizontal, 10)
                     }
                 }
