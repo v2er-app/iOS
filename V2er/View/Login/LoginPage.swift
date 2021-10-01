@@ -11,23 +11,22 @@ import Kingfisher
 
 struct LoginPage: StateView {
     @EnvironmentObject private var store: Store
-    //    @State var username: String = .default
-    @State var password: String = .default
-    @State var captcha: String = .default
+    @Environment(\.dismiss) var dismiss
     @State var showPassword = false
 
     var bindingState: Binding<LoginState> {
         $store.appState.loginState
     }
 
-    var state: LoginState {
-        bindingState.raw
-    }
-
     var body: some View {
         contentView
             .onAppear {
                 dispatch(action: LoginActions.FetchCaptchaStart())
+            }
+            .onChange(of: state.dismiss) { newValue in
+                if newValue {
+                    dismiss()
+                }
             }
     }
 

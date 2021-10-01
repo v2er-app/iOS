@@ -43,7 +43,7 @@ struct FeedDetailActions {
 
             func execute(in store: Store) async {
                 let result: APIResult<FeedDetailInfo> = await APIService.shared
-                    .htmlGet(endpoint: .topic(id: feedId ?? .default), ["p" : willLoadPage.toString()])
+                    .htmlGet(endpoint: .topic(id: feedId ?? .default), ["p" : willLoadPage.string])
                 dispatch(action: LoadMore.Done(id: id, result: result))
             }
         }

@@ -63,8 +63,12 @@ func hapticFeedback(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) 
 }
 
 func parseQueryParam(from url: String, param: String) -> String? {
-    guard let url = URLComponents(string: url) else { return nil }
-    return url.queryItems?.first(where: { $0.name == param })?.value
+    var tmpUrl: String = url
+    if !tmpUrl.starts(with: "http") {
+        tmpUrl = APIService.baseUrlString.appending(tmpUrl)
+    }
+    guard let tmpUrl = URLComponents(string: tmpUrl) else { return nil }
+    return tmpUrl.queryItems?.first(where: { $0.name == param })?.value
 }
 
 func notEmpty(_ strs: String?...) -> Bool {

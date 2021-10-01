@@ -10,8 +10,8 @@ import Foundation
 import SwiftSoup
 
 struct LoginState: FluxState {
-    var loginParams: LoginParams?
     var loading = false
+    var loginParams: LoginParams?
     var captchaUrl: String = .empty
     var logining = false
     var username: String = .empty
@@ -19,7 +19,6 @@ struct LoginState: FluxState {
     var captcha: String = .empty
     var dismiss = false
 }
-
 
 struct LoginParams: BaseModel {
     var rawData: String?

@@ -7,57 +7,84 @@
 //
 
 import SwiftUI
+import SwiftSoup
 
-struct MessagePage: View {
+struct MessagePage: StateView {
+    @EnvironmentObject private var store: Store
+    var bindingState: Binding<MessageState> {
+        $store.appState.messageState
+    }
     var selecedTab: TabId
+
+    var isSelected: Bool {
+        let selected = selecedTab == .message
+        if selected && !state.hasLoadedOnce {
+            dispatch(action: MessageActions.FetchStart(autoLoad: true))
+        }
+        return selected
+    }
+
+    var scrollToTop: Bool {
+        if store.appState.globalState.scrollTop == .message {
+            store.appState.globalState.scrollTop = .none
+            return true
+        }
+        return false
+    }
     
     var body: some View {
+        contentView
+            .hide(!isSelected)
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
         LazyVStack(spacing: 0) {
-            ForEach( 0...20, id: \.self) { i in
+            ForEach(state.model.items) { item in
                 NavigationLink(destination: FeedDetailPage()) {
-                    MessageItemView()
+                    MessageItemView(item: item)
+                    Divider()
                 }
             }
         }
         .background(Color.pageLight)
-        .updatable(
-            refresh:{
-                print("onRefresh...")
-            },
-            loadMore: {
-                print("onLoadMore...")
-            }
-        )
-        .opacity(selecedTab == .message ? 1.0 : 0.0)
+        .updatable(state: state.updatableState) {
+            await run(action: MessageActions.FetchStart())
+        } loadMore: {
+            await run(action: MessageActions.LoadMoreStart())
+        }
     }
 }
 
-fileprivate struct MessageItemView: View {
-    
+struct MessageItemView: View {
+    let item: MessageInfo.Item
+
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(alignment: .top,spacing: 8) {
-                AvatarView(size: 40)
-                VStack(alignment: .leading) {
-                    Text("kevinsnow 在回复 Mac mini m1 用微信的时候总是识别不了摄像头 时提到了你")
-                        .font(.subheadline)
-                    Text("@ghui 是直接插在机身的 usb 上面的")
-                        .greedyWidth(.leading)
-                        .font(.footnote)
-                        .padding(10)
-                        .background {
-                            HStack(spacing: 0) {
-                                Color.tintColor.opacity(0.8)
-                                    .frame(width: 3)
-                                Color.lightGray
-                            }
+        HStack(alignment: .top, spacing: 10) {
+            AvatarView(url: item.avatar, size: 40)
+            VStack(alignment: .leading) {
+                Text(item.title)
+                    .font(.subheadline)
+                    .greedyWidth(.leading)
+                Text(item.content)
+                    .greedyWidth(.leading)
+                    .font(.footnote)
+                    .lineLimit(3)
+                    .padding(10)
+                    .background {
+                        HStack(spacing: 0) {
+                            Color.tintColor.opacity(0.8)
+                                .frame(width: 3)
+                            Color.lightGray
                         }
-                }
+                    }
+                    .visibility(item.content.isEmpty ? .gone : .visible)
             }
-            .padding(10)
-            Divider()
         }
+        .padding(12)
+        .divider()
     }
+
 }
 
 struct MessagePage_Previews: PreviewProvider {

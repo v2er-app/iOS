@@ -10,14 +10,12 @@ import SwiftUI
 
 struct MainPage: StateView {
     @EnvironmentObject private var store: Store
-    var state: GlobalState {
-        bindingState.raw
-    }
+
     var bindingState: Binding<GlobalState> {
         $store.appState.globalState
     }
     var selectedTab: Binding<TabId> {
-        $store.appState.globalState.selectedTab
+        bindingState.selectedTab
     }
 
     var body: some View {

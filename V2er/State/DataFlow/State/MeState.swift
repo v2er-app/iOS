@@ -9,6 +9,5 @@
 import Foundation
 
 struct MeState: FluxState {
-    var hasLogined = false
     var showLoginView = false
 }

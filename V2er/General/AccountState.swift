@@ -8,37 +8,45 @@
 
 import Foundation
 
-struct AccountUtil {
+struct AccountState {
     static let ACCOUNT_KEY = "app.v2er.account"
-    static func save(_ account: AccountInfo) {
+    static var ACCOUNT: AccountInfo?
+
+    static func saveAccount(_ account: AccountInfo) {
         do {
             let jsonData = try JSONEncoder().encode(account)
-            Persist.save(value: jsonData, forkey: ACCOUNT_KEY)
+            Persist.save(value: jsonData, forkey: AccountState.ACCOUNT_KEY)
             log("account: \(account) saved")
+            ACCOUNT = account
         } catch {
             log("Save account failed")
         }
     }
 
-    static func readAccount() -> AccountInfo? {
+    static func getAccount() -> AccountInfo? {
         do {
+            if ACCOUNT != nil { return ACCOUNT }
             let data = Persist.read(key: ACCOUNT_KEY)
             guard let data = data else { return nil }
-            let accountInfo = try JSONDecoder()
+            ACCOUNT = try JSONDecoder()
                 .decode(AccountInfo.self, from: data)
-            return accountInfo
+            return ACCOUNT
         } catch {
             log("readAccount failed")
         }
         return nil
     }
 
-    static func isAccountSignIn() -> Bool {
-        let account = readAccount()
-        guard let account = account else {
-            return false
-        }
-        return account.isValid()
+    static func hasSignIn() -> Bool {
+        return getAccount() != nil
+    }
+
+    static var userName: String {
+        return getAccount()?.username ?? .default
+    }
+
+    static var avatarUrl: String {
+        return getAccount()?.avatar ?? .default
     }
 
 }

@@ -14,5 +14,12 @@ struct GlobalState: FluxState {
     var selectedTab: TabId = .feed
     var lastSelectedTab: TabId = .none
     var scrollTop: TabId = .none
+
+    static var account: AccountInfo? {
+        AccountState.getAccount()
+    }
+    static var hasSignIn: Bool {
+        AccountState.hasSignIn()
+    }
 }
 

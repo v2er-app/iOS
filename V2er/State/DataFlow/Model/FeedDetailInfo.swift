@@ -67,7 +67,7 @@ struct FeedDetailInfo: BaseModel {
             tagId = root.pick("div.box a[href^=/go]", .href)
                 .segment(separatedBy: "/")
             comment = root.pick("div.cell span.gray:contains(回复)")
-            let lastNormalpage = root.pick("div.box a.page_normal:last-child").toInt()
+            let lastNormalpage = root.pick("div.box a.page_normal", at: .last).toInt()
             let currentPage = root.pick("div.box span.page_current").toInt()
             totalPage = max(lastNormalpage, currentPage)
             title = root.pick("div.box h1")

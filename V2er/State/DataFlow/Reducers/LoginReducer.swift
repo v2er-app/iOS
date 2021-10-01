@@ -35,7 +35,8 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                 // login success
                 let account = AccountInfo(username: dailyInfo!.userName,
                             avatar: dailyInfo!.avatar)
-                AccountUtil.save(account)
+                AccountState.saveAccount(account)
+                state.dismiss = true
             } else {
                 // -> is LoginParam -> psw error
                 // -> is TwoStepInfo -> enabled two step log
@@ -46,3 +47,5 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
     }
     return (state, followingAction)
 }
+
+

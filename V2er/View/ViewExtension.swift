@@ -189,12 +189,52 @@ extension View {
         self.opacity(shouldHide ? 0.0 : 1.0)
     }
 
+    func divider(_ lineWidth: CGFloat = 1.0) -> some View {
+        self.modifier(DividerModifier(lineWidth: lineWidth))
+    }
 }
+
+struct DividerModifier: ViewModifier {
+    var lineWidth = 1.0
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.bottom, lineWidth)
+            .overlay {
+                VStack(spacing: 0) {
+                    Spacer()
+                    Divider()
+                }
+            }
+    }
+}
+
+
 
 extension Divider {
     func light() -> some View {
         frame(height: 0.2)
     }
 }
+
+enum Visibility: CaseIterable {
+    case visible, // view is fully visible
+         invisible, // view is hidden but takes up space
+         gone // view is fully removed from the view hierarchy
+}
+
+extension View {
+    @ViewBuilder func visibility(_ visibility: Visibility) -> some View {
+        if visibility != .gone {
+            if visibility == .visible {
+                self
+            } else {
+                hidden()
+            }
+        }
+    }
+}
+
+
 
 

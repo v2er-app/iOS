@@ -26,7 +26,7 @@ struct MePage: BaseHomePageView {
         }
         .background(Color.bgColor)
         .overlay {
-            if !state.hasLogined {
+            if !AccountState.hasSignIn() {
                 VStack {
                     Text("登录查看更多")
                         .foregroundColor(.white)
@@ -56,14 +56,13 @@ struct MePage: BaseHomePageView {
     @ViewBuilder
     private var topBannerView: some View {
         HStack(spacing: 10) {
-            AvatarView(size: 60)
+            AvatarView(url: AccountState.avatarUrl, size: 60)
             HStack {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("")
+                    Text(AccountState.userName)
                         .font(.headline)
                     Text("")
                         .font(.footnote)
-                        .hide(!bindingState.hasLogined.raw)
                 }
                 Spacer()
             }

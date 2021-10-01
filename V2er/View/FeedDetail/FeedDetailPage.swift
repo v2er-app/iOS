@@ -13,12 +13,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Environment(\.isPresented) private var isPresented
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var store: Store
-//    var state: FeedDetailState {
-//        if store.appState.feedDetailStates[instanceId] == nil {
-//            store.appState.feedDetailStates[instanceId] = FeedDetailState()
-//        }
-//        return store.appState.feedDetailStates[instanceId]!
-//    }
 
     var bindingState: Binding<FeedDetailState> {
         if store.appState.feedDetailStates[instanceId] == nil {

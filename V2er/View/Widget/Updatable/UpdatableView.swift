@@ -27,11 +27,9 @@ struct UpdatableView<Content: View>: View {
     let threshold: CGFloat = 60
     @State var boundsDelta = 0.0
     @State var isLoadingMore: Bool = false
-    var hasMoreData: Bool = true
-    var autoRefresh: Bool
     let damper: Float = 1.2
-    var scrollToTop: Bool = false
     @State var hapticed = false
+    let state: UpdatableState
 
     private var refreshable: Bool {
         return onRefresh != nil
@@ -44,17 +42,13 @@ struct UpdatableView<Content: View>: View {
     fileprivate init(onRefresh: RefreshAction,
                      onLoadMore: LoadMoreAction,
                      onScroll: ScrollAction?,
-                     autoRefresh: Bool,
-                     hasMoreData: Bool,
-                     scrollToTop: Bool,
+                     state: UpdatableState,
                      @ViewBuilder content: () -> Content) {
         self.onRefresh = onRefresh
         self.onLoadMore = onLoadMore
         self.onScroll = onScroll
         self.content = content()
-        self.autoRefresh = autoRefresh
-        self.hasMoreData = hasMoreData
-        self.scrollToTop = scrollToTop
+        self.state = state
     }
 
     var body: some View {
@@ -68,7 +62,7 @@ struct UpdatableView<Content: View>: View {
                             content
                                 .anchorPreference(key: ContentBoundsKey.self, value: .bounds) { $0 }
                             if loadMoreable {
-                                LoadmoreIndicatorView(isLoading: isLoadingMore, hasMoreData: hasMoreData)
+                                LoadmoreIndicatorView(isLoading: isLoadingMore, hasMoreData: state.hasMoreData)
                             }
                         }
                     }
@@ -78,7 +72,7 @@ struct UpdatableView<Content: View>: View {
                     }
                 }
             }
-            .onChange(of: scrollToTop) { scrollToTop in
+            .onChange(of: state.scrollToTop) { scrollToTop in
                 guard scrollToTop else { return }
                 withAnimation {
                     reader.scrollTo(0, anchor: .top)
@@ -86,7 +80,7 @@ struct UpdatableView<Content: View>: View {
             }
         }
         .overlay {
-            if autoRefresh {
+            if state.showLoadingView {
                 ZStack {
                     Color.almostClear
                     ProgressView()
@@ -135,7 +129,7 @@ struct UpdatableView<Content: View>: View {
         }
 
         if loadMoreable
-            && hasMoreData
+            && state.hasMoreData
             && boundsDelta >= 0
             && Int(scrollY) < Int(-boundsDelta)
             && !isLoadingMore {
@@ -204,7 +198,16 @@ extension View {
                           refresh: RefreshAction = nil,
                           loadMore: LoadMoreAction = nil,
                           onScroll: ScrollAction? = nil) -> some View {
-        self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, autoRefresh: autoRefresh, hasMoreData: hasMoreData, scrollToTop: scrollToTop))
+        let state = UpdatableState(hasMoreData: hasMoreData, showLoadingView: autoRefresh, scrollToTop: scrollToTop)
+        return self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, state: state))
+    }
+
+    public func updatable(state: UpdatableState,
+                          refresh: RefreshAction = nil,
+                          loadMore: LoadMoreAction = nil,
+                          onScroll: ScrollAction? = nil) -> some View {
+        let modifier = UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, state: state)
+        return self.modifier(modifier)
     }
     
     public func loadMore(autoRefresh: Bool = false,
@@ -213,20 +216,17 @@ extension View {
                          onScroll: ScrollAction? = nil) -> some View {
         self.updatable(autoRefresh: autoRefresh, hasMoreData: hasMoreData, refresh: nil, loadMore: loadMore, onScroll: onScroll)
     }
-    
 }
 
 struct UpdatableModifier: ViewModifier {
     let onRefresh: RefreshAction
     let onLoadMore: LoadMoreAction
     let onScroll: ScrollAction?
-    let autoRefresh: Bool
-    let hasMoreData: Bool
-    let scrollToTop: Bool
+    let state: UpdatableState
     
     func body(content: Content) -> some View {
         UpdatableView(onRefresh: onRefresh, onLoadMore: onLoadMore,
-                      onScroll: onScroll, autoRefresh: autoRefresh, hasMoreData: hasMoreData, scrollToTop: scrollToTop) {
+                      onScroll: onScroll, state: state) {
             content
         }
     }

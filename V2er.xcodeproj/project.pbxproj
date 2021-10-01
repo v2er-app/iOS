@@ -39,7 +39,7 @@
 		5D2B2B3826FF336600446F93 /* TwoStepLoginInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3726FF336600446F93 /* TwoStepLoginInfo.swift */; };
 		5D2B2B3A26FF5DF800446F93 /* AccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */; };
 		5D2B2B3C26FF754F00446F93 /* Persist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3B26FF754F00446F93 /* Persist.swift */; };
-		5D2B2B3E26FF797600446F93 /* AccountUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3D26FF797600446F93 /* AccountUtil.swift */; };
+		5D2B2B3E26FF797600446F93 /* AccountState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3D26FF797600446F93 /* AccountState.swift */; };
 		5D2DD00826FB353C0001C85A /* DefaultReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2DD00726FB353C0001C85A /* DefaultReducer.swift */; };
 		5D2DD00A26FB443D0001C85A /* GlobalActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2DD00926FB443D0001C85A /* GlobalActions.swift */; };
 		5D32B19B26B587CB00E72E65 /* StatusBarConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D32B19A26B587CB00E72E65 /* StatusBarConfigurator.swift */; };
@@ -70,6 +70,7 @@
 		5D71DF57247C153C00B53ED4 /* ExplorePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF56247C153C00B53ED4 /* ExplorePage.swift */; };
 		5D71DF59247C155400B53ED4 /* MessagePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF58247C155400B53ED4 /* MessagePage.swift */; };
 		5D71DF5B247C155D00B53ED4 /* MePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF5A247C155D00B53ED4 /* MePage.swift */; };
+		5D74653D2705B97F0020F1F8 /* UpdatableState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74653C2705B97F0020F1F8 /* UpdatableState.swift */; };
 		5D79E28B26E52C1000C181C5 /* RichText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D79E28A26E52C1000C181C5 /* RichText.swift */; };
 		5D7B78F626C2BB490037D000 /* StateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7B78F526C2BB490037D000 /* StateView.swift */; };
 		5D843E9526A4537C00C47D95 /* SearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D843E9426A4537C00C47D95 /* SearchPage.swift */; };
@@ -156,7 +157,7 @@
 		5D2B2B3726FF336600446F93 /* TwoStepLoginInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepLoginInfo.swift; sourceTree = "<group>"; };
 		5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfo.swift; sourceTree = "<group>"; };
 		5D2B2B3B26FF754F00446F93 /* Persist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persist.swift; sourceTree = "<group>"; };
-		5D2B2B3D26FF797600446F93 /* AccountUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountUtil.swift; sourceTree = "<group>"; };
+		5D2B2B3D26FF797600446F93 /* AccountState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountState.swift; sourceTree = "<group>"; };
 		5D2DD00726FB353C0001C85A /* DefaultReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultReducer.swift; sourceTree = "<group>"; };
 		5D2DD00926FB443D0001C85A /* GlobalActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalActions.swift; sourceTree = "<group>"; };
 		5D32B19A26B587CB00E72E65 /* StatusBarConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarConfigurator.swift; sourceTree = "<group>"; };
@@ -193,6 +194,7 @@
 		5D71DF56247C153C00B53ED4 /* ExplorePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplorePage.swift; sourceTree = "<group>"; };
 		5D71DF58247C155400B53ED4 /* MessagePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePage.swift; sourceTree = "<group>"; };
 		5D71DF5A247C155D00B53ED4 /* MePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MePage.swift; sourceTree = "<group>"; };
+		5D74653C2705B97F0020F1F8 /* UpdatableState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatableState.swift; sourceTree = "<group>"; };
 		5D79E28A26E52C1000C181C5 /* RichText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichText.swift; sourceTree = "<group>"; };
 		5D7B78F526C2BB490037D000 /* StateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateView.swift; sourceTree = "<group>"; };
 		5D843E9426A4537C00C47D95 /* SearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPage.swift; sourceTree = "<group>"; };
@@ -310,6 +312,7 @@
 				5D1D8C0926EDEC96009DF65A /* GlobalState.swift */,
 				5D91F8D426F22A6F0089D72E /* TagDetailState.swift */,
 				5D1D7B8326FC8323008E0C08 /* LoginState.swift */,
+				5D74653C2705B97F0020F1F8 /* UpdatableState.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -543,7 +546,7 @@
 				5D32B19A26B587CB00E72E65 /* StatusBarConfigurator.swift */,
 				5DE62A2826CEB20E0082161A /* Extentions.swift */,
 				5D2B2B3B26FF754F00446F93 /* Persist.swift */,
-				5D2B2B3D26FF797600446F93 /* AccountUtil.swift */,
+				5D2B2B3D26FF797600446F93 /* AccountState.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -717,7 +720,7 @@
 				5D6AAAAC2691851100F42A13 /* Utils.swift in Sources */,
 				5D612FA126C7C34E0009B8F9 /* NetworkException.swift in Sources */,
 				5DE5B4CA2684601A00569684 /* TopBar.swift in Sources */,
-				5D2B2B3E26FF797600446F93 /* AccountUtil.swift in Sources */,
+				5D2B2B3E26FF797600446F93 /* AccountState.swift in Sources */,
 				5D71DF55247C0FFE00B53ED4 /* FeedPage.swift in Sources */,
 				5DA2AD4226C18112007FB1EF /* ExploreState.swift in Sources */,
 				5D91F8D526F22A6F0089D72E /* TagDetailState.swift in Sources */,
@@ -730,6 +733,7 @@
 				5D0CFA8026B992FC001A8A7F /* HistoryPage.swift in Sources */,
 				5D0CFA7E26B992D6001A8A7F /* StarPage.swift in Sources */,
 				5D0A513726E0CBFC006F3D9B /* ExploreActions.swift in Sources */,
+				5D74653D2705B97F0020F1F8 /* UpdatableState.swift in Sources */,
 				5D368C8826C419D000794B8E /* APIService.swift in Sources */,
 				5D88D5E026C2017E00302265 /* MeReducer.swift in Sources */,
 				5DD4639E26F70CE800A1FBA1 /* LoginPage.swift in Sources */,

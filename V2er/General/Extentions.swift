@@ -89,7 +89,7 @@ extension Int {
     static let first: Int = 0
     static let last: Int = Int.max
 
-    func toString() -> String {
+    var string: String {
         return String(self)
     }
 }

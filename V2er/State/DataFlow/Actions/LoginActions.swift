@@ -39,8 +39,7 @@ struct LoginActions {
             params[loginParams.pswParam] = state.password
             params[loginParams.captchaParam] = state.captcha
             params["once"] = loginParams.once
-//            params["next"] = "/mission/daily"
-            params["next"] = "/"
+            params["next"] = "/mission/daily"
             let headers: Params = ["Referer": APIService.baseUrlString.appending("/signin")]
             let result: APIResult<DailyInfo> = await APIService.shared
                 .post(endpoint: .signin, params, requestHeaders: headers)
@@ -51,7 +50,6 @@ struct LoginActions {
 
     struct LoginDone: Action {
         var target: Reducer = R
-
         let result: APIResult<DailyInfo>
     }
 

@@ -29,7 +29,9 @@ struct DailyInfo: BaseModel {
             .extractDigits()
         let checkedInUrl: String = root.pick("div.cell input[type=button]", .onclick)
         hadCheckedIn = !checkedInUrl.isEmpty && checkedInUrl.contains("location.href = '/balance';")
-        once = parseQueryParam(from: checkedInUrl, param: "once") ?? .default
+        once = checkedInUrl
+            .segment(separatedBy: "?")
+            .extractDigits()
     }
 
     func isValid() -> Bool {
