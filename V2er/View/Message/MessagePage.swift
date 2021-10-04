@@ -9,7 +9,7 @@
 import SwiftUI
 import SwiftSoup
 
-struct MessagePage: StateView {
+struct MessagePage: BaseHomePageView {
     @EnvironmentObject private var store: Store
     var bindingState: Binding<MessageState> {
         $store.appState.messageState
@@ -22,14 +22,6 @@ struct MessagePage: StateView {
             dispatch(action: MessageActions.FetchStart(autoLoad: true))
         }
         return selected
-    }
-
-    var scrollToTop: Bool {
-        if store.appState.globalState.scrollTop == .message {
-            store.appState.globalState.scrollTop = .none
-            return true
-        }
-        return false
     }
     
     var body: some View {
@@ -48,7 +40,7 @@ struct MessagePage: StateView {
             }
         }
         .background(Color.pageLight)
-        .updatable(state: state.updatableState) {
+        .updatable(state.updatableState) {
             await run(action: MessageActions.FetchStart())
         } loadMore: {
             await run(action: MessageActions.LoadMoreStart())

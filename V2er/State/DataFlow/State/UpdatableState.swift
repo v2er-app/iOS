@@ -14,5 +14,5 @@ public struct UpdatableState {
     var willLoadPage = 0
     var hasMoreData = true
     var showLoadingView = false
-    var scrollToTop = false
+    var scrollToTop: Int = 0
 }

@@ -8,19 +8,29 @@
 
 import Foundation
 
-func defaultReducer(_ state: GlobalState, _ action: Action) -> (GlobalState, Action?) {
+func defaultReducer(_ state: AppState, _ action: Action) -> (AppState, Action?) {
     var state = state
+    var globalState = state.globalState
     var followingAction: Action?
     switch action {
         case let action as TabbarClickAction:
-            state.lastSelectedTab = state.selectedTab
-            state.selectedTab = action.selectedTab
-            if state.lastSelectedTab == state.selectedTab {
+            globalState.lastSelectedTab = globalState.selectedTab
+            globalState.selectedTab = action.selectedTab
+            if globalState.lastSelectedTab == globalState.selectedTab {
                 hapticFeedback(.light)
-                state.scrollTop = state.selectedTab
+                globalState.scrollTopTab = globalState.selectedTab
+                let tab = globalState.scrollTopTab
+                if tab == .message {
+                    state
+                        .messageState
+                        .updatableState
+                        .scrollToTop += 1
+                }
+                // TODO: refactor
             }
         default:
             break
     }
+    state.globalState = globalState
     return (state, action)
 }

@@ -13,7 +13,7 @@ struct GlobalState: FluxState {
     var statusBarState = StatusBarConfigurator()
     var selectedTab: TabId = .feed
     var lastSelectedTab: TabId = .none
-    var scrollTop: TabId = .none
+    var scrollTopTab: TabId = .none
 
     static var account: AccountInfo? {
         AccountState.getAccount()

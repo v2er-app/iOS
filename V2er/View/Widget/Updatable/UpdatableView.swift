@@ -73,7 +73,7 @@ struct UpdatableView<Content: View>: View {
                 }
             }
             .onChange(of: state.scrollToTop) { scrollToTop in
-                guard scrollToTop else { return }
+                guard scrollToTop != 0 else { return }
                 withAnimation {
                     reader.scrollTo(0, anchor: .top)
                 }
@@ -194,7 +194,7 @@ struct FrameContentBoundsDeltaKey: PreferenceKey {
 extension View {
     public func updatable(autoRefresh: Bool = false,
                           hasMoreData: Bool = true,
-                          _ scrollToTop: Bool = false,
+                          _ scrollToTop: Int = 0,
                           refresh: RefreshAction = nil,
                           loadMore: LoadMoreAction = nil,
                           onScroll: ScrollAction? = nil) -> some View {
@@ -202,7 +202,7 @@ extension View {
         return self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, state: state))
     }
 
-    public func updatable(state: UpdatableState,
+    public func updatable(_ state: UpdatableState,
                           refresh: RefreshAction = nil,
                           loadMore: LoadMoreAction = nil,
                           onScroll: ScrollAction? = nil) -> some View {

@@ -56,7 +56,7 @@ final public class Store: ObservableObject {
             case .global:
                 fallthrough
             default:
-                (appState.globalState, followingAction) = defaultReducer(appState.globalState, action)
+                (appState, followingAction) = defaultReducer(appState, action)
         }
         if followingAction == nil && action is Executable {
             followingAction = action

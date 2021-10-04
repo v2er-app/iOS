@@ -24,8 +24,8 @@ struct ExplorePage: BaseHomePageView {
     }
 
     var scrollToTop: Bool {
-        if store.appState.globalState.scrollTop == .explore {
-            store.appState.globalState.scrollTop = .none
+        if store.appState.globalState.scrollTopTab == .explore {
+            store.appState.globalState.scrollTopTab = .none
             return true
         }
         return false

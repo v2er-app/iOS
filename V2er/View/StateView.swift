@@ -23,17 +23,15 @@ extension StateView {
 
 protocol BasePageView: StateView {}
 
-protocol BaseHomePageView: BasePageView {
-
-}
+protocol BaseHomePageView: BasePageView {}
 
 extension BaseHomePageView {
-    func scrollTop(tab: TabId) -> Bool {
-        if Store.shared.appState.globalState.scrollTop == tab {
-            Store.shared.appState.globalState.scrollTop = .none
-            return true
+    func scrollTop(tab: TabId) -> Int {
+        if Store.shared.appState.globalState.scrollTopTab == tab {
+            Store.shared.appState.globalState.scrollTopTab = .none
+            return Int.random(in: 0...Int.max)
         }
-        return false
+        return 0
     }
 
 }
