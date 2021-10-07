@@ -12,11 +12,11 @@ import SwiftSoup
 
 public extension Element {
     func pick(_ selector: String, at index:Int = 0,
-              _ attr: HtmlAttr = .text, regex: String? = nil) -> String {
+              _ attr: HtmlAttr = .text, regex: String? = nil, `default`: String = .empty) -> String {
         let es: Elements = pickAll(selector)
         let index = min(index, es.count - 1)
         let e : Element? = es[safe: index]
-        guard let e = e else { return .default }
+        guard let e = e else { return `default` }
         let result: String?
         if attr == .text {
             result = try? e.text()
@@ -28,7 +28,7 @@ public extension Element {
             result = try? e.attr(attr.value)
         }
         // TODO use reg
-        return result ?? .default
+        return result.isEmpty ? `default` : result!
     }
 
     func pickAll(_ selector: String) -> Elements {

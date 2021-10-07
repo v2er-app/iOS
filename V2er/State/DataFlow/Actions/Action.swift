@@ -42,4 +42,10 @@ enum Reducer {
     case userdetail
     case tagdetail
     case login
+    case userfeed
+    case myfavorite
+    case myfollow
+    case myrecent
+    case setting
+    case createfeed
 }

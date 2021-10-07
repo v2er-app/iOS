@@ -25,20 +25,47 @@ struct NavbarHostView<Content: View>: View {
             HStack(alignment: .center, spacing: 0) {
                 self.content
             }
+            .greedyWidth()
             Divider()
                 .opacity(hideDivider ? 0.0 : 1.0)
         }
         .greedyWidth()
         .padding(.horizontal, self.paddingH)
     }
+}
 
+struct NavbarView: View {
+    @Environment(\.dismiss) var dismiss
+    var title: String
+
+    var body: some View {
+        NavbarHostView(paddingH: 0, hideDivider: false) {
+            HStack(alignment: .center, spacing: 4) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.backward")
+                        .font(.title2.weight(.regular))
+                        .padding(.leading, 8)
+                        .padding(.vertical, 10)
+                        .foregroundColor(.tintColor)
+                }
+                Spacer()
+            }
+            .greedyWidth()
+            .overlay {
+                HStack(alignment: .center) {
+                    Text(title)
+                        .font(.headline)
+                }
+            }
+        }
+        .visualBlur()
+    }
 }
 
 struct NavHostView_Previews: PreviewProvider {
     static var previews: some View {
-        NavbarHostView {
-            Text("V2EX")
-                .font(.headline)
-        }
+        NavbarView(title: "Title")
     }
 }

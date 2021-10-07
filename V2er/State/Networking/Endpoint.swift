@@ -15,8 +15,9 @@ enum Endpoint {
     }
     case tab, recent, explore
     case captcha, signin
-    case topic(id: String), message
-    case myFollowing, myTopics, myNodes, nodesNav
+    case topic(id: String), topics(userName: String)
+    case myFollowing, message
+    case myNodes, nodesNav
     case tagDetail(tagId: String)
     case userPage(userName: String), createTopic
     case appendTopic(id: String), thanksReply(id: String)
@@ -63,13 +64,13 @@ enum Endpoint {
                 info.path = "/signin"
             case let .topic(id):
                 info.path = "/t/\(id)"
+            case let .topics(userName):
+                info.path = "/member/\(userName)/topics"
             case .message:
                 info.path = "/notifications"
                 info.ua = .web
             case .myFollowing:
                 info.path = "/my/following"
-            case .myTopics:
-                info.path = "/my/topics"
             case .myNodes:
                 info.path = "/my/nodes"
             case .nodesNav:

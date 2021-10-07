@@ -19,7 +19,7 @@
 		5D0CFA7C26B992B2001A8A7F /* SpecailCarePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7B26B992B2001A8A7F /* SpecailCarePage.swift */; };
 		5D0CFA7E26B992D6001A8A7F /* StarPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7D26B992D6001A8A7F /* StarPage.swift */; };
 		5D0CFA8026B992FC001A8A7F /* HistoryPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */; };
-		5D0CFA8226B9935B001A8A7F /* MyTopicPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA8126B9935B001A8A7F /* MyTopicPage.swift */; };
+		5D0CFA8226B9935B001A8A7F /* UserFeedPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA8126B9935B001A8A7F /* UserFeedPage.swift */; };
 		5D0CFA8526B994F5001A8A7F /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 5D0CFA8426B994F5001A8A7F /* SwiftSoup */; };
 		5D143198270426FD00462661 /* MeActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D143197270426FD00462661 /* MeActions.swift */; };
 		5D1D7B8426FC8323008E0C08 /* LoginState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8326FC8323008E0C08 /* LoginState.swift */; };
@@ -95,6 +95,16 @@
 		5DAA50A626F0D8DD00CB63DE /* TagDetailInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAA50A526F0D8DD00CB63DE /* TagDetailInfo.swift */; };
 		5DB622A026DE8BCD0026C4A8 /* ExploreInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB6229F26DE8BCD0026C4A8 /* ExploreInfo.swift */; };
 		5DCDE3942695D16B00261385 /* AuthorInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE3932695D16B00261385 /* AuthorInfoView.swift */; };
+		5DCE4CE6270BC683006BA98D /* UserFeedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CE5270BC683006BA98D /* UserFeedState.swift */; };
+		5DCE4CE8270D9551006BA98D /* UserFeedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CE7270D9551006BA98D /* UserFeedReducer.swift */; };
+		5DCE4CEA270D9700006BA98D /* MyFavoriteState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CE9270D9700006BA98D /* MyFavoriteState.swift */; };
+		5DCE4CEC270D9746006BA98D /* MyFollowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CEB270D9746006BA98D /* MyFollowState.swift */; };
+		5DCE4CEE270D9761006BA98D /* MyRecentState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CED270D9761006BA98D /* MyRecentState.swift */; };
+		5DCE4CF0270D978B006BA98D /* SettingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CEF270D978B006BA98D /* SettingState.swift */; };
+		5DCE4CF2270D9827006BA98D /* MyFavoriteReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CF1270D9827006BA98D /* MyFavoriteReducer.swift */; };
+		5DCE4CF4270D9850006BA98D /* MyFollowReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CF3270D9850006BA98D /* MyFollowReducer.swift */; };
+		5DCE4CF6270D9865006BA98D /* MyRecentReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CF5270D9865006BA98D /* MyRecentReducer.swift */; };
+		5DCE4CF8270D9871006BA98D /* SettingReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CF7270D9871006BA98D /* SettingReducer.swift */; };
 		5DD440D3269F1F5E00EE0FAB /* Syles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD440D2269F1F5E00EE0FAB /* Syles.swift */; };
 		5DD4639E26F70CE800A1FBA1 /* LoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD4639D26F70CE800A1FBA1 /* LoginPage.swift */; };
 		5DE5B4CA2684601A00569684 /* TopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE5B4C92684601A00569684 /* TopBar.swift */; };
@@ -138,7 +148,7 @@
 		5D0CFA7B26B992B2001A8A7F /* SpecailCarePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecailCarePage.swift; sourceTree = "<group>"; };
 		5D0CFA7D26B992D6001A8A7F /* StarPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarPage.swift; sourceTree = "<group>"; };
 		5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryPage.swift; sourceTree = "<group>"; };
-		5D0CFA8126B9935B001A8A7F /* MyTopicPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTopicPage.swift; sourceTree = "<group>"; };
+		5D0CFA8126B9935B001A8A7F /* UserFeedPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserFeedPage.swift; sourceTree = "<group>"; };
 		5D143197270426FD00462661 /* MeActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeActions.swift; sourceTree = "<group>"; };
 		5D1D7B8326FC8323008E0C08 /* LoginState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginState.swift; sourceTree = "<group>"; };
 		5D1D7B8626FC9B61008E0C08 /* LoginReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginReducer.swift; sourceTree = "<group>"; };
@@ -219,6 +229,16 @@
 		5DAA50A526F0D8DD00CB63DE /* TagDetailInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailInfo.swift; sourceTree = "<group>"; };
 		5DB6229F26DE8BCD0026C4A8 /* ExploreInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreInfo.swift; sourceTree = "<group>"; };
 		5DCDE3932695D16B00261385 /* AuthorInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorInfoView.swift; sourceTree = "<group>"; };
+		5DCE4CE5270BC683006BA98D /* UserFeedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserFeedState.swift; sourceTree = "<group>"; };
+		5DCE4CE7270D9551006BA98D /* UserFeedReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserFeedReducer.swift; sourceTree = "<group>"; };
+		5DCE4CE9270D9700006BA98D /* MyFavoriteState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFavoriteState.swift; sourceTree = "<group>"; };
+		5DCE4CEB270D9746006BA98D /* MyFollowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFollowState.swift; sourceTree = "<group>"; };
+		5DCE4CED270D9761006BA98D /* MyRecentState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyRecentState.swift; sourceTree = "<group>"; };
+		5DCE4CEF270D978B006BA98D /* SettingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingState.swift; sourceTree = "<group>"; };
+		5DCE4CF1270D9827006BA98D /* MyFavoriteReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFavoriteReducer.swift; sourceTree = "<group>"; };
+		5DCE4CF3270D9850006BA98D /* MyFollowReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFollowReducer.swift; sourceTree = "<group>"; };
+		5DCE4CF5270D9865006BA98D /* MyRecentReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyRecentReducer.swift; sourceTree = "<group>"; };
+		5DCE4CF7270D9871006BA98D /* SettingReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingReducer.swift; sourceTree = "<group>"; };
 		5DD440D2269F1F5E00EE0FAB /* Syles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Syles.swift; sourceTree = "<group>"; };
 		5DD4639D26F70CE800A1FBA1 /* LoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
 		5DE5B4C92684601A00569684 /* TopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBar.swift; sourceTree = "<group>"; };
@@ -293,7 +313,7 @@
 				5D0CFA7B26B992B2001A8A7F /* SpecailCarePage.swift */,
 				5D0CFA7D26B992D6001A8A7F /* StarPage.swift */,
 				5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */,
-				5D0CFA8126B9935B001A8A7F /* MyTopicPage.swift */,
+				5D0CFA8126B9935B001A8A7F /* UserFeedPage.swift */,
 			);
 			path = Me;
 			sourceTree = "<group>";
@@ -313,6 +333,11 @@
 				5D91F8D426F22A6F0089D72E /* TagDetailState.swift */,
 				5D1D7B8326FC8323008E0C08 /* LoginState.swift */,
 				5D74653C2705B97F0020F1F8 /* UpdatableState.swift */,
+				5DCE4CE5270BC683006BA98D /* UserFeedState.swift */,
+				5DCE4CE9270D9700006BA98D /* MyFavoriteState.swift */,
+				5DCE4CEB270D9746006BA98D /* MyFollowState.swift */,
+				5DCE4CED270D9761006BA98D /* MyRecentState.swift */,
+				5DCE4CEF270D978B006BA98D /* SettingState.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -430,6 +455,11 @@
 				5D91F8D826F22CEC0089D72E /* TagDetailReducer.swift */,
 				5D2DD00726FB353C0001C85A /* DefaultReducer.swift */,
 				5D1D7B8626FC9B61008E0C08 /* LoginReducer.swift */,
+				5DCE4CE7270D9551006BA98D /* UserFeedReducer.swift */,
+				5DCE4CF1270D9827006BA98D /* MyFavoriteReducer.swift */,
+				5DCE4CF3270D9850006BA98D /* MyFollowReducer.swift */,
+				5DCE4CF5270D9865006BA98D /* MyRecentReducer.swift */,
+				5DCE4CF7270D9871006BA98D /* SettingReducer.swift */,
 			);
 			path = Reducers;
 			sourceTree = "<group>";
@@ -699,6 +729,7 @@
 				5D54903326AB9E2200BB0CC0 /* SwiftUIView.swift in Sources */,
 				5DE5B4CD268466D800569684 /* UpdatableView.swift in Sources */,
 				5D1D8C0226EBA88C009DF65A /* UserDetailInfo.swift in Sources */,
+				5DCE4CE6270BC683006BA98D /* UserFeedState.swift in Sources */,
 				5D0CFA7C26B992B2001A8A7F /* SpecailCarePage.swift in Sources */,
 				5DE5C579249D90AD0004DCC6 /* Color.swift in Sources */,
 				5D02BD5F26909146007B6A1B /* LoadmoreIndicatorView.swift in Sources */,
@@ -706,11 +737,13 @@
 				5D38DEF5268C21A800C48F94 /* ActivityIndicator.swift in Sources */,
 				5D3CD32126D0F9CC00B3C2D3 /* TabInfo.swift in Sources */,
 				5D0A513F26E36F15006F3D9B /* FeedDetailActions.swift in Sources */,
+				5DCE4CEE270D9761006BA98D /* MyRecentState.swift in Sources */,
 				5DA2AD3726C17EB9007FB1EF /* AppState.swift in Sources */,
 				5D71DF59247C155400B53ED4 /* MessagePage.swift in Sources */,
 				5DA2AD4626C18208007FB1EF /* MeState.swift in Sources */,
 				5D88D5DA26C200FB00302265 /* FeedReducer.swift in Sources */,
 				5D6EE28B2693DC470053B637 /* FeedDetailPage.swift in Sources */,
+				5DCE4CEA270D9700006BA98D /* MyFavoriteState.swift in Sources */,
 				5D88D5DC26C2016000302265 /* ExploreReducer.swift in Sources */,
 				5D2B2B3A26FF5DF800446F93 /* AccountInfo.swift in Sources */,
 				5D6AAAAA26917E7B00F42A13 /* Helper.swift in Sources */,
@@ -724,8 +757,11 @@
 				5D71DF55247C0FFE00B53ED4 /* FeedPage.swift in Sources */,
 				5DA2AD4226C18112007FB1EF /* ExploreState.swift in Sources */,
 				5D91F8D526F22A6F0089D72E /* TagDetailState.swift in Sources */,
+				5DCE4CF0270D978B006BA98D /* SettingState.swift in Sources */,
 				5D436FED24791C2C00FFA37E /* MainPage.swift in Sources */,
 				5DA2AD3E26C18043007FB1EF /* FluxState.swift in Sources */,
+				5DCE4CE8270D9551006BA98D /* UserFeedReducer.swift in Sources */,
+				5DCE4CEC270D9746006BA98D /* MyFollowState.swift in Sources */,
 				5D32B19B26B587CB00E72E65 /* StatusBarConfigurator.swift in Sources */,
 				5D04BF9726C9FB6E0005F7E3 /* FeedInfo.swift in Sources */,
 				5D0A513926E26473006F3D9B /* FeedDetailReducer.swift in Sources */,
@@ -749,6 +785,7 @@
 				5DA2AD3926C17ECC007FB1EF /* Action.swift in Sources */,
 				5DA2DC8826ADAD6400022C31 /* FlowStack.swift in Sources */,
 				5DCDE3942695D16B00261385 /* AuthorInfoView.swift in Sources */,
+				5DCE4CF2270D9827006BA98D /* MyFavoriteReducer.swift in Sources */,
 				5DAA50A626F0D8DD00CB63DE /* TagDetailInfo.swift in Sources */,
 				5D91F8D726F22B560089D72E /* TagDetailActions.swift in Sources */,
 				5D4E43FC2699E20400650714 /* AvatarView.swift in Sources */,
@@ -756,6 +793,7 @@
 				5D4E43FA2699DDE200650714 /* ReplyItemView.swift in Sources */,
 				5D1D8E2426B19A640040C418 /* UserDetailPage.swift in Sources */,
 				5D5DA26A24A4939B005BC60F /* ViewExtension.swift in Sources */,
+				5DCE4CF4270D9850006BA98D /* MyFollowReducer.swift in Sources */,
 				5D1D8C0626ECA457009DF65A /* ModelUtils.swift in Sources */,
 				5DB622A026DE8BCD0026C4A8 /* ExploreInfo.swift in Sources */,
 				5D6AAAAF2692036100F42A13 /* FeedItemView.swift in Sources */,
@@ -764,6 +802,7 @@
 				5D7B78F626C2BB490037D000 /* StateView.swift in Sources */,
 				5D4E43F82699DBC600650714 /* NewsContentView.swift in Sources */,
 				5D143198270426FD00462661 /* MeActions.swift in Sources */,
+				5DCE4CF8270D9871006BA98D /* SettingReducer.swift in Sources */,
 				5D0A513B26E26505006F3D9B /* FeedDetailInfo.swift in Sources */,
 				5D88D5DE26C2017400302265 /* MessageReducer.swift in Sources */,
 				5D9D5223269543DA00D80D6B /* TagDetailPage.swift in Sources */,
@@ -776,9 +815,10 @@
 				5D71DF5B247C155D00B53ED4 /* MePage.swift in Sources */,
 				5DA2AD3526C17EA5007FB1EF /* Store.swift in Sources */,
 				5D1D7B8926FC9C48008E0C08 /* LoginActions.swift in Sources */,
+				5DCE4CF6270D9865006BA98D /* MyRecentReducer.swift in Sources */,
 				5D1D7B8726FC9B61008E0C08 /* LoginReducer.swift in Sources */,
 				5DA2AD4826C18232007FB1EF /* MessageState.swift in Sources */,
-				5D0CFA8226B9935B001A8A7F /* MyTopicPage.swift in Sources */,
+				5D0CFA8226B9935B001A8A7F /* UserFeedPage.swift in Sources */,
 				5D096A08247ABF5E00EF3E47 /* TabBar.swift in Sources */,
 				5D91F8D926F22CEC0089D72E /* TagDetailReducer.swift in Sources */,
 				5D45FC2B26CD3FCF0055C336 /* SwiftSoupExtention.swift in Sources */,

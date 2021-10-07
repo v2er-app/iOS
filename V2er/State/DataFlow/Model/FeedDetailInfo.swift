@@ -67,8 +67,8 @@ struct FeedDetailInfo: BaseModel {
             tagId = root.pick("div.box a[href^=/go]", .href)
                 .segment(separatedBy: "/")
             comment = root.pick("div.cell span.gray:contains(回复)")
-            let lastNormalpage = root.pick("div.box a.page_normal", at: .last).toInt()
-            let currentPage = root.pick("div.box span.page_current").toInt()
+            let lastNormalpage = root.pick("div.box a.page_normal", at: .last).int
+            let currentPage = root.pick("div.box span.page_current").int
             totalPage = max(lastNormalpage, currentPage)
             title = root.pick("div.box h1")
             favoriteLink = root.pick("div.box a[href*=favorite/]", .href)
@@ -138,7 +138,7 @@ struct FeedDetailInfo: BaseModel {
 
             init(from html: Element?) {
                 guard let root = html else { return }
-                floor = root.pick("span.no").toInt()
+                floor = root.pick("span.no").int
                 content = root.pick("div.reply_content", .innerHtml)
                 userName = root.pick("strong a.dark[href^=/member]")
                 avatar = root.pick("img.avatar", .src)

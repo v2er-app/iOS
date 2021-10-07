@@ -42,8 +42,8 @@ struct MessageInfo: BaseModel {
     init() {}
     init(from html: Element?) {
         guard let root = html else { return }
-        let lastNormalpage = root.pick("div.box a.page_normal", at: .last).toInt()
-        let currentPage = root.pick("div.box a.page_current").toInt()
+        let lastNormalpage = root.pick("div.box a.page_normal", at: .last).int
+        let currentPage = root.pick("div.box a.page_current").int
         totalPage = max(lastNormalpage, currentPage)
         let elements = root.pickAll("div.cell[id^=n_]")
         for e in elements {

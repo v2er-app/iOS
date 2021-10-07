@@ -91,7 +91,7 @@ struct MePage: BaseHomePageView {
                     .padding(.bottom, 8)
             }
             NavigationLink {
-                MyTopicPage()
+                UserFeedPage(userId: AccountState.userName)
             } label: {
                 SectionItemView("主题", icon: "paperplane")
             }

@@ -13,7 +13,7 @@ extension String {
     static let `default`: String = ""
     public static let empty = `default`
 
-    func toInt() -> Int {
+    var int: Int {
         return Int(self) ?? 0
     }
 
@@ -44,6 +44,7 @@ extension String {
     func notEmpty()-> Bool {
         return !isEmpty
     }
+    
 
     func replace(segs: String..., with replacement: String) -> String {
         var result: String = self
@@ -57,6 +58,12 @@ extension String {
     func extractDigits() -> String {
         guard !self.isEmpty else { return .default }
         return self.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+    }
+}
+
+extension Optional where Wrapped == String {
+    var isEmpty: Bool {
+        return self?.isEmpty ?? true
     }
 }
 

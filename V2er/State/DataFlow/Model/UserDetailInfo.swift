@@ -56,7 +56,7 @@ struct UserDetailInfo: BaseModel {
                     .segment(separatedBy: "/")
                 title = root.pick("span.item_title")
                 time = root.pick("span.small.fade", at: 1)
-                replyNum = root.pick("a[class^=count_]").toInt()
+                replyNum = root.pick("a[class^=count_]").int
             }
         }
 

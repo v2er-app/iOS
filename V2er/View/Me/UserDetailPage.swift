@@ -205,15 +205,17 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                     }
                 }
                 if model.topicInfo.items.count > 0 {
-                    NavigationLink(destination: FeedDetailPage()) {
+                    NavigationLink(destination: UserFeedPage(userId: userId!)) {
                         Text("\(userId ?? .default)创建的更多主题")
                             .font(.subheadline)
                             .padding()
+                            .padding(.bottom, 12)
                     }
                 } else {
                     Text("根据 \(userId ?? .default) 的设置，主题列表被隐藏")
                         .font(.subheadline)
                         .padding()
+                        .hide(state.refreshing)
                 }
             } else {
                 ForEach(model.replyInfo.items) { item in

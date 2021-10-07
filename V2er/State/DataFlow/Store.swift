@@ -53,6 +53,16 @@ final public class Store: ObservableObject {
                 (appState.tagDetailStates, followingAction) = tagDetailStateReducer(appState.tagDetailStates, action)
             case .login:
                 (appState.loginState, followingAction) = loginReducer(appState.loginState, action)
+            case .userfeed:
+                (appState.userFeedStates, followingAction) = userFeedStateReducer(appState.userFeedStates, action)
+            case .myfavorite:
+                (appState.myFavoriteState, followingAction) = myFavoriteStateReducer(appState.myFavoriteState, action)
+            case .myfollow:
+                (appState.myFavoriteState, followingAction) = myFavoriteStateReducer(appState.myFavoriteState, action)
+            case .myrecent:
+                (appState.myRecentState, followingAction) = myRecentStateReducer(appState.myRecentState, action)
+            case .setting:
+                (appState.settingState, followingAction) = settingStateReducer(appState.settingState, action)
             case .global:
                 fallthrough
             default:

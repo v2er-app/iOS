@@ -47,21 +47,6 @@ struct FeedPage: BaseHomePageView {
 
 }
 
-
-//private func fetchData() async -> [String] {
-//    await withCheckedContinuation { continuation in
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 2 ) {
-//            let persons = [
-//                "new Person 1",
-//                "new Person 2",
-//                "new Person 3",
-//                "new Person 4"
-//            ]
-//            continuation.resume(returning: persons)
-//        }
-//    }
-//}
-
 struct HomePage_Previews: PreviewProvider {
     static var selected = TabId.feed
     

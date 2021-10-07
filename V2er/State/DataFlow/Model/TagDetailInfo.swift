@@ -69,8 +69,8 @@ struct TagDetailInfo: BaseModel {
         countOfStaredPeople = root.pick("div.cell.flex-one-row div:not(div#money)")
             .segment(separatedBy: " ", at: .first)
         topicsCount = root.pick("span.topic-count strong")
-        let lastNormalpage = root.pick("div.box a.page_normal", at: .last).toInt()
-        let currentPage = root.pick("div.box span.page_current").toInt()
+        let lastNormalpage = root.pick("div.box a.page_normal", at: .last).int
+        let currentPage = root.pick("div.box span.page_current").int
         totalPage = max(lastNormalpage, currentPage)
         let favoritePath = root.pick("a[href*=/favorite/]", .href)
         starLink = APIService.baseUrlString.appending(favoritePath)

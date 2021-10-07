@@ -18,4 +18,9 @@ struct AppState: FluxState {
     var meState = MeState()
     var userDetailStates: UserDetailStates = [:]
     var tagDetailStates: TagDetailStates = [:]
+    var userFeedStates: UserFeedStates = [:]
+    var myFavoriteState = MyFavoriteState()
+    var myFollowState = MyFollowState()
+    var myRecentState = MyRecentState()
+    var settingState = SettingState()
 }

@@ -62,7 +62,7 @@ struct ExploreInfo: BaseModel {
         onlineNum = root.pick("div#Bottom div.inner strong")
             .segment(separatedBy: " · ")
             .segment(separatedBy: " ", at: .first)
-            .toInt()
+            .int
         // 2. dailyHotInfo
         let dailyHotElements = root.pickAll("div#TopicsHot.box table")
         for e in dailyHotElements {
