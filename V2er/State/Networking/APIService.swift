@@ -147,17 +147,21 @@ struct APIService {
     }
 
     private func parse<T: BaseModel>(from htmlData: Data) async -> (T?, APIError?) {
-        let parseTask = Task { () -> T in
+        let parseTask = Task { () -> T? in
             let html = htmlData.string
             let parseResult = try SwiftSoup.parse(html)
-            var result = T(from: parseResult)
-            result.rawData = html
+            let result = T(from: parseResult)
+            if var result = result {
+                result.rawData = html
+            }
             return result
         }
         let result: (data: T?, error: APIError?)
         do {
             result.data = try await parseTask.value
-            if !result.data!.isValid() {
+            if result.data == nil {
+                result.error = APIError.decodingError(GeneralError("Error parse: \(htmlData.string)"))
+            } else if !result.data!.isValid() {
                 result.error = APIError.invalid
             } else {
                 result.error = nil
@@ -209,6 +213,14 @@ enum APIError: Error {
     case decodingError(_ error: Error?)
     case networkError(_ error: Error?)
     case invalid
+}
+
+struct GeneralError: Error {
+    let msg: String?
+
+    init(_ msg: String?) {
+        self.msg = msg
+    }
 }
 
 struct HttpError: Error {

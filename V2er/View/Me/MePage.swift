@@ -102,7 +102,7 @@ struct MePage: BaseHomePageView {
                 SectionItemView("收藏", icon: "bookmark")
             }
             NavigationLink {
-                SpecailCarePage()
+                MyFollowPage()
             } label: {
                 SectionItemView("关注", icon: "heart")
             }

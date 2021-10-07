@@ -11,6 +11,7 @@ import Foundation
 public struct UpdatableState {
     var refreshing = false
     var loadingMore = false
+    var hasLoadedOnce = false
     var willLoadPage = 0
     var hasMoreData = true
     var showLoadingView = false

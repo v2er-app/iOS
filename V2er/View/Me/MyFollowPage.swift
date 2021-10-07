@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct SpecailCarePage: View {
+struct MyFollowPage: View {
     var body: some View {
         Text("SpecialCarePage")
     }
@@ -16,6 +16,6 @@ struct SpecailCarePage: View {
 
 struct SpecailCarePage_Previews: PreviewProvider {
     static var previews: some View {
-        SpecailCarePage()
+        MyFollowPage()
     }
 }

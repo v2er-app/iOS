@@ -10,7 +10,7 @@ import Foundation
 import SwiftSoup
 
 protocol HtmlParsable {
-    init(from html: Element?)
+    init?(from html: Element?)
 }
 
 protocol HtmlItemModel: HtmlParsable, Identifiable {
@@ -19,8 +19,6 @@ protocol HtmlItemModel: HtmlParsable, Identifiable {
 
 protocol BaseModel: HtmlParsable {
     var rawData: String? { get set }
-
-    init()
 
     func isValid() -> Bool
 }

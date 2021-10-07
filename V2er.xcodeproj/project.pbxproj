@@ -16,7 +16,7 @@
 		5D0A513D26E36AB9006F3D9B /* FeedDetailState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0A513C26E36AB9006F3D9B /* FeedDetailState.swift */; };
 		5D0A513F26E36F15006F3D9B /* FeedDetailActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0A513E26E36F15006F3D9B /* FeedDetailActions.swift */; };
 		5D0CFA7A26B9926C001A8A7F /* SettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7926B9926C001A8A7F /* SettingsPage.swift */; };
-		5D0CFA7C26B992B2001A8A7F /* SpecailCarePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7B26B992B2001A8A7F /* SpecailCarePage.swift */; };
+		5D0CFA7C26B992B2001A8A7F /* MyFollowPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7B26B992B2001A8A7F /* MyFollowPage.swift */; };
 		5D0CFA7E26B992D6001A8A7F /* StarPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7D26B992D6001A8A7F /* StarPage.swift */; };
 		5D0CFA8026B992FC001A8A7F /* HistoryPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */; };
 		5D0CFA8226B9935B001A8A7F /* UserFeedPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA8126B9935B001A8A7F /* UserFeedPage.swift */; };
@@ -145,7 +145,7 @@
 		5D0A513C26E36AB9006F3D9B /* FeedDetailState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailState.swift; sourceTree = "<group>"; };
 		5D0A513E26E36F15006F3D9B /* FeedDetailActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailActions.swift; sourceTree = "<group>"; };
 		5D0CFA7926B9926C001A8A7F /* SettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPage.swift; sourceTree = "<group>"; };
-		5D0CFA7B26B992B2001A8A7F /* SpecailCarePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecailCarePage.swift; sourceTree = "<group>"; };
+		5D0CFA7B26B992B2001A8A7F /* MyFollowPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFollowPage.swift; sourceTree = "<group>"; };
 		5D0CFA7D26B992D6001A8A7F /* StarPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarPage.swift; sourceTree = "<group>"; };
 		5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryPage.swift; sourceTree = "<group>"; };
 		5D0CFA8126B9935B001A8A7F /* UserFeedPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserFeedPage.swift; sourceTree = "<group>"; };
@@ -310,7 +310,7 @@
 				5D1D8E2126B1969B0040C418 /* CreateTopicPage.swift */,
 				5D1D8E2326B19A640040C418 /* UserDetailPage.swift */,
 				5D0CFA7926B9926C001A8A7F /* SettingsPage.swift */,
-				5D0CFA7B26B992B2001A8A7F /* SpecailCarePage.swift */,
+				5D0CFA7B26B992B2001A8A7F /* MyFollowPage.swift */,
 				5D0CFA7D26B992D6001A8A7F /* StarPage.swift */,
 				5D0CFA7F26B992FC001A8A7F /* HistoryPage.swift */,
 				5D0CFA8126B9935B001A8A7F /* UserFeedPage.swift */,
@@ -730,7 +730,7 @@
 				5DE5B4CD268466D800569684 /* UpdatableView.swift in Sources */,
 				5D1D8C0226EBA88C009DF65A /* UserDetailInfo.swift in Sources */,
 				5DCE4CE6270BC683006BA98D /* UserFeedState.swift in Sources */,
-				5D0CFA7C26B992B2001A8A7F /* SpecailCarePage.swift in Sources */,
+				5D0CFA7C26B992B2001A8A7F /* MyFollowPage.swift in Sources */,
 				5DE5C579249D90AD0004DCC6 /* Color.swift in Sources */,
 				5D02BD5F26909146007B6A1B /* LoadmoreIndicatorView.swift in Sources */,
 				5D3CD31F26D0F5F600B3C2D3 /* BaseModel.swift in Sources */,
