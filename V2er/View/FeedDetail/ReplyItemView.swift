@@ -29,6 +29,9 @@ struct ReplyItemView: View {
                 Text(info.content)
                     .font(.subheadline)
                     .foregroundColor(.bodyText)
+                Text("\(info.floor)楼")
+                    .font(.footnote)
+                    .foregroundColor(Color.tintColor)
                 Divider()
                     .padding(.vertical, 6)
             }

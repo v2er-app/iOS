@@ -41,10 +41,9 @@ struct FeedActions {
             }
 
             func execute(in store: Store) async {
-                // TODO: change endpoint to .recent
-
+                let endpoint: Endpoint = willLoadPage >= 1 ? .recent : .tab
                 let result: APIResult<FeedInfo> = await APIService.shared
-                    .htmlGet(endpoint: .tab, ["p": willLoadPage.string])
+                    .htmlGet(endpoint: endpoint, ["p": willLoadPage.string])
                 dispatch(action: FeedActions.LoadMore.Done(result: result))
             }
         }
