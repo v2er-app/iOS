@@ -10,11 +10,11 @@ import SwiftUI
 import Kingfisher
 
 struct AvatarView: View {
-    var url: String = ""
+    var url: String? = ""
     var size: CGFloat = 38.0
     
     var body: some View {
-        KFImage.url(URL(string: url))
+        KFImage.url(URL(string: url ?? .default))
 //            .loadDiskFileSynchronously()
             .placeholder { Color.lightGray.frame(width: size, height: size) }
             .fade(duration: 0.25)

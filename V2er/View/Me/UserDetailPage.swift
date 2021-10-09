@@ -82,7 +82,6 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
             }
         }
         .prepareStatusBarConfigurator(store.appState.globalState.statusBarState)
-        .buttonStyle(.plain)
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
         .onAppear {

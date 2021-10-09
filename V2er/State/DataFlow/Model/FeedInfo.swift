@@ -26,26 +26,29 @@ struct FeedInfo: BaseModel {
         self.items.append(contentsOf: feedInfo.items)
     }
 
-    struct Item: Identifiable {
+    struct Item: FeedItemInfo {
         var id: String = .default
         // @Pick(value = "span.item_title > a")
-        var title: String = .default
+        var title: String? = .default
         // @Pick(value = "span.item_title > a", attr = "href")
         var linkPath: String = .default
         // @Pick(value = "td > a > img", attr = "src")
-        var avatar: String = .default
+        var avatar: String? = .default
         // @Pick(value = "span.small.fade > strong > a")
-        var userName: String = .default
+        var userName: String? = .default
         // @Pick(value = "span.small.fade:last-child", attr = "ownText")
-        var replyUpdate: String = .default
+        var replyUpdate: String? = .default
         // @Pick(value = "span.small.fade > a")
-        var tagName: String = .default
+        var tagName: String? = .default
         // @Pick(value = "span.small.fade > a", attr = "href")
-        var tagId: String = .default
+        var tagId: String? = .default
         // @Pick("a[class^=count_]")
-        var replies: String = .default
+        var replyNum: String? = .default
 
         init() {}
+        init(id: String) {
+            self.id = id
+        }
 
         static func create(from id: String, title: String = .default, avatar: String = .default) -> Item {
             var item = Item()
@@ -83,7 +86,7 @@ struct FeedInfo: BaseModel {
             item.tagName = e.pick("span.small.fade > a")
             item.tagId = e.pick("span.small.fade > a", .href)
                 .segment(separatedBy: "/")
-            item.replies = e.pick("a[class^=count_]")
+            item.replyNum = e.pick("a[class^=count_]")
             items.append(item)
         }
         log("FeedInfo: \(self)")

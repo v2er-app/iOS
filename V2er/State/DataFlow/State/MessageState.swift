@@ -20,7 +20,7 @@ struct MessageInfo: BaseModel {
     var items: [Item] = []
 
     struct Item: HtmlItemModel {
-        let id = UUID()
+        let id: String
         var name: String = .default
         var avatar: String = .default
         var title: String = .default
@@ -28,12 +28,13 @@ struct MessageInfo: BaseModel {
         var content: String = .default
         var time: String = .default
 
-        init(from html: Element?) {
-            guard let root = html else { return }
+        init?(from html: Element?) {
+            guard let root = html else { return nil }
             name = root.pick("a[href^=/member/] strong")
             avatar = parseAvatar(root.pick("a[href^=/member/] img", .src))
             title = root.pick("span.fade")
             link = root.pick("a[href^=/t/]", .href)
+            id = parseFeedId(link)
             content = root.pick("div.payload", .innerHtml)
             time = root.pick("span.snow")
         }
@@ -48,7 +49,9 @@ struct MessageInfo: BaseModel {
         let elements = root.pickAll("div.cell[id^=n_]")
         for e in elements {
             let item = Item(from: e)
-            items.append(item)
+            if let item = item {
+                items.append(item)
+            }
         }
         log("items.count: \(items.count)")
     }

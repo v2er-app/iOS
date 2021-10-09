@@ -79,7 +79,6 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             }
         }
         .prepareStatusBarConfigurator(statusBarConfig)
-        .buttonStyle(.plain)
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
         .onAppear {

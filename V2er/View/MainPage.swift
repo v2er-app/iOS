@@ -34,7 +34,6 @@ struct MainPage: StateView {
             }
             .ignoresSafeArea(.container)
             .navigationBarHidden(true)
-            .buttonStyle(.plain)
         }
     }
     

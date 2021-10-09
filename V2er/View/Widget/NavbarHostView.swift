@@ -31,12 +31,17 @@ struct NavbarHostView<Content: View>: View {
         }
         .greedyWidth()
         .padding(.horizontal, self.paddingH)
+        .forceClickable()
     }
 }
 
-struct NavbarView: View {
+struct NavbarView<TitleView: View>: View {
     @Environment(\.dismiss) var dismiss
-    var title: String
+    let titleView: TitleView
+
+    init(@ViewBuilder titleView: () -> TitleView) {
+        self.titleView = titleView()
+    }
 
     var body: some View {
         NavbarHostView(paddingH: 0, hideDivider: false) {
@@ -55,8 +60,7 @@ struct NavbarView: View {
             .greedyWidth()
             .overlay {
                 HStack(alignment: .center) {
-                    Text(title)
-                        .font(.headline)
+                    titleView
                 }
             }
         }
@@ -66,6 +70,9 @@ struct NavbarView: View {
 
 struct NavHostView_Previews: PreviewProvider {
     static var previews: some View {
-        NavbarView(title: "Title")
+        NavbarView {
+            Text("Title")
+                .font(.headline)
+        }
     }
 }

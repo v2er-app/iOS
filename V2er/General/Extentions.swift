@@ -65,6 +65,14 @@ extension Optional where Wrapped == String {
     var isEmpty: Bool {
         return self?.isEmpty ?? true
     }
+
+    var safe: String {
+        return ifEmpty(.empty)
+    }
+
+    func ifEmpty(_ defaultValue: String) -> String {
+        return isEmpty ? defaultValue : self!
+    }
 }
 
 extension Binding {

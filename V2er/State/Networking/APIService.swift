@@ -11,7 +11,9 @@ import SwiftSoup
 import Kingfisher
 
 struct APIService {
-    static let baseUrlString = "https://www.v2ex.com"
+    static let HTTPS = "https:"
+    static let HTTP = "http:"
+    static let baseUrlString = "\(HTTPS)//www.v2ex.com"
     //    static let baseUrlWww= "https://www.v2ex.com"
     let baseURL = URL(string: baseUrlString)!
     static let shared = APIService()

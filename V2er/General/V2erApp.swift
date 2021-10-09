@@ -42,6 +42,7 @@ struct V2erApp: App {
         WindowGroup {
             MainPage()
                 .environmentObject(Store.shared)
+                .buttonStyle(.plain)
         }
     }
 

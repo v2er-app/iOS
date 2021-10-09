@@ -58,7 +58,7 @@ final public class Store: ObservableObject {
             case .myfavorite:
                 (appState.myFavoriteState, followingAction) = myFavoriteStateReducer(appState.myFavoriteState, action)
             case .myfollow:
-                (appState.myFavoriteState, followingAction) = myFavoriteStateReducer(appState.myFavoriteState, action)
+                (appState.myFollowState, followingAction) = myFollowStateReducer(appState.myFollowState, action)
             case .myrecent:
                 (appState.myRecentState, followingAction) = myRecentStateReducer(appState.myRecentState, action)
             case .setting:

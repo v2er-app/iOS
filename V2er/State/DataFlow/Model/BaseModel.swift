@@ -24,7 +24,6 @@ protocol BaseModel: HtmlParsable {
 }
 
 extension BaseModel {
-
     var rawData: String? {
         get {
             return .empty
@@ -38,7 +37,3 @@ extension BaseModel {
         return true
     }
 }
-
-
-
-

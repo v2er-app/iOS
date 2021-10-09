@@ -70,10 +70,9 @@ struct MyFollowActions {
 
     struct LoadMoreStart: AwaitAction {
         var target: Reducer = R
-        let userId: String
 
         func execute(in store: Store) async {
-            let state = store.appState.userFeedStates[id]!
+            let state = store.appState.myFollowState
             let params = ["p": state.updatableState.willLoadPage.string]
             let result: APIResult<MyFollowInfo> = await APIService.shared
                 .htmlGet(endpoint: .myFollowing, params)

@@ -22,13 +22,23 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     }
 
     var instanceId: String {
-        initData?.id ?? .default
+        self.id
     }
     @State var hideTitleViews = true
     @State var replyContent = ""
     @State var isKeyboardVisiable = false
     @FocusState private var replyIsFocused: Bool
     var initData: FeedInfo.Item? = nil
+    var id: String
+
+    init(id: String) {
+        self.id = id
+    }
+
+    init(initData: FeedInfo.Item?) {
+        self.initData = initData
+        self.id = self.initData!.id
+    }
 
     private var hasReplyContent: Bool {
         !replyContent.isEmpty
@@ -227,7 +237,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 struct NewsDetailPage_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            FeedDetailPage()
+            FeedDetailPage(id: .empty)
         }
     }
 }

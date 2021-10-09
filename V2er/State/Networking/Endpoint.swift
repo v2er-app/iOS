@@ -17,7 +17,8 @@ enum Endpoint {
     case captcha, signin
     case topic(id: String), topics(userName: String)
     case myFollowing, message
-    case myNodes, nodesNav
+    case myFavoriteNodes, myFavoriteFeeds
+    case nodesNav
     case tagDetail(tagId: String)
     case userPage(userName: String), createTopic
     case appendTopic(id: String), thanksReply(id: String)
@@ -71,7 +72,9 @@ enum Endpoint {
                 info.ua = .web
             case .myFollowing:
                 info.path = "/my/following"
-            case .myNodes:
+            case .myFavoriteFeeds:
+                info.path = "/my/topics"
+            case .myFavoriteNodes:
                 info.path = "/my/nodes"
             case .nodesNav:
                 info.path = "/"

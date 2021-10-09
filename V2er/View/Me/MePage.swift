@@ -97,7 +97,7 @@ struct MePage: BaseHomePageView {
             }
             
             NavigationLink {
-                StarPage()
+                MyFavoritePage()
             } label: {
                 SectionItemView("收藏", icon: "bookmark")
             }

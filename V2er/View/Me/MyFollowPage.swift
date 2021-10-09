@@ -8,9 +8,44 @@
 
 import SwiftUI
 
-struct MyFollowPage: View {
+struct MyFollowPage: StateView {
+    @EnvironmentObject private var store: Store
+
+    var bindingState: Binding<MyFollowState> {
+        return $store.appState.myFollowState
+    }
+
     var body: some View {
-        Text("SpecialCarePage")
+        contentView
+            .updatable(state.updatableState) {
+                await run(action: MyFollowActions.FetchStart(autoLoad: false))
+            } loadMore: {
+                await run(action: MyFollowActions.LoadMoreStart())
+            }
+            .onAppear {
+                dispatch(action: MyFollowActions.FetchStart(autoLoad: !state.updatableState.hasLoadedOnce))
+            }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                NavbarView {
+                    Text("我的关注")
+                        .font(.headline)
+                }
+            }
+            .ignoresSafeArea(.container)
+            .navigationBarHidden(true)
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
+        LazyVStack(spacing: 0) {
+            ForEach(state.model?.items ?? []) { item in
+                NavigationLink {
+                    FeedDetailPage(id: item.id)
+                } label: {
+                    FeedItemView(data: item)
+                }
+            }
+        }
     }
 }
 

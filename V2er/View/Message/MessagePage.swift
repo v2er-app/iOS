@@ -33,7 +33,7 @@ struct MessagePage: BaseHomePageView {
     private var contentView: some View {
         LazyVStack(spacing: 0) {
             ForEach(state.model.items) { item in
-                NavigationLink(destination: FeedDetailPage()) {
+                NavigationLink(destination: FeedDetailPage(id: item.id)) {
                     MessageItemView(item: item)
                     Divider()
                 }

@@ -39,22 +39,25 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
             .navigationBarHidden(true)
     }
 
+    @ViewBuilder
     private var contentView: some View {
         LazyVStack(spacing: 0) {
             ForEach(state.model.items) { item in
                 NavigationLink {
-                    FeedDetailPage()
+                    FeedDetailPage(id: item.id)
                 } label: {
                     ItemView(data: item)
                 }
             }
         }
-        .buttonStyle(.plain)
     }
 
     @ViewBuilder
     private var navBar: some View  {
-        NavbarView(title: "\(userId)的全部主题")
+        NavbarView {
+            Text("\(userId)的全部主题")
+                .font(.headline)
+        }
     }
 
     struct ItemView: View {
