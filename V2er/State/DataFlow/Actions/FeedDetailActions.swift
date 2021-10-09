@@ -21,7 +21,7 @@ struct FeedDetailActions {
 
             func execute(in store: Store) async {
                 let result: APIResult<FeedDetailInfo> = await APIService.shared
-                    .htmlGet(endpoint: .topic(id: feedId ?? .default))
+                    .htmlGet(endpoint: .topic(id: feedId ?? .default), ["p": 1.string])
                 dispatch(action: FetchData.Done(id: id, result: result))
             }
         }
