@@ -32,6 +32,7 @@ struct MyFavoritePage: StateView {
                 .tag(1)
         }
         .tabViewStyle(.page)
+        .padding(.horizontal, 10)
         .debug()
     }
 
@@ -44,6 +45,7 @@ struct MyFavoritePage: StateView {
                 Text("节点")
                     .tag(1)
             }
+            .font(.headline)
             .pickerStyle(.segmented)
             .frame(maxWidth: 200)
             .debug()
@@ -85,6 +87,7 @@ struct MyFavoritePage: StateView {
                         Text(item.topicNum)
                             .font(.footnote)
                     }
+                    .lineLimit(1)
                 }
             }
         }

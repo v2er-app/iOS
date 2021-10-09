@@ -31,6 +31,7 @@ struct NavbarHostView<Content: View>: View {
         }
         .greedyWidth()
         .padding(.horizontal, self.paddingH)
+        .frame(minHeight: 50)
         .forceClickable()
     }
 }
