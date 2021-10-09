@@ -20,7 +20,8 @@ struct MessageInfo: BaseModel {
     var items: [Item] = []
 
     struct Item: HtmlItemModel {
-        let id: String
+        var id: String = UUID().uuidString
+        var feedId: String
         var name: String = .default
         var avatar: String = .default
         var title: String = .default
@@ -34,7 +35,7 @@ struct MessageInfo: BaseModel {
             avatar = parseAvatar(root.pick("a[href^=/member/] img", .src))
             title = root.pick("span.fade")
             link = root.pick("a[href^=/t/]", .href)
-            id = parseFeedId(link)
+            feedId = parseFeedId(link)
             content = root.pick("div.payload", .innerHtml)
             time = root.pick("span.snow")
         }

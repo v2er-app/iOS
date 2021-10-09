@@ -13,7 +13,7 @@ struct NavbarHostView<Content: View>: View {
     let paddingH: CGFloat
     let hideDivider: Bool
     
-    init(paddingH: CGFloat = 2, hideDivider: Bool = true, @ViewBuilder content: () -> Content) {
+    init(paddingH: CGFloat = 2, hideDivider: Bool = false, @ViewBuilder content: () -> Content) {
         self.content = content()
         self.paddingH = paddingH
         self.hideDivider = hideDivider
