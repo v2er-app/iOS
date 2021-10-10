@@ -44,7 +44,7 @@ struct ExploreInfo: BaseModel {
         var nodes: [Node] = []
     }
 
-    struct Node: NodeItemInfo, Hashable {
+    struct Node: Identifiable, Hashable {
         let id: String
         var name: String
         var img: String?

@@ -28,11 +28,13 @@ struct MyFavoriteState: FluxState {
                 var replyUpdate: String?
                 var title: String?
                 var replyNum: String? = 0.string
-                var tagName: String?
-                var tagId: String?
+                var nodeName: String?
+                var nodeId: String?
 
-                init(id: String) {
+                init(id: String, title: String? = .default, avatar: String? = .default) {
                     self.id = id
+                    self.title = title
+                    self.avatar = avatar
                 }
 
                 init?(from html: Element?) {
@@ -42,8 +44,8 @@ struct MyFavoriteState: FluxState {
                     userName = root.pick("strong a[href^=/member/]")
                     title = root.pick("span.item_title a[href^=/t/]")
                     replyNum = root.pick("a[class^=count_]")
-                    tagName = root.pick("a.node")
-                    tagId = root.pick("a.node", .href)
+                    nodeName = root.pick("a.node")
+                    nodeId = root.pick("a.node", .href)
                         .segment(separatedBy: "/")
                     let timeReplier = root.pick("span.topic_info")
                     replyUpdate = timeReplier.segment(separatedBy: "•", at: 2)

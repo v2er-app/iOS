@@ -28,15 +28,7 @@ struct FeedItemView<Data: FeedItemInfo>: View {
                             .foregroundColor(Color.tintColor)
                     }
                     Spacer()
-                    NavigationLink(destination: TagDetailPage(tagId: data.tagId)) {
-                        Text(data.tagName.safe)
-                            .font(.footnote)
-                            .foregroundColor(.black)
-                            .lineLimit(1)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(Color.lightGray)
-                    }
+                    NodeView(id: data.nodeId.safe, name: data.nodeName.safe)
                 }
                 Text(data.title.safe)
                     .greedyWidth(.leading)
@@ -60,11 +52,11 @@ protocol FeedItemInfo: Identifiable {
     var avatar: String? { get }
     var userName: String? { get }
     var replyUpdate: String? { get }
-    var tagName: String? { get }
-    var tagId: String? { get }
+    var nodeName: String? { get }
+    var nodeId: String? { get }
     var replyNum: String? { get }
     
-    init(id: String)
+    init(id: String, title: String?, avatar: String?)
 }
 
 //struct NewsItemView_Previews: PreviewProvider {

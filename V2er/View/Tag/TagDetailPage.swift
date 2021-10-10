@@ -192,8 +192,8 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     private var nodeListView: some View {
         LazyVStack(spacing: 0) {
             ForEach(model.topics) { item in
-                let data = FeedInfo.Item.create(
-                    from: item.id,
+                let data = FeedInfo.Item(
+                    id: item.id,
                     title: item.title,
                     avatar: item.avatar)
                 NavigationLink(destination: FeedDetailPage(initData: data)) {

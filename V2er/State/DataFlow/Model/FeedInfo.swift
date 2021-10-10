@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftSoup
+import CloudKit
 
 // @Pick("div#Wrapper")
 struct FeedInfo: BaseModel {
@@ -26,36 +27,49 @@ struct FeedInfo: BaseModel {
         self.items.append(contentsOf: feedInfo.items)
     }
 
-    struct Item: FeedItemInfo {
-        var id: String = .default
+    struct Item: FeedItemInfo, HtmlItemModel {
+        var id: String
         // @Pick(value = "span.item_title > a")
-        var title: String? = .default
-        // @Pick(value = "span.item_title > a", attr = "href")
-        var linkPath: String = .default
+        var title: String?
         // @Pick(value = "td > a > img", attr = "src")
-        var avatar: String? = .default
+        var avatar: String?
         // @Pick(value = "span.small.fade > strong > a")
-        var userName: String? = .default
+        var userName: String?
         // @Pick(value = "span.small.fade:last-child", attr = "ownText")
-        var replyUpdate: String? = .default
+        var replyUpdate: String?
         // @Pick(value = "span.small.fade > a")
-        var tagName: String? = .default
+        var nodeName: String?
         // @Pick(value = "span.small.fade > a", attr = "href")
-        var tagId: String? = .default
+        var nodeId: String?
         // @Pick("a[class^=count_]")
-        var replyNum: String? = .default
+        var replyNum: String?
 
-        init() {}
-        init(id: String) {
+        init(id: String, title: String? = .default, avatar: String? = .default) {
             self.id = id
+            self.title = title
+            self.avatar = avatar
         }
 
-        static func create(from id: String, title: String = .default, avatar: String = .default) -> Item {
-            var item = Item()
-            item.id = id
-            item.title = title
-            item.avatar = avatar
-            return item
+        init?(from html: Element?) {
+            guard let root = html else { return nil }
+            id = parseFeedId(root.pick("span.item_title > a", .href))
+            title = root.pick("span.item_title > a")
+            avatar = parseAvatar(root.pick("td > a > img", .src))
+            userName = root.pick("span.small.fade > strong > a")
+            let timeReplier = root.pick("span.small.fade", at: 1, .text)
+            if timeReplier.contains("来自") {
+                let time = timeReplier.segment(separatedBy: "•", at: .first)
+                    .trim()
+                let replier = timeReplier.segment(separatedBy: "来自").trim()
+                replyUpdate = time.appending(" \(replier) ")
+                    .appending("回复了")
+            } else {
+                replyUpdate = timeReplier
+            }
+            nodeName = root.pick("span.small.fade > a")
+            nodeId = root.pick("span.small.fade > a", .href)
+                .segment(separatedBy: "/")
+            replyNum = root.pick("a[class^=count_]")
         }
     }
 
@@ -67,27 +81,9 @@ struct FeedInfo: BaseModel {
         twoStepStr = root.pick("form[action=/2fa]")
         let elements = root.pickAll("div.cell.item")
         for e in elements {
-            var item = Item()
-            item.id = parseFeedId(e.pick("span.item_title > a", .href))
-            item.title = e.pick("span.item_title > a")
-            item.linkPath = e.pick("span.item_title > a", .href)
-            item.avatar = parseAvatar(e.pick("td > a > img", .src))
-            item.userName = e.pick("span.small.fade > strong > a")
-            let timeReplier = e.pick("span.small.fade", at: 1, .text)
-            if timeReplier.contains("来自") {
-                let time = timeReplier.segment(separatedBy: "•", at: .first)
-                    .trim()
-                let replier = timeReplier.segment(separatedBy: "来自").trim()
-                item.replyUpdate = time.appending(" \(replier) ")
-                                       .appending("回复了")
-            } else {
-                item.replyUpdate = timeReplier
+            if let item = Item(from: e) {
+                items.append(item)
             }
-            item.tagName = e.pick("span.small.fade > a")
-            item.tagId = e.pick("span.small.fade > a", .href)
-                .segment(separatedBy: "/")
-            item.replyNum = e.pick("a[class^=count_]")
-            items.append(item)
         }
         log("FeedInfo: \(self)")
     }

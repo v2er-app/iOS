@@ -39,7 +39,7 @@ struct ExplorePage: BaseHomePageView {
                     NavigationLink(destination: UserDetailPage(userId: item.member)) {
                         AvatarView(url: item.avatar, size: 30)
                     }
-                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item.create(from: item.id))) {
+                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
                         Text(item.title)
                             .font(.system(size: 15))
                             .fontWeight(.semibold)
@@ -55,14 +55,14 @@ struct ExplorePage: BaseHomePageView {
         let hotNodesItem = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("最热节点")
             FlowStack(data: state.exploreInfo.hottestNodeInfo) { node in
-                NodeView(node: node)
+                NodeView(id: node.id, name: node.name)
             }
         }
         
         let newlyAddedItem = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("新增节点")
             FlowStack(data: state.exploreInfo.recentNodeInfo) { node in
-                NodeView(node: node)
+                NodeView(id: node.id, name: node.name)
             }
         }
         
@@ -89,7 +89,6 @@ struct ExplorePage: BaseHomePageView {
         }
         .hide(!isSelected)
     }
-
 }
 
 
@@ -101,7 +100,7 @@ struct NodeNavItemView: View {
         VStack(alignment: .leading, spacing: 0) {
             SectionTitleView(data.category, style: .small)
             FlowStack(data: data.nodes) { node in
-                NodeView(node: node)
+                NodeView(id: node.id, name: node.name)
             }
         }
     }

@@ -199,7 +199,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
         VStack(spacing: 0) {
             if currentTab == .topic {
                 ForEach(model.topicInfo.items) { item in
-                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item.create(from: item.id))) {
+                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
                         TopicItemView(data: item)
                     }
                 }
@@ -218,7 +218,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                 }
             } else {
                 ForEach(model.replyInfo.items) { item in
-                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item.create(from: item.id))) {
+                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
                         ReplyItemView(data: item)
                     }
                 }

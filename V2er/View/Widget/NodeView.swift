@@ -8,14 +8,22 @@
 
 import SwiftUI
 
-struct NodeView<Data: NodeItemInfo>: View {
-    let node: Data
+struct NodeView: View {
+    let id: String
+    let name: String
+    let img: String?
+
+    init(id: String, name: String, img: String = .empty) {
+        self.id = id
+        self.name = name
+        self.img = img
+    }
 
     var body: some View {
         NavigationLink {
-            TagDetailPage(tagId: node.id)
+            TagDetailPage(tagId: id)
         } label: {
-            Text(node.name)
+            Text(name)
                 .font(.footnote)
                 .foregroundColor(.black)
                 .lineLimit(1)
@@ -26,10 +34,3 @@ struct NodeView<Data: NodeItemInfo>: View {
     }
 
 }
-
-protocol NodeItemInfo: Identifiable {
-    var id: String { get }
-    var name: String { get }
-    var img: String? { get }
-}
-

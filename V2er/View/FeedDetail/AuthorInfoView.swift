@@ -17,11 +17,11 @@ struct AuthorInfoView: View {
     }
 
     private var tag: String {
-        data?.tagName ?? initData?.tagName ?? .default
+        data?.tagName ?? initData?.nodeName ?? .default
     }
 
     private var tagId: String {
-        data?.tagId ?? initData?.tagId ?? .default
+        data?.tagId ?? initData?.nodeId ?? .default
     }
 
     private var userName: String {
