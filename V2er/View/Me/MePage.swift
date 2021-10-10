@@ -107,7 +107,7 @@ struct MePage: BaseHomePageView {
                 SectionItemView("关注", icon: "heart")
             }
             NavigationLink {
-                HistoryPage()
+                MyRecentPage()
             } label: {
                 SectionItemView("最近浏览", icon: "clock", showDivider: false)
             }

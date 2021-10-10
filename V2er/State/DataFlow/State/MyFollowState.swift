@@ -18,7 +18,7 @@ struct MyFollowInfo: BaseModel {
     var totalPage: Int = 0
     var items: [Item] = []
 
-    struct Item: FeedItemInfo {
+    struct Item: FeedItemProtocol {
 
         var id: String = .default
         var avatar: String?

@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct FeedItemView<Data: FeedItemInfo>: View {
+struct FeedItemView<Data: FeedItemProtocol>: View {
     let data: Data
     
     var body: some View {
@@ -46,7 +46,7 @@ struct FeedItemView<Data: FeedItemInfo>: View {
 }
 
 
-protocol FeedItemInfo: Identifiable {
+protocol FeedItemProtocol: Identifiable {
     var id: String { get }
     var title: String? { get }
     var avatar: String? { get }

@@ -21,7 +21,7 @@ struct MyFavoriteState: FluxState {
             var totalPage: Int = 0
             var items: [Item] = []
 
-            struct Item: FeedItemInfo {
+            struct Item: FeedItemProtocol {
                 var id: String
                 var avatar: String?
                 var userName: String?

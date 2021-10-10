@@ -27,7 +27,7 @@ struct FeedInfo: BaseModel {
         self.items.append(contentsOf: feedInfo.items)
     }
 
-    struct Item: FeedItemInfo, HtmlItemModel {
+    struct Item: FeedItemProtocol, HtmlItemModel {
         var id: String
         // @Pick(value = "span.item_title > a")
         var title: String?
