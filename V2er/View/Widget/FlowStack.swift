@@ -48,31 +48,29 @@ public struct FlowStack<T: Hashable, V: View>: View {
         var height = CGFloat.zero
         return ZStack(alignment: .topLeading) {
             ForEach(self.data, id: \.self) { item in
-                NavigationLink(destination: TagDetailPage()) {
-                    self.viewMapping(item)
-                        .padding(.horizontal, self.horizontalSpace)
-                        .padding(.vertical, self.verticalSpace)
-                        .alignmentGuide(.leading, computeValue: { d in
-                            if (abs(width - d.width) > geometry.size.width) {
-                                width = 0
-                                height -= d.height
-                            }
-                            let result = width
-                            if item == self.data.last {
-                                width = 0
-                            } else {
-                                width -= d.width
-                            }
-                            return result
-                        })
-                        .alignmentGuide(.top, computeValue: { d in
-                            let result = height
-                            if item == self.data.last {
-                                height = 0
-                            }
-                            return result
-                        })
-                }
+                self.viewMapping(item)
+                    .padding(.horizontal, self.horizontalSpace)
+                    .padding(.vertical, self.verticalSpace)
+                    .alignmentGuide(.leading, computeValue: { d in
+                        if (abs(width - d.width) > geometry.size.width) {
+                            width = 0
+                            height -= d.height
+                        }
+                        let result = width
+                        if item == self.data.last {
+                            width = 0
+                        } else {
+                            width -= d.width
+                        }
+                        return result
+                    })
+                    .alignmentGuide(.top, computeValue: { d in
+                        let result = height
+                        if item == self.data.last {
+                            height = 0
+                        }
+                        return result
+                    })
             }
         }
         .background(viewHeightReader($totalHeight))
@@ -95,8 +93,8 @@ public struct FlowStack<T: Hashable, V: View>: View {
 struct FlowStack_Previews: PreviewProvider {
     static var previews: some View {
         FlowStack(data: ["问与答1", "问与答2", "99",
-                          "问与答333", "问与答4", "问与答55",
-                          "问与答6", "问与答77"])
+                         "问与答333", "问与答4", "问与答55",
+                         "问与答6", "问与答77"])
         {
             Text($0)
                 .font(.footnote)

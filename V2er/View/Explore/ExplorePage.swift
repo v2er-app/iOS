@@ -40,7 +40,7 @@ struct ExplorePage: BaseHomePageView {
                         AvatarView(url: item.avatar, size: 30)
                     }
                     NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item.create(from: item.id))) {
-                    Text(item.title)
+                        Text(item.title)
                             .font(.system(size: 15))
                             .fontWeight(.semibold)
                             .foregroundColor(.bodyText)
@@ -54,27 +54,15 @@ struct ExplorePage: BaseHomePageView {
         
         let hotNodesItem = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("最热节点")
-            FlowStack(data: state.exploreInfo.hottestNodeInfo) {
-                Text($0.name)
-                    .font(.footnote)
-                    .foregroundColor(.black)
-                    .lineLimit(1)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color.lightGray)
+            FlowStack(data: state.exploreInfo.hottestNodeInfo) { node in
+                NodeView(node: node)
             }
         }
         
         let newlyAddedItem = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("新增节点")
-            FlowStack(data: state.exploreInfo.recentNodeInfo) {
-                Text($0.name)
-                    .font(.footnote)
-                    .foregroundColor(.black)
-                    .lineLimit(1)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color.lightGray)
+            FlowStack(data: state.exploreInfo.recentNodeInfo) { node in
+                NodeView(node: node)
             }
         }
         
@@ -112,14 +100,8 @@ struct NodeNavItemView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             SectionTitleView(data.category, style: .small)
-            FlowStack(data: data.nodes) {
-                Text($0.name)
-                    .font(.footnote)
-                    .foregroundColor(.black)
-                    .lineLimit(1)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color.lightGray)
+            FlowStack(data: data.nodes) { node in
+                NodeView(node: node)
             }
         }
     }

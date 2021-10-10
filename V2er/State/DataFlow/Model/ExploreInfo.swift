@@ -44,12 +44,10 @@ struct ExploreInfo: BaseModel {
         var nodes: [Node] = []
     }
 
-    struct Node: Identifiable, Hashable {
-        let id = UUID()
-        // .text
+    struct Node: NodeItemInfo, Hashable {
+        let id: String
         var name: String
-        // .href
-        var link: String
+        var img: String?
     }
 
     init() {}
@@ -83,7 +81,9 @@ struct ExploreInfo: BaseModel {
         for e in hottestNodeElements {
             let name = e.value()
             let link = e.value(.href)
-            let node = Node(name: name, link: link)
+            let id = link
+                .segment(separatedBy: "/")
+            let node = Node(id: id, name: name)
             self.hottestNodeInfo.append(node)
         }
         // 4. recentNodeInfo
@@ -91,7 +91,9 @@ struct ExploreInfo: BaseModel {
         for e in recentNodeElements {
             let name = e.value()
             let link = e.value(.href)
-            let node = Node(name: name, link: link)
+            let id = link
+                .segment(separatedBy: "/")
+            let node = Node(id: id, name: name)
             self.recentNodeInfo.append(node)
         }
         // 5. nodeNavInfo
@@ -105,7 +107,9 @@ struct ExploreInfo: BaseModel {
             for ee in nodeElements {
                 let name = ee.value()
                 let link = ee.value(.href)
-                let node = Node(name: name, link: link)
+                let id = link
+                    .segment(separatedBy: "/")
+                let node = Node(id: id, name: name)
                 nodes.append(node)
             }
             let nodesNavItem = NodeNavItem(category: category,
