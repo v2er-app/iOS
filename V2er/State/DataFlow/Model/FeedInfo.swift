@@ -50,6 +50,19 @@ struct FeedInfo: BaseModel {
             self.avatar = avatar
         }
 
+        init(id: String, title: String? = .default, avatar: String?,
+             userName: String?, replyUpdate: String?, nodeName: String?,
+             nodeId: String?, replyNum: String?) {
+            self.id = id
+            self.title = title
+            self.avatar = avatar
+            self.userName = userName
+            self.replyUpdate = replyUpdate
+            self.nodeName = nodeName
+            self.nodeId = nodeId
+            self.replyNum = replyNum
+        }
+
         init?(from html: Element?) {
             guard let root = html else { return nil }
             id = parseFeedId(root.pick("span.item_title > a", .href))

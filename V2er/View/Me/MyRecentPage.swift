@@ -26,11 +26,11 @@ struct MyRecentPage: StateView {
     private var contentView: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
-                ForEach(state.model?.items ?? []) { item in
+                ForEach(state.records ?? []) { item in
                     NavigationLink {
                         FeedDetailPage(id: item.id)
                     } label: {
-                        FeedItemView(data: item)
+                        RecentItemView(data: item)
                     }
                 }
             }
@@ -45,6 +45,39 @@ struct MyRecentPage: StateView {
         .navigationBarHidden(true)
     }
 }
+
+struct RecentItemView<Data: FeedItemProtocol>: View {
+    let data: Data
+
+    var body: some View {
+            VStack(spacing: 0) {
+                HStack(alignment: .top) {
+                    NavigationLink(destination: UserDetailPage(userId: data.userName)) {
+                        AvatarView(url: data.avatar)
+                    }
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(data.userName.safe)
+                            .lineLimit(1)
+                            .font(.body)
+                        Text(data.replyNum.safe)
+                            .lineLimit(1)
+                            .font(.footnote)
+                            .foregroundColor(Color.tintColor)
+                    }
+                    Spacer()
+                    NodeView(id: data.nodeId.safe, name: data.nodeName.safe)
+                }
+                Text(data.title.safe)
+                    .greedyWidth(.leading)
+                    .lineLimit(2)
+                    .padding(.vertical, 3)
+            }
+            .padding(12)
+            .background(Color.almostClear)
+            .divider()
+    }
+}
+
 
 struct HistoryPage_Previews: PreviewProvider {
     static var previews: some View {

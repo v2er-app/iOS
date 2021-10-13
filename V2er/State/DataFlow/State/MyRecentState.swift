@@ -9,38 +9,51 @@
 import Foundation
 
 struct MyRecentState: FluxState {
+    static let RECORD_KEY = "app.v2er.record"
     var loading = false
-    var model: Model?
+    var records: [Record]?
 
-    struct Model {
-        var items: [Item]
+    struct Record: FeedItemProtocol, Codable, Comparable {
+        var timestamp: Int64 = Date.currentTimeStamp
+        var id: String
+        var title: String?
+        var avatar: String?
+        var userName: String?
+        var replyUpdate: String?
+        var nodeName: String?
+        var nodeId: String?
+        var replyNum: String?
 
-        struct Item: FeedItemProtocol, Codable {
-            var id: String
-            var title: String?
-            var avatar: String?
-            var userName: String?
-            var replyUpdate: String?
-            var nodeName: String?
-            var nodeId: String?
-            var replyNum: String?
+        init(id: String, title: String?, avatar: String?) {
+            self.init(id: id, title: title, avatar: avatar, userName: .empty)
+        }
 
-            init(id: String, title: String?, avatar: String?) {
-                self.id = id
-                self.title = title
-                self.avatar = avatar
-            }
+        init(id: String,
+             title: String?,
+             avatar: String?,
+             userName: String? = .empty,
+             replyUpdate: String? = .empty,
+             nodeName: String? = .empty,
+             nodeId: String? = .empty,
+             replyNum: String? = .empty
+        ) {
+            self.id = id
+            self.title = title
+            self.avatar = avatar
+            self.userName = userName
+            self.replyUpdate = replyUpdate
+            self.nodeName = nodeName
+            self.nodeId = nodeId
+            self.replyNum = replyNum
+        }
 
-//            init(id: String, title: String?, avatar: String?, userName: String?, replyUpdate: String?, nodeName: String?, nodeId: String?, replyNum: String?) {
-//                self.id = id
-//                self.title = title
-//                self.avatar = avatar
-//                self.userName = userName
-//                self.replyUpdate = replyUpdate
-//                self.nodeName = nodeName
-//                self.nodeId = replyNum
-//            }
+        static func < (lhs: MyRecentState.Record, rhs: MyRecentState.Record) -> Bool {
+            lhs.timestamp < rhs.timestamp
+        }
 
+        static func == (lhs: MyRecentState.Record, rhs: MyRecentState.Record) -> Bool {
+            lhs.id == rhs.id
         }
     }
+
 }

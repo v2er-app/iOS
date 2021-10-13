@@ -28,6 +28,7 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             state.showProgressView = false
             if case let .success(result) = action.result {
                 state.model = result!
+                state.model.injectId(id)
                 state.willLoadPage = 2
                 state.hasMoreData = state.willLoadPage <= result?.headerInfo?.totalPage ?? 1
             } else {

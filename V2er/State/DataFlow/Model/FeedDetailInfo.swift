@@ -32,22 +32,28 @@ struct FeedDetailInfo: BaseModel {
     // a[onclick*=/sticky/topic/], onclick
     var stickyStr: String?
 
-    struct HeaderInfo: HtmlParsable {
+    mutating func injectId(_ id: String) {
+         self.topicId = id
+         self.headerInfo?.id = id
+    }
+
+    struct HeaderInfo: HtmlParsable, FeedItemProtocol {
+        var id: String = .empty
         // div.box img.avatar, .src
-        var avatar: String = .empty
+        var avatar: String?
         // div.box small.gray a
-        var userName: String = .empty
+        var userName: String?
         // div.box small.gray, .ownText
-        var timeAndClickedNum: String = .empty
+        var replyUpdate: String?
         // div.box a[href^=/go]
-        var tagName: String = .empty
+        var nodeName: String?
         // div.box a[href^=/go], .href
-        var tagId: String = .empty
+        var nodeId: String?
         // div.cell span.gray:contains(回复)
-        var comment: String = .empty
+        var replyNum: String?
         var totalPage: Int = 1
         // div.box h1
-        var title: String = .empty
+        var title: String?
         // div.box a[href*=favorite/], .href
         var favoriteLink: String = .empty
         // div.box div[id=topic_thank]
@@ -57,16 +63,29 @@ struct FeedDetailInfo: BaseModel {
         // div.box div.header a.op
         var appendText: String = .empty
 
-        init(from html: Element?) {
-            guard let root = html else { return }
+        func toFeedItemInfo() -> FeedInfo.Item {
+            return FeedInfo.Item(id: id, title: title,
+                                 avatar: avatar, userName: userName,
+                                 replyUpdate: replyUpdate, nodeName: nodeName,
+                                 nodeId: nodeId, replyNum: replyNum)
+        }
+
+        init(id: String, title: String?, avatar: String?) {
+            self.id = id
+            self.title = title
+            self.avatar = avatar
+        }
+
+        init?(from html: Element?) {
+            guard let root = html else { return nil }
             avatar = parseAvatar(root.pick("div.box img.avatar", .src))
             userName = root.pick("div.box small.gray a")
-            timeAndClickedNum = root.pick("div.box small.gray", .ownText)
+            replyUpdate = root.pick("div.box small.gray", .ownText)
                 .remove("By at")
-            tagName = root.pick("div.box a[href^=/go]")
-            tagId = root.pick("div.box a[href^=/go]", .href)
+            nodeName = root.pick("div.box a[href^=/go]")
+            nodeId = root.pick("div.box a[href^=/go]", .href)
                 .segment(separatedBy: "/")
-            comment = root.pick("div.cell span.gray:contains(回复)")
+            replyNum = root.pick("div.cell span.gray:contains(回复)")
             let lastNormalpage = root.pick("div.box a.page_normal", at: .last).int
             let currentPage = root.pick("div.box span.page_current").int
             totalPage = max(lastNormalpage, currentPage)
@@ -169,12 +188,12 @@ struct FeedDetailInfo: BaseModel {
     init() {}
     init(from html: Element?) {
         guard let root = html else { return }
+        self.topicId = root.pick("meta[property=og:url]", .content)
         self.headerInfo = HeaderInfo(from: root.pickOne("div#Wrapper"))
         self.contentInfo = ContentInfo(from: root.pickOne("div.content div.box"))
         self.problem = ProblemInfo(from: root.pickOne("div.problem"))
         self.replyInfo = ReplyInfo(from: root.pickAll("div[id^=r_]"))
         self.once = root.pick("input[name=once]", .value)
-        self.topicId = root.pick("meta[property=og:url]", .content)
         self.reportLink = root.pick("a[onclick*=/report/topic/]", .onclick)
         self.hasReported = root.pick("div.content div.box div.inner span.fade")
             .contains("已对本主题进行了报告")

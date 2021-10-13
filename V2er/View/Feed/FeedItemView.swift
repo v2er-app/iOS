@@ -57,6 +57,8 @@ protocol FeedItemProtocol: Identifiable {
     var replyNum: String? { get }
     
     init(id: String, title: String?, avatar: String?)
+
+    
 }
 
 //struct NewsItemView_Previews: PreviewProvider {

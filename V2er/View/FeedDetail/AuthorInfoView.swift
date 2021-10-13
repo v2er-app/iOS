@@ -17,11 +17,11 @@ struct AuthorInfoView: View {
     }
 
     private var tag: String {
-        data?.tagName ?? initData?.nodeName ?? .default
+        data?.nodeName ?? initData?.nodeName ?? .default
     }
 
     private var tagId: String {
-        data?.tagId ?? initData?.nodeId ?? .default
+        data?.nodeId ?? initData?.nodeId ?? .default
     }
 
     private var userName: String {
@@ -33,7 +33,7 @@ struct AuthorInfoView: View {
     }
 
     private var timeAndClickedNum: String {
-        data?.timeAndClickedNum ?? .default
+        data?.replyUpdate ?? .default
     }
 
     var body: some View {

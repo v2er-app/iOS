@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
-
     @Environment(\.isPresented) private var isPresented
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var store: Store
@@ -33,6 +32,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
     init(id: String) {
         self.id = id
+        self.initData = FeedInfo.Item(id: id)
     }
 
     init(initData: FeedInfo.Item?) {
@@ -84,7 +84,13 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .onDisappear {
             if !isPresented {
                 log("onPageClosed----->")
-//                dispatch(action: InstanceDestoryAction(target: .feeddetail, id: instanceId))
+                let data: FeedInfo.Item?
+                if state.model.headerInfo != nil {
+                    data = state.model.headerInfo?.toFeedItemInfo()
+                } else {
+                    data = initData
+                }
+                dispatch(action: MyRecentActions.RecordAction(data: data))
             }
         }
     }
