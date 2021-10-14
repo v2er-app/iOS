@@ -1,9 +1,9 @@
 //
-//  MePage.swift
-//  V2er
 //
 //  Created by Seth on 2020/5/25.
-//  Copyright © 2020 lessmore.io. All rights reserved.
+//  Copyright © 2020 lessmore.io. All rights reser
+//  MePage.swift
+//  V2erved.
 //
 
 import SwiftUI
@@ -21,8 +21,10 @@ struct MePage: BaseHomePageView {
     
     var body: some View {
         ScrollView {
-            topBannerView
-            sectionViews
+            VStack(spacing: 0) {
+                topBannerView
+                sectionViews
+            }
         }
         .background(Color.bgColor)
         .overlay {
@@ -111,7 +113,6 @@ struct MePage: BaseHomePageView {
             } label: {
                 SectionItemView("最近浏览", icon: "clock", showDivider: false)
             }
-            
             NavigationLink {
                 SettingsPage()
             } label: {
@@ -123,46 +124,6 @@ struct MePage: BaseHomePageView {
     
 }
 
-struct SectionItemView: View {
-    let title: String
-    var showDivider: Bool = true
-    let icon: String
-    
-    public init(_ title: String, icon: String, showDivider: Bool = true) {
-        self.title = title
-        self.icon = icon
-        self.showDivider = showDivider
-    }
-    
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .font(.body.weight(.semibold))
-                .padding(.leading, 16)
-                .padding(.trailing, 5)
-                .foregroundColor(.tintColor)
-            
-            HStack {
-                Text(title)
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.body.weight(.regular))
-                    .foregroundColor(.gray)
-                    .padding(.trailing, 16)
-            }
-            .padding(.vertical, 17)
-            .background {
-                VStack {
-                    Spacer()
-                    Divider()
-                        .foregroundColor(.lightGray)
-                        .opacity(showDivider ? 0.5 : 0.0)
-                }
-            }
-        }
-        .background(.white)
-    }
-}
 
 struct AccountPage_Previews: PreviewProvider {
     static var selected = TabId.me

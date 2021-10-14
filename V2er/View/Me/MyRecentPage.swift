@@ -35,14 +35,7 @@ struct MyRecentPage: StateView {
                 }
             }
         }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            NavbarView {
-                Text("最近浏览")
-                    .font(.headline)
-            }
-        }
-        .ignoresSafeArea(.container)
-        .navigationBarHidden(true)
+        .navBar("最近浏览")
     }
 }
 

@@ -66,6 +66,32 @@ struct NavbarView<TitleView: View>: View {
             }
         }
         .visualBlur()
+        .navigationBarHidden(true)
+        .ignoresSafeArea(.container)
+    }
+}
+
+extension View {
+    func navBar(_ title: String) -> some View {
+        return self.modifier(NavBarModifier(title: title))
+    }
+}
+
+struct NavBarModifier: ViewModifier {
+    let title: String
+
+    func body(content: Content) -> some View {
+        content
+            .safeAreaInset(edge: .top, spacing: 0) {
+                NavbarView {
+                    Text(title)
+                        .font(.headline)
+                }
+            }
+            .background(Color.bgColor)
+            .navigationBarHidden(true)
+            .navigationBarTitle("")
+            .ignoresSafeArea(.all)
     }
 }
 

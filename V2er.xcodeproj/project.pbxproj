@@ -61,6 +61,12 @@
 		5D5DA26A24A4939B005BC60F /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5DA26924A4939B005BC60F /* ViewExtension.swift */; };
 		5D612FA126C7C34E0009B8F9 /* NetworkException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D612FA026C7C34E0009B8F9 /* NetworkException.swift */; };
 		5D612FA326C7C61C0009B8F9 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D612FA226C7C61C0009B8F9 /* Endpoint.swift */; };
+		5D68717C271853DB00329E73 /* SectionItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D68717B271853DB00329E73 /* SectionItemView.swift */; };
+		5D68717E27186A6200329E73 /* AppearanceSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D68717D27186A6200329E73 /* AppearanceSettingView.swift */; };
+		5D68718027186E0300329E73 /* BrowseSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D68717F27186E0300329E73 /* BrowseSettingView.swift */; };
+		5D6871822718717B00329E73 /* OtherSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6871812718717B00329E73 /* OtherSettingsView.swift */; };
+		5D6871862718761800329E73 /* FeedbackHelperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6871852718761800329E73 /* FeedbackHelperView.swift */; };
+		5D6871882718764E00329E73 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6871872718764E00329E73 /* AboutView.swift */; };
 		5D6AAAAA26917E7B00F42A13 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6AAAA926917E7B00F42A13 /* Helper.swift */; };
 		5D6AAAAC2691851100F42A13 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6AAAAB2691851100F42A13 /* Utils.swift */; };
 		5D6AAAAF2692036100F42A13 /* FeedItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D6AAAAE2692036100F42A13 /* FeedItemView.swift */; };
@@ -196,6 +202,12 @@
 		5D5DA26924A4939B005BC60F /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		5D612FA026C7C34E0009B8F9 /* NetworkException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkException.swift; sourceTree = "<group>"; };
 		5D612FA226C7C61C0009B8F9 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
+		5D68717B271853DB00329E73 /* SectionItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionItemView.swift; sourceTree = "<group>"; };
+		5D68717D27186A6200329E73 /* AppearanceSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingView.swift; sourceTree = "<group>"; };
+		5D68717F27186E0300329E73 /* BrowseSettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowseSettingView.swift; sourceTree = "<group>"; };
+		5D6871812718717B00329E73 /* OtherSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherSettingsView.swift; sourceTree = "<group>"; };
+		5D6871852718761800329E73 /* FeedbackHelperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackHelperView.swift; sourceTree = "<group>"; };
+		5D6871872718764E00329E73 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		5D6AAAA926917E7B00F42A13 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		5D6AAAAB2691851100F42A13 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		5D6AAAAE2692036100F42A13 /* FeedItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemView.swift; sourceTree = "<group>"; };
@@ -294,6 +306,7 @@
 				5D22A26C26AF16D700F769E2 /* SectionTitleView.swift */,
 				5D79E28A26E52C1000C181C5 /* RichText.swift */,
 				5DF417712712CD8D00E6D135 /* NodeView.swift */,
+				5D68717B271853DB00329E73 /* SectionItemView.swift */,
 			);
 			path = Widget;
 			sourceTree = "<group>";
@@ -312,7 +325,6 @@
 				5D71DF5A247C155D00B53ED4 /* MePage.swift */,
 				5D1D8E2126B1969B0040C418 /* CreateTopicPage.swift */,
 				5D1D8E2326B19A640040C418 /* UserDetailPage.swift */,
-				5D0CFA7926B9926C001A8A7F /* SettingsPage.swift */,
 				5D0CFA7B26B992B2001A8A7F /* MyFollowPage.swift */,
 				5D0CFA7D26B992D6001A8A7F /* MyFavoritePage.swift */,
 				5D0CFA7F26B992FC001A8A7F /* MyRecentPage.swift */,
@@ -418,6 +430,19 @@
 				5D43700C24791C2D00FFA37E /* Info.plist */,
 			);
 			path = V2erUITests;
+			sourceTree = "<group>";
+		};
+		5D6353EC27171CBF00AC9CF9 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				5D0CFA7926B9926C001A8A7F /* SettingsPage.swift */,
+				5D68717D27186A6200329E73 /* AppearanceSettingView.swift */,
+				5D68717F27186E0300329E73 /* BrowseSettingView.swift */,
+				5D6871812718717B00329E73 /* OtherSettingsView.swift */,
+				5D6871852718761800329E73 /* FeedbackHelperView.swift */,
+				5D6871872718764E00329E73 /* AboutView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		5D6AAAAD2692034700F42A13 /* Feed */ = {
@@ -550,6 +575,7 @@
 				5DAA50A426F0D8A400CB63DE /* Tag */,
 				5D843E9326A4536400C47D95 /* Explore */,
 				5D1D8E2026B1967B0040C418 /* Me */,
+				5D6353EC27171CBF00AC9CF9 /* Settings */,
 				5D1D7B8526FC9AF6008E0C08 /* Login */,
 				5D843E9626A46CB800C47D95 /* Message */,
 				5D179BFD2496F6EC00E40E90 /* Widget */,
@@ -737,6 +763,7 @@
 				5DE5C579249D90AD0004DCC6 /* Color.swift in Sources */,
 				5D02BD5F26909146007B6A1B /* LoadmoreIndicatorView.swift in Sources */,
 				5D3CD31F26D0F5F600B3C2D3 /* BaseModel.swift in Sources */,
+				5D6871862718761800329E73 /* FeedbackHelperView.swift in Sources */,
 				5D38DEF5268C21A800C48F94 /* ActivityIndicator.swift in Sources */,
 				5D3CD32126D0F9CC00B3C2D3 /* TabInfo.swift in Sources */,
 				5D0A513F26E36F15006F3D9B /* FeedDetailActions.swift in Sources */,
@@ -745,10 +772,12 @@
 				5DA2AD4626C18208007FB1EF /* MeState.swift in Sources */,
 				5D88D5DA26C200FB00302265 /* FeedReducer.swift in Sources */,
 				5D6EE28B2693DC470053B637 /* FeedDetailPage.swift in Sources */,
+				5D6871882718764E00329E73 /* AboutView.swift in Sources */,
 				5DCE4CEA270D9700006BA98D /* MyFavoriteState.swift in Sources */,
 				5D88D5DC26C2016000302265 /* ExploreReducer.swift in Sources */,
 				5D2B2B3A26FF5DF800446F93 /* AccountInfo.swift in Sources */,
 				5D6AAAAA26917E7B00F42A13 /* Helper.swift in Sources */,
+				5D68717E27186A6200329E73 /* AppearanceSettingView.swift in Sources */,
 				5D0A513D26E36AB9006F3D9B /* FeedDetailState.swift in Sources */,
 				5D1D8BFE26EBA857009DF65A /* UserDetailReducer.swift in Sources */,
 				5DF417742712DA7500E6D135 /* MyRecentState.swift in Sources */,
@@ -765,6 +794,7 @@
 				5DA2AD3E26C18043007FB1EF /* FluxState.swift in Sources */,
 				5DCE4CE8270D9551006BA98D /* UserFeedReducer.swift in Sources */,
 				5DCE4CEC270D9746006BA98D /* MyFollowState.swift in Sources */,
+				5D6871822718717B00329E73 /* OtherSettingsView.swift in Sources */,
 				5D32B19B26B587CB00E72E65 /* StatusBarConfigurator.swift in Sources */,
 				5D04BF9726C9FB6E0005F7E3 /* FeedInfo.swift in Sources */,
 				5D0A513926E26473006F3D9B /* FeedDetailReducer.swift in Sources */,
@@ -801,6 +831,7 @@
 				5D1D8C0626ECA457009DF65A /* ModelUtils.swift in Sources */,
 				5DB622A026DE8BCD0026C4A8 /* ExploreInfo.swift in Sources */,
 				5D6AAAAF2692036100F42A13 /* FeedItemView.swift in Sources */,
+				5D68717C271853DB00329E73 /* SectionItemView.swift in Sources */,
 				5D0CFA7A26B9926C001A8A7F /* SettingsPage.swift in Sources */,
 				5DED91CE269FBA2D00BD942B /* NavbarHostView.swift in Sources */,
 				5D7B78F626C2BB490037D000 /* StateView.swift in Sources */,
@@ -811,6 +842,7 @@
 				5D88D5DE26C2017400302265 /* MessageReducer.swift in Sources */,
 				5D9D5223269543DA00D80D6B /* TagDetailPage.swift in Sources */,
 				5D1F4265249713640043F604 /* VEBlur.swift in Sources */,
+				5D68718027186E0300329E73 /* BrowseSettingView.swift in Sources */,
 				5D22A26D26AF16D700F769E2 /* SectionTitleView.swift in Sources */,
 				5DF80E3626A2D045002ADC79 /* MultilineTextField.swift in Sources */,
 				5D2B2B3826FF336600446F93 /* TwoStepLoginInfo.swift in Sources */,

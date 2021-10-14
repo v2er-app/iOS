@@ -32,11 +32,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
             .onAppear {
                 dispatch(action: UserFeedActions.FetchStart(id: instanceId, userId: userId, autoLoad: !state.hasLoadedOnce))
             }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                navBar
-            }
-            .ignoresSafeArea(.container)
-            .navigationBarHidden(true)
+            .navBar("\(userId)的全部主题")
     }
 
     @ViewBuilder
@@ -49,14 +45,6 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                     ItemView(data: item)
                 }
             }
-        }
-    }
-
-    @ViewBuilder
-    private var navBar: some View  {
-        NavbarView {
-            Text("\(userId)的全部主题")
-                .font(.headline)
         }
     }
 

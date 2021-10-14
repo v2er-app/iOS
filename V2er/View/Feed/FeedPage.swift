@@ -37,12 +37,12 @@ struct FeedPage: BaseHomePageView {
                 }
             }
         }
-        .background(Color.pageLight)
         .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, scrollTop(tab: .feed)) {
             await run(action: FeedActions.FetchData.Start())
         } loadMore: {
             await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
         }
+        .background(Color.bgColor)
     }
 
 }

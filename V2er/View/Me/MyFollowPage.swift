@@ -25,14 +25,7 @@ struct MyFollowPage: StateView {
             .onAppear {
                 dispatch(action: MyFollowActions.FetchStart(autoLoad: !state.updatableState.hasLoadedOnce))
             }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                NavbarView {
-                    Text("我的关注")
-                        .font(.headline)
-                }
-            }
-            .ignoresSafeArea(.container)
-            .navigationBarHidden(true)
+            .navBar("我的关注")
     }
 
     @ViewBuilder

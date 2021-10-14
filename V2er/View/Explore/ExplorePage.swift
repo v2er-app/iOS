@@ -34,21 +34,25 @@ struct ExplorePage: BaseHomePageView {
     var body: some View {
         let todayHotList = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("今日热议")
+                .background(Color.pageLight)
             ForEach(state.exploreInfo.dailyHotInfo) { item in
-                HStack(spacing: 12) {
-                    NavigationLink(destination: UserDetailPage(userId: item.member)) {
-                        AvatarView(url: item.avatar, size: 30)
-                    }
-                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
+                NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
+                    HStack(spacing: 12) {
+                        NavigationLink(destination: UserDetailPage(userId: item.member)) {
+                            AvatarView(url: item.avatar, size: 30)
+                        }
                         Text(item.title)
-                            .font(.system(size: 15))
+                            .font(.body)
                             .fontWeight(.semibold)
                             .foregroundColor(.bodyText)
                             .lineLimit(2)
+                            .greedyWidth(.leading)
                     }
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 10)
+                    .background(Color.pageLight)
+                    .divider(0.2)
                 }
-                .padding(.vertical, 8)
-                Divider().opacity(0.6)
             }
         }
         
@@ -73,20 +77,23 @@ struct ExplorePage: BaseHomePageView {
                 NodeNavItemView(data: $0)
             }
         }
+        .padding(.horizontal, 10)
         
         VStack(spacing: 0) {
             todayHotList
-            hotNodesItem
-            newlyAddedItem
-            navNodesItem
+            Group {
+                hotNodesItem
+                newlyAddedItem
+                navNodesItem
+            }
+            .padding(.horizontal, 10)
+            .background(Color.pageLight)
         }
-        .padding(.top, 4)
-        .padding(.horizontal, 10)
-        .background(Color.pageLight)
         .hide(state.refreshing)
         .updatable(autoRefresh: state.showProgressView, scrollTop(tab: .explore)) {
             await run(action: ExploreActions.FetchData.Start())
         }
+        .background(Color.bgColor)
         .hide(!isSelected)
     }
 }

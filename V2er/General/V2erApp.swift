@@ -29,12 +29,14 @@ struct V2erApp: App {
         let tintColor = UIColor.black
         navbarAppearance.titleTextAttributes = [.foregroundColor: tintColor]
         navbarAppearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
+        navbarAppearance.backgroundColor = .clear
         
         let navAppearance = UINavigationBar.appearance()
         navAppearance.isTranslucent = true
         navAppearance.standardAppearance = navbarAppearance
         navAppearance.compactAppearance = navbarAppearance
         navAppearance.scrollEdgeAppearance = navbarAppearance
+        navAppearance.backgroundColor = .clear
         navAppearance.tintColor = tintColor
     }
     
@@ -43,6 +45,9 @@ struct V2erApp: App {
             MainPage()
                 .environmentObject(Store.shared)
                 .buttonStyle(.plain)
+//                .navigationBarTitle("")
+//                .navigationBarHidden(true)
+//                .ignoresSafeArea(.container)
         }
     }
 

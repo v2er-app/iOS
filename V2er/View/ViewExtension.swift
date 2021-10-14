@@ -189,7 +189,7 @@ extension View {
         self.opacity(shouldHide ? 0.0 : 1.0)
     }
 
-    func divider(_ lineWidth: CGFloat = 1.0) -> some View {
+    func divider(_ lineWidth: CGFloat = 0.6) -> some View {
         self.modifier(DividerModifier(lineWidth: lineWidth))
     }
 }
@@ -234,6 +234,18 @@ extension View {
         }
     }
 }
+
+struct EmptyView: View {
+    var body: some View {
+        Color.clear.frame(width: 0, height: 0)
+    }
+}
+
+extension LocalizedStringKey {
+    static let empty: LocalizedStringKey = ""
+}
+
+
 
 
 
