@@ -81,6 +81,9 @@ struct MePage: BaseHomePageView {
         .padding(.vertical, 16)
         .background(.white)
         .padding(.bottom, 8)
+        .to {
+            UserDetailPage(userId: AccountState.userName)
+        }
     }
     
     @ViewBuilder

@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct SettingsPage: View {
-    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         formView

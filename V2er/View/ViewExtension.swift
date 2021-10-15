@@ -263,6 +263,24 @@ extension LocalizedStringKey {
     static let empty: LocalizedStringKey = ""
 }
 
+extension View {
+    func to<Destination: View>(@ViewBuilder destination: () -> Destination) -> some View {
+        self.modifier(NavigationLinkModifider(destination: destination()))
+    }
+}
+
+struct NavigationLinkModifider<Destination: View>: ViewModifier {
+    let destination: Destination
+
+    func body(content: Content) -> some View {
+        NavigationLink {
+            destination
+        } label: {
+            content
+        }
+    }
+}
+
 
 
 

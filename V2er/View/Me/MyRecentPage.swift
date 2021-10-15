@@ -27,11 +27,11 @@ struct MyRecentPage: StateView {
         ScrollView {
             LazyVStack(spacing: 0) {
                 ForEach(state.records ?? []) { item in
-                    NavigationLink {
-                        FeedDetailPage(id: item.id)
-                    } label: {
-                        RecentItemView(data: item)
-                    }
+                    RecentItemView(data: item)
+                        .background(Color.itemBg)
+                        .to {
+                            FeedDetailPage(id: item.id)
+                        }
                 }
             }
         }
@@ -43,31 +43,31 @@ struct RecentItemView<Data: FeedItemProtocol>: View {
     let data: Data
 
     var body: some View {
-            VStack(spacing: 0) {
-                HStack(alignment: .top) {
-                    NavigationLink(destination: UserDetailPage(userId: data.userName)) {
-                        AvatarView(url: data.avatar)
-                    }
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(data.userName.safe)
-                            .lineLimit(1)
-                            .font(.body)
-                        Text(data.replyNum.safe)
-                            .lineLimit(1)
-                            .font(.footnote)
-                            .foregroundColor(Color.tintColor)
-                    }
-                    Spacer()
-                    NodeView(id: data.nodeId.safe, name: data.nodeName.safe)
+        VStack(spacing: 0) {
+            HStack(alignment: .top) {
+                NavigationLink(destination: UserDetailPage(userId: data.userName)) {
+                    AvatarView(url: data.avatar)
                 }
-                Text(data.title.safe)
-                    .greedyWidth(.leading)
-                    .lineLimit(2)
-                    .padding(.vertical, 3)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(data.userName.safe)
+                        .lineLimit(1)
+                        .font(.body)
+                    Text(data.replyNum.safe)
+                        .lineLimit(1)
+                        .font(.footnote)
+                        .foregroundColor(Color.tintColor)
+                }
+                Spacer()
+                NodeView(id: data.nodeId.safe, name: data.nodeName.safe)
             }
-            .padding(12)
-            .background(Color.almostClear)
-            .divider()
+            Text(data.title.safe)
+                .greedyWidth(.leading)
+                .lineLimit(2)
+                .padding(.vertical, 3)
+        }
+        .padding(12)
+        .background(Color.almostClear)
+        .divider()
     }
 }
 
