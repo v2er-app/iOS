@@ -54,7 +54,7 @@ struct DebugModifier: ViewModifier {
 }
 
 extension View {
-    func wrapperInNavgationView() -> some View {
+    func navigatable() -> some View {
         self.modifier(NavigationViewModifier())
     }
 }

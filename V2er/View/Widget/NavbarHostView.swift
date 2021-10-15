@@ -39,9 +39,11 @@ struct NavbarHostView<Content: View>: View {
 struct NavbarView<TitleView: View>: View {
     @Environment(\.dismiss) var dismiss
     let titleView: TitleView
+    let onBackPressed: (()->Void)?
 
-    init(@ViewBuilder titleView: () -> TitleView) {
+    init(@ViewBuilder titleView: () -> TitleView, onBackPressed: (()->Void)? = nil) {
         self.titleView = titleView()
+        self.onBackPressed = onBackPressed
     }
 
     var body: some View {
@@ -49,6 +51,7 @@ struct NavbarView<TitleView: View>: View {
             HStack(alignment: .center, spacing: 4) {
                 Button {
                     dismiss()
+                    onBackPressed?()
                 } label: {
                     Image(systemName: "chevron.backward")
                         .font(.title2.weight(.regular))
@@ -78,6 +81,7 @@ extension View {
 }
 
 struct NavBarModifier: ViewModifier {
+    @Environment(\.dismiss) var dismiss
     let title: String
 
     func body(content: Content) -> some View {
@@ -87,6 +91,8 @@ struct NavBarModifier: ViewModifier {
                     NavbarView {
                         Text(title)
                             .font(.headline)
+                    } onBackPressed: {
+                        dismiss()
                     }
                 }
                 .background(Color.bgColor)

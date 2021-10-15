@@ -48,7 +48,6 @@ struct MyFavoritePage: StateView {
             .font(.headline)
             .pickerStyle(.segmented)
             .frame(maxWidth: 200)
-            .debug()
         }
     }
 

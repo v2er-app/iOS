@@ -46,7 +46,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     
     var body: some View {
         contentView
-            .wrapperInNavgationView()
+            .navigatable()
     }
 
     private var contentView: some View {
