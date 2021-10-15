@@ -35,6 +35,7 @@ struct ExplorePage: BaseHomePageView {
         let todayHotList = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("今日热议")
                 .background(Color.itemBg)
+                .padding(.horizontal, 10)
             ForEach(state.exploreInfo.dailyHotInfo) { item in
                 NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
                     HStack(spacing: 12) {
@@ -77,8 +78,7 @@ struct ExplorePage: BaseHomePageView {
                 NodeNavItemView(data: $0)
             }
         }
-        .padding(.horizontal, 10)
-        
+
         VStack(spacing: 0) {
             todayHotList
             Group {

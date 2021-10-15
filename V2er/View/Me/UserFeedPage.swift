@@ -85,7 +85,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
             }
             .padding(12)
             .divider()
-            .forceClickable()
+            .background(Color.itemBg)
         }
     }
 

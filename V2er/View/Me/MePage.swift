@@ -89,39 +89,20 @@ struct MePage: BaseHomePageView {
     @ViewBuilder
     private var sectionViews: some View {
         VStack(spacing: 0) {
-            NavigationLink {
-                CreateTopicPage()
-            } label: {
-                SectionItemView("发贴", icon: "pencil", showDivider: false)
-                    .padding(.bottom, 8)
-            }
-            NavigationLink {
-                UserFeedPage(userId: AccountState.userName)
-            } label: {
-                SectionItemView("主题", icon: "paperplane")
-            }
-            
-            NavigationLink {
-                MyFavoritePage()
-            } label: {
-                SectionItemView("收藏", icon: "bookmark")
-            }
-            NavigationLink {
-                MyFollowPage()
-            } label: {
-                SectionItemView("关注", icon: "heart")
-            }
-            NavigationLink {
-                MyRecentPage()
-            } label: {
-                SectionItemView("最近浏览", icon: "clock", showDivider: false)
-            }
-            NavigationLink {
-                SettingsPage()
-            } label: {
-                SectionItemView("设置", icon: "gearshape", showDivider: false)
-                    .padding(.top, 8)
-            }
+            SectionItemView("发贴", icon: "pencil", showDivider: false)
+                .padding(.bottom, 8)
+                .to { CreateTopicPage() }
+            SectionItemView("主题", icon: "paperplane")
+                .to { UserFeedPage(userId: AccountState.userName) }
+            SectionItemView("收藏", icon: "bookmark")
+                .to { MyFavoritePage() }
+            SectionItemView("关注", icon: "heart")
+                .to { MyFollowPage() }
+            SectionItemView("最近浏览", icon: "clock", showDivider: false)
+                .to { MyRecentPage() }
+            SectionItemView("设置", icon: "gearshape", showDivider: false)
+                .padding(.top, 8)
+                .to { SettingsPage() }
         }
     }
     

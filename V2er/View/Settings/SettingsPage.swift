@@ -19,45 +19,27 @@ struct SettingsPage: View {
     private var formView: some View {
         ScrollView {
             VStack(spacing: 0) {
-                NavigationLink {
-                    AppearanceSettingView()
-                } label: {
-                    SectionItemView("外观设置")
-                }
-                NavigationLink {
-                    BrowseSettingView()
-                } label: {
-                    SectionItemView("浏览设置", showDivider: false)
-                }
-                NavigationLink {
-                    OtherSettingsView()
-                } label: {
-                    SectionItemView("其他设置", showDivider: false)
-                        .padding(.top, 8)
-                }
-
-                NavigationLink {
-                    FeedbackHelperView()
-                } label: {
-                    SectionItemView("帮助与反馈")
-                        .padding(.top, 8)
-                }
-
-                NavigationLink {
-                    AboutView()
-                } label: {
-                    SectionView("关于") {
-                        HStack {
-                            Text("版本1.0.0")
-                                .font(.footnote)
-                                .foregroundColor(Color.tintColor)
-                            Image(systemName: "chevron.right")
-                                .font(.body.weight(.regular))
-                                .foregroundColor(.gray)
-                                .padding(.trailing, 16)
-                        }
+                SectionItemView("外观设置").to { AppearanceSettingView() }
+                SectionItemView("浏览设置", showDivider: false)
+                    .to { BrowseSettingView() }
+                SectionItemView("其他设置", showDivider: false)
+                    .padding(.top, 8)
+                    .to { OtherSettingsView() }
+                SectionItemView("帮助与反馈")
+                    .padding(.top, 8)
+                    .to { FeedbackHelperView() }
+                SectionView("关于") {
+                    HStack {
+                        Text("版本1.0.0")
+                            .font(.footnote)
+                            .foregroundColor(Color.tintColor)
+                        Image(systemName: "chevron.right")
+                            .font(.body.weight(.regular))
+                            .foregroundColor(.gray)
+                            .padding(.trailing, 16)
                     }
                 }
+                .to { AboutView() }
                 Button {
                     // go to app store
                 } label: {
