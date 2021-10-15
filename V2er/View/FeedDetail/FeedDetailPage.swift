@@ -45,6 +45,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     }
     
     var body: some View {
+        contentView
+            .wrapperInNavgationView()
+    }
+
+    private var contentView: some View {
         VStack (spacing: 0) {
             LazyVStack(spacing: 0) {
                 AuthorInfoView(initData: initData, data: state.model.headerInfo)
@@ -57,7 +62,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     .padding(.top, 8)
                     .hide(state.showProgressView)
             }
-            .background(state.showProgressView ? .clear : Color.pageLight)
+            .background(state.showProgressView ? .clear : Color.itemBg)
             .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData) {
                 await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
             } loadMore: {

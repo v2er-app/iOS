@@ -81,17 +81,20 @@ struct NavBarModifier: ViewModifier {
     let title: String
 
     func body(content: Content) -> some View {
-        content
-            .safeAreaInset(edge: .top, spacing: 0) {
-                NavbarView {
-                    Text(title)
-                        .font(.headline)
+        NavigationView {
+            content
+                .safeAreaInset(edge: .top, spacing: 0) {
+                    NavbarView {
+                        Text(title)
+                            .font(.headline)
+                    }
                 }
-            }
-            .background(Color.bgColor)
-            .navigationBarHidden(true)
-            .navigationBarTitle("")
-            .ignoresSafeArea(.all)
+                .background(Color.bgColor)
+                .navigationBarHidden(true)
+                .ignoresSafeArea(.all)
+        }
+        .navigationBarHidden(true)
+        .ignoresSafeArea(.all)
     }
 }
 

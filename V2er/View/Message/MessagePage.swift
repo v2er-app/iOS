@@ -26,6 +26,7 @@ struct MessagePage: BaseHomePageView {
     
     var body: some View {
         contentView
+            .background(Color.bgColor)
             .hide(!isSelected)
     }
 
@@ -35,11 +36,9 @@ struct MessagePage: BaseHomePageView {
             ForEach(state.model.items) { item in
                 NavigationLink(destination: FeedDetailPage(id: item.id)) {
                     MessageItemView(item: item)
-                    Divider()
                 }
             }
         }
-        .background(Color.pageLight)
         .updatable(state.updatableState) {
             await run(action: MessageActions.FetchStart())
         } loadMore: {
@@ -74,6 +73,7 @@ struct MessageItemView: View {
             }
         }
         .padding(12)
+        .background(Color.itemBg)
         .divider()
     }
 

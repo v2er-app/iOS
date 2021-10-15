@@ -70,7 +70,7 @@ struct AuthorInfoView: View {
             .padding(10)
             Divider()
         }
-        .background(Color.pageLight)
+        .background(Color.itemBg)
     }
 }
 

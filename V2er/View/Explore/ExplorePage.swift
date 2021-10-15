@@ -34,7 +34,7 @@ struct ExplorePage: BaseHomePageView {
     var body: some View {
         let todayHotList = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("今日热议")
-                .background(Color.pageLight)
+                .background(Color.itemBg)
             ForEach(state.exploreInfo.dailyHotInfo) { item in
                 NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
                     HStack(spacing: 12) {
@@ -50,7 +50,7 @@ struct ExplorePage: BaseHomePageView {
                     }
                     .padding(.vertical, 8)
                     .padding(.horizontal, 10)
-                    .background(Color.pageLight)
+                    .background(Color.itemBg)
                     .divider(0.2)
                 }
             }
@@ -87,7 +87,7 @@ struct ExplorePage: BaseHomePageView {
                 navNodesItem
             }
             .padding(.horizontal, 10)
-            .background(Color.pageLight)
+            .background(Color.itemBg)
         }
         .hide(state.refreshing)
         .updatable(autoRefresh: state.showProgressView, scrollTop(tab: .explore)) {

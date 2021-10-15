@@ -24,6 +24,7 @@ struct TabBar: View {
             Divider().frame(height: 0.1)
             HStack(spacing: 0) {
                 ForEach (self.tabs, id: \.self) { tab in
+                    let isSelected: Bool = self.selectedTab == tab.id
                     Button {
                         dispatch(action: TabbarClickAction(selectedTab: tab.id))
                     } label: {
@@ -39,10 +40,11 @@ struct TabBar: View {
                                 .padding(.bottom, 2.5)
                             Text(tab.text)
                                 .font(.caption)
+                                .fontWeight(isSelected ? .semibold : .regular)
                                 .padding(.bottom, 8)
                         }
-                        .foregroundColor(Color(self.selectedTab == tab.id ? "selected" : "unselected"))
-                        .background(self.bg(isSelected: self.selectedTab == tab.id))
+                        .foregroundColor(Color.tintColor)
+                        .background(self.bg(isSelected: isSelected))
                         .padding(.horizontal, 16)
                         .background(Color.almostClear)
                     }

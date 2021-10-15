@@ -55,7 +55,7 @@ struct TopBar: View {
                 Text(title)
                     .font(isHomePage ? .title2 : .headline)
                     .foregroundColor(.primary)
-                    .fontWeight(isHomePage ? .heavy : .regular)
+                    .fontWeight(isHomePage ? .heavy : .bold)
             }
             .padding(.top, topSafeAreaInset().top)
             .background(VEBlur())

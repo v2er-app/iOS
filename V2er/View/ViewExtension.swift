@@ -53,6 +53,22 @@ struct DebugModifier: ViewModifier {
     }
 }
 
+extension View {
+    func wrapperInNavgationView() -> some View {
+        self.modifier(NavigationViewModifier())
+    }
+}
+
+struct NavigationViewModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        NavigationView {
+            content
+        }
+        .ignoresSafeArea(.container)
+        .navigationBarHidden(true)
+    }
+}
+
 struct RoundedEdgeModifier: ViewModifier {
     var width: CGFloat = 2
     var color: Color = .black
@@ -189,7 +205,7 @@ extension View {
         self.opacity(shouldHide ? 0.0 : 1.0)
     }
 
-    func divider(_ lineWidth: CGFloat = 0.6) -> some View {
+    func divider(_ lineWidth: CGFloat = 0.5) -> some View {
         self.modifier(DividerModifier(lineWidth: lineWidth))
     }
 }
@@ -203,7 +219,9 @@ struct DividerModifier: ViewModifier {
             .overlay {
                 VStack(spacing: 0) {
                     Spacer()
-                    Divider()
+                    Rectangle()
+                        .frame(maxWidth: .infinity, maxHeight: lineWidth)
+                        .foregroundColor(Color.border)
                 }
             }
     }

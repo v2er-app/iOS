@@ -41,7 +41,7 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
             .padding(12)
             Divider()
         }
-        .background(Color.pageLight)
+        .background(Color.itemBg)
     }
 }
 
