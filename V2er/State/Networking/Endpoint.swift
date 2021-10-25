@@ -18,7 +18,7 @@ enum Endpoint {
     case topic(id: String), topics(userName: String)
     case myFollowing, message
     case myFavoriteNodes, myFavoriteFeeds
-    case nodesNav
+    case nodesNav, nodes
     case tagDetail(tagId: String)
     case userPage(userName: String), createTopic
     case appendTopic(id: String), thanksReply(id: String)
@@ -78,13 +78,16 @@ enum Endpoint {
                 info.path = "/my/nodes"
             case .nodesNav:
                 info.path = "/"
+            case .nodes:
+                info.path = "/api/nodes/s2.json"
+                info.type = .json
             case let .tagDetail(nodeName):
                 info.path = "/go/\(nodeName)"
                 info.ua = .web
             case let .userPage(userName):
                 info.path = "/member/\(userName)"
             case .createTopic:
-                info.path = "/new"
+                info.path = "/write"
             case let .appendTopic(id):
                 info.path = "/append/topic/\(id)"
             case let .thanksReply(id):

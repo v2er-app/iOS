@@ -36,13 +36,37 @@ struct NavbarHostView<Content: View>: View {
     }
 }
 
-struct NavbarView<TitleView: View>: View {
-    @Environment(\.dismiss) var dismiss
+struct NavbarTitleView<TitleView: View>: View {
     let titleView: TitleView
     let onBackPressed: (()->Void)?
 
-    init(@ViewBuilder titleView: () -> TitleView, onBackPressed: (()->Void)? = nil) {
+    init(@ViewBuilder titleView: () -> TitleView,
+         onBackPressed: (()->Void)? = nil) {
         self.titleView = titleView()
+        self.onBackPressed = onBackPressed
+    }
+    var body: some View {
+        NavbarView {
+            titleView
+        } contentView: {
+
+        } onBackPressed: {
+            onBackPressed?()
+        }
+    }
+}
+
+struct NavbarView<TitleView, ContentView>: View where TitleView: View, ContentView: View {
+    @Environment(\.dismiss) var dismiss
+    let titleView: TitleView
+    let onBackPressed: (()->Void)?
+    let contentView: ContentView
+
+    init(@ViewBuilder titleView: () -> TitleView,
+         @ViewBuilder contentView: () -> ContentView,
+         onBackPressed: (()->Void)? = nil) {
+        self.titleView = titleView()
+        self.contentView = contentView()
         self.onBackPressed = onBackPressed
     }
 
@@ -60,6 +84,7 @@ struct NavbarView<TitleView: View>: View {
                         .foregroundColor(.tintColor)
                 }
                 Spacer()
+                contentView
             }
             .greedyWidth()
             .overlay {
@@ -88,7 +113,7 @@ struct NavBarModifier: ViewModifier {
         NavigationView {
             content
                 .safeAreaInset(edge: .top, spacing: 0) {
-                    NavbarView {
+                    NavbarTitleView {
                         Text(title)
                             .font(.headline)
                     } onBackPressed: {
@@ -106,9 +131,7 @@ struct NavBarModifier: ViewModifier {
 
 struct NavHostView_Previews: PreviewProvider {
     static var previews: some View {
-        NavbarView {
-            Text("Title")
-                .font(.headline)
-        }
+        Color.clear
+            .navBar("Title")
     }
 }

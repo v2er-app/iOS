@@ -86,6 +86,7 @@ struct FeedDetailInfo: BaseModel {
             nodeId = root.pick("div.box a[href^=/go]", .href)
                 .segment(separatedBy: "/")
             replyNum = root.pick("div.cell span.gray:contains(回复)")
+                .segment(separatedBy: " ", at: .first)
             let lastNormalpage = root.pick("div.box a.page_normal", at: .last).int
             let currentPage = root.pick("div.box span.page_current").int
             totalPage = max(lastNormalpage, currentPage)

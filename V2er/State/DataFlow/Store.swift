@@ -63,6 +63,8 @@ final public class Store: ObservableObject {
                 (appState.myRecentState, followingAction) = myRecentStateReducer(appState.myRecentState, action)
             case .setting:
                 (appState.settingState, followingAction) = settingStateReducer(appState.settingState, action)
+            case .createfeed:
+                (appState.createTopicState, followingAction) = createStateReducer(appState.createTopicState, action)
             case .global:
                 fallthrough
             default:
@@ -78,6 +80,10 @@ final public class Store: ObservableObject {
 
 func dispatch(action: Action) {
     Store.shared.dispatch(action)
+}
+
+func dispatch(_ action: Action) {
+    dispatch(action: action)
 }
 
 func run(action: AwaitAction) async {

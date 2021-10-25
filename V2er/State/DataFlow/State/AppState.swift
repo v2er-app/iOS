@@ -23,4 +23,5 @@ struct AppState: FluxState {
     var myFollowState = MyFollowState()
     var myRecentState = MyRecentState()
     var settingState = SettingState()
+    var createTopicState = CreateTopicState()
 }

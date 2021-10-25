@@ -9,8 +9,8 @@
 import SwiftUI
 
 /**
- * 1. Could custome HeadView (custome in the future, e.g. state in progress, state refreshing, state finished
- * 2. Could custome LoadmoreView (same as HeadView)
+ * 1. Could custom HeadView (custome in the future, e.g. state in progress, state refreshing, state finished
+ * 2. Could custom LoadmoreView (same as HeadView)
  * 3. Two actions:
  *  1. onRefresh
  *  2. onLoadMoreStart
@@ -215,6 +215,10 @@ extension View {
                          _ loadMore: LoadMoreAction = nil,
                          onScroll: ScrollAction? = nil) -> some View {
         self.updatable(autoRefresh: autoRefresh, hasMoreData: hasMoreData, refresh: nil, loadMore: loadMore, onScroll: onScroll)
+    }
+
+    public func onScroll(onScroll: ScrollAction?) -> some View {
+        self.updatable(onScroll: onScroll)
     }
 }
 

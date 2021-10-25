@@ -34,8 +34,8 @@ struct ExplorePage: BaseHomePageView {
     var body: some View {
         let todayHotList = VStack(alignment: .leading, spacing: 0) {
             SectionTitleView("今日热议")
-                .background(Color.itemBg)
                 .padding(.horizontal, 10)
+                .background(Color.itemBg)
             ForEach(state.exploreInfo.dailyHotInfo) { item in
                 NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
                     HStack(spacing: 12) {

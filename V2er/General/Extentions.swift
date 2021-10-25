@@ -59,6 +59,19 @@ extension String {
         guard !self.isEmpty else { return .default }
         return self.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
     }
+
+
+    var attributedString: AttributedString {
+        do {
+            let attributedString = try AttributedString(markdown: self, options:
+                                                            AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace))
+            return attributedString
+        } catch {
+            print("Couldn't parse: \(error)")
+        }
+        return AttributedString("Error parsing markdown")
+    }
+
 }
 
 extension Optional where Wrapped == String {
@@ -80,14 +93,14 @@ extension Binding {
         return self.wrappedValue
     }
 
-//    subscript<T>(_ key: Int) -> Binding<T> where Value == [T] {
-//        .init(get: {
-//            self.wrappedValue[key]
-//        },
-//              set: {
-//            self.wrappedValue[key] = $0
-//        })
-//    }
+    //    subscript<T>(_ key: Int) -> Binding<T> where Value == [T] {
+    //        .init(get: {
+    //            self.wrappedValue[key]
+    //        },
+    //              set: {
+    //            self.wrappedValue[key] = $0
+    //        })
+    //    }
 
     subscript<K, V>(_ key: K) -> Binding<V> where Value == [K:V], K: Hashable {
         .init(get: {

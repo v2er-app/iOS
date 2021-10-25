@@ -157,8 +157,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 }
                 .background(Color.lightGray)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                
-                
                 if isKeyboardVisiable {
                     actionBar
                         .transition(.opacity)

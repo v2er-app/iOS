@@ -91,7 +91,10 @@ struct MePage: BaseHomePageView {
         VStack(spacing: 0) {
             SectionItemView("发贴", icon: "pencil", showDivider: false)
                 .padding(.bottom, 8)
-                .to { CreateTopicPage() }
+                .to {
+                    CreateTopicPage()
+                        .transition(.move(edge: .bottom))
+                }
             SectionItemView("主题", icon: "paperplane")
                 .to { UserFeedPage(userId: AccountState.userName) }
             SectionItemView("收藏", icon: "bookmark")

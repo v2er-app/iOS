@@ -22,6 +22,7 @@
 		5D0CFA8226B9935B001A8A7F /* UserFeedPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D0CFA8126B9935B001A8A7F /* UserFeedPage.swift */; };
 		5D0CFA8526B994F5001A8A7F /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 5D0CFA8426B994F5001A8A7F /* SwiftSoup */; };
 		5D143198270426FD00462661 /* MeActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D143197270426FD00462661 /* MeActions.swift */; };
+		5D1CB5BC27244618002DB087 /* Nodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1CB5BB27244618002DB087 /* Nodes.swift */; };
 		5D1D7B8426FC8323008E0C08 /* LoginState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8326FC8323008E0C08 /* LoginState.swift */; };
 		5D1D7B8726FC9B61008E0C08 /* LoginReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8626FC9B61008E0C08 /* LoginReducer.swift */; };
 		5D1D7B8926FC9C48008E0C08 /* LoginActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8826FC9C48008E0C08 /* LoginActions.swift */; };
@@ -36,6 +37,7 @@
 		5D1D8E2426B19A640040C418 /* UserDetailPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D8E2326B19A640040C418 /* UserDetailPage.swift */; };
 		5D1F4265249713640043F604 /* VEBlur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1F4264249713640043F604 /* VEBlur.swift */; };
 		5D22A26D26AF16D700F769E2 /* SectionTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D22A26C26AF16D700F769E2 /* SectionTitleView.swift */; };
+		5D271DCD271C6F730077808F /* NodeChooserPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D271DCC271C6F730077808F /* NodeChooserPage.swift */; };
 		5D2B2B3826FF336600446F93 /* TwoStepLoginInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3726FF336600446F93 /* TwoStepLoginInfo.swift */; };
 		5D2B2B3A26FF5DF800446F93 /* AccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */; };
 		5D2B2B3C26FF754F00446F93 /* Persist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3B26FF754F00446F93 /* Persist.swift */; };
@@ -58,6 +60,8 @@
 		5D4E43FA2699DDE200650714 /* ReplyItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4E43F92699DDE200650714 /* ReplyItemView.swift */; };
 		5D4E43FC2699E20400650714 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4E43FB2699E20400650714 /* AvatarView.swift */; };
 		5D54903326AB9E2200BB0CC0 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D54903226AB9E2200BB0CC0 /* SwiftUIView.swift */; };
+		5D5677CB2721916300543FE8 /* CreateReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5677CA2721916300543FE8 /* CreateReducer.swift */; };
+		5D5677CD2721923B00543FE8 /* CreateTopicState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5677CC2721923B00543FE8 /* CreateTopicState.swift */; };
 		5D5DA26A24A4939B005BC60F /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5DA26924A4939B005BC60F /* ViewExtension.swift */; };
 		5D612FA126C7C34E0009B8F9 /* NetworkException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D612FA026C7C34E0009B8F9 /* NetworkException.swift */; };
 		5D612FA326C7C61C0009B8F9 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D612FA226C7C61C0009B8F9 /* Endpoint.swift */; };
@@ -157,6 +161,7 @@
 		5D0CFA7F26B992FC001A8A7F /* MyRecentPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyRecentPage.swift; sourceTree = "<group>"; };
 		5D0CFA8126B9935B001A8A7F /* UserFeedPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserFeedPage.swift; sourceTree = "<group>"; };
 		5D143197270426FD00462661 /* MeActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeActions.swift; sourceTree = "<group>"; };
+		5D1CB5BB27244618002DB087 /* Nodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nodes.swift; sourceTree = "<group>"; };
 		5D1D7B8326FC8323008E0C08 /* LoginState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginState.swift; sourceTree = "<group>"; };
 		5D1D7B8626FC9B61008E0C08 /* LoginReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginReducer.swift; sourceTree = "<group>"; };
 		5D1D7B8826FC9C48008E0C08 /* LoginActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginActions.swift; sourceTree = "<group>"; };
@@ -171,6 +176,7 @@
 		5D1D8E2326B19A640040C418 /* UserDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailPage.swift; sourceTree = "<group>"; };
 		5D1F4264249713640043F604 /* VEBlur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VEBlur.swift; sourceTree = "<group>"; };
 		5D22A26C26AF16D700F769E2 /* SectionTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionTitleView.swift; sourceTree = "<group>"; };
+		5D271DCC271C6F730077808F /* NodeChooserPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodeChooserPage.swift; sourceTree = "<group>"; };
 		5D2B2B3726FF336600446F93 /* TwoStepLoginInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepLoginInfo.swift; sourceTree = "<group>"; };
 		5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfo.swift; sourceTree = "<group>"; };
 		5D2B2B3B26FF754F00446F93 /* Persist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persist.swift; sourceTree = "<group>"; };
@@ -199,6 +205,8 @@
 		5D4E43F92699DDE200650714 /* ReplyItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyItemView.swift; sourceTree = "<group>"; };
 		5D4E43FB2699E20400650714 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		5D54903226AB9E2200BB0CC0 /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
+		5D5677CA2721916300543FE8 /* CreateReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReducer.swift; sourceTree = "<group>"; };
+		5D5677CC2721923B00543FE8 /* CreateTopicState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTopicState.swift; sourceTree = "<group>"; };
 		5D5DA26924A4939B005BC60F /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		5D612FA026C7C34E0009B8F9 /* NetworkException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkException.swift; sourceTree = "<group>"; };
 		5D612FA226C7C61C0009B8F9 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
@@ -329,6 +337,7 @@
 				5D0CFA7D26B992D6001A8A7F /* MyFavoritePage.swift */,
 				5D0CFA7F26B992FC001A8A7F /* MyRecentPage.swift */,
 				5D0CFA8126B9935B001A8A7F /* UserFeedPage.swift */,
+				5D271DCC271C6F730077808F /* NodeChooserPage.swift */,
 			);
 			path = Me;
 			sourceTree = "<group>";
@@ -353,6 +362,7 @@
 				5DCE4CEB270D9746006BA98D /* MyFollowState.swift */,
 				5DCE4CEF270D978B006BA98D /* SettingState.swift */,
 				5DF417732712DA7500E6D135 /* MyRecentState.swift */,
+				5D5677CC2721923B00543FE8 /* CreateTopicState.swift */,
 			);
 			path = State;
 			sourceTree = "<group>";
@@ -488,6 +498,7 @@
 				5DCE4CF3270D9850006BA98D /* MyFollowReducer.swift */,
 				5DCE4CF5270D9865006BA98D /* MyRecentReducer.swift */,
 				5DCE4CF7270D9871006BA98D /* SettingReducer.swift */,
+				5D5677CA2721916300543FE8 /* CreateReducer.swift */,
 			);
 			path = Reducers;
 			sourceTree = "<group>";
@@ -515,6 +526,7 @@
 				5D1D7B8A26FD7FCE008E0C08 /* DailyInfo.swift */,
 				5D2B2B3726FF336600446F93 /* TwoStepLoginInfo.swift */,
 				5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */,
+				5D1CB5BB27244618002DB087 /* Nodes.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -761,6 +773,7 @@
 				5DCE4CE6270BC683006BA98D /* UserFeedState.swift in Sources */,
 				5D0CFA7C26B992B2001A8A7F /* MyFollowPage.swift in Sources */,
 				5DE5C579249D90AD0004DCC6 /* Color.swift in Sources */,
+				5D1CB5BC27244618002DB087 /* Nodes.swift in Sources */,
 				5D02BD5F26909146007B6A1B /* LoadmoreIndicatorView.swift in Sources */,
 				5D3CD31F26D0F5F600B3C2D3 /* BaseModel.swift in Sources */,
 				5D6871862718761800329E73 /* FeedbackHelperView.swift in Sources */,
@@ -793,6 +806,7 @@
 				5D436FED24791C2C00FFA37E /* MainPage.swift in Sources */,
 				5DA2AD3E26C18043007FB1EF /* FluxState.swift in Sources */,
 				5DCE4CE8270D9551006BA98D /* UserFeedReducer.swift in Sources */,
+				5D5677CB2721916300543FE8 /* CreateReducer.swift in Sources */,
 				5DCE4CEC270D9746006BA98D /* MyFollowState.swift in Sources */,
 				5D6871822718717B00329E73 /* OtherSettingsView.swift in Sources */,
 				5D32B19B26B587CB00E72E65 /* StatusBarConfigurator.swift in Sources */,
@@ -802,6 +816,7 @@
 				5D0CFA8026B992FC001A8A7F /* MyRecentPage.swift in Sources */,
 				5D0CFA7E26B992D6001A8A7F /* MyFavoritePage.swift in Sources */,
 				5D0A513726E0CBFC006F3D9B /* ExploreActions.swift in Sources */,
+				5D271DCD271C6F730077808F /* NodeChooserPage.swift in Sources */,
 				5D74653D2705B97F0020F1F8 /* UpdatableState.swift in Sources */,
 				5D368C8826C419D000794B8E /* APIService.swift in Sources */,
 				5D88D5E026C2017E00302265 /* MeReducer.swift in Sources */,
@@ -823,6 +838,7 @@
 				5DAA50A626F0D8DD00CB63DE /* TagDetailInfo.swift in Sources */,
 				5D91F8D726F22B560089D72E /* TagDetailActions.swift in Sources */,
 				5D4E43FC2699E20400650714 /* AvatarView.swift in Sources */,
+				5D5677CD2721923B00543FE8 /* CreateTopicState.swift in Sources */,
 				5D1D8C0026EBA875009DF65A /* UserDetailState.swift in Sources */,
 				5D4E43FA2699DDE200650714 /* ReplyItemView.swift in Sources */,
 				5D1D8E2426B19A640040C418 /* UserDetailPage.swift in Sources */,

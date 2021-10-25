@@ -36,6 +36,14 @@ struct AuthorInfoView: View {
         data?.replyUpdate ?? .default
     }
 
+    private var replyNum: String {
+        var result = (data?.replyNum ?? initData?.replyNum ?? .default)
+        if result.notEmpty() {
+            result = " • 评论\(result)"
+        }
+        return result
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             VStack {
@@ -47,7 +55,7 @@ struct AuthorInfoView: View {
                         Text(userName)
                             .lineLimit(1)
                             .font(.body)
-                        Text(timeAndClickedNum)
+                        Text(timeAndClickedNum + replyNum)
                             .lineLimit(1)
                             .font(.caption2)
                     }

@@ -34,7 +34,7 @@ extension Color {
     static let bgColor = hex(0xE2E2E2, alpha: 0.8)
     static let itemBg: Color = .white
     static let dim = hex(0x000000, alpha: 0.6)
-    public static let border = hex(0x383838, alpha: 0.15)
+    public static let border = hex(0xE8E8E8, alpha: 0.8)
     
     public func toUIColor() -> UIColor {
         return UIColor(self)
@@ -66,6 +66,7 @@ struct Color_Previews: PreviewProvider {
             Color.hex(0xFF00FF).frame(width: 100, height: 100)
             Color.tintColor.frame(width: 100, height: 100)
             Color.lightGray.frame(width: 100, height: 100)
+            Color.border.frame(width: 100, height: 100).opacity(0.5)
         }
         
     }

@@ -42,7 +42,7 @@ struct APIService {
     }
 
     func jsonGet<T: Codable>(endpoint: Endpoint,
-                             params: Params?) async -> APIResult<T> {
+                             params: Params? = nil) async -> APIResult<T> {
         let rawResult = await get(endpoint: endpoint, params: params)
         guard rawResult.error == nil else {
             return .failure(rawResult.error!)

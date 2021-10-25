@@ -38,7 +38,7 @@ struct MyFavoritePage: StateView {
 
     @ViewBuilder
     private var navBar: some View {
-        NavbarView {
+        NavbarTitleView {
             Picker("收藏", selection: $selectedTab) {
                 Text("主题")
                     .tag(0)

@@ -205,7 +205,7 @@ extension View {
         self.opacity(shouldHide ? 0.0 : 1.0)
     }
 
-    func divider(_ lineWidth: CGFloat = 0.5) -> some View {
+    func divider(_ lineWidth: CGFloat = 0.8) -> some View {
         self.modifier(DividerModifier(lineWidth: lineWidth))
     }
 }
