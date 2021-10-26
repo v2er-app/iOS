@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Introspect
 
 struct SearchPage: StateView {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
