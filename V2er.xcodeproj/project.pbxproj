@@ -81,7 +81,6 @@
 		5D71DF59247C155400B53ED4 /* MessagePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF58247C155400B53ED4 /* MessagePage.swift */; };
 		5D71DF5B247C155D00B53ED4 /* MePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D71DF5A247C155D00B53ED4 /* MePage.swift */; };
 		5D74653D2705B97F0020F1F8 /* UpdatableState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D74653C2705B97F0020F1F8 /* UpdatableState.swift */; };
-		5D79E28B26E52C1000C181C5 /* RichText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D79E28A26E52C1000C181C5 /* RichText.swift */; };
 		5D7B78F626C2BB490037D000 /* StateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7B78F526C2BB490037D000 /* StateView.swift */; };
 		5D843E9526A4537C00C47D95 /* SearchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D843E9426A4537C00C47D95 /* SearchPage.swift */; };
 		5D88D5DA26C200FB00302265 /* FeedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88D5D926C200FB00302265 /* FeedReducer.swift */; };
@@ -105,7 +104,6 @@
 		5DAA50A626F0D8DD00CB63DE /* TagDetailInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAA50A526F0D8DD00CB63DE /* TagDetailInfo.swift */; };
 		5DB622A026DE8BCD0026C4A8 /* ExploreInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB6229F26DE8BCD0026C4A8 /* ExploreInfo.swift */; };
 		5DB684792728057E00BDCE3C /* Introspect in Frameworks */ = {isa = PBXBuildFile; productRef = 5DB684782728057E00BDCE3C /* Introspect */; };
-		5DB6847B272807E900BDCE3C /* FirstRespondTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB6847A272807E900BDCE3C /* FirstRespondTextField.swift */; };
 		5DCDE3942695D16B00261385 /* AuthorInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE3932695D16B00261385 /* AuthorInfoView.swift */; };
 		5DCE4CE6270BC683006BA98D /* UserFeedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CE5270BC683006BA98D /* UserFeedState.swift */; };
 		5DCE4CE8270D9551006BA98D /* UserFeedReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCE4CE7270D9551006BA98D /* UserFeedReducer.swift */; };
@@ -230,7 +228,6 @@
 		5D71DF58247C155400B53ED4 /* MessagePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePage.swift; sourceTree = "<group>"; };
 		5D71DF5A247C155D00B53ED4 /* MePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MePage.swift; sourceTree = "<group>"; };
 		5D74653C2705B97F0020F1F8 /* UpdatableState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdatableState.swift; sourceTree = "<group>"; };
-		5D79E28A26E52C1000C181C5 /* RichText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichText.swift; sourceTree = "<group>"; };
 		5D7B78F526C2BB490037D000 /* StateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateView.swift; sourceTree = "<group>"; };
 		5D843E9426A4537C00C47D95 /* SearchPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchPage.swift; sourceTree = "<group>"; };
 		5D88D5D926C200FB00302265 /* FeedReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedReducer.swift; sourceTree = "<group>"; };
@@ -253,7 +250,6 @@
 		5DA69A4824ACBC8D00F8B77A /* V2erApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2erApp.swift; sourceTree = "<group>"; };
 		5DAA50A526F0D8DD00CB63DE /* TagDetailInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailInfo.swift; sourceTree = "<group>"; };
 		5DB6229F26DE8BCD0026C4A8 /* ExploreInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreInfo.swift; sourceTree = "<group>"; };
-		5DB6847A272807E900BDCE3C /* FirstRespondTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRespondTextField.swift; sourceTree = "<group>"; };
 		5DCDE3932695D16B00261385 /* AuthorInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorInfoView.swift; sourceTree = "<group>"; };
 		5DCE4CE5270BC683006BA98D /* UserFeedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserFeedState.swift; sourceTree = "<group>"; };
 		5DCE4CE7270D9551006BA98D /* UserFeedReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserFeedReducer.swift; sourceTree = "<group>"; };
@@ -320,10 +316,8 @@
 				5DF80E3526A2D045002ADC79 /* MultilineTextField.swift */,
 				5DA2DC8726ADAD6400022C31 /* FlowStack.swift */,
 				5D22A26C26AF16D700F769E2 /* SectionTitleView.swift */,
-				5D79E28A26E52C1000C181C5 /* RichText.swift */,
 				5DF417712712CD8D00E6D135 /* NodeView.swift */,
 				5D68717B271853DB00329E73 /* SectionItemView.swift */,
-				5DB6847A272807E900BDCE3C /* FirstRespondTextField.swift */,
 			);
 			path = Widget;
 			sourceTree = "<group>";
@@ -775,7 +769,6 @@
 			files = (
 				5D2DD00A26FB443D0001C85A /* GlobalActions.swift in Sources */,
 				5D71DF57247C153C00B53ED4 /* ExplorePage.swift in Sources */,
-				5D79E28B26E52C1000C181C5 /* RichText.swift in Sources */,
 				5D1D8C0426EBAC07009DF65A /* UserDetailActions.swift in Sources */,
 				5DA69A4924ACBC8D00F8B77A /* V2erApp.swift in Sources */,
 				5D1D8E2226B1969B0040C418 /* CreateTopicPage.swift in Sources */,
@@ -817,7 +810,6 @@
 				5DA2AD4226C18112007FB1EF /* ExploreState.swift in Sources */,
 				5D91F8D526F22A6F0089D72E /* TagDetailState.swift in Sources */,
 				5DD2B9FE27263E3A004F357D /* SearchState.swift in Sources */,
-				5DB6847B272807E900BDCE3C /* FirstRespondTextField.swift in Sources */,
 				5DCE4CF0270D978B006BA98D /* SettingState.swift in Sources */,
 				5D436FED24791C2C00FFA37E /* MainPage.swift in Sources */,
 				5DA2AD3E26C18043007FB1EF /* FluxState.swift in Sources */,
