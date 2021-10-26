@@ -7,91 +7,137 @@
 //
 
 import SwiftUI
+import Introspect
 
-struct SearchPage: View {
+struct SearchPage: StateView {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    @State var searchText: String = ""
-    @FocusState private var editIsFocused: Bool
-    
+    @EnvironmentObject private var store: Store
+    var bindingState: Binding<SearchState> {
+        return $store.appState.searchState
+    }
+    @FocusState private var focused: Bool
+
     var body: some View {
-        LazyVStack (alignment: .leading ,spacing: 0) {
-            ForEach( 0...20, id: \.self) { i in
-                NavigationLink(destination: FeedDetailPage(id: .empty)) {
-                    SearchResultItemView()
+        NavigationView {
+            LazyVStack (alignment: .leading ,spacing: 0) {
+                ForEach(state.model?.hits ?? []) { item in
+                    NavigationLink(destination: FeedDetailPage(id: item.id)) {
+                        SearchResultItemView(hint: item)
+                    }
                 }
             }
-        }
-        .navigationBarHidden(true)
-        .updatable(
-            loadMore: {
-            })
-        .safeAreaInset(edge: .top, spacing: 0) {
-            searchView
+            .navigationBarHidden(true)
+            .updatable(state.updatable) {
+                await run(action: SearchActions.Start())
+            } loadMore: {
+                await run(action: SearchActions.LoadMoreStart())
+            }
+            .onChange(of: state.sortWay) { sort in
+                dispatch(SearchActions.Start())
+            }
+            .safeAreaInset(edge: .top, spacing: 0) { searchView }
+            .ignoresSafeArea(.container)
+            .background(Color.bgColor)
         }
         .ignoresSafeArea(.container)
-        .background(Color.lightGray)
+        .navigationBarHidden(true)
     }
-    
+
+
+    @ViewBuilder
     private var searchView: some View {
-        HStack(spacing: 0) {
-            searchBar
-            Button("取消") {
-                // Cancel Search
-                if editIsFocused {
-                    editIsFocused = false
-                } else {
-                    self.presentationMode.wrappedValue.dismiss()
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    TextField("sov2ex", text: bindingState.keyword)
+                        .disableAutocorrection(true)
+                        .autocapitalization(.none)
+                        .focused($focused)
+                        .submitLabel(.search)
+                        .onSubmit { dispatch(action: SearchActions.Start()) }
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
+                                self.focused = true
+                            }
+                        }
                 }
-            }
-            .font(.body)
-            .foregroundColor(.tintColor)
-        }
-        .padding(.top, topSafeAreaInset().top)
-        .padding(.bottom, 10)
-        .padding(.trailing, 10)
-        .background(Color.gray.opacity(0.1))
-        .background(VEBlur())
-        
-    }
-    
-    private var searchBar: some View {
-        HStack {
-            TextField("Type to Search ...", text: $searchText)
                 .padding(7)
-                .background(Color.white)
-                .cornerRadius(10)
-                .padding(.horizontal, 10)
-                .focused($editIsFocused)
+                .padding(.horizontal, 8)
+                .background(Color.itemBg.opacity(0.6))
+                .cornerRadius(8)
+                .padding(.horizontal, 16)
+                .padding(.top, 5)
+                Button("取消") {
+                    // Cancel Search
+                    if focused {
+                        focused = false
+                    } else {
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
+                }
+                .font(.body)
+                .foregroundColor(.tintColor)
+            }
+            .padding(.top, topSafeAreaInset().top)
+            .padding(.trailing, 10)
+            sortPickerView
+                .padding(10)
+            Divider()
         }
+        .visualBlur()
+        .background(Color.gray.opacity(0.35))
     }
-    
+
+    @ViewBuilder
+    private var sortPickerView: some View {
+        Picker("Sort", selection: bindingState.sortWay) {
+            Text("相关")
+                .tag("sumup")
+            Text("最新")
+                .tag("created")
+        }
+        .font(.headline)
+        .pickerStyle(.segmented)
+        .padding(.horizontal)
+    }
 }
 
 fileprivate struct SearchResultItemView: View {
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            VStack(alignment: .leading) {
-                Text("Android开源项目汇总")
-                    .font(.callout)
-                Divider()
-                    .padding(0)
-                Text("仅支持4.0以上版本。Android Design.目前只是preview版本，还不支持看大图，登陆，发布，回复")
-                    .font(.subheadline)
-            }
-            .padding()
-            .background(.white)
-            .padding(.horizontal, 12)
-            .padding(.bottom, 8)
-        }
-//        .background(Color.lightGray)
+    let hint: SearchState.Model.Hit
+    var data: SearchState.Model.Hit.Source {
+        hint.source
     }
     
+    var body: some View {
+        let padding: CGFloat = 16
+        VStack(alignment: .leading) {
+            Text(data.title)
+                .font(.body)
+                .fontWeight(.semibold)
+                .greedyWidth(.leading)
+                .lineLimit(2)
+            Text(data.content)
+                .font(.body)
+                .lineLimit(5)
+                .padding(.vertical, 5)
+            Text("\(data.creator) 于 \(data.created) 发表, \(data.replyNum) 回复")
+                .font(.footnote)
+                .foregroundColor(Color.tintColor.opacity(0.8))
+        }
+        .foregroundColor(Color.bodyText)
+        .greedyWidth()
+        .padding(padding)
+        .background(Color.itemBg)
+        .padding(.bottom, 8)
+    }
 }
 
 
 struct SearchPage_Previews: PreviewProvider {
     static var previews: some View {
         SearchPage()
+            .environmentObject(Store.shared)
     }
 }

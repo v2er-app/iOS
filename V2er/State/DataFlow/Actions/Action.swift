@@ -48,4 +48,5 @@ enum Reducer {
     case myrecent
     case setting
     case createfeed
+    case search
 }

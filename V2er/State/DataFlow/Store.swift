@@ -65,6 +65,9 @@ final public class Store: ObservableObject {
                 (appState.settingState, followingAction) = settingStateReducer(appState.settingState, action)
             case .createfeed:
                 (appState.createTopicState, followingAction) = createStateReducer(appState.createTopicState, action)
+            case .search:
+                (appState.searchState, followingAction) = searchStateReducer(appState.searchState, action)
+                break
             case .global:
                 fallthrough
             default:

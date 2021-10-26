@@ -29,9 +29,21 @@ enum Endpoint {
     case replyTopic(id: String), blockUser(id: String)
     case followUser(id: String), starNode(id: String), dailyMission
     case checkin, twoFA, downMyTopic(id: String), pinTopic(id: String)
+    case search
 
     func path() -> String {
         return info().path
+    }
+
+    var url: URL {
+        var url: URL
+        let path = info().path
+        if path.starts(with: "http") {
+            url = URL(string: path)!
+        } else {
+            url =  APIService.baseURL.appendingPathComponent(path)
+        }
+        return url
     }
 
     func type() -> ResourceType {
@@ -128,6 +140,8 @@ enum Endpoint {
                 info.path = "/fade/topic/\(id)"
             case let .pinTopic(id):
                 info.path = "/sticky/topic/\(id)"
+            case let .search:
+                info.path = "https://www.sov2ex.com/api/search"
         }
         return info
     }

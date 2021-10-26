@@ -15,7 +15,7 @@ struct APIService {
     static let HTTP = "http:"
     static let baseUrlString = "\(HTTPS)//www.v2ex.com"
     //    static let baseUrlWww= "https://www.v2ex.com"
-    let baseURL = URL(string: baseUrlString)!
+    static let baseURL = URL(string: baseUrlString)!
     static let shared = APIService()
     private var session: URLSession
     private let jsonDecoder: JSONDecoder
@@ -42,8 +42,9 @@ struct APIService {
     }
 
     func jsonGet<T: Codable>(endpoint: Endpoint,
-                             params: Params? = nil) async -> APIResult<T> {
+                             _ params: Params? = nil) async -> APIResult<T> {
         let rawResult = await get(endpoint: endpoint, params: params)
+        log("jsonGet: \(rawResult.data?.string)")
         guard rawResult.error == nil else {
             return .failure(rawResult.error!)
         }
@@ -79,7 +80,7 @@ struct APIService {
                      params: Params?,
                      requestHeaders: Params? = nil) async -> RawResult {
         printCookies()
-        let url = baseURL.appendingPathComponent(endpoint.path())
+        let url = endpoint.url
         var componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         var queries = endpoint.queries()
         if let params = params {
@@ -122,7 +123,7 @@ struct APIService {
                       params: Params? = nil,
                       requestHeaders: Params? = nil) async -> RawResult {
         printCookies()
-        let url = baseURL.appendingPathComponent(endpoint.path())
+        let url = endpoint.url
         let componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         var request = URLRequest(url: componets.url!)
 //        request.httpMethod = "POST"

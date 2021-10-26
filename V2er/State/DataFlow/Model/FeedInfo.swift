@@ -44,7 +44,7 @@ struct FeedInfo: BaseModel {
         // @Pick("a[class^=count_]")
         var replyNum: String?
 
-        init(id: String, title: String? = .default, avatar: String? = .default) {
+        init(id: String, title: String? = nil, avatar: String? = nil) {
             self.id = id
             self.title = title
             self.avatar = avatar

@@ -40,15 +40,16 @@ struct TopBar: View {
                         Image(systemName: "square.grid.2x2")
                             .foregroundColor(.primary)
                             .font(.system(size: 22))
-                            .padding(3)
+                            .padding(6)
+                            .forceClickable()
                     }
                     Spacer()
-                    NavigationLink(destination: SearchPage()) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.primary)
-                            .font(.system(size: 22))
-                            .padding(3)
-                    }
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.primary)
+                        .font(.system(size: 22))
+                        .padding(6)
+                        .forceClickable()
+                        .to { SearchPage() }
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 8)
