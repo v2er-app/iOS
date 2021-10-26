@@ -209,6 +209,13 @@ extension View {
         let modifier = UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, state: state)
         return self.modifier(modifier)
     }
+
+    public func loadMore(_ state: UpdatableState,
+                         _ loadMore: LoadMoreAction = nil,
+                         onScroll: ScrollAction? = nil) -> some View {
+        let modifier = UpdatableModifier(onRefresh: nil, onLoadMore: loadMore, onScroll: onScroll, state: state)
+        return self.modifier(modifier)
+    }
     
     public func loadMore(autoRefresh: Bool = false,
                          hasMoreData: Bool = true,

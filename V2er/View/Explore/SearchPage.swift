@@ -27,9 +27,7 @@ struct SearchPage: StateView {
                 }
             }
             .navigationBarHidden(true)
-            .updatable(state.updatable) {
-                await run(action: SearchActions.Start())
-            } loadMore: {
+            .loadMore(state.updatable) {
                 await run(action: SearchActions.LoadMoreStart())
             }
             .onChange(of: state.sortWay) { sort in
