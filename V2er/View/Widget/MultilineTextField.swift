@@ -26,7 +26,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         textField.isUserInteractionEnabled = true
         textField.isScrollEnabled = false
         textField.backgroundColor = UIColor.clear
-        textField.textColor = Color.bodyText.toUIColor()
+        textField.textColor = Color.bodyText.uiColor
         
 //        textField.textContainer.maximumNumberOfLines = 5
         

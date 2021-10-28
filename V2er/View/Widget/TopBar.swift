@@ -34,15 +34,12 @@ struct TopBar: View {
         VStack(spacing: 0) {
             ZStack {
                 HStack {
-                    Button (action: {
-                        
-                    }) {
-                        Image(systemName: "square.grid.2x2")
-                            .foregroundColor(.primary)
-                            .font(.system(size: 22))
-                            .padding(6)
-                            .forceClickable()
-                    }
+                    Image(systemName: "square.grid.2x2")
+                        .foregroundColor(.primary)
+                        .font(.system(size: 22))
+                        .padding(6)
+                        .forceClickable()
+                        .to { TestView() }
                     Spacer()
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.primary)

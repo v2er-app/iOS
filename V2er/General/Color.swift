@@ -26,6 +26,7 @@ extension Color {
         self.frame(width: .infinity)
     }
     
+    public static let border = hex(0xE8E8E8, alpha: 0.8)
     static let lightGray = hex(0xF5F5F5)
     static let almostClear = hex(0xFFFFFF, alpha: 0.000001)
     static let debugColor = hex(0xFF0000, alpha: 0.1)
@@ -34,9 +35,9 @@ extension Color {
     static let bgColor = hex(0xE2E2E2, alpha: 0.8)
     static let itemBg: Color = .white
     static let dim = hex(0x000000, alpha: 0.6)
-    public static let border = hex(0xE8E8E8, alpha: 0.8)
-    
-    public func toUIColor() -> UIColor {
+    static let url = hex(0x60c2d4)
+
+    public var uiColor: UIColor {
         return UIColor(self)
     }
 }

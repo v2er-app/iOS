@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Atributika
 
 
 struct ReplyItemView: View {
@@ -25,10 +26,8 @@ struct ReplyItemView: View {
                     Spacer()
                     Image(systemName: "heart")
                 }
-//                RichText(info.content)
-                Text(info.content)
-                    .font(.subheadline)
-                    .foregroundColor(.bodyText)
+                RichText(info.content)
+                    .debug()
                 Text("\(info.floor)楼")
                     .font(.footnote)
                     .foregroundColor(Color.tintColor)
@@ -39,12 +38,3 @@ struct ReplyItemView: View {
         .padding(.horizontal, 12)
     }
 }
-
-
-
-
-//struct ReplyListView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ReplyItemView(info: nil)
-//    }
-//}

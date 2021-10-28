@@ -160,6 +160,7 @@ struct FeedDetailInfo: BaseModel {
                 guard let root = html else { return }
                 floor = root.pick("span.no").int
                 content = root.pick("div.reply_content", .innerHtml)
+                    .replace(segs: "\n", with: "")
                 userName = root.pick("strong a.dark[href^=/member]")
                 avatar = root.pick("img.avatar", .src)
                 time = root.pick("span.fade.small:not(:contains(♥))")
