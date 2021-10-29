@@ -51,7 +51,6 @@ struct RecentItemView<Data: FeedItemProtocol>: View {
                 VStack(alignment: .leading, spacing: 5) {
                     Text(data.userName.safe)
                         .lineLimit(1)
-                        .font(.body)
                     Text(data.replyNum.safe)
                         .lineLimit(1)
                         .font(.footnote)

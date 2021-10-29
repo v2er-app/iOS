@@ -48,8 +48,14 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     private var foreGroundColor: Color {
         shouldHideNavbar ? .white.opacity(0.9) : .tintColor
     }
-    
+
     var body: some View {
+        contentView
+            .navigatable()
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
         ZStack(alignment: .top) {
             navBar
                 .zIndex(1)
@@ -92,7 +98,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             }
         }
     }
-    
+
     @ViewBuilder
     private var navBar: some View  {
         NavbarHostView(paddingH: 0, hideDivider: shouldHideNavbar) {
@@ -218,7 +224,6 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                         VStack(alignment: .leading, spacing: 5) {
                             Text(data.userName)
                                 .lineLimit(1)
-                                .font(.body)
                             Text(data.timeAndReplier)
                                 .font(.footnote)
                                 .greedyWidth(.leading)

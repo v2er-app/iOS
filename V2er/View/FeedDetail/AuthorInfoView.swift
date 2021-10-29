@@ -54,7 +54,6 @@ struct AuthorInfoView: View {
                     VStack(alignment: .leading, spacing: 5) {
                         Text(userName)
                             .lineLimit(1)
-                            .font(.body)
                         Text(timeAndClickedNum + replyNum)
                             .lineLimit(1)
                             .font(.caption2)

@@ -21,7 +21,6 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
                     VStack(alignment: .leading, spacing: 5) {
                         Text(data.userName.safe)
                             .lineLimit(1)
-                            .font(.body)
                         Text(data.replyUpdate.safe)
                             .lineLimit(1)
                             .font(.footnote)
@@ -63,6 +62,9 @@ protocol FeedItemProtocol: Identifiable {
 
 //struct NewsItemView_Previews: PreviewProvider {
 //    static var previews: some View {
-////        NewsItemView()
+//        Text("Default Text")
+//            .greedyWidth(.leading)
+//            .lineLimit(2)
+//            .padding(.vertical, 3)
 //    }
 //}

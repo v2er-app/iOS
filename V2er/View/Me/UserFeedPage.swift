@@ -57,7 +57,6 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                     VStack(alignment: .leading, spacing: 5) {
                         Text(data.userName)
                             .lineLimit(1)
-                            .font(.body)
                         Text(data.replyUpdate)
                             .lineLimit(1)
                             .font(.footnote)

@@ -74,7 +74,6 @@ struct SearchPage: StateView {
                         self.presentationMode.wrappedValue.dismiss()
                     }
                 }
-                .font(.body)
                 .foregroundColor(.tintColor)
             }
             .padding(.top, topSafeAreaInset().top)
@@ -111,12 +110,10 @@ fileprivate struct SearchResultItemView: View {
         let padding: CGFloat = 16
         VStack(alignment: .leading) {
             Text(data.title)
-                .font(.body)
                 .fontWeight(.semibold)
                 .greedyWidth(.leading)
                 .lineLimit(2)
             Text(data.content)
-                .font(.body)
                 .lineLimit(5)
                 .padding(.vertical, 5)
             Text("\(data.creator) 于 \(data.created) 发表, \(data.replyNum) 回复")

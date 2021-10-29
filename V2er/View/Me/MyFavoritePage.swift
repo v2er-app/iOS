@@ -18,9 +18,7 @@ struct MyFavoritePage: StateView {
 
     var body: some View {
         contentView
-            .safeAreaInset(edge: .top, spacing: 0) { navBar }
-            .ignoresSafeArea(.container)
-            .navigationBarHidden(true)
+            .navigatable()
     }
 
     @ViewBuilder
@@ -34,6 +32,9 @@ struct MyFavoritePage: StateView {
         .tabViewStyle(.page)
         .padding(.horizontal, 10)
         .debug()
+        .safeAreaInset(edge: .top, spacing: 0) { navBar }
+        .ignoresSafeArea(.container)
+        .navigationBarHidden(true)
     }
 
     @ViewBuilder

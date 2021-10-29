@@ -49,6 +49,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             .navigatable()
     }
 
+    @ViewBuilder
     private var contentView: some View {
         VStack (spacing: 0) {
             LazyVStack(spacing: 0) {
@@ -126,7 +127,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             .padding(.top, 4)
             .padding(.horizontal, 16)
             .foregroundColor(.black)
-            .font(.body)
             Divider()
         }
     }

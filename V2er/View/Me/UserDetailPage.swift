@@ -50,6 +50,12 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
     }
     
     var body: some View {
+        contentView
+            .navigatable()
+    }
+
+    @ViewBuilder
+    private var contentView: some View {
         ZStack(alignment: .top) {
             navBar
                 .zIndex(1)
@@ -91,7 +97,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
             if !isPresented {
                 log("onPageClosed----->")
                 statusBarConfig.statusBarStyle = .darkContent
-//                dispatch(action: InstanceDestoryAction(target: .userdetail, id: instanceId))
+                //                dispatch(action: InstanceDestoryAction(target: .userdetail, id: instanceId))
             }
         }
     }
@@ -264,7 +270,6 @@ struct TopicItemView: View {
                     VStack(alignment: .leading, spacing: 5) {
                         Text(data.userName)
                             .lineLimit(1)
-                            .font(.body)
                         Text(data.time)
                             .lineLimit(1)
                             .font(.footnote)

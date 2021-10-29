@@ -37,23 +37,21 @@ struct ExplorePage: BaseHomePageView {
                 .padding(.horizontal, 10)
                 .background(Color.itemBg)
             ForEach(state.exploreInfo.dailyHotInfo) { item in
-                NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
-                    HStack(spacing: 12) {
-                        NavigationLink(destination: UserDetailPage(userId: item.member)) {
-                            AvatarView(url: item.avatar, size: 30)
-                        }
-                        Text(item.title)
-                            .font(.body)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.bodyText)
-                            .lineLimit(2)
-                            .greedyWidth(.leading)
+                HStack(spacing: 12) {
+                    NavigationLink(destination: UserDetailPage(userId: item.member)) {
+                        AvatarView(url: item.avatar, size: 30)
                     }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 10)
-                    .background(Color.itemBg)
-                    .divider(0.2)
+                    Text(item.title)
+//                        .fontWeight(.semibold)
+//                        .foregroundColor(.bodyText)
+                        .lineLimit(2)
+                        .greedyWidth(.leading)
                 }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 10)
+                .background(Color.itemBg)
+                .divider(0.2)
+                .to { FeedDetailPage(initData: FeedInfo.Item(id: item.id)) }
             }
         }
         

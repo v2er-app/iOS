@@ -49,7 +49,7 @@ struct UserDetailInfo: BaseModel {
 
             init(from html: Element?) {
                 guard let root = html else { return }
-                id = root.pick("span.item_title a", .href)
+                id = parseFeedId(root.pick("span.item_title a", .href))
                 userName = root.pick("strong > a[href^=/member/]:first-child")
                 tag = root.pick("a.node")
                 tagId = root.pick("a.node", .href)
