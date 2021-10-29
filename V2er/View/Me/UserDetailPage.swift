@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Kingfisher
+import Atributika
 
 struct UserDetailPage: StateView, InstanceIdentifiable {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
@@ -45,7 +46,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
         return hideNavbar
     }
     
-    var foreGroundColor: Color {
+    var foreGroundColor: SwiftUI.Color {
         shouldHideNavbar ? .white.opacity(0.9) : .tintColor
     }
     
@@ -59,7 +60,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
         ZStack(alignment: .top) {
             navBar
                 .zIndex(1)
-            VStack(spacing: 0) {
+            LazyVStack(spacing: 0) {
                 topBannerView
                     .readSize {
                         bannerViewHeight = $0.height
@@ -194,7 +195,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
             TabButton(title: "回复", id: .reply, selectedID: $currentTab, animation: self.animation)
         }
         .background(Color.lightGray, in: RoundedRectangle(cornerRadius: 10))
-        .padding(.horizontal, 10)
+        .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(.white)
         .clipCorner(12, corners: [.topLeft, .topRight])
@@ -230,112 +231,122 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                 }
             }
         }
-        .background(.white)
+        .padding(.bottom, 36)
+        .background(Color.itemBg)
     }
 
 
-struct ReplyItemView: View {
-    var data: UserDetailInfo.ReplyInfo.Item
+    struct ReplyItemView: View {
+        var data: UserDetailInfo.ReplyInfo.Item
+        let quoteFont = Style.font(UIFont.prfered(.footnote))
+            .foregroundColor(Color.bodyText.uiColor)
 
-    var body: some View {
-        VStack(spacing: 0) {
-            Text(data.title)
+        var body: some View {
+            VStack(spacing: 0) {
+                Text(data.title)
+                    .font(.footnote)
+                    .greedyWidth(.leading)
+                RichText {
+                    data.content
+                        .rich(baseStyle: quoteFont)
+                }
                 .font(.footnote)
-            Text(data.content)
-                .greedyWidth(.leading)
-                .font(.footnote)
-                .padding(10)
+                .padding(12)
                 .background {
                     HStack(spacing: 0) {
                         Color.tintColor.opacity(0.8)
                             .frame(width: 3)
                         Color.lightGray
                     }
+                    .clipCorner(1.5, corners: [.topLeft, .bottomLeft])
                 }
-            Text(data.time)
-                .font(.footnote)
-                .greedyWidth(.trailing)
-        }
-    }
-}
-
-
-struct TopicItemView: View {
-    var data: UserDetailInfo.TopicInfo.Item
-
-    var body: some View {
-        VStack(spacing: 0) {
-            VStack {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(data.userName)
-                            .lineLimit(1)
-                        Text(data.time)
-                            .lineLimit(1)
-                            .font(.footnote)
-                    }
-                    Spacer()
-                    NavigationLink(destination: TagDetailPage()) {
-                        Text(data.tag)
-                            .font(.footnote)
-                            .foregroundColor(.black)
-                            .lineLimit(1)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(Color.lightGray)
-                    }
-                }
-                Text(data.title )
-                    .greedyWidth(.leading)
-                    .lineLimit(2)
+                .padding(.vertical, 6)
+                Text(data.time)
+                    .font(.footnote)
+                    .greedyWidth(.trailing)
             }
             .padding(12)
-            Divider()
+            .divider()
         }
-        .background(Color.almostClear)
     }
-}
 
-struct TabButton: View {
-    public enum ID: String {
-        case topic, reply
-    }
-    
-    var title: String
-    var id: ID
-    @Binding var selectedID: ID
-    var animation: Namespace.ID
-    
-    
-    var isSelected: Bool {
-        return id == selectedID
-    }
-    
-    var body: some View {
-        Button {
-            withAnimation(.spring()) {
-                selectedID = id
-            }
-        } label: {
-            Text(title)
-                .fontWeight(.bold)
-                .foregroundColor(isSelected ? .white.opacity(0.9) : .tintColor)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background {
-                    VStack {
-                        if isSelected {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(.black)
-                                .matchedGeometryEffect(id: "TAB", in: animation)
+
+    struct TopicItemView: View {
+        var data: UserDetailInfo.TopicInfo.Item
+
+        var body: some View {
+            VStack(spacing: 0) {
+                VStack {
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(data.userName)
+                                .lineLimit(1)
+                            Text(data.time)
+                                .lineLimit(1)
+                                .font(.footnote)
+                        }
+                        Spacer()
+                        NavigationLink(destination: TagDetailPage()) {
+                            Text(data.tag)
+                                .font(.footnote)
+                                .foregroundColor(.black)
+                                .lineLimit(1)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 8)
+                                .background(Color.lightGray)
                         }
                     }
+                    Text(data.title )
+                        .greedyWidth(.leading)
+                        .lineLimit(2)
                 }
-                .forceClickable()
+                .padding(12)
+                Divider()
+            }
+            .background(Color.almostClear)
         }
     }
-    
-}
+
+    struct TabButton: View {
+        public enum ID: String {
+            case topic, reply
+        }
+
+        var title: String
+        var id: ID
+        @Binding var selectedID: ID
+        var animation: Namespace.ID
+
+
+        var isSelected: Bool {
+            return id == selectedID
+        }
+
+        var body: some View {
+            Button {
+                withAnimation(.spring()) {
+                    selectedID = id
+                }
+            } label: {
+                Text(title)
+                    .fontWeight(.bold)
+                    .foregroundColor(isSelected ? .white.opacity(0.9) : .tintColor)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background {
+                        VStack {
+                            if isSelected {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(.black)
+                                    .matchedGeometryEffect(id: "TAB", in: animation)
+                            }
+                        }
+                    }
+                    .forceClickable()
+            }
+        }
+
+    }
 
 }
 

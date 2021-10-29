@@ -102,6 +102,7 @@ struct UserDetailInfo: BaseModel {
                 item.title = dock.pick("span.gray")
                 item.time = dock.pick("span.fade")
                 item.content = content.value(.innerHtml)
+                    .remove("\n")
                 items.append(item)
             }
         }
