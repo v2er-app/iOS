@@ -14,10 +14,10 @@ struct TabBar: View {
         store.appState.globalState.selectedTab
     }
     
-    var tabs = [TabItem(id: TabId.feed, text: "Feed", icon: "feed_tab"),
-                TabItem(id: TabId.explore, text: "Explore", icon: "explore_tab"),
-                TabItem(id: TabId.message, text: "Message", icon: "message_tab"),
-                TabItem(id: TabId.me, text: "Me", icon: "me_tab")]
+    var tabs = [TabItem(id: TabId.feed, text: "最新", icon: "feed_tab"),
+                TabItem(id: TabId.explore, text: "发现", icon: "explore_tab"),
+                TabItem(id: TabId.message, text: "通知", icon: "message_tab"),
+                TabItem(id: TabId.me, text: "我", icon: "me_tab")]
     
     var body: some View {
         VStack(spacing: 0) {
@@ -35,7 +35,7 @@ struct TabBar: View {
                             Image(tab.icon)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(height: 16)
+                                .frame(height: 18)
                                 .padding(.top, 8)
                                 .padding(.bottom, 2.5)
                             Text(tab.text)
@@ -103,7 +103,9 @@ struct TabBar_Previews : PreviewProvider {
             Spacer()
             TabBar()
                 .background(VEBlur())
-        }.edgesIgnoringSafeArea(.bottom)
+        }
+        .edgesIgnoringSafeArea(.bottom)
+        .environmentObject(Store.shared)
     }
     
 }

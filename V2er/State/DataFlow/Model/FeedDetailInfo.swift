@@ -139,7 +139,7 @@ struct FeedDetailInfo: BaseModel {
         struct Item: HtmlItemModel {
             // span.no
             var floor: Int = 0
-            var id: Int { floor }
+            var id = UUID().uuidString
             // div.reply_content, .innerHtml
             var content: String = .default
             // strong a.dark[href^=/member]
