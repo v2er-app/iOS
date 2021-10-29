@@ -48,7 +48,7 @@ struct MessagePage: BaseHomePageView {
 
 struct MessageItemView: View {
     let item: MessageInfo.Item
-    let quoteFont = Style.font(UIFont.prfered(.body))
+    let quoteFont = Style.font(UIFont.prfered(.subheadline))
         .foregroundColor(Color.bodyText.uiColor)
 
     var body: some View {
