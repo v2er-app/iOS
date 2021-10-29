@@ -10,55 +10,78 @@ import SwiftUI
 import UIKit
 import Atributika
 
+
+typealias RichString = Atributika.AttributedText
+
 struct RichText: View {
     @State private var height: CGFloat = .zero
-    let html: String
+    let richString: RichString
+    typealias DetectionAction = (DetectionType) -> Bool
+    let action: DetectionAction?
 
-    init(_ html: String, maxWidth: CGFloat = 0) {
-        self.html = html
+    init(_ string: ()->String, action: DetectionAction? = nil) {
+        self.init({ string().rich() }, action: action)
+    }
+
+    init(_ richString: ()->RichString, action: DetectionAction? = nil) {
+        self.richString = richString()
+        self.action = action
     }
 
     var body: some View {
-        AttributedText(from: html, height: $height)
+        AttributedText(richString, height: $height, detection: action)
     }
-}
 
-fileprivate struct AttributedText: UIViewRepresentable {
-    let attributedText: Atributika.AttributedText
-    @Binding var dynamicHeight: CGFloat
-    @State var maxWidth: CGFloat = 300
-
-    init(from html: String, height: Binding<CGFloat>) {
-        self._dynamicHeight = height
-        let all = Style.font(.systemFont(ofSize: 16))
-        let link = Style("a")
+    struct Styles {
+        public static let base = Style.font(UIFont.prfered(.body))
+            .foregroundColor(Color.bodyText.uiColor)
+        public static let link = Style("a")
             .font(.boldSystemFont(ofSize: 16))
             .foregroundColor(Color.url.uiColor, .normal)
             .backgroundColor(Color.lightGray.uiColor, .highlighted)
-        let img = Style("img")
-            .foregroundColor(.red, .normal)
+    }
+}
 
-        self.attributedText = html
-            .style(tags: link)
-            .styleLinks(link)
-            .styleMentions(link)
-            .styleHashtags(link)
-            .styleAll(all)
+extension String {
+    func rich(baseStyle: Atributika.Style = RichText.Styles.base) ->RichString {
+        return self
+            .style(tags: RichText.Styles.link)
+            .styleLinks(RichText.Styles.link)
+            .styleMentions(RichText.Styles.link)
+//            .styleHashtags(RichText.Styles.link)
+            .styleAll(baseStyle)
+    }
+
+}
+
+fileprivate struct AttributedText: UIViewRepresentable {
+    let richString: RichString
+    let detection: RichText.DetectionAction?
+    @Binding var dynamicHeight: CGFloat
+    @State var maxWidth: CGFloat = 300
+
+    init(_ richString: RichString, height: Binding<CGFloat>, detection: RichText.DetectionAction?) {
+        self._dynamicHeight = height
+        self.detection = detection
+        self.richString = richString
     }
 
     func makeUIView(context: Context) -> MaxWidthAttributedLabel {
         let label = MaxWidthAttributedLabel()
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.attributedText = self.attributedText
+        label.attributedText = self.richString
         label.maxWidth = maxWidth
-        onClick(label: label)
+        clickEvent(label: label)
         return label
     }
 
-    private func onClick(label: MaxWidthAttributedLabel) {
+    private func clickEvent(label: MaxWidthAttributedLabel) {
         let baseURL = APIService.baseUrlString
         label.onClick = { label, detection in
+            if let consumed = self.detection?(detection.type) {
+                if consumed { return }
+            }
             switch detection.type {
                 case .hashtag(let tag):
                     if let url = URL(string: "\(baseURL)/hashtag/\(tag)") {
@@ -81,8 +104,8 @@ fileprivate struct AttributedText: UIViewRepresentable {
     }
 
     func updateUIView(_ label: MaxWidthAttributedLabel, context: Context) {
-        label.attributedText = self.attributedText
-        onClick(label: label)
+        label.attributedText = self.richString
+        clickEvent(label: label)
         label.maxWidth = maxWidth
     }
 }

@@ -8,6 +8,7 @@
 
 import SwiftUI
 import SwiftSoup
+import Atributika
 
 struct MessagePage: BaseHomePageView {
     @EnvironmentObject private var store: Store
@@ -34,9 +35,7 @@ struct MessagePage: BaseHomePageView {
     private var contentView: some View {
         LazyVStack(spacing: 0) {
             ForEach(state.model.items) { item in
-                NavigationLink(destination: FeedDetailPage(id: item.id)) {
-                    MessageItemView(item: item)
-                }
+                MessageItemView(item: item)
             }
         }
         .updatable(state.updatableState) {
@@ -49,27 +48,33 @@ struct MessagePage: BaseHomePageView {
 
 struct MessageItemView: View {
     let item: MessageInfo.Item
+    let quoteFont = Style.font(UIFont.prfered(.callout))
+        .foregroundColor(Color.bodyText.uiColor)
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             AvatarView(url: item.avatar, size: 40)
+                .to { UserDetailPage(userId: item.username)}
             VStack(alignment: .leading) {
                 Text(item.title)
                     .font(.subheadline)
                     .greedyWidth(.leading)
-                Text(item.content)
-                    .greedyWidth(.leading)
-                    .font(.footnote)
-                    .lineLimit(3)
-                    .padding(10)
-                    .background {
-                        HStack(spacing: 0) {
-                            Color.tintColor.opacity(0.8)
-                                .frame(width: 3)
-                            Color.lightGray
-                        }
+                    .background(Color.itemBg)
+                    .to { FeedDetailPage(id: item.feedId) }
+                RichText {
+                    item.content
+                        .rich(baseStyle: quoteFont)
+                }
+                .greedyWidth(.leading)
+                .padding(10)
+                .background {
+                    HStack(spacing: 0) {
+                        Color.tintColor.opacity(0.8)
+                            .frame(width: 3)
+                        Color.lightGray
                     }
-                    .visibility(item.content.isEmpty ? .gone : .visible)
+                }
+                .visibility(item.content.isEmpty ? .gone : .visible)
             }
         }
         .padding(12)
@@ -82,7 +87,7 @@ struct MessageItemView: View {
 struct MessagePage_Previews: PreviewProvider {
     static var selected = TabId.message
     static var previews: some View {
-        MainPage()
+        MessagePage(selecedTab: .message)
             .environmentObject(Store.shared)
     }
 }

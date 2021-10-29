@@ -26,8 +26,8 @@ struct ReplyItemView: View {
                     Spacer()
                     Image(systemName: "heart")
                 }
-                RichText(info.content)
-                    .debug()
+                RichText { info.content }
+                .debug()
                 Text("\(info.floor)楼")
                     .font(.footnote)
                     .foregroundColor(Color.tintColor)

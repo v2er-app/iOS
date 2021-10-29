@@ -22,7 +22,7 @@ struct MessageInfo: BaseModel {
     struct Item: HtmlItemModel {
         var id: String = UUID().uuidString
         var feedId: String
-        var name: String = .default
+        var username: String = .default
         var avatar: String = .default
         var title: String = .default
         var link: String = .default
@@ -31,12 +31,13 @@ struct MessageInfo: BaseModel {
 
         init?(from html: Element?) {
             guard let root = html else { return nil }
-            name = root.pick("a[href^=/member/] strong")
+            username = root.pick("a[href^=/member/] strong")
             avatar = parseAvatar(root.pick("a[href^=/member/] img", .src))
             title = root.pick("span.fade")
             link = root.pick("a[href^=/t/]", .href)
             feedId = parseFeedId(link)
             content = root.pick("div.payload", .innerHtml)
+                .remove("\n")
             time = root.pick("span.snow")
         }
     }
