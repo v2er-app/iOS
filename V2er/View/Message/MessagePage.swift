@@ -72,7 +72,7 @@ struct MessageItemView: View {
                             .frame(width: 3)
                         Color.lightGray
                     }
-                    .clipCorner(2.5, corners: [.topLeft, .bottomLeft])
+                    .clipCorner(1.5, corners: [.topLeft, .bottomLeft])
                 }
                 .visibility(item.content.isEmpty ? .gone : .visible)
             }
