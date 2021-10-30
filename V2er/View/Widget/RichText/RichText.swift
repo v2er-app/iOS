@@ -17,7 +17,6 @@ struct RichText: View {
     typealias DetectionAction = (DetectionType) -> Bool
     let action: DetectionAction?
     let richString: RichString
-    @State var width: CGFloat = 300
     @State var height: CGFloat = 0
 
     init(_ string: ()->String, action: DetectionAction? = nil) {
@@ -30,14 +29,8 @@ struct RichText: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.clear
-                .greedyWidth()
-                .readSize { size in
-                    self.width = size.width
-                    log("rich.width: \(width)")
-                }
-            AttributedText(richString, detection: action, maxWidth: width, height: $height)
+        GeometryReader { geo in
+            AttributedText(richString, detection: action, maxWidth: geo.size.width, height: $height)
         }
         .frame(height: height)
         .debug()

@@ -16,6 +16,7 @@ struct ReplyItemView: View {
     var body: some View {
         HStack(alignment: .top) {
             AvatarView(url: info.avatar, size: 40)
+                .to { UserDetailPage(userId: info.userName) }
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     VStack (alignment: .leading, spacing: 4) {
