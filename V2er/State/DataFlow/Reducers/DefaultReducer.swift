@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 func defaultReducer(_ state: AppState, _ action: Action) -> (AppState, Action?) {
     var state = state

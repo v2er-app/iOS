@@ -44,7 +44,6 @@
 		5D2B2B3E26FF797600446F93 /* AccountState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2B2B3D26FF797600446F93 /* AccountState.swift */; };
 		5D2DD00826FB353C0001C85A /* DefaultReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2DD00726FB353C0001C85A /* DefaultReducer.swift */; };
 		5D2DD00A26FB443D0001C85A /* GlobalActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D2DD00926FB443D0001C85A /* GlobalActions.swift */; };
-		5D32B19B26B587CB00E72E65 /* StatusBarConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D32B19A26B587CB00E72E65 /* StatusBarConfigurator.swift */; };
 		5D368C8826C419D000794B8E /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D368C8726C419D000794B8E /* APIService.swift */; };
 		5D38DEF5268C21A800C48F94 /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D38DEF4268C21A800C48F94 /* ActivityIndicator.swift */; };
 		5D3CD31D26D0BFC600B3C2D3 /* FeedActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D3CD31C26D0BFC600B3C2D3 /* FeedActions.swift */; };
@@ -90,6 +89,7 @@
 		5D88D5E026C2017E00302265 /* MeReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88D5DF26C2017E00302265 /* MeReducer.swift */; };
 		5D8FAA34272A70F50067766E /* Atributika in Frameworks */ = {isa = PBXBuildFile; productRef = 5D8FAA33272A70F50067766E /* Atributika */; };
 		5D8FAA36272AD27A0067766E /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8FAA35272AD27A0067766E /* TestView.swift */; };
+		5D8FAA38272D26200067766E /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8FAA37272D26200067766E /* RootView.swift */; };
 		5D91F8D526F22A6F0089D72E /* TagDetailState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D91F8D426F22A6F0089D72E /* TagDetailState.swift */; };
 		5D91F8D726F22B560089D72E /* TagDetailActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D91F8D626F22B560089D72E /* TagDetailActions.swift */; };
 		5D91F8D926F22CEC0089D72E /* TagDetailReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D91F8D826F22CEC0089D72E /* TagDetailReducer.swift */; };
@@ -187,7 +187,6 @@
 		5D2B2B3D26FF797600446F93 /* AccountState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountState.swift; sourceTree = "<group>"; };
 		5D2DD00726FB353C0001C85A /* DefaultReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultReducer.swift; sourceTree = "<group>"; };
 		5D2DD00926FB443D0001C85A /* GlobalActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalActions.swift; sourceTree = "<group>"; };
-		5D32B19A26B587CB00E72E65 /* StatusBarConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarConfigurator.swift; sourceTree = "<group>"; };
 		5D368C8726C419D000794B8E /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		5D38DEF4268C21A800C48F94 /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
 		5D3CD31C26D0BFC600B3C2D3 /* FeedActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedActions.swift; sourceTree = "<group>"; };
@@ -238,6 +237,7 @@
 		5D88D5DD26C2017400302265 /* MessageReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReducer.swift; sourceTree = "<group>"; };
 		5D88D5DF26C2017E00302265 /* MeReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeReducer.swift; sourceTree = "<group>"; };
 		5D8FAA35272AD27A0067766E /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
+		5D8FAA37272D26200067766E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		5D91F8D426F22A6F0089D72E /* TagDetailState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailState.swift; sourceTree = "<group>"; };
 		5D91F8D626F22B560089D72E /* TagDetailActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailActions.swift; sourceTree = "<group>"; };
 		5D91F8D826F22CEC0089D72E /* TagDetailReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailReducer.swift; sourceTree = "<group>"; };
@@ -633,10 +633,10 @@
 				5DE5C578249D90AD0004DCC6 /* Color.swift */,
 				5D6AAAAB2691851100F42A13 /* Utils.swift */,
 				5DF1B36C2698A39E0046DB20 /* Device.swift */,
-				5D32B19A26B587CB00E72E65 /* StatusBarConfigurator.swift */,
 				5DE62A2826CEB20E0082161A /* Extentions.swift */,
 				5D2B2B3B26FF754F00446F93 /* Persist.swift */,
 				5D2B2B3D26FF797600446F93 /* AccountState.swift */,
+				5D8FAA37272D26200067766E /* RootView.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -833,7 +833,7 @@
 				5D5677CB2721916300543FE8 /* CreateReducer.swift in Sources */,
 				5DCE4CEC270D9746006BA98D /* MyFollowState.swift in Sources */,
 				5D6871822718717B00329E73 /* OtherSettingsView.swift in Sources */,
-				5D32B19B26B587CB00E72E65 /* StatusBarConfigurator.swift in Sources */,
+				5D8FAA38272D26200067766E /* RootView.swift in Sources */,
 				5D04BF9726C9FB6E0005F7E3 /* FeedInfo.swift in Sources */,
 				5D0A513926E26473006F3D9B /* FeedDetailReducer.swift in Sources */,
 				5D2DD00826FB353C0001C85A /* DefaultReducer.swift in Sources */,

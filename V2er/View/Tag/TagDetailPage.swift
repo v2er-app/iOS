@@ -28,10 +28,6 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         state.model
     }
 
-    var statusBarConfig: StatusBarConfigurator {
-        store.appState.globalState.statusBarState
-    }
-
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
@@ -40,18 +36,21 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     var tagId: String?
 
     private var shouldHideNavbar: Bool {
-        let hideNavbar =  scrollY > -heightOfNodeImage * 1.0
-        statusBarConfig.statusBarStyle = hideNavbar ? .lightContent : .darkContent
-        return hideNavbar
+        return scrollY > -heightOfNodeImage * 1.0
     }
     
     private var foreGroundColor: Color {
         shouldHideNavbar ? .white.opacity(0.9) : .tintColor
     }
 
+    private var statusBarStyle: UIStatusBarStyle {
+        shouldHideNavbar ? .lightContent : .darkContent
+    }
+
     var body: some View {
         contentView
             .navigatable()
+            .statusBarStyle(statusBarStyle, original: .darkContent)
     }
 
     @ViewBuilder
@@ -84,7 +83,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 }
             }
         }
-        .prepareStatusBarConfigurator(statusBarConfig)
+        .statusBarStyle(shouldHideNavbar ? .lightContent : .darkContent, original: .darkContent)
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
         .onAppear {
@@ -93,7 +92,6 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         .onDisappear {
             if !isPresented {
                 log("onPageClosed----->")
-                statusBarConfig.statusBarStyle = .darkContent
                 // dispatch(action: InstanceDestoryAction(target: .userdetail, id: instanceId))
             }
         }
@@ -153,7 +151,6 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         .onDisappear {
             if !isPresented {
                 log("onPageClosed----->")
-                statusBarConfig.statusBarStyle = .darkContent
             }
         }
     }

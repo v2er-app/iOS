@@ -11,15 +11,9 @@ import SwiftUI
 @main
 struct V2erApp: App {
     public static let deviceType = UIDevice().type
-    
-    public static let viewController: UIHostingController = UIHostingController(rootView: Text(""))
-    
-    public static func measureSize(view: Text) -> CGSize {
-        viewController.rootView = view
-        return viewController.view.intrinsicContentSize
-    }
+    public static var rootViewController: UIViewController?
+    public static var statusBarState: UIStatusBarStyle = .darkContent
 
-    
     init() {
         setupApperance()
     }
@@ -42,15 +36,23 @@ struct V2erApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainPage()
-                .environmentObject(Store.shared)
-                .buttonStyle(.plain)
-//                .navigationBarTitle("")
-//                .navigationBarHidden(true)
-//                .ignoresSafeArea(.container)
+            RootView {
+                MainPage()
+                    .environmentObject(Store.shared)
+                    .buttonStyle(.plain)
+            }
         }
     }
 
+    static func changeStatusBarStyle(_ style: UIStatusBarStyle) {
+        guard style != statusBarState else { return }
+        statusBarState = style
+        rootViewController?
+            .setNeedsStatusBarAppearanceUpdate()
+    }
+
 }
+
+
 
 

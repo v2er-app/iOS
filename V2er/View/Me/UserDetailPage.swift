@@ -36,23 +36,22 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
         state.model
     }
 
-    var statusBarConfig: StatusBarConfigurator {
-        store.appState.globalState.statusBarState
-    }
-    
     private var shouldHideNavbar: Bool {
-        let hideNavbar =  scrollY > -heightOfNodeImage * 1.0
-        statusBarConfig.statusBarStyle = hideNavbar ? .lightContent : .darkContent
-        return hideNavbar
+        scrollY > -heightOfNodeImage * 1.0
+    }
+
+    private var statusBarStyle: UIStatusBarStyle {
+        shouldHideNavbar ? .lightContent : .darkContent
     }
     
     var foreGroundColor: SwiftUI.Color {
-        shouldHideNavbar ? .white.opacity(0.9) : .tintColor
+        return shouldHideNavbar ? .white.opacity(0.9) : .tintColor
     }
     
     var body: some View {
         contentView
             .navigatable()
+            .statusBarStyle(statusBarStyle, original: .darkContent)
     }
 
     @ViewBuilder
@@ -88,16 +87,16 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                 .debug()
             }
         }
-        .prepareStatusBarConfigurator(store.appState.globalState.statusBarState)
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
         .onAppear {
+            log("onAppear----")
             dispatch(action: UserDetailActions.FetchData.Start(id: instanceId, userId: userId))
         }
         .onDisappear {
+            log("onDisappear----")
             if !isPresented {
                 log("onPageClosed----->")
-                statusBarConfig.statusBarStyle = .darkContent
                 //                dispatch(action: InstanceDestoryAction(target: .userdetail, id: instanceId))
             }
         }

@@ -26,6 +26,9 @@ struct FeedPage: BaseHomePageView {
     var body: some View {
         contentView
             .hide(!isSelected)
+            .onAppear {
+                log("FeedPage.onAppear")
+            }
     }
 
     @ViewBuilder
