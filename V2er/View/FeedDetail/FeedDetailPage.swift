@@ -52,7 +52,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @ViewBuilder
     private var contentView: some View {
         VStack (spacing: 0) {
-            LazyVStack(spacing: 0) {
+            // TODO: improve here
+            VStack(spacing: 0) {
                 AuthorInfoView(initData: initData, data: state.model.headerInfo)
                 NewsContentView(state.model.contentInfo)
                     .padding(.horizontal, 10)
