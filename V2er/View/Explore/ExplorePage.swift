@@ -50,7 +50,7 @@ struct ExplorePage: BaseHomePageView {
                 .padding(.vertical, 8)
                 .padding(.horizontal, 10)
                 .background(Color.itemBg)
-                .divider(0.2)
+                .divider()
                 .to { FeedDetailPage(initData: FeedInfo.Item(id: item.id)) }
             }
         }

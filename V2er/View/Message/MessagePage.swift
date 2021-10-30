@@ -64,7 +64,7 @@ struct MessageItemView: View {
                     item.content
                         .rich(baseStyle: quoteFont)
                 }
-                .greedyWidth(.leading)
+                .debug(true)
                 .padding(10)
                 .background {
                     HStack(spacing: 0) {

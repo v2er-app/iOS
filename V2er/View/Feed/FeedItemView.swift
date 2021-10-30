@@ -13,34 +13,33 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            VStack(spacing: 0) {
-                HStack(alignment: .top) {
-                    NavigationLink(destination: UserDetailPage(userId: data.userName)) {
-                        AvatarView(url: data.avatar)
-                    }
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(data.userName.safe)
-                            .lineLimit(1)
-                        Text(data.replyUpdate.safe)
-                            .lineLimit(1)
-                            .font(.footnote)
-                            .foregroundColor(Color.tintColor)
-                    }
-                    Spacer()
-                    NodeView(id: data.nodeId.safe, name: data.nodeName.safe)
+            HStack(alignment: .top) {
+                NavigationLink(destination: UserDetailPage(userId: data.userName)) {
+                    AvatarView(url: data.avatar)
                 }
-                Text(data.title.safe)
-                    .greedyWidth(.leading)
-                    .lineLimit(2)
-                    .padding(.vertical, 3)
-                Text("评论\(data.replyNum.safe)")
-                    .font(.footnote)
-                    .greedyWidth(.trailing)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(data.userName.safe)
+                        .lineLimit(1)
+                    Text(data.replyUpdate.safe)
+                        .lineLimit(1)
+                        .font(.footnote)
+                        .foregroundColor(Color.tintColor)
+                }
+                Spacer()
+                NodeView(id: data.nodeId.safe, name: data.nodeName.safe)
             }
-            .padding(12)
-            Divider()
+            Text(data.title.safe)
+                .greedyWidth(.leading)
+                .lineLimit(2)
+                .padding(.vertical, 3)
+            Text("评论\(data.replyNum.safe)")
+                .font(.footnote)
+                .greedyWidth(.trailing)
         }
+        .padding(12)
         .background(Color.itemBg)
+        .divider()
+
     }
 }
 

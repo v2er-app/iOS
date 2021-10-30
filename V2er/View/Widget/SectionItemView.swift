@@ -63,14 +63,7 @@ struct SectionView<Content: View>: View {
                     .padding(.trailing, paddingH)
             }
             .padding(.vertical, 17)
-            .background {
-                VStack {
-                    Spacer()
-                    Divider()
-                        .foregroundColor(.lightGray)
-                        .opacity(showDivider ? 0.5 : 0.0)
-                }
-            }
+            .divider(showDivider ? 0.8 : 0.0)
         }
         .background(.white)
     }

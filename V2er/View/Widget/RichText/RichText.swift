@@ -14,10 +14,11 @@ import Atributika
 typealias RichString = Atributika.AttributedText
 
 struct RichText: View {
-    @State private var height: CGFloat = .zero
-    let richString: RichString
     typealias DetectionAction = (DetectionType) -> Bool
     let action: DetectionAction?
+    let richString: RichString
+    @State var width: CGFloat = 300
+    @State var height: CGFloat = 0
 
     init(_ string: ()->String, action: DetectionAction? = nil) {
         self.init({ string().rich() }, action: action)
@@ -29,7 +30,17 @@ struct RichText: View {
     }
 
     var body: some View {
-        AttributedText(richString, height: $height, detection: action)
+        ZStack {
+            Color.clear
+                .greedyWidth()
+                .readSize { size in
+                    self.width = size.width
+                    log("rich.width: \(width)")
+                }
+            AttributedText(richString, detection: action, maxWidth: width, height: $height)
+        }
+        .frame(height: height)
+        .debug()
     }
 
     struct Styles {
@@ -48,7 +59,7 @@ extension String {
             .style(tags: RichText.Styles.link)
             .styleLinks(RichText.Styles.link)
             .styleMentions(RichText.Styles.link)
-//            .styleHashtags(RichText.Styles.link)
+        //            .styleHashtags(RichText.Styles.link)
             .styleAll(baseStyle)
     }
 
@@ -57,13 +68,14 @@ extension String {
 fileprivate struct AttributedText: UIViewRepresentable {
     let richString: RichString
     let detection: RichText.DetectionAction?
-    @Binding var dynamicHeight: CGFloat
-    @State var maxWidth: CGFloat = 300
+    var maxWidth: CGFloat
+    @Binding var height: CGFloat
 
-    init(_ richString: RichString, height: Binding<CGFloat>, detection: RichText.DetectionAction?) {
-        self._dynamicHeight = height
+    init(_ richString: RichString, detection: RichText.DetectionAction?, maxWidth: CGFloat, height: Binding<CGFloat>) {
         self.detection = detection
         self.richString = richString
+        self.maxWidth = maxWidth
+        self._height = height
     }
 
     func makeUIView(context: Context) -> MaxWidthAttributedLabel {
@@ -105,16 +117,17 @@ fileprivate struct AttributedText: UIViewRepresentable {
 
     func updateUIView(_ label: MaxWidthAttributedLabel, context: Context) {
         label.attributedText = self.richString
-        clickEvent(label: label)
         label.maxWidth = maxWidth
+        DispatchQueue.main.async { // << fixed
+            self.height = label.sizeThatFits(CGSize(width: maxWidth, height: .infinity)).height
+        }
     }
 }
 
 fileprivate class MaxWidthAttributedLabel: AttributedLabel {
     var maxWidth: CGFloat!
 
-    open override var intrinsicContentSize: CGSize
-    {
+    open override var intrinsicContentSize: CGSize {
         sizeThatFits(CGSize(width: maxWidth, height: .infinity))
     }
 }

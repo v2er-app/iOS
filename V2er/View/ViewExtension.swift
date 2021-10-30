@@ -26,21 +26,21 @@ public func topSafeAreaInset() -> UIEdgeInsets {
 }
 
 extension View {
-    public func debug(_ force: Bool = false) -> some View {
+    public func debug(_ force: Bool = false, _ color: Color = .green) -> some View {
 #if DEBUG
         //        print(Mirror(reflecting: self).subjectType)
-        return self.modifier(DebugModifier(force))
+        return self.modifier(DebugModifier(force, color))
 #endif
     }
-    
-
 }
 
 
 struct DebugModifier: ViewModifier {
     private var force: Bool
-    public init(_ force: Bool) {
+    private var color: Color
+    public init(_ force: Bool, _ color: Color) {
         self.force = force
+        self.color = color
     }
     
     func body(content: Content) -> some View {
@@ -48,7 +48,7 @@ struct DebugModifier: ViewModifier {
             content
         } else {
             content
-                .border(.green, width: 1)
+                .border(color, width: 1)
         }
     }
 }
@@ -205,25 +205,20 @@ extension View {
         self.opacity(shouldHide ? 0.0 : 1.0)
     }
 
-    func divider(_ lineWidth: CGFloat = 0.8) -> some View {
-        self.modifier(DividerModifier(lineWidth: lineWidth))
+    func divider(_ opacity: CGFloat = 1.0) -> some View {
+        self.modifier(DividerModifier(opacity: opacity))
     }
 }
 
 struct DividerModifier: ViewModifier {
-    var lineWidth = 1.0
+    let opacity: CGFloat
 
     func body(content: Content) -> some View {
-        content
-            .padding(.bottom, lineWidth)
-            .overlay {
-                VStack(spacing: 0) {
-                    Spacer()
-                    Rectangle()
-                        .frame(maxWidth: .infinity, maxHeight: lineWidth)
-                        .foregroundColor(Color.border)
-                }
-            }
+        VStack(spacing: 0) {
+            content
+            Divider()
+                .opacity(opacity)
+        }
     }
 }
 
