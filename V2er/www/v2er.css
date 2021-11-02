@@ -1,0 +1,116 @@
+html, body, div, p {
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+}
+
+body {
+    background:transparent;
+}
+
+a {
+    color:#778087
+}
+
+img {
+    display: inline;
+    height: auto;
+    max-width: 100%;
+    padding: 6px;
+    border-radius: 8px;
+}
+
+.topic_content{
+    color:#555555;
+    word-wrap:break-word;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.dark .topic_content{
+    background:#111214;
+    color:#7F8082;
+}
+
+div.subtle {
+    border-left: 3px solid rgba(126, 126, 126, 0.5);
+    border-top: 0.4px solid rgba(126, 126, 126, 0.2);
+    background-color: rgba(250, 250, 250, 0.5);
+    padding: 5px;
+    line-height: 120%;
+    text-align: left;
+}
+
+.dark div.subtle {
+    background:#08090b;
+}
+
+blockquote {
+    color:#555555;
+    border-left: 3px solid rgba(126, 126, 126, 0.5);
+    background-color: rgba(250, 250, 250, 0.5);
+    padding: 5px;
+    line-height: 120%;
+    text-align: left;
+}
+
+.dark blockquote {
+    background:#08090b;
+    color:#7F8082;
+}
+
+div.subtle blockquote {
+    border-left: 0px solid rgba(126, 126, 126, 0.5);
+    display: block;
+}
+
+.dark div.subtle blockquote {
+    background:#08090b;
+}
+
+.dark div.subtle .topic_content {
+    background:#08090b;
+}
+
+div.subtle span.fade {
+    opacity: 0.8;
+    color: #ccc;
+    font-size: 12px;
+}
+
+.embedded_video {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 200px
+}
+
+pre {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+}
+
+::selection {
+  background: #bbbbbb;
+}
+
+code {
+    font-size: 80%;
+}
+
+.dark code {
+    border-style: solid;
+    border-color: rgba(126, 126, 126, 0.5);
+    color: #7F8082;
+    background: none;
+}
+
+hr {
+    border-top: 0.8px solid #f4f2f2;
+}
+
+.dark hr {
+    border-top: 0.8px solid #202020;
+}

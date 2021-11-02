@@ -79,4 +79,3 @@ func notEmpty(_ strs: String?...) -> Bool {
     }
     return true
 }
-

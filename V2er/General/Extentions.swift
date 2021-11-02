@@ -212,3 +212,24 @@ extension UIFont {
         return uiFont
     }
 }
+
+
+extension Bundle {
+    static func readString(name: String?, type: String?,
+                    inDir: String? = nil) -> String? {
+        var result: String? = nil
+        if let filepath = Bundle.main.path(forResource: name, ofType: type, inDirectory: inDir) {
+            do {
+                result = try String(contentsOfFile: filepath)
+                log("----------> local resource: \(result) <------------")
+            } catch {
+                // contents could not be loaded
+            }
+        } else {
+            // example.txt not found!
+            log("----------> local resource \(name): not found <------------")
+        }
+        return result
+    }
+
+}
