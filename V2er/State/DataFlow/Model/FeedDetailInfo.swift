@@ -108,6 +108,18 @@ struct FeedDetailInfo: BaseModel {
             guard let root = doc else { return }
             root.remove(selector: ".header")
                 .remove(selector: ".inner")
+            // For HtmlView loading
+            for img in root.pickAll("img") {
+                let imgUrl = try? img.attr("src") ?? .empty
+                if imgUrl.isEmpty { continue }
+                do {
+                    try img.attr("original_src", imgUrl!)
+                    try img.attr("src", "image_holder_loading.gif")
+                } catch {
+                    log("error in inject images")
+                }
+            }
+
             if root.value() == .empty
                 && !root.hasClass("embedded_video_wrapper") {
                 self.html = .default

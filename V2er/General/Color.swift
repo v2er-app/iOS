@@ -36,16 +36,13 @@ extension Color {
     static let bgColor = hex(0xE2E2E2, alpha: 0.8)
     static let itemBg: Color = .white
     static let dim = hex(0x000000, alpha: 0.6)
-    static let url = hex(0x60c2d4)
+//    static let url = hex(0x60c2d4)
+    static let url = hex(0x778087)
 
     public var uiColor: UIColor {
         return UIColor(self)
     }
 }
-
-
-
-
 
 extension UIColor {
     convenience init(hex: Int, alpha: CGFloat = 1.0) {

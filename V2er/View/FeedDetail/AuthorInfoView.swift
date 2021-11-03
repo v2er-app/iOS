@@ -45,38 +45,35 @@ struct AuthorInfoView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            VStack {
-                HStack(alignment: .top) {
-                    NavigationLink(destination: UserDetailPage()) {
-                        AvatarView(url: avatar, size: 48)
-                    }
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(userName)
-                            .lineLimit(1)
-                        Text(timeAndClickedNum + replyNum)
-                            .lineLimit(1)
-                            .font(.caption2)
-                    }
-                    Spacer()
-                    NavigationLink(destination: TagDetailPage(tag: tag, tagId: tagId)) {
-                        Text(tag)
-                            .font(.footnote)
-                            .foregroundColor(.black)
-                            .lineLimit(1)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(Color.lightGray)
-                    }
+        VStack {
+            HStack(alignment: .top) {
+                NavigationLink(destination: UserDetailPage()) {
+                    AvatarView(url: avatar, size: 48)
                 }
-                Text(title)
-                    .font(.headline)
-                    .foregroundColor(.bodyText)
-                    .greedyWidth(.leading)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(userName)
+                        .lineLimit(1)
+                    Text(timeAndClickedNum + replyNum)
+                        .lineLimit(1)
+                        .font(.caption2)
+                }
+                Spacer()
+                NavigationLink(destination: TagDetailPage(tag: tag, tagId: tagId)) {
+                    Text(tag)
+                        .font(.footnote)
+                        .foregroundColor(.black)
+                        .lineLimit(1)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Color.lightGray)
+                }
             }
-            .padding(10)
-            Divider()
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.bodyText)
+                .greedyWidth(.leading)
         }
+        .padding(10)
         .background(Color.itemBg)
     }
 }

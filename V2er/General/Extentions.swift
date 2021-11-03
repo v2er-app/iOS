@@ -215,10 +215,9 @@ extension UIFont {
 
 
 extension Bundle {
-    static func readString(name: String?, type: String?,
-                    inDir: String? = nil) -> String? {
+    static func readString(name: String?, type: String?) -> String? {
         var result: String? = nil
-        if let filepath = Bundle.main.path(forResource: name, ofType: type, inDirectory: inDir) {
+        if let filepath = Bundle.main.path(forResource: name, ofType: type) {
             do {
                 result = try String(contentsOfFile: filepath)
                 log("----------> local resource: \(result) <------------")

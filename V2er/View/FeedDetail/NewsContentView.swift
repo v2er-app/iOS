@@ -17,8 +17,9 @@ struct NewsContentView: View {
     
     var body: some View {
         VStack {
+            Divider()
             HtmlView(html: contentInfo?.html)
-                .frame(width: 300, height: 300)
+                .debug(true)
             Divider()
         }
         .padding(.vertical, 10)

@@ -18,9 +18,22 @@ protocol WebViewHandlerDelegate {
     func receivedStringValueFromWebView(value: String)
 }
 
-struct HtmlView: UIViewRepresentable, WebViewHandlerDelegate {
-
+struct HtmlView: View {
     let html: String?
+    @State var height: CGFloat = 0
+
+    var body: some View {
+        GeometryReader { geo in
+            Webview(html: html, height: $height)
+        }
+        .frame(height: height)
+        .debug()
+    }
+}
+
+fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
+    let html: String?
+    @Binding var height: CGFloat
 
     // Make a coordinator to co-ordinate with WKWebView's default delegate functions
     func makeCoordinator() -> Coordinator {
@@ -32,6 +45,10 @@ struct HtmlView: UIViewRepresentable, WebViewHandlerDelegate {
         let preferences = WKPreferences()
         preferences.javaScriptEnabled = true
         //        preferences.allowsContentJavaScript = true
+        let wkpref = WKWebpagePreferences()
+        wkpref.allowsContentJavaScript = true
+
+//        webView.configuration.preferences.javaScriptEnabled = true
 
         let configuration = WKWebViewConfiguration()
         // Here "iOSNative" is our delegate name that we pushed to the website that is being loaded
@@ -42,13 +59,20 @@ struct HtmlView: UIViewRepresentable, WebViewHandlerDelegate {
         webView.navigationDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = false
         webView.scrollView.isScrollEnabled = true
+        webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         return webView
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
-        var content = Bundle.readString(name: "v2er", type: "html", inDir: "/www")
+        var content = Bundle.readString(name: "v2er", type: "html")
+        // TODO: dark mode
+        let isDark = false
+        let fontSize = 16
+        let params = "\(isDark), \(fontSize)"
         content = content?.replace(segs: "{injecttedContent}", with: html ?? .empty)
-        webView.loadHTMLString(content ?? .empty, baseURL: APIService.baseURL)
+                          .replace(segs: "{INJECT_PARAMS}", with: params)
+        let baseUrl = Bundle.main.bundleURL
+        webView.loadHTMLString(content ?? .empty, baseURL: baseUrl)
     }
 
     func receivedJsonValueFromWebView(value: [String : Any?]) {
@@ -60,11 +84,11 @@ struct HtmlView: UIViewRepresentable, WebViewHandlerDelegate {
     }
 
     class Coordinator : NSObject, WKNavigationDelegate, WKScriptMessageHandler {
-        var parent: HtmlView
+        var parent: Webview
         var delegate: WebViewHandlerDelegate?
 
-        init(_ htmlView: HtmlView) {
-            self.parent = htmlView
+        init(_ webview: Webview) {
+            self.parent = webview
             self.delegate = parent
         }
 
@@ -81,13 +105,26 @@ struct HtmlView: UIViewRepresentable, WebViewHandlerDelegate {
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            injectImgClicker(webView)
+            measureHeightOfHtml(webView)
+        }
+
+        private func injectImgClicker(_ webview: WKWebView) {
             let javascriptFunction = "addClickToImg()"
-            webView.evaluateJavaScript(javascriptFunction) { (response, error) in
+            webview.evaluateJavaScript(javascriptFunction) { (response, error) in
                 if let error = error {
                     print("Error calling javascript:valueGotFromIOS()")
                     print(error.localizedDescription)
                 } else {
                     print("Called javascript:valueGotFromIOS()")
+                }
+            }
+        }
+
+        private func measureHeightOfHtml(_ webview: WKWebView) {
+            webview.evaluateJavaScript("document.documentElement.scrollHeight") { (height, error) in
+                DispatchQueue.main.async {
+                    self.parent.height = height as! CGFloat
                 }
             }
         }

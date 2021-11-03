@@ -65,7 +65,6 @@ public extension Element {
         try? pickAll(selector).remove()
         return self
     }
-
 }
 
 public enum HtmlAttr: String {
