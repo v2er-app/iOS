@@ -45,7 +45,7 @@ struct AuthorInfoView: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             HStack(alignment: .top) {
                 NavigationLink(destination: UserDetailPage()) {
                     AvatarView(url: avatar, size: 48)
@@ -72,6 +72,8 @@ struct AuthorInfoView: View {
                 .font(.headline)
                 .foregroundColor(.bodyText)
                 .greedyWidth(.leading)
+                .padding(.top, 10)
+                .debug()
         }
         .padding(10)
         .background(Color.itemBg)

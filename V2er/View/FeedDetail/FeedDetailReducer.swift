@@ -34,6 +34,10 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             } else {
                 // failed
             }
+        case let action as FeedDetailActions.HTMLRendered:
+            guard !state.showProgressView else { break }
+            state.showProgressView = false
+            state.refreshing = false
         case let action as FeedDetailActions.LoadMore.Start:
             guard !state.refreshing else { break }
             guard !state.loadingMore else { break }

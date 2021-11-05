@@ -10,24 +10,20 @@ import SwiftUI
 
 struct NewsContentView: View {
     var contentInfo: FeedDetailInfo.ContentInfo?
+    @Binding var rendered: Bool
 
-    init(_ contentInfo: FeedDetailInfo.ContentInfo?) {
+    init(_ contentInfo: FeedDetailInfo.ContentInfo?, rendered: Binding<Bool>) {
         self.contentInfo = contentInfo
+        self._rendered = rendered
     }
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             Divider()
-            HtmlView(html: contentInfo?.html)
-                .debug(true)
+            HtmlView(html: contentInfo?.html, rendered: $rendered)
             Divider()
         }
-        .padding(.vertical, 10)
     }
 }
 
-struct NewsContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        NewsContentView(nil)
-    }
-}
+

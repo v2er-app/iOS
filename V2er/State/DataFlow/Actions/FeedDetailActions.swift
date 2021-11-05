@@ -55,4 +55,8 @@ struct FeedDetailActions {
         }
     }
 
+    struct HTMLRendered: Action {
+        var target: Reducer = R
+    }
+
 }

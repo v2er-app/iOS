@@ -21,19 +21,20 @@ protocol WebViewHandlerDelegate {
 struct HtmlView: View {
     let html: String?
     @State var height: CGFloat = 0
+    @Binding var rendered: Bool
 
     var body: some View {
         GeometryReader { geo in
-            Webview(html: html, height: $height)
+            Webview(html: html, height: $height, rendered: $rendered)
         }
         .frame(height: height)
-        .debug()
     }
 }
 
 fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
     let html: String?
     @Binding var height: CGFloat
+    @Binding var rendered: Bool
 
     // Make a coordinator to co-ordinate with WKWebView's default delegate functions
     func makeCoordinator() -> Coordinator {
@@ -44,12 +45,8 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
         // Enable javascript in WKWebView
         let preferences = WKPreferences()
         preferences.javaScriptEnabled = true
-        //        preferences.allowsContentJavaScript = true
         let wkpref = WKWebpagePreferences()
         wkpref.allowsContentJavaScript = true
-
-//        webView.configuration.preferences.javaScriptEnabled = true
-
         let configuration = WKWebViewConfiguration()
         // Here "iOSNative" is our delegate name that we pushed to the website that is being loaded
         configuration.userContentController.add(self.makeCoordinator(), name: "iOSNative")
@@ -125,6 +122,9 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
             webview.evaluateJavaScript("document.documentElement.scrollHeight") { (height, error) in
                 DispatchQueue.main.async {
                     self.parent.height = height as! CGFloat
+                    runInMain(delay: 100) {
+                        self.parent.rendered = true
+                    }
                 }
             }
         }

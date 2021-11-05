@@ -12,6 +12,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Environment(\.isPresented) private var isPresented
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var store: Store
+    @State var rendered: Bool = false
 
     var bindingState: Binding<FeedDetailState> {
         if store.appState.feedDetailStates[instanceId] == nil {
@@ -43,6 +44,16 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     private var hasReplyContent: Bool {
         !replyContent.isEmpty
     }
+
+    private var isContentEmpty: Bool {
+        let contentInfo = state.model.contentInfo
+        return contentInfo == nil || contentInfo!.html.isEmpty
+    }
+
+    private var showProgressView: Bool {
+        return state.showProgressView
+        || (!isContentEmpty && !self.rendered)
+    }
     
     var body: some View {
         contentView
@@ -55,17 +66,19 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             // TODO: improve here
             VStack(spacing: 0) {
                 AuthorInfoView(initData: initData, data: state.model.headerInfo)
-                NewsContentView(state.model.contentInfo)
-                    .padding(.horizontal, 10)
-                    .hide(state.showProgressView)
+                if !isContentEmpty {
+                    NewsContentView(state.model.contentInfo, rendered: $rendered)
+                        .padding(.horizontal, 10)
+                        .hide(showProgressView)
+                }
                 actionItems
-                    .hide(state.showProgressView)
+                    .hide(showProgressView)
                 replayListView
                     .padding(.top, 8)
-                    .hide(state.showProgressView)
+                    .hide(showProgressView)
             }
-            .background(state.showProgressView ? .clear : Color.itemBg)
-            .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData) {
+            .background(showProgressView ? .clear : Color.itemBg)
+            .updatable(autoRefresh: showProgressView, hasMoreData: state.hasMoreData) {
                 await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
             } loadMore: {
                 await run(action: FeedDetailActions.LoadMore.Start(id: instanceId, feedId: initData?.id, willLoadPage: state.willLoadPage))
