@@ -58,7 +58,7 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
         let webView = WKWebView(frame: CGRect.zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
         webView.allowsBackForwardNavigationGestures = false
-        webView.scrollView.isScrollEnabled = true
+        webView.scrollView.isScrollEnabled = false
         webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         return webView
     }
@@ -102,6 +102,19 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
                     delegate?.receivedStringValueFromWebView(value: body)
                 }
             }
+        }
+
+        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+            let url = navigationAction.request.url
+            let navType = navigationAction.navigationType
+            guard url != nil else { return .allow }
+            guard navType == .linkActivated  else { return .allow }
+            if url!.absoluteString.starts(with: "file:") {
+                return .allow
+            }
+            // TODO: open in internal webview/safari
+            await UIApplication.shared.openURL(url!)
+            return .cancel
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
