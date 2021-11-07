@@ -114,9 +114,13 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
             for img in self.parent.imgs {
                 let url = URL(string: img)!
                 KingfisherManager.shared.retrieveImage(with: url) { result in
-                    let cachePath = ImageCache.default.cachePath(forKey: url.cacheKey)
-                    log("------> cachePath: \(cachePath)")
-                    self.reloadImage(webview, url: img, path: cachePath)
+                    var path: String
+                    if case let .success(_) = result {
+                        path = ImageCache.default.cachePath(forKey: url.cacheKey)
+                    } else {
+                        path = "image_holder_failed.png"
+                    }
+                    self.reloadImage(webview, url: img, path: path)
                 }
             }
         }
@@ -127,9 +131,6 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
             webview.evaluateJavaScript(jsReloadFunction) { (response, error) in
                 if let error = error {
                     print("Error calling javascriptFunction: \(error)")
-//                    print(error.localizedDescription)
-                } else {
-//                    print("==========>jsReloadFunction Called ==========>")
                 }
             }
         }
@@ -138,15 +139,10 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
             let javascriptFunction = "addClickToImg()"
             webview.evaluateJavaScript(javascriptFunction) { (response, error) in
                 if let error = error {
-                    print("Error calling javascript:valueGotFromIOS()")
-                    print(error.localizedDescription)
-                } else {
-                    print("Called javascript:valueGotFromIOS()")
+                    print("Error calling javascriptFunction: \(error)")
                 }
             }
         }
-
-
 
         private func measureHeightOfHtml(_ webview: WKWebView) {
             webview.evaluateJavaScript("document.documentElement.scrollHeight") { (height, error) in
