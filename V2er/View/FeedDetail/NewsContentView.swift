@@ -20,7 +20,7 @@ struct NewsContentView: View {
     var body: some View {
         VStack(spacing: 0) {
             Divider()
-            HtmlView(html: contentInfo?.html, rendered: $rendered)
+            HtmlView(html: contentInfo?.html, imgs: contentInfo?.imgs ?? [], rendered: $rendered)
             Divider()
         }
     }

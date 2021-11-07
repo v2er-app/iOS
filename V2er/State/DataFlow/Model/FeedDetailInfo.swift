@@ -103,6 +103,7 @@ struct FeedDetailInfo: BaseModel {
     struct ContentInfo: HtmlParsable {
         // .html
         var html: String? = .default
+        var imgs: [String] = []
 
         init(from doc: Element?) {
             guard let root = doc else { return }
@@ -115,6 +116,7 @@ struct FeedDetailInfo: BaseModel {
                 do {
                     try img.attr("original_src", imgUrl!)
                     try img.attr("src", "image_holder_loading.gif")
+                    imgs.append(imgUrl!)
                 } catch {
                     log("error in inject images")
                 }

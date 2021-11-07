@@ -72,6 +72,15 @@ extension String {
         return AttributedString("Error parsing markdown")
     }
 
+    func urlEncoded()-> String {
+        let result = self.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        return result ?? .empty
+    }
+
+    func urlDecode()-> String {
+        self.removingPercentEncoding ?? .empty
+    }
+
 }
 
 extension Optional where Wrapped == String {
@@ -232,3 +241,5 @@ extension Bundle {
     }
 
 }
+
+

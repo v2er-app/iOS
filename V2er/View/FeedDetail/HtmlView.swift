@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import SwiftUI
 import WebKit
+import Kingfisher
 
 // MARK: - WebViewHandlerDelegate
 // For printing values received from web app
@@ -20,12 +21,13 @@ protocol WebViewHandlerDelegate {
 
 struct HtmlView: View {
     let html: String?
+    let imgs: [String]
     @State var height: CGFloat = 0
     @Binding var rendered: Bool
 
     var body: some View {
         GeometryReader { geo in
-            Webview(html: html, height: $height, rendered: $rendered)
+            Webview(html: html, imgs: imgs,height: $height, rendered: $rendered)
         }
         .frame(height: height)
     }
@@ -33,6 +35,7 @@ struct HtmlView: View {
 
 fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
     let html: String?
+    let imgs: [String]
     @Binding var height: CGFloat
     @Binding var rendered: Bool
 
@@ -102,8 +105,33 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            downloadImgs(webView)
             injectImgClicker(webView)
             measureHeightOfHtml(webView)
+        }
+
+        private func downloadImgs(_ webview: WKWebView) {
+            for img in self.parent.imgs {
+                let url = URL(string: img)!
+                KingfisherManager.shared.retrieveImage(with: url) { result in
+                    let cachePath = ImageCache.default.cachePath(forKey: url.cacheKey)
+                    log("------> cachePath: \(cachePath)")
+                    self.reloadImage(webview, url: img, path: cachePath)
+                }
+            }
+        }
+
+        private func reloadImage(_ webview: WKWebView, url: String, path: String) {
+            let url = url.urlEncoded()
+            let jsReloadFunction = "reloadImg('\(url)', '\(path)')"
+            webview.evaluateJavaScript(jsReloadFunction) { (response, error) in
+                if let error = error {
+                    print("Error calling javascriptFunction: \(error)")
+//                    print(error.localizedDescription)
+                } else {
+//                    print("==========>jsReloadFunction Called ==========>")
+                }
+            }
         }
 
         private func injectImgClicker(_ webview: WKWebView) {
@@ -118,12 +146,16 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
             }
         }
 
+
+
         private func measureHeightOfHtml(_ webview: WKWebView) {
             webview.evaluateJavaScript("document.documentElement.scrollHeight") { (height, error) in
                 DispatchQueue.main.async {
                     self.parent.height = height as! CGFloat
                     runInMain(delay: 100) {
-                        self.parent.rendered = true
+//                        withAnimation {
+                            self.parent.rendered = true
+//                        }
                     }
                 }
             }
