@@ -26,7 +26,7 @@ function reloadImg(url, path) {
 }
 
 function injectOnLoad(isDark, fontSize) {
-    console.error('js.injectOnLoad');
+//    console.error('js.injectOnLoad');
     decodeEmail();
     document.body.className += isDark ? 'dark ' : ' ';
     document.body.style.fontSize = fontSize + 'px';

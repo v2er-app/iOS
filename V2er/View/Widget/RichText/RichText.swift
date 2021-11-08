@@ -46,18 +46,6 @@ struct RichText: View {
     }
 }
 
-extension String {
-    func rich(baseStyle: Atributika.Style = RichText.Styles.base) ->RichString {
-        return self
-            .style(tags: RichText.Styles.link)
-            .styleLinks(RichText.Styles.link)
-            .styleMentions(RichText.Styles.link)
-        //            .styleHashtags(RichText.Styles.link)
-            .styleAll(baseStyle)
-    }
-
-}
-
 fileprivate struct AttributedText: UIViewRepresentable {
     let richString: RichString
     let detection: RichText.DetectionAction?
@@ -79,6 +67,14 @@ fileprivate struct AttributedText: UIViewRepresentable {
         label.maxWidth = maxWidth
         clickEvent(label: label)
         return label
+    }
+
+    func updateUIView(_ label: MaxWidthAttributedLabel, context: Context) {
+        label.attributedText = self.richString
+        label.maxWidth = maxWidth
+        runInMain {
+            self.height = label.sizeThatFits(CGSize(width: maxWidth, height: .infinity)).height
+        }
     }
 
     private func clickEvent(label: MaxWidthAttributedLabel) {
@@ -108,13 +104,6 @@ fileprivate struct AttributedText: UIViewRepresentable {
         }
     }
 
-    func updateUIView(_ label: MaxWidthAttributedLabel, context: Context) {
-        label.attributedText = self.richString
-        label.maxWidth = maxWidth
-        DispatchQueue.main.async { // << fixed
-            self.height = label.sizeThatFits(CGSize(width: maxWidth, height: .infinity)).height
-        }
-    }
 }
 
 fileprivate class MaxWidthAttributedLabel: AttributedLabel {
@@ -123,4 +112,16 @@ fileprivate class MaxWidthAttributedLabel: AttributedLabel {
     open override var intrinsicContentSize: CGSize {
         sizeThatFits(CGSize(width: maxWidth, height: .infinity))
     }
+}
+
+extension String {
+    func rich(baseStyle: Atributika.Style = RichText.Styles.base) ->RichString {
+        return self
+            .style(tags: RichText.Styles.link)
+            .styleLinks(RichText.Styles.link)
+            .styleMentions(RichText.Styles.link)
+        //            .styleHashtags(RichText.Styles.link)
+            .styleAll(baseStyle)
+    }
+
 }
