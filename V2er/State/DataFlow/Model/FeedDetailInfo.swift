@@ -114,9 +114,9 @@ struct FeedDetailInfo: BaseModel {
                 let imgUrl = try? img.attr("src") ?? .empty
                 if imgUrl.isEmpty { continue }
                 do {
-                    try img.attr("original_src", imgUrl!)
-                    try img.attr("src", "image_holder_loading.gif")
-                    imgs.append(imgUrl!)
+//                    try img.attr("original_src", imgUrl!)
+//                    try img.attr("src", "image_holder_loading.gif")
+//                    imgs.append(imgUrl!)
                 } catch {
                     log("error in inject images")
                 }

@@ -46,6 +46,8 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
     }
 
     func makeUIView(context: Context) -> WKWebView {
+        // TODO: called many times
+        print("------makeUIView--------: \(self.rendered)")
         // Enable javascript in WKWebView
         let preferences = WKPreferences()
         preferences.javaScriptEnabled = true
