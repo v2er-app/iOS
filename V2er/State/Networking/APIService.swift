@@ -37,14 +37,14 @@ struct APIService {
         guard result.error == nil && result.model != nil else {
             return .failure(result.error!)
         }
-        log("htmlGet: \(result)")
+//        log("htmlGet: \(result)")
         return .success(result.model)
     }
 
     func jsonGet<T: Codable>(endpoint: Endpoint,
                              _ params: Params? = nil) async -> APIResult<T> {
         let rawResult = await get(endpoint: endpoint, params: params)
-        log("jsonGet: \(rawResult.data?.string)")
+//        log("jsonGet: \(rawResult.data?.string)")
         guard rawResult.error == nil else {
             return .failure(rawResult.error!)
         }

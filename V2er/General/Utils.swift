@@ -11,7 +11,7 @@ import Combine
 import UIKit
 import SwiftUI
 
-private let loggable: Bool = true
+private let loggable: Bool = false
 
 public func log(_ items: Any..., separator: String = " ", terminator: String = "\n") {
     if !loggable {

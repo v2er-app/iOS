@@ -38,6 +38,7 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
     let imgs: [String]
     @Binding var height: CGFloat
     @Binding var rendered: Bool
+    @State var loaded: Bool = false
 
     // Make a coordinator to co-ordinate with WKWebView's default delegate functions
     func makeCoordinator() -> Coordinator {
@@ -64,6 +65,8 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {
+        print("------updateUIView--------: \(self.rendered)")
+        if rendered { return }
         var content = Bundle.readString(name: "v2er", type: "html")
         // TODO: dark mode
         let isDark = false
@@ -118,22 +121,37 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            if webView.isLoading {
+                return
+            }
             downloadImgs(webView)
             injectImgClicker(webView)
             measureHeightOfHtml(webView)
         }
 
+//        ImageCache.defaultCache.retrieveImageForKey(imageCacheKey! as String, options: nil) { (imageCacheObject, imageCacheType) -> () in
+//
+//            let imageData:NSData = UIImageJPEGRepresentation(imageCacheObject!, 100)!
+//            strBase64 = "data:image/jpg;base64," + imageData.base64EncodedStringWithOptions(.EncodingEndLineWithCarriageReturn)
+//            webView.stringByEvaluatingJavaScriptFromString("setAttributeOnFly('background_image', 'xlink:href', '\(strBase64)');")!
+
         private func downloadImgs(_ webview: WKWebView) {
+            print("------downloadImgs--------")
             for img in self.parent.imgs {
                 let url = URL(string: img)!
                 KingfisherManager.shared.retrieveImage(with: url) { result in
-                    var path: String
-                    if case let .success(_) = result {
-                        path = ImageCache.default.cachePath(forKey: url.cacheKey)
-                    } else {
-                        path = "image_holder_failed.png"
+                    Task {
+                        var base64DataOrPath: String
+                        if case let .success(imgData) = result {
+                            base64DataOrPath = imgData.image.jpegData(compressionQuality: 1)?.base64EncodedString() ?? ""
+                            base64DataOrPath = "data:image/jpg;base64," + base64DataOrPath
+                        } else {
+                            base64DataOrPath = "image_holder_failed.png"
+                        }
+                        runInMain {
+                            self.reloadImage(webview, url: img, path: base64DataOrPath)
+                        }
                     }
-                    self.reloadImage(webview, url: img, path: path)
                 }
             }
         }

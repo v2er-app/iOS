@@ -17,7 +17,7 @@ function addClickToImg() {
 }
 
 function reloadImg(url, path) {
-    sendConsole("reloadImg from js, url: " + url + ", path: " + path)
+//    sendConsole("reloadImg from js, url: " + url + ", path: " + path)
     var imgs = document.querySelectorAll("*[original_src='" + url + "']");
     for (var i=0; i<imgs.length; i++) {
         console.error(imgs[i]);
