@@ -34,7 +34,7 @@ struct MyRecentActions {
 
         func execute(in store: Store) async {
             let result: [MyRecentState.Record]? = readRecordsSyncly()
-            dispatch(action: LoadDataDone(result: result))
+            dispatch(LoadDataDone(result: result))
         }
     }
 

@@ -99,7 +99,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             replyIsFocused = false
         }
         .onAppear {
-            dispatch(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id, autoLoad: !state.hasLoadedOnce))
+            dispatch(FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id, autoLoad: !state.hasLoadedOnce))
         }
         .onDisappear {
             if !isPresented {
@@ -110,7 +110,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 } else {
                     data = initData
                 }
-                dispatch(action: MyRecentActions.RecordAction(data: data))
+                dispatch(MyRecentActions.RecordAction(data: data))
             }
         }
     }

@@ -20,7 +20,7 @@ struct FeedActions {
             func execute(in store: Store) async {
                 let result: APIResult<FeedInfo> = await APIService.shared
                     .htmlGet(endpoint: .tab, ["tab": tab.rawValue])
-                dispatch(action: FetchData.Done(result: result))
+                dispatch(FetchData.Done(result: result))
             }
         }
 
@@ -44,7 +44,7 @@ struct FeedActions {
                 let endpoint: Endpoint = willLoadPage >= 1 ? .recent : .tab
                 let result: APIResult<FeedInfo> = await APIService.shared
                     .htmlGet(endpoint: endpoint, ["p": willLoadPage.string])
-                dispatch(action: FeedActions.LoadMore.Done(result: result))
+                dispatch(FeedActions.LoadMore.Done(result: result))
             }
         }
 

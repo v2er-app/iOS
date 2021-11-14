@@ -20,7 +20,7 @@ struct MessagePage: BaseHomePageView {
     var isSelected: Bool {
         let selected = selecedTab == .message
         if selected && !state.hasLoadedOnce {
-            dispatch(action: MessageActions.FetchStart(autoLoad: true))
+            dispatch(MessageActions.FetchStart(autoLoad: true))
         }
         return selected
     }

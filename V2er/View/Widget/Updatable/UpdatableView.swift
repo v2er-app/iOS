@@ -81,11 +81,12 @@ struct UpdatableView<Content: View>: View {
         }
         .overlay {
             if state.showLoadingView {
-                ZStack {
-                    Color.almostClear
-                    ProgressView()
-                        .scaleEffect(1.3)
-                }
+//                ZStack {
+//                    Color.almostClear
+//                    ProgressView()
+//                        .scaleEffect(1.3)
+//                }
+                HudLoadingView()
             }
         }
         .backgroundPreferenceValue(ContentBoundsKey.self) { pref in

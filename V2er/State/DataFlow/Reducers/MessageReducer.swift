@@ -58,7 +58,7 @@ struct MessageActions {
         func execute(in store: Store) async {
             let result: APIResult<MessageInfo> = await APIService.shared
                 .htmlGet(endpoint: .message)
-            dispatch(action: FetchDone(result: result))
+            dispatch(FetchDone(result: result))
         }
     }
 
@@ -74,7 +74,7 @@ struct MessageActions {
             let params = ["p": state.updatableState.willLoadPage.string]
             let result: APIResult<MessageInfo> = await APIService.shared
                 .htmlGet(endpoint: .message, params)
-            dispatch(action: LoadMoreDone(result: result))
+            dispatch(LoadMoreDone(result: result))
         }
     }
 

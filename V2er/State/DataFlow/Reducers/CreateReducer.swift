@@ -24,7 +24,7 @@ func createStateReducer(_ state: CreateTopicState, _ action: Action) -> (CreateT
                 // load failed, retry
                 if !state.retried {
                     state.retried = true
-                    dispatch(action: CreateTopicActions.LoadDataStart())
+                    dispatch(CreateTopicActions.LoadDataStart())
                 }
             }
         case let action as CreateTopicActions.LoadAllNodesStart:
@@ -40,7 +40,7 @@ func createStateReducer(_ state: CreateTopicState, _ action: Action) -> (CreateT
             } else {
                 if !state.retried {
                     state.retried = true
-                    dispatch(action: CreateTopicActions.LoadAllNodesStart())
+                    dispatch(CreateTopicActions.LoadAllNodesStart())
                 }
             }
         default:
@@ -58,7 +58,7 @@ struct CreateTopicActions {
         func execute(in store: Store) async {
             let createPageInfo: APIResult<CreatePageInfo> = await APIService.shared
                 .htmlGet(endpoint: .createTopic)
-            dispatch(action: LoadDataDone(createPageInfo: createPageInfo))
+            dispatch(LoadDataDone(createPageInfo: createPageInfo))
         }
     }
 
@@ -75,7 +75,7 @@ struct CreateTopicActions {
         func execute(in store: Store) async {
             let result: APIResult<Nodes> = await APIService.shared
                 .jsonGet(endpoint: .nodes)
-            dispatch(action: LoadAllNodesDone(result: result))
+            dispatch(LoadAllNodesDone(result: result))
         }
     }
 

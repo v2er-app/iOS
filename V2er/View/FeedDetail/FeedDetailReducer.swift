@@ -32,7 +32,7 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
                 state.willLoadPage = 2
                 state.hasMoreData = state.willLoadPage <= result?.headerInfo?.totalPage ?? 1
             } else {
-                // failed
+                Toast.show("加载出错")
             }
         case let action as FeedDetailActions.HTMLRendered:
             guard !state.showProgressView else { break }

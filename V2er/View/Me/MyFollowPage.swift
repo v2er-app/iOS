@@ -23,7 +23,7 @@ struct MyFollowPage: StateView {
                 await run(action: MyFollowActions.LoadMoreStart())
             }
             .onAppear {
-                dispatch(action: MyFollowActions.FetchStart(autoLoad: !state.updatableState.hasLoadedOnce))
+                dispatch(MyFollowActions.FetchStart(autoLoad: !state.updatableState.hasLoadedOnce))
             }
             .navBar("我的关注")
     }

@@ -16,11 +16,13 @@ final public class Store: ObservableObject {
 
     private init() {}
 
-    func dispatch(_ action: Action) {
+    func dispatch(_ action: Action, animation: Animation) {
         DispatchQueue.main.async { [self] in
 //            log("====> dispatch action: \(action)")
             let result = self.reduce(initialState: self.appState, action: action)
-            appState = result.0
+            withAnimation(animation) {
+                appState = result.0
+            }
             if let asyncAction = result.1 as? AsyncAction {
                 asyncAction.execute(in: self)
             } else if let awaitAction = result.1 as? AwaitAction {
@@ -69,6 +71,7 @@ final public class Store: ObservableObject {
                 (appState.searchState, followingAction) = searchStateReducer(appState.searchState, action)
                 break
             case .global:
+                (appState.globalState, followingAction) = globalStateReducer(appState.globalState, action)
                 fallthrough
             default:
                 (appState, followingAction) = defaultReducer(appState, action)
@@ -81,12 +84,8 @@ final public class Store: ObservableObject {
 
 }
 
-func dispatch(action: Action) {
-    Store.shared.dispatch(action)
-}
-
-func dispatch(_ action: Action) {
-    dispatch(action: action)
+func dispatch(_ action: Action, _ animation: Animation = .default) {
+    Store.shared.dispatch(action, animation: animation)
 }
 
 func run(action: AwaitAction) async {

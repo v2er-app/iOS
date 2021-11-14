@@ -40,7 +40,7 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
             } else {
                 // -> is LoginParam -> psw error
                 // -> is TwoStepInfo -> enabled two step log
-                // dispatch(action: LoginDone())
+                // dispatch(LoginDone())
             }
         default:
             break

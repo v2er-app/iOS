@@ -59,7 +59,7 @@ struct MyFollowActions {
         func execute(in store: Store) async {
             let result: APIResult<MyFollowInfo> = await APIService.shared
                 .htmlGet(endpoint: .myFollowing)
-            dispatch(action: FetchDone(result: result))
+            dispatch(FetchDone(result: result))
         }
     }
 
@@ -76,7 +76,7 @@ struct MyFollowActions {
             let params = ["p": state.updatableState.willLoadPage.string]
             let result: APIResult<MyFollowInfo> = await APIService.shared
                 .htmlGet(endpoint: .myFollowing, params)
-            dispatch(action: LoadMoreDone(result: result))
+            dispatch(LoadMoreDone(result: result))
         }
     }
 

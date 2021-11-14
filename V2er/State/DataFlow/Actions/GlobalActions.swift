@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 private let R: Reducer = .global
 
@@ -17,7 +18,7 @@ struct OnAppearChangeAction: Action {
 }
 
 struct InstanceDestoryAction: Action {
-    var target: Reducer
+    var target: Reducer = R
     var id: String
 }
 
@@ -31,4 +32,26 @@ struct TabbarClickAction: Action {
     var target: Reducer = R
 
     let selectedTab: TabId
+}
+
+struct ShowToastAction: Action {
+    var target: Reducer = R
+    let title: String
+    var icon: String = .empty
+}
+
+
+func globalStateReducer(_ state: GlobalState, _ action: Action?) -> (GlobalState, Action?) {
+    var state = state
+    var followingAction = action
+    switch action {
+        case let action as ShowToastAction:
+            state.toast.title = action.title
+            state.toast.icon = action.icon
+            state.toast.isPresented = true
+            break
+        default:
+            break
+    }
+    return (state, followingAction)
 }

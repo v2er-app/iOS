@@ -53,7 +53,7 @@ struct SearchPage: StateView {
                         .autocapitalization(.none)
                         .focused($focused)
                         .submitLabel(.search)
-                        .onSubmit { dispatch(action: SearchActions.Start()) }
+                        .onSubmit { dispatch(SearchActions.Start()) }
                         .onAppear {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
                                 self.focused = true

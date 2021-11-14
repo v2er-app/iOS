@@ -37,9 +37,8 @@ struct V2erApp: App {
     var body: some Scene {
         WindowGroup {
             RootView {
-                MainPage()
+                RootHostView()
                     .environmentObject(Store.shared)
-                    .buttonStyle(.plain)
             }
         }
     }

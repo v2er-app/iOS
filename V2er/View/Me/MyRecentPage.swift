@@ -18,7 +18,7 @@ struct MyRecentPage: StateView {
     var body: some View {
         contentView
             .onAppear {
-                dispatch(action: MyRecentActions.LoadDataStart())
+                dispatch(MyRecentActions.LoadDataStart())
             }
     }
 

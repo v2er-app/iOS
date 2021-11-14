@@ -21,7 +21,7 @@ struct LoginPage: StateView {
     var body: some View {
         contentView
             .onAppear {
-                dispatch(action: LoginActions.FetchCaptchaStart())
+                dispatch(LoginActions.FetchCaptchaStart())
             }
             .onChange(of: state.dismiss) { newValue in
                 if newValue {
@@ -105,7 +105,7 @@ struct LoginPage: StateView {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 100, height: height)
                         .onTapGesture {
-                            dispatch(action: LoginActions.FetchCaptchaStart())
+                            dispatch(LoginActions.FetchCaptchaStart())
                         }
                 }
                 .background(Color.lightGray)
@@ -125,7 +125,7 @@ struct LoginPage: StateView {
                         .cornerBorder(radius: 15, borderWidth: 2, color: Color.tintColor)
                 }
                 Button {
-                    dispatch(action: LoginActions.StartLogin())
+                    dispatch(LoginActions.StartLogin())
                 } label: {
                     Text("Login")
                         .font(.headline)

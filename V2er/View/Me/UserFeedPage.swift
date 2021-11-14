@@ -30,7 +30,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                 await run(action: UserFeedActions.LoadMoreStart(id: instanceId, userId: userId))
             }
             .onAppear {
-                dispatch(action: UserFeedActions.FetchStart(id: instanceId, userId: userId, autoLoad: !state.hasLoadedOnce))
+                dispatch(UserFeedActions.FetchStart(id: instanceId, userId: userId, autoLoad: !state.hasLoadedOnce))
             }
             .navBar("\(userId)的全部主题")
     }

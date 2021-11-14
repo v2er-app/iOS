@@ -66,7 +66,7 @@ struct UserFeedActions {
         func execute(in store: Store) async {
             let result: APIResult<UserFeedInfo> = await APIService.shared
                 .htmlGet(endpoint: .topics(userName: userId))
-            dispatch(action: FetchDone(id: id, result: result))
+            dispatch(FetchDone(id: id, result: result))
         }
     }
 
@@ -86,7 +86,7 @@ struct UserFeedActions {
             let params = ["p": state.updatableState.willLoadPage.string]
             let result: APIResult<UserFeedInfo> = await APIService.shared
                 .htmlGet(endpoint: .topics(userName: userId), params)
-            dispatch(action: LoadMoreDone(id: id, result: result))
+            dispatch(LoadMoreDone(id: id, result: result))
         }
     }
 

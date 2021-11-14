@@ -91,13 +91,13 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
         .navigationBarHidden(true)
         .onAppear {
             log("onAppear----")
-            dispatch(action: UserDetailActions.FetchData.Start(id: instanceId, userId: userId))
+            dispatch(UserDetailActions.FetchData.Start(id: instanceId, userId: userId))
         }
         .onDisappear {
             log("onDisappear----")
             if !isPresented {
                 log("onPageClosed----->")
-                //                dispatch(action: InstanceDestoryAction(target: .userdetail, id: instanceId))
+                //                dispatch(InstanceDestoryAction(target: .userdetail, id: instanceId))
             }
         }
     }

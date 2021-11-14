@@ -34,7 +34,7 @@ struct MePage: BaseHomePageView {
                         .foregroundColor(.white)
                         .font(.title2)
                     Button {
-                        dispatch(action: MeActions.ShowLoginPageAction())
+                        dispatch(MeActions.ShowLoginPageAction())
                     } label: {
                         Text("登录")
                             .font(.headline)

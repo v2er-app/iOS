@@ -20,7 +20,7 @@ struct ExploreActions {
             func execute(in store: Store) async {
                 let result: APIResult<ExploreInfo> = await APIService.shared
                     .htmlGet(endpoint: .explore)
-                dispatch(action: FetchData.Done(result: result))
+                dispatch(FetchData.Done(result: result))
             }
         }
 

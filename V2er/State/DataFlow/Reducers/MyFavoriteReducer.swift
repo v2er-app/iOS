@@ -85,7 +85,7 @@ struct MyFavoriteActions {
         func execute(in store: Store) async {
             let result: APIResult<MyFavoriteState.FeedState.Model> =
             await APIService.shared.htmlGet(endpoint: .myFavoriteFeeds)
-            dispatch(action: FetchFeedDone(result: result))
+            dispatch(FetchFeedDone(result: result))
         }
     }
 
@@ -102,7 +102,7 @@ struct MyFavoriteActions {
             let params = ["p" : state.updatable.willLoadPage.string]
             let result: APIResult<MyFavoriteState.FeedState.Model> =
             await APIService.shared.htmlGet(endpoint: .myFavoriteFeeds, params)
-            dispatch(action: LoadMoreFeedDone(result: result))
+            dispatch(LoadMoreFeedDone(result: result))
         }
     }
 
@@ -118,7 +118,7 @@ struct MyFavoriteActions {
         func execute(in store: Store) async {
             let result: APIResult<MyFavoriteState.NodeState.Model> =
             await APIService.shared.htmlGet(endpoint: .myFavoriteNodes)
-            dispatch(action: FetchNodeDone(result: result))
+            dispatch(FetchNodeDone(result: result))
         }
     }
 

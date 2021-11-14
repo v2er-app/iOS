@@ -26,7 +26,7 @@ struct TabBar: View {
                 ForEach (self.tabs, id: \.self) { tab in
                     let isSelected: Bool = self.selectedTab == tab.id
                     Button {
-                        dispatch(action: TabbarClickAction(selectedTab: tab.id))
+                        dispatch(TabbarClickAction(selectedTab: tab.id))
                     } label: {
                         VStack (spacing: 0) {
                             Color(self.selectedTab == tab.id ? "indictor" : "clear")

@@ -87,12 +87,12 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
         .onAppear {
-            dispatch(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, autoLoad: !state.hasLoadedOnce))
+            dispatch(TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, autoLoad: !state.hasLoadedOnce))
         }
         .onDisappear {
             if !isPresented {
                 log("onPageClosed----->")
-                // dispatch(action: InstanceDestoryAction(target: .userdetail, id: instanceId))
+                // dispatch(InstanceDestoryAction(target: .userdetail, id: instanceId))
             }
         }
     }

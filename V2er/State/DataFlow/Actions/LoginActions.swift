@@ -17,7 +17,7 @@ struct LoginActions {
         func execute(in store: Store) async {
             let result: APIResult<LoginParams> = await APIService.shared
                 .htmlGet(endpoint: .captcha)
-            dispatch(action: FetchCaptchaDone(result: result))
+            dispatch(FetchCaptchaDone(result: result))
         }
     }
 
@@ -43,7 +43,7 @@ struct LoginActions {
             let headers: Params = ["Referer": APIService.baseUrlString.appending("/signin")]
             let result: APIResult<DailyInfo> = await APIService.shared
                 .post(endpoint: .signin, params, requestHeaders: headers)
-            dispatch(action: LoginDone(result: result))
+            dispatch(LoginDone(result: result))
         }
 
     }

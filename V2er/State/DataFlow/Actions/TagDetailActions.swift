@@ -22,7 +22,7 @@ struct TagDetailActions {
             func execute(in store: Store) async {
                 let result: APIResult<TagDetailInfo> = await APIService.shared
                     .htmlGet(endpoint: .tagDetail(tagId: tagId ?? .default), ["p" : willLoadPage.string])
-                dispatch(action: LoadMore.Done(id: id, result: result))
+                dispatch(LoadMore.Done(id: id, result: result))
             }
         }
 

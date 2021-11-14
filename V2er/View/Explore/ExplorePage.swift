@@ -18,7 +18,7 @@ struct ExplorePage: BaseHomePageView {
     var isSelected: Bool {
         let selected = selecedTab == .explore
         if selected && !state.hasLoadedOnce {
-            dispatch(action: ExploreActions.FetchData.Start(autoLoad: true))
+            dispatch(ExploreActions.FetchData.Start(autoLoad: true))
         }
         return selected
     }

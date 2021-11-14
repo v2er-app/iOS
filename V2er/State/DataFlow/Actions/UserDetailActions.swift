@@ -21,7 +21,7 @@ struct UserDetailActions {
             func execute(in store: Store) async {
                 let result: APIResult<UserDetailInfo> = await APIService.shared
                     .htmlGet(endpoint: .userPage(userName: userId ?? .default))
-                dispatch(action: FetchData.Done(id: id, result: result))
+                dispatch(FetchData.Done(id: id, result: result))
             }
         }
 

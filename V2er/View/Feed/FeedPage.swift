@@ -18,7 +18,7 @@ struct FeedPage: BaseHomePageView {
     var isSelected: Bool {
         let selected = selecedTab == .feed
         if selected && !state.hasLoadedOnce {
-            dispatch(action: FeedActions.FetchData.Start(autoLoad: true))
+            dispatch(FeedActions.FetchData.Start(autoLoad: true))
         }
         return selected
     }

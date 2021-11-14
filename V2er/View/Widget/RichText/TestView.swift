@@ -9,8 +9,22 @@
 import SwiftUI
 
 struct TestView: View {
+    @State var showToast: Bool = false
     var body: some View {
-        Text("TestView")
+        ScrollView {
+            VStack {
+                SectionItemView("Show toast")
+                    .onTapGesture {
+                        Toast.show("网络加载错误")
+                    }
+            }
+        }
+        .navigatable()
+        .toast(isPresented: $showToast) {
+            Label("showToast", systemImage: "star")
+                .padding(.horizontal, 26)
+                .padding(.vertical, 12)
+        }
     }
 }
 
