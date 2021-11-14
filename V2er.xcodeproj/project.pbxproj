@@ -107,7 +107,6 @@
 		5DA69A4924ACBC8D00F8B77A /* V2erApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DA69A4824ACBC8D00F8B77A /* V2erApp.swift */; };
 		5DAA50A626F0D8DD00CB63DE /* TagDetailInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAA50A526F0D8DD00CB63DE /* TagDetailInfo.swift */; };
 		5DB622A026DE8BCD0026C4A8 /* ExploreInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DB6229F26DE8BCD0026C4A8 /* ExploreInfo.swift */; };
-		5DC05A53273D4AA8003561A9 /* HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC05A52273D4AA8003561A9 /* HUD.swift */; };
 		5DC05A55273D5A2B003561A9 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC05A54273D5A2B003561A9 /* Toast.swift */; };
 		5DC05A57273E36DC003561A9 /* RootHostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DC05A56273E36DC003561A9 /* RootHostView.swift */; };
 		5DCDE3942695D16B00261385 /* AuthorInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DCDE3932695D16B00261385 /* AuthorInfoView.swift */; };
@@ -271,7 +270,6 @@
 		5DA69A4824ACBC8D00F8B77A /* V2erApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2erApp.swift; sourceTree = "<group>"; };
 		5DAA50A526F0D8DD00CB63DE /* TagDetailInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailInfo.swift; sourceTree = "<group>"; };
 		5DB6229F26DE8BCD0026C4A8 /* ExploreInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreInfo.swift; sourceTree = "<group>"; };
-		5DC05A52273D4AA8003561A9 /* HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUD.swift; sourceTree = "<group>"; };
 		5DC05A54273D5A2B003561A9 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		5DC05A56273E36DC003561A9 /* RootHostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootHostView.swift; sourceTree = "<group>"; };
 		5DCDE3932695D16B00261385 /* AuthorInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorInfoView.swift; sourceTree = "<group>"; };
@@ -355,7 +353,6 @@
 				5D22A26C26AF16D700F769E2 /* SectionTitleView.swift */,
 				5DF417712712CD8D00E6D135 /* NodeView.swift */,
 				5D68717B271853DB00329E73 /* SectionItemView.swift */,
-				5DC05A52273D4AA8003561A9 /* HUD.swift */,
 				5DC05A54273D5A2B003561A9 /* Toast.swift */,
 			);
 			path = Widget;
@@ -859,7 +856,6 @@
 				5D54903326AB9E2200BB0CC0 /* SwiftUIView.swift in Sources */,
 				5DE5B4CD268466D800569684 /* UpdatableView.swift in Sources */,
 				5D1D8C0226EBA88C009DF65A /* UserDetailInfo.swift in Sources */,
-				5DC05A53273D4AA8003561A9 /* HUD.swift in Sources */,
 				5DCE4CE6270BC683006BA98D /* UserFeedState.swift in Sources */,
 				5D0CFA7C26B992B2001A8A7F /* MyFollowPage.swift in Sources */,
 				5DE5C579249D90AD0004DCC6 /* Color.swift in Sources */,

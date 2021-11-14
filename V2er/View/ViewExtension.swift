@@ -182,8 +182,8 @@ extension View {
         frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment)
     }
     
-    func visualBlur(alpha: CGFloat = 1.0) -> some View {
-        return self.background(VEBlur().opacity(alpha))
+    func visualBlur(alpha: CGFloat = 1.0, bg: Color = .clear) -> some View {
+        return self.background(VEBlur(bg: bg).opacity(alpha))
     }
     
     func forceClickable() -> some View {

@@ -11,10 +11,11 @@ import SwiftUI
 
 struct VEBlur: UIViewRepresentable {
     var style: UIBlurEffect.Style = .systemUltraThinMaterial
+    var bg: Color = .clear
 
     func makeUIView(context: Context) -> UIVisualEffectView {
         let effectView = UIVisualEffectView(effect: UIBlurEffect(style: style))
-//        effectView.backgroundColor = Color.lightGray.toUIColor()
+        effectView.backgroundColor = bg.uiColor
         return effectView
     }
 

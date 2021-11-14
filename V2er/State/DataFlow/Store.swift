@@ -16,7 +16,7 @@ final public class Store: ObservableObject {
 
     private init() {}
 
-    func dispatch(_ action: Action, animation: Animation) {
+    func dispatch(_ action: Action, animation: Animation?) {
         DispatchQueue.main.async { [self] in
 //            log("====> dispatch action: \(action)")
             let result = self.reduce(initialState: self.appState, action: action)
@@ -84,7 +84,7 @@ final public class Store: ObservableObject {
 
 }
 
-func dispatch(_ action: Action, _ animation: Animation = .default) {
+func dispatch(_ action: Action, _ animation: Animation? = nil) {
     Store.shared.dispatch(action, animation: animation)
 }
 

@@ -19,9 +19,7 @@ struct RootHostView: View {
         MainPage()
             .buttonStyle(.plain)
             .toast(isPresented: toast.isPresented) {
-                Label(toast.title.raw, systemImage: toast.icon.raw)
-                    .padding(.horizontal, 26)
-                    .padding(.vertical, 12)
+                DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
             }
     }
 }
