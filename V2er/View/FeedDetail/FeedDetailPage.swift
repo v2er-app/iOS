@@ -69,11 +69,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 if !isContentEmpty {
                     NewsContentView(state.model.contentInfo, rendered: $rendered)
                         .padding(.horizontal, 10)
-                        .hide(showProgressView)
+//                        .hide(showProgressView)
                 }
                 replayListView
                     .padding(.top, 8)
-                    .hide(showProgressView)
+//                    .hide(showProgressView)
             }
             .background(showProgressView ? .clear : Color.itemBg)
             .updatable(autoRefresh: showProgressView, hasMoreData: state.hasMoreData) {
@@ -193,13 +193,14 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 }
                 .opacity(hideTitleViews ? 0.0 : 1.0)
                 Menu {
+                    let hadStared = state.model.headerInfo?.hadStared ?? false
                     Button {
-                        // star
+                        dispatch(FeedDetailActions.StarTopic(id: id))
                     } label: {
-                        Label("收藏", systemImage: "bookmark")
+                        Label(hadStared ? "取消收藏" : "收藏", systemImage: hadStared ? "bookmark.fill" : "bookmark")
                     }
                     Button {
-                        // star
+                        // thank
                     } label: {
                         Label("感谢", systemImage: "heart")
                     }

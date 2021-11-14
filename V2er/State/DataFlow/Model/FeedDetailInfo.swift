@@ -56,12 +56,20 @@ struct FeedDetailInfo: BaseModel {
         var title: String?
         // div.box a[href*=favorite/], .href
         var favoriteLink: String = .empty
+        var hadStared: Bool = false
         // div.box div[id=topic_thank]
         var hadThanked: Bool = false
         // div.box div.inner div#topic_thank
         var isThankable: Bool = false
         // div.box div.header a.op
         var appendText: String = .empty
+
+        mutating func update(_ headerInfo: HeaderInfo?) {
+            guard let headerInfo = headerInfo else { return }
+            let originalId = self.id
+            self = headerInfo
+            self.id = originalId
+        }
 
         func toFeedItemInfo() -> FeedInfo.Item {
             return FeedInfo.Item(id: id, title: title,
@@ -92,6 +100,7 @@ struct FeedDetailInfo: BaseModel {
             totalPage = max(lastNormalpage, currentPage)
             title = root.pick("div.box h1")
             favoriteLink = root.pick("div.box a[href*=favorite/]", .href)
+            hadStared = favoriteLink.notEmpty() && favoriteLink.contains("unfavorite/")
             hadThanked = root.pick("div.box div[id=topic_thank]")
                 .contains("已发送")
             isThankable = root.pick("div.box div.inner div#topic_thank")

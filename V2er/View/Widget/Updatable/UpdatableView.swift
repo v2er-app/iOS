@@ -82,7 +82,7 @@ struct UpdatableView<Content: View>: View {
         .overlay {
             if state.showLoadingView {
                 ZStack {
-                    Color.almostClear
+//                    Color.almostClear
                     ProgressView()
                         .scaleEffect(1.3)
                 }

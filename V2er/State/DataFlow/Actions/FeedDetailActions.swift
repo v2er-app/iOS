@@ -57,14 +57,13 @@ struct FeedDetailActions {
     struct StarTopic: AwaitAction {
         var target: Reducer = R
         var id: String
-        let feedId: String
 
         func execute(in store: Store) async {
             let state = store.appState.feedDetailStates[id]
             let once = state?.model.once
-
+            let headers: Params = [Headers.REFERER : Headers.topicReferer(id)]
             let result: APIResult<FeedDetailInfo> = await APIService.shared
-                .post(endpoint: .starTopic(id: feedId), ["once": once!])
+                .htmlGet(endpoint: .starTopic(id: id), ["once": once!], requestHeaders: headers)
             dispatch(StarTopicDone(id: id, result: result))
         }
     }

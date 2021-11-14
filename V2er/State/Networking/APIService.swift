@@ -28,8 +28,9 @@ struct APIService {
     }
 
     func htmlGet<T: BaseModel>(endpoint: Endpoint,
-                               _ params: Params? = nil) async -> APIResult<T> {
-        let rawResult = await get(endpoint: endpoint, params: params)
+                               _ params: Params? = nil,
+                               requestHeaders: Params? = nil) async -> APIResult<T> {
+        let rawResult = await get(endpoint: endpoint, params: params, requestHeaders: requestHeaders)
         guard rawResult.error == nil else {
             Toast.show(rawResult.error!)
             return .failure(rawResult.error!)
