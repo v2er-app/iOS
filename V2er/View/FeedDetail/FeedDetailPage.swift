@@ -69,11 +69,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 if !isContentEmpty {
                     NewsContentView(state.model.contentInfo, rendered: $rendered)
                         .padding(.horizontal, 10)
-//                        .hide(showProgressView)
+                    //                        .hide(showProgressView)
                 }
                 replayListView
                     .padding(.top, 8)
-//                    .hide(showProgressView)
+                //                    .hide(showProgressView)
             }
             .background(showProgressView ? .clear : Color.itemBg)
             .updatable(autoRefresh: showProgressView, hasMoreData: state.hasMoreData) {
@@ -215,17 +215,14 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         Label("举报", systemImage: "person.crop.circle.badge.exclamationmark")
                     }
                 } label: {
-                    Button {
-                        // Show more actions
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .padding(8)
-                            .font(.title3.weight(.regular))
-                            .foregroundColor(.tintColor)
-                    }
-                    .forceClickable()
-                    .debug(true)
+                    Image(systemName: "ellipsis")
+                        .padding(8)
+                        .font(.title3.weight(.regular))
+                        .foregroundColor(.tintColor)
                 }
+                .forceClickable()
+                .debug(true)
+                .hapticOnTap()
             }
             .padding(.vertical, 5)
             .padding(.trailing, 5)

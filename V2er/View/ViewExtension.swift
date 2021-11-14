@@ -246,6 +246,14 @@ extension View {
             }
         }
     }
+
+
+    func hapticOnTap(style: UIImpactFeedbackGenerator.FeedbackStyle = .light) -> some View {
+        self.onTapGesture {
+            let impact = UIImpactFeedbackGenerator(style: style)
+            impact.impactOccurred()
+        }
+    }
 }
 
 //struct EmptyView: View {

@@ -64,11 +64,12 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             break
         case let action as FeedDetailActions.StarTopicDone:
             state.showProgressView = false
+            let toast = action.hadStared ? "取消收藏" : "收藏"
             if case let .success(result) = action.result {
                 state.model.headerInfo?.update(result?.headerInfo)
-                Toast.show("收藏成功")
+                Toast.show(toast + "成功")
             } else {
-                Toast.show("收藏失败")
+                Toast.show(toast + "失败")
             }
         default:
             break;

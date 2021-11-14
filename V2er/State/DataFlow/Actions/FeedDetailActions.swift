@@ -62,17 +62,23 @@ struct FeedDetailActions {
             let state = store.appState.feedDetailStates[id]
             let once = state?.model.once
             let headers: Params = [Headers.REFERER : Headers.topicReferer(id)]
+            let hadStared = state?.model.headerInfo?.hadStared ?? false
+
             let result: APIResult<FeedDetailInfo> = await APIService.shared
-                .htmlGet(endpoint: .starTopic(id: id), ["once": once!], requestHeaders: headers)
-            dispatch(StarTopicDone(id: id, result: result))
+                .htmlGet(endpoint: hadStared ? .unStarTopic(id: id): .starTopic(id: id),
+                         ["once": once!],
+                         requestHeaders: headers)
+            dispatch(StarTopicDone(id: id, hadStared: hadStared, result: result))
         }
     }
 
     struct StarTopicDone: Action {
         var target: Reducer = R
         var id: String
+        var hadStared: Bool
 
         let result: APIResult<FeedDetailInfo>
+
     }
 
 }
