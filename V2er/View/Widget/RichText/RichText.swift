@@ -72,7 +72,7 @@ fileprivate struct AttributedText: UIViewRepresentable {
     func updateUIView(_ label: MaxWidthAttributedLabel, context: Context) {
         label.attributedText = self.richString
         label.maxWidth = maxWidth
-        runInMain {
+        runInMain(delay: 100) {
             self.height = label.sizeThatFits(CGSize(width: maxWidth, height: .infinity)).height
         }
     }
