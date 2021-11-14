@@ -14,7 +14,6 @@ struct FeedDetailActions {
     struct FetchData {
         struct Start: AwaitAction {
             var target: Reducer = R
-
             var id: String
             let feedId: String?
             var autoLoad: Bool = false
@@ -55,8 +54,26 @@ struct FeedDetailActions {
         }
     }
 
-    struct HTMLRendered: Action {
+    struct StarTopic: AwaitAction {
         var target: Reducer = R
+        var id: String
+        let feedId: String
+
+        func execute(in store: Store) async {
+            let state = store.appState.feedDetailStates[id]
+            let once = state?.model.once
+
+            let result: APIResult<FeedDetailInfo> = await APIService.shared
+                .post(endpoint: .starTopic(id: feedId), ["once": once!])
+            dispatch(StarTopicDone(id: id, result: result))
+        }
+    }
+
+    struct StarTopicDone: Action {
+        var target: Reducer = R
+        var id: String
+
+        let result: APIResult<FeedDetailInfo>
     }
 
 }

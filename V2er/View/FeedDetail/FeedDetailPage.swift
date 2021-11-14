@@ -71,8 +71,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         .padding(.horizontal, 10)
                         .hide(showProgressView)
                 }
-                actionItems
-                    .hide(showProgressView)
                 replayListView
                     .padding(.top, 8)
                     .hide(showProgressView)
@@ -114,38 +112,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             }
         }
     }
-    
-    @ViewBuilder
-    private var actionItems: some View {
-        VStack {
-            HStack(spacing: 16) {
-                // 收藏，忽略，感谢，举报, up, down
-                
-                Button("收藏") {
-                    
-                }
-                Button("感谢") {
-                    
-                }
-                
-                Button("忽略") {
-                    
-                }
-                
-                Button("举报") {
-                    
-                }
-                
-                Spacer()
-            }
-            .padding(.top, 4)
-            .padding(.horizontal, 16)
-            .foregroundColor(.black)
-            Divider()
-        }
-    }
-    
-    
+
     private var replyBar: some View {
         VStack(spacing: 0) {
             Divider()
@@ -225,13 +192,38 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     .lineLimit(1)
                 }
                 .opacity(hideTitleViews ? 0.0 : 1.0)
-                Button {
-                    // Show more actions
+                Menu {
+                    Button {
+                        // star
+                    } label: {
+                        Label("收藏", systemImage: "bookmark")
+                    }
+                    Button {
+                        // star
+                    } label: {
+                        Label("感谢", systemImage: "heart")
+                    }
+                    Button {
+                        // star
+                    } label: {
+                        Label("忽略", systemImage: "exclamationmark.octagon")
+                    }
+                    Button {
+                        // star
+                    } label: {
+                        Label("举报", systemImage: "person.crop.circle.badge.exclamationmark")
+                    }
                 } label: {
-                    Image(systemName: "ellipsis")
-                        .padding(8)
-                        .font(.title3.weight(.regular))
-                        .foregroundColor(.tintColor)
+                    Button {
+                        // Show more actions
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .padding(8)
+                            .font(.title3.weight(.regular))
+                            .foregroundColor(.tintColor)
+                    }
+                    .forceClickable()
+                    .debug(true)
                 }
             }
             .padding(.vertical, 5)

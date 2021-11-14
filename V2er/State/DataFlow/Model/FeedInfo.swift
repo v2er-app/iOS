@@ -27,7 +27,7 @@ struct FeedInfo: BaseModel {
         self.items.append(contentsOf: feedInfo.items)
     }
 
-    struct Item: FeedItemProtocol, HtmlItemModel {
+    struct Item: FeedItemProtocol, HtmlItemModel, Hashable {
         var id: String
         // @Pick(value = "span.item_title > a")
         var title: String?
@@ -43,6 +43,14 @@ struct FeedInfo: BaseModel {
         var nodeId: String?
         // @Pick("a[class^=count_]")
         var replyNum: String?
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.id == rhs.id
+        }
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
 
         init(id: String, title: String? = nil, avatar: String? = nil) {
             self.id = id

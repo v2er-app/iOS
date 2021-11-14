@@ -31,13 +31,7 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
                 state.model.injectId(id)
                 state.willLoadPage = 2
                 state.hasMoreData = state.willLoadPage <= result?.headerInfo?.totalPage ?? 1
-            } else {
-                Toast.show("加载出错")
             }
-        case let action as FeedDetailActions.HTMLRendered:
-            guard !state.showProgressView else { break }
-            state.showProgressView = false
-            state.refreshing = false
         case let action as FeedDetailActions.LoadMore.Start:
             guard !state.refreshing else { break }
             guard !state.loadingMore else { break }
@@ -65,6 +59,17 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             if state.refCounts == 0 {
                 state.reseted = true
             }
+        case let action as FeedDetailActions.StarTopic:
+            state.showProgressView = true
+            break
+        case let action as FeedDetailActions.StarTopicDone:
+            state.showProgressView = false
+            if case let .success(result) = action.result {
+                Toast.show("收藏成功")
+            } else {
+                Toast.show("收藏失败")
+            }
+            break
         default:
             break;
     }
