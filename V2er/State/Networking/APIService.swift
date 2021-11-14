@@ -31,6 +31,7 @@ struct APIService {
                                _ params: Params? = nil) async -> APIResult<T> {
         let rawResult = await get(endpoint: endpoint, params: params)
         guard rawResult.error == nil else {
+            Toast.show(rawResult.error!)
             return .failure(rawResult.error!)
         }
         let result: (model: T?, error: APIError?) = await self.parse(from: rawResult.data!)
@@ -46,6 +47,7 @@ struct APIService {
         let rawResult = await get(endpoint: endpoint, params: params)
 //        log("jsonGet: \(rawResult.data?.string)")
         guard rawResult.error == nil else {
+            Toast.show(rawResult.error!)
             return .failure(rawResult.error!)
         }
         let parseTask = Task { () -> T in
@@ -65,11 +67,13 @@ struct APIService {
                             requestHeaders: Params? = nil) async -> APIResult<T> {
         let rawResult = await post(endpoint: endpoint, params: params, requestHeaders: requestHeaders)
         guard rawResult.error == nil else {
+            Toast.show(rawResult.error!)
             return .failure(rawResult.error!)
         }
         let result: (model: T?, error: APIError?) = await self.parse(from: rawResult.data!)
         guard result.error == nil else {
             log("error: \(String(describing: result.model?.rawData))")
+            Toast.show(rawResult.error!)
             return .failure(result.error!)
         }
         log("post.Result: \(result)")
