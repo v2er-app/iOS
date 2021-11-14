@@ -68,7 +68,7 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         print("------updateUIView--------: \(self.rendered)")
-        if rendered { return }
+//        if rendered { return }
         var content = Bundle.readString(name: "v2er", type: "html")
         // TODO: dark mode
         let isDark = false

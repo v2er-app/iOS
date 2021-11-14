@@ -13,7 +13,7 @@ struct GlobalState: FluxState {
     var selectedTab: TabId = .feed
     var lastSelectedTab: TabId = .none
     var scrollTopTab: TabId = .none
-    var toast = Toast.shared
+    var toast = Toast()
 
     static var account: AccountInfo? {
         AccountState.getAccount()

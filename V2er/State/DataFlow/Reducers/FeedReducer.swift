@@ -20,11 +20,11 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
         case let action as FeedActions.FetchData.Done:
             state.refreshing = false
             state.showProgressView = false
-            if case let .success(newsInfo) = action.result {
+            if case let .failure(error) = action.result {
+                Toast.show(error)
+            } else if case let .success(newsInfo) = action.result {
                 state.feedInfo = newsInfo ?? FeedInfo()
                 state.willLoadPage = 1
-            } else {
-                // Loaded failed
             }
         case let action as FeedActions.LoadMore.Start:
             guard !state.refreshing else { break }

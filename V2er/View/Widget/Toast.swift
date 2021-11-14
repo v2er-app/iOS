@@ -12,11 +12,25 @@ final class Toast {
     var isPresented: Bool = false
     var title: String = ""
     var icon: String = ""
-    public static let shared = Toast()
-    private init() {}
 
     static func show(_ title: String, icon: String = .empty) {
         dispatch(ShowToastAction(title: title, icon: icon), .default)
+    }
+
+    static func show(_ error: APIError) {
+        let title: String
+        switch error {
+            case .noResponse:
+                title = "未返回数据"
+            case .decodingError:
+                title = "解析数据出错"
+            case .networkError:
+                title = "网络出错"
+            case .invalid:
+                title = "返回数据非法"
+            default:
+                title = "未知错误"
+        }
     }
 }
 
