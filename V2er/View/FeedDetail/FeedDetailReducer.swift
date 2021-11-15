@@ -74,6 +74,10 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
         case let action as FeedDetailActions.ThanksAuthorDone:
             state.model.headerInfo?.hadThanked = true
             Toast.show(action.success ? "感谢发送成功" : "感谢发送失败")
+        case let action as FeedDetailActions.IgnoreTopicDone:
+            state.ignored = action.ignored
+            Toast.show(action.ignored ? "忽略成功" : "忽略失败")
+            break
         default:
             break;
     }

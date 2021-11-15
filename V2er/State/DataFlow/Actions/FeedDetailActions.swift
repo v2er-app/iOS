@@ -109,4 +109,28 @@ struct FeedDetailActions {
         let success: Bool
     }
 
+    struct IgnoreTopic: AwaitAction {
+        var target: Reducer = R
+        var id: String
+
+        func execute(in store: Store) async {
+            let state = store.appState.feedDetailStates[id]
+            let once = state?.model.once
+            let result: APIResult<FeedInfo> = await APIService.shared
+                .htmlGet(endpoint: .ignoreTopic(id: id), ["once": once!])
+            var ignored = false
+            if case let .success(result) = result {
+                ignored = result?.isValid() ?? false
+            }
+            dispatch(IgnoreTopicDone(id: id, ignored: ignored))
+        }
+
+    }
+
+    struct IgnoreTopicDone: Action {
+        var target: Reducer = R
+        var id: String
+        let ignored: Bool
+    }
+
 }

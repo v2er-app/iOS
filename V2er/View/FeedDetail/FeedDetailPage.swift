@@ -96,6 +96,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .onTapGesture {
             replyIsFocused = false
         }
+        .onChange(of: state.ignored) { ignored in
+            if ignored {
+                dismiss()
+            }
+        }
         .onAppear {
             dispatch(FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id, autoLoad: !state.hasLoadedOnce))
         }
@@ -208,7 +213,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     .disabled(hadThanked)
 
                     Button {
-                        // star
+                        dispatch(FeedDetailActions.IgnoreTopic(id: id))
                     } label: {
                         Label("忽略", systemImage: "exclamationmark.octagon")
                     }
