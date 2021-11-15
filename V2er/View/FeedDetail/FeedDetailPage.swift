@@ -199,11 +199,14 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     } label: {
                         Label(hadStared ? "取消收藏" : "收藏", systemImage: hadStared ? "bookmark.fill" : "bookmark")
                     }
+                    let hadThanked = state.model.headerInfo?.hadThanked ?? false
                     Button {
-                        // thank
+                        dispatch(FeedDetailActions.ThanksAuthor(id: id))
                     } label: {
-                        Label("感谢", systemImage: "heart")
+                        Label(hadThanked ? "已感谢" : "感谢", systemImage: hadThanked ? "heart.fill" : "heart")
                     }
+                    .disabled(hadThanked)
+
                     Button {
                         // star
                     } label: {

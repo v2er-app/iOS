@@ -78,7 +78,35 @@ struct FeedDetailActions {
         var hadStared: Bool
 
         let result: APIResult<FeedDetailInfo>
+    }
 
+    struct ThanksAuthor: AwaitAction {
+        var target: Reducer = R
+        var id: String
+
+        func execute(in store: Store) async {
+            let state = store.appState.feedDetailStates[id]
+            let once = state?.model.once
+
+            let step1Result: APIResult<SimpleModel>  = await APIService.shared
+                .post(endpoint: .thanksAuthor(id: id), ["once": once!])
+
+            var success: Bool = false
+            var toast = "感谢发送失败"
+            if case let .success(result) = step1Result {
+                if result!.isValid() {
+                    toast = "感谢发送成功"
+                    success = true
+                }
+            }
+            dispatch(ThanksAuthorDone(id: id, success: success))
+        }
+    }
+
+    struct ThanksAuthorDone: Action {
+        var target: Reducer = R
+        var id: String
+        let success: Bool
     }
 
 }

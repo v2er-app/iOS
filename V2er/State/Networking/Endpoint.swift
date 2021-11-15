@@ -22,7 +22,8 @@ enum Endpoint {
     case tagDetail(tagId: String)
     case userPage(userName: String), createTopic
     case appendTopic(id: String), thanksReply(id: String)
-    case thanksAuthor(id: String), starTopic(id: String)
+    case thanksAuthor(id: String), sendMoney
+    case starTopic(id: String)
     case unStarTopic(id: String), ignoreTopic(id: String)
     case ignoreReply(id: String), ignoreNode(id: String)
     case unIgnoreNode(id: String), upTopic(id: String), downTopic(id: String)
@@ -106,6 +107,8 @@ enum Endpoint {
                 info.path = "/thank/reply/\(id)"
             case let .thanksAuthor(id):
                 info.path = "/thank/topic/\(id)"
+            case .sendMoney:
+                info.path = "/ajax/money"
             case let .starTopic(id):
                 info.path = "/favorite/topic/\(id)"
             case let .unStarTopic(id):

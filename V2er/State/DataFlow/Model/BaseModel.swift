@@ -23,6 +23,14 @@ protocol BaseModel: HtmlParsable {
     func isValid() -> Bool
 }
 
+struct SimpleModel: BaseModel {
+    init?(from html: Element?) { }
+
+    func isValid() -> Bool {
+        true
+    }
+}
+
 extension BaseModel {
     var rawData: String? {
         get {

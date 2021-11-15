@@ -71,6 +71,9 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             } else {
                 Toast.show(toast + "失败")
             }
+        case let action as FeedDetailActions.ThanksAuthorDone:
+            state.model.headerInfo?.hadThanked = true
+            Toast.show(action.success ? "感谢发送成功" : "感谢发送失败")
         default:
             break;
     }
