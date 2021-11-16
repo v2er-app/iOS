@@ -12,8 +12,12 @@ struct Headers {
     static let REFERER: String = "Referer"
     static let TINY_REFERER = [REFERER : Endpoint.dailyMission.url.absoluteString]
 
-    static func topicReferer(_ topicId: String) -> String {
-        return APIService.baseUrlString + "/t/\(topicId)"
+    static func topicReferer(_ topicId: String) -> [String : String] {
+        [REFERER : APIService.baseUrlString + "/t/\(topicId)"]
+    }
+
+    static func userReferer(_ username: String) -> [String : String] {
+        [REFERER : APIService.baseUrlString + "/member/\(username)"]
     }
 
     static func refer(url: String) -> [String : String] {

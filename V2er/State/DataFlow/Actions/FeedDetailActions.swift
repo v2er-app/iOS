@@ -62,7 +62,7 @@ struct FeedDetailActions {
             Toast.show("收藏中")
             let state = store.appState.feedDetailStates[id]
             let once = state?.model.once
-            let headers: Params = [Headers.REFERER : Headers.topicReferer(id)]
+            let headers: Params = Headers.topicReferer(id)
             let hadStared = state?.model.headerInfo?.hadStared ?? false
 
             let result: APIResult<FeedDetailInfo> = await APIService.shared

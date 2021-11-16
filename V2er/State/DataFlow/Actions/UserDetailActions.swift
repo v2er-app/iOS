@@ -31,4 +31,26 @@ struct UserDetailActions {
             let result: APIResult<UserDetailInfo>
         }
     }
+
+    struct Follow: AwaitAction {
+        var target: Reducer = R
+        var id: String
+
+        func execute(in store: Store) async {
+            let state = store.appState.userDetailStates[id]!
+            let followed = state.model.hasFollowed
+            Toast.show(followed ? "取消中" : "关注中")
+            let result: APIResult<UserDetailInfo> = await APIService.shared
+                .htmlGet(endpoint: .general(url: state.model.followUrl),
+                         requestHeaders: Headers.userReferer(id))
+            dispatch(FollowDone(id: id, result: result))
+        }
+    }
+
+    struct FollowDone: Action {
+        var target: Reducer = R
+        var id: String
+        let result: APIResult<UserDetailInfo>
+    }
+
 }

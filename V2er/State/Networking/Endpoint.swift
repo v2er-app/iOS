@@ -28,7 +28,8 @@ enum Endpoint {
     case ignoreReply(id: String), ignoreNode(id: String)
     case unIgnoreNode(id: String), upTopic(id: String), downTopic(id: String)
     case replyTopic(id: String), blockUser(id: String)
-    case followUser(id: String), starNode(id: String), dailyMission
+    case followUser(id: String), unfollowUser(id: String)
+    case starNode(id: String), dailyMission
     case checkin, twoFA, downMyTopic(id: String), pinTopic(id: String)
     case search
     case general(url: String)
@@ -132,6 +133,8 @@ enum Endpoint {
                 info.path = "/block/\(id)"
             case let .followUser(id):
                 info.path = "/follow/\(id)"
+            case let .unfollowUser(id):
+                info.path = "/unfollow/\(id)"
             case let .starNode(id):
                 info.path = "/favorite/node/\(id)"
             case .dailyMission:

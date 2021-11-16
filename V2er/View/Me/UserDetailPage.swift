@@ -168,14 +168,16 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
             Color.clear.frame(height: topSafeAreaInset().top)
             AvatarView(url: model.avatar, size: heightOfNodeImage)
             HStack(alignment: .center,spacing: 4) {
-                Circle().fill(.green).frame(width: 8, height: 8)
+                Circle()
+                    .fill(state.model.isOnline ? .green : .gray)
+                    .frame(width: 8, height: 8)
                 Text(model.userName)
                     .font(.headline.weight(.semibold))
             }
             Button {
-                // do star
+                dispatch(UserDetailActions.Follow(id: userId!))
             } label: {
-                Text("关注")
+                Text(state.model.hasFollowed ? "已关注" : "关注")
                     .font(.callout)
                     .padding(.horizontal, 15)
                     .padding(.vertical, 2)

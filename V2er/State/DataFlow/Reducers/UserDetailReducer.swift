@@ -41,6 +41,13 @@ func userDetailReducer(_ states: UserDetailStates, _ action: Action) -> (UserDet
             if state.refCounts == 0 {
                 state.reseted = true
             }
+        case let action as UserDetailActions.FollowDone:
+            if case let .success(result) = action.result {
+                state.model = result!
+                Toast.show("关注成功")
+            } else {
+                Toast.show("关注失败")
+            }
         default:
             break
     }
