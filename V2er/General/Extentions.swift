@@ -32,6 +32,7 @@ extension String {
         }
         return self
     }
+    
 
     func trim() -> String {
         return trimmingCharacters(in: .whitespacesAndNewlines)
@@ -250,3 +251,19 @@ extension Bundle {
 }
 
 
+extension URL {
+    func params() -> [String : String] {
+        var dict = [String : String]()
+
+        if let components = URLComponents(url: self, resolvingAgainstBaseURL: false) {
+            if let queryItems = components.queryItems {
+                for item in queryItems {
+                    dict[item.name] = item.value!
+                }
+            }
+            return dict
+        } else {
+            return [ : ]
+        }
+    }
+}

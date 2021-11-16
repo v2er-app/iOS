@@ -9,11 +9,15 @@
 import Foundation
 
 struct Headers {
-
     static let REFERER: String = "Referer"
+    static let TINY_REFERER = [REFERER : Endpoint.dailyMission.url.absoluteString]
 
     static func topicReferer(_ topicId: String) -> String {
         return APIService.baseUrlString + "/t/\(topicId)"
+    }
+
+    static func refer(url: String) -> [String : String] {
+        [REFERER : url]
     }
 }
 

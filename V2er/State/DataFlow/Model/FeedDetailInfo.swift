@@ -219,7 +219,11 @@ struct FeedDetailInfo: BaseModel {
         self.problem = ProblemInfo(from: root.pickOne("div.problem"))
         self.replyInfo = ReplyInfo(from: root.pickAll("div[id^=r_]"))
         self.once = root.pick("input[name=once]", .value)
-        self.reportLink = root.pick("a[onclick*=/report/topic/]", .onclick)
+        let rawReportUrl = root.pick("a[onclick*=/report/topic/]", .onclick)
+        let sIndex = rawReportUrl.index(of: "/report/topic/")!
+        let eIndex = rawReportUrl.lastIndex(of: "'")!
+        self.reportLink = String(rawReportUrl[sIndex..<eIndex])
+
         self.hasReported = root.pick("div.content div.box div.inner span.fade")
             .contains("已对本主题进行了报告")
         self.fadeStr = root.pick("a[onclick*=/fade/topic/]", .onclick)

@@ -133,4 +133,28 @@ struct FeedDetailActions {
         let ignored: Bool
     }
 
+    struct ReportTopic: AwaitAction {
+        var target: Reducer = R
+        var id: String
+
+        func execute(in store: Store) async {
+            let state = store.appState.feedDetailStates[id]!
+
+            let result: APIResult<DailyInfo> = await APIService.shared
+                .htmlGet(endpoint: .general(url: state.model.reportLink!),
+                         requestHeaders: Headers.TINY_REFERER)
+            var reported = false
+            if case let .success(result) = result {
+                reported = result?.isValid() ?? false
+            }
+            dispatch(ReportTopicDone(id: id, reported: reported))
+        }
+    }
+
+    struct ReportTopicDone: Action {
+        var target: Reducer = R
+        var id: String
+        let reported: Bool
+    }
+
 }

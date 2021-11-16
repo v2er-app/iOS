@@ -77,7 +77,9 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
         case let action as FeedDetailActions.IgnoreTopicDone:
             state.ignored = action.ignored
             Toast.show(action.ignored ? "忽略成功" : "忽略失败")
-            break
+        case let action as FeedDetailActions.ReportTopicDone:
+            state.model.hasReported = action.reported
+            Toast.show(action.reported ? "举报成功" : "举报失败")
         default:
             break;
     }

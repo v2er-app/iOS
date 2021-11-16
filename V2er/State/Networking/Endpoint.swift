@@ -31,6 +31,7 @@ enum Endpoint {
     case followUser(id: String), starNode(id: String), dailyMission
     case checkin, twoFA, downMyTopic(id: String), pinTopic(id: String)
     case search
+    case general(url: String)
 
     func path() -> String {
         return info().path
@@ -145,6 +146,14 @@ enum Endpoint {
                 info.path = "/sticky/topic/\(id)"
             case let .search:
                 info.path = "https://www.sov2ex.com/api/search"
+            case let .general(url):
+                // check whether url contains params
+                if url.contains("?") {
+                    info.queries = URL(string: url)!.params()
+                    info.path = url.segment(separatedBy: "?", at: .first)
+                } else {
+                    info.path = url
+                }
         }
         return info
     }

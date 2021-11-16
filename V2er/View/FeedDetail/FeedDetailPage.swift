@@ -69,11 +69,9 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 if !isContentEmpty {
                     NewsContentView(state.model.contentInfo, rendered: $rendered)
                         .padding(.horizontal, 10)
-                    //                        .hide(showProgressView)
                 }
                 replayListView
                     .padding(.top, 8)
-                //                    .hide(showProgressView)
             }
             .background(showProgressView ? .clear : Color.itemBg)
             .updatable(autoRefresh: showProgressView, hasMoreData: state.hasMoreData) {
@@ -217,11 +215,13 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     } label: {
                         Label("忽略", systemImage: "exclamationmark.octagon")
                     }
+                    let reported = state.model.hasReported ?? false
                     Button {
-                        // star
+                        dispatch(FeedDetailActions.ReportTopic(id: id))
                     } label: {
-                        Label("举报", systemImage: "person.crop.circle.badge.exclamationmark")
+                        Label(reported ? "已举报" : "举报", systemImage: "person.crop.circle.badge.exclamationmark")
                     }
+                    .disabled(reported)
                 } label: {
                     Image(systemName: "ellipsis")
                         .padding(8)
@@ -255,10 +255,9 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     
 }
 
-struct NewsDetailPage_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            FeedDetailPage(id: .empty)
-        }
-    }
-}
+//struct NewsDetailPage_Previews: PreviewProvider {
+//    static var previews: some View {
+//        FeedDetailPage(id: .empty)
+//            .environmentObject(Store.shared)
+//    }
+//}
