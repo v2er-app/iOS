@@ -59,6 +59,7 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            Toast.show("收藏中")
             let state = store.appState.feedDetailStates[id]
             let once = state?.model.once
             let headers: Params = [Headers.REFERER : Headers.topicReferer(id)]
@@ -85,6 +86,7 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            Toast.show("发送中")
             let state = store.appState.feedDetailStates[id]
             let once = state?.model.once
 
@@ -114,6 +116,7 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            Toast.show("忽略中")
             let state = store.appState.feedDetailStates[id]
             let once = state?.model.once
             let result: APIResult<FeedInfo> = await APIService.shared
@@ -138,6 +141,7 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            Toast.show("举报中")
             let state = store.appState.feedDetailStates[id]!
 
             let result: APIResult<DailyInfo> = await APIService.shared
@@ -162,6 +166,7 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            Toast.show("回复中")
             let state = store.appState.feedDetailStates[id]!
             var params: Params = Params()
             params["once"] = state.model.once

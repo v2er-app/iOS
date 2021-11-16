@@ -97,8 +97,8 @@ struct FeedDetailInfo: BaseModel {
             replyNum = root.pick("div.cell span.gray:contains(回复)")
                 .segment(separatedBy: " ", at: .first)
             let lastNormalpage = root.pick("div.box a.page_normal", at: .last).int
-            currentPage = root.pick("div.box span.page_current").int
-            totalPage = max(lastNormalpage, currentPage)
+            currentPage = root.pick("div.box span.page_current", default: "1").int
+            totalPage = max(lastNormalpage, currentPage, 1)
             title = root.pick("div.box h1")
             favoriteLink = root.pick("div.box a[href*=favorite/]", .href)
             hadStared = favoriteLink.notEmpty() && favoriteLink.contains("unfavorite/")

@@ -128,6 +128,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         .focused($replyIsFocused)
 
                     Button {
+                        replyIsFocused = false
                         dispatch(FeedDetailActions.ReplyTopic(id: id))
                     } label: {
                         Image(systemName: "arrow.up.circle.fill")
@@ -216,6 +217,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     }
                     let reported = state.model.hasReported ?? false
                     Button {
+                        replyIsFocused = false
                         dispatch(FeedDetailActions.ReportTopic(id: id))
                     } label: {
                         Label(reported ? "已举报" : "举报", systemImage: "person.crop.circle.badge.exclamationmark")
