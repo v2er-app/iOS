@@ -49,6 +49,18 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             } else {
                 state.hasMoreData = true
             }
+        case let action as FeedDetailActions.ReplyDone:
+            var toast: String
+            if case let .success(result) = action.result {
+                toast = "回复成功"
+                state.replyContent = .empty
+                state.model.replyInfo.append(result?.replyInfo, afterReply: true)
+                state.willLoadPage = state.model.headerInfo?.currentPage ?? 1 + 1
+                state.hasMoreData = state.willLoadPage <= result?.headerInfo?.totalPage ?? 1
+            } else {
+                toast = "回复失败"
+            }
+            Toast.show(toast)
         case let action as OnAppearChangeAction:
             if action.isAppear {
                 state.refCounts += 1

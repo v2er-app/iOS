@@ -25,7 +25,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         self.id
     }
     @State var hideTitleViews = true
-    @State var replyContent = ""
     @State var isKeyboardVisiable = false
     @FocusState private var replyIsFocused: Bool
     var initData: FeedInfo.Item? = nil
@@ -42,7 +41,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     }
 
     private var hasReplyContent: Bool {
-        !replyContent.isEmpty
+        !state.replyContent.isEmpty
     }
 
     private var isContentEmpty: Bool {
@@ -121,16 +120,16 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             Divider()
             VStack(spacing: 0) {
                 HStack(alignment: .bottom, spacing: 0) {
-                    MultilineTextField("发表回复", text: $replyContent)
+                    MultilineTextField("发表回复", text: bindingState.replyContent)
                         .debug()
                         .onReceive(keyboardPublisher) { isKeyboardVisiable in
                             self.isKeyboardVisiable = isKeyboardVisiable
                         }
                         .focused($replyIsFocused)
 
-                    Button(action: {
-                        // Do submit
-                    }) {
+                    Button {
+                        dispatch(FeedDetailActions.ReplyTopic(id: id))
+                    } label: {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.title.weight(.regular))
                             .foregroundColor(Color.bodyText.opacity(hasReplyContent ? 1.0 : 0.6))

@@ -19,6 +19,7 @@ struct FeedDetailState: FluxState {
     var hasMoreData = true
     var model: FeedDetailInfo = FeedDetailInfo()
     var ignored: Bool = false
+    var replyContent: String = .empty
 }
 
 typealias FeedDetailStates=[String : FeedDetailState]

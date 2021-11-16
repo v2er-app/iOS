@@ -157,4 +157,26 @@ struct FeedDetailActions {
         let reported: Bool
     }
 
+    struct ReplyTopic: AwaitAction {
+        var target: Reducer = R
+        var id: String
+
+        func execute(in store: Store) async {
+            let state = store.appState.feedDetailStates[id]!
+            var params: Params = Params()
+            params["once"] = state.model.once
+            params["content"] = state.replyContent
+
+            let result: APIResult<FeedDetailInfo> = await APIService.shared
+                .post(endpoint: .replyTopic(id: id), params)
+            dispatch(ReplyDone(id: id, result: result))
+        }
+    }
+
+    struct ReplyDone: Action {
+        var target: Reducer = R
+        let id: String
+        let result: APIResult<FeedDetailInfo>
+    }
+
 }

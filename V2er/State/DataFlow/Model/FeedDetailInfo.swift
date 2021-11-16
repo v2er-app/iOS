@@ -51,6 +51,7 @@ struct FeedDetailInfo: BaseModel {
         var nodeId: String?
         // div.cell span.gray:contains(回复)
         var replyNum: String?
+        var currentPage: Int = 1
         var totalPage: Int = 1
         // div.box h1
         var title: String?
@@ -96,7 +97,7 @@ struct FeedDetailInfo: BaseModel {
             replyNum = root.pick("div.cell span.gray:contains(回复)")
                 .segment(separatedBy: " ", at: .first)
             let lastNormalpage = root.pick("div.box a.page_normal", at: .last).int
-            let currentPage = root.pick("div.box span.page_current").int
+            currentPage = root.pick("div.box span.page_current").int
             totalPage = max(lastNormalpage, currentPage)
             title = root.pick("div.box h1")
             favoriteLink = root.pick("div.box a[href*=favorite/]", .href)
@@ -159,7 +160,7 @@ struct FeedDetailInfo: BaseModel {
     struct ReplyInfo {
         var items: [Item] = []
 
-        struct Item: HtmlItemModel {
+        struct Item: HtmlItemModel, Hashable {
             // span.no
             var floor: Int = 0
             var id = UUID()
@@ -178,6 +179,14 @@ struct FeedDetailInfo: BaseModel {
             // id
             var replyId: String = .default
             var isOwner: Bool = false
+
+            static func == (lhs: Self, rhs: Self) -> Bool {
+                lhs.floor == rhs.floor
+            }
+
+            func hash(into hasher: inout Hasher) {
+                hasher.combine(floor)
+            }
 
             init(from html: Element?) {
                 guard let root = html else { return }
@@ -203,9 +212,12 @@ struct FeedDetailInfo: BaseModel {
             }
         }
 
-        mutating func append(_ replyInfo: ReplyInfo?) {
+        mutating func append(_ replyInfo: ReplyInfo?, afterReply: Bool = false) {
             guard let replyInfo = replyInfo else { return }
             self.items.append(contentsOf: replyInfo.items)
+            if afterReply {
+                self.items = self.items.uniqued()
+            }
         }
 
     }
@@ -220,9 +232,11 @@ struct FeedDetailInfo: BaseModel {
         self.replyInfo = ReplyInfo(from: root.pickAll("div[id^=r_]"))
         self.once = root.pick("input[name=once]", .value)
         let rawReportUrl = root.pick("a[onclick*=/report/topic/]", .onclick)
-        let sIndex = rawReportUrl.index(of: "/report/topic/")!
-        let eIndex = rawReportUrl.lastIndex(of: "'")!
-        self.reportLink = String(rawReportUrl[sIndex..<eIndex])
+        if rawReportUrl.notEmpty() {
+            let sIndex = rawReportUrl.index(of: "/report/topic/")!
+            let eIndex = rawReportUrl.lastIndex(of: "'")!
+            self.reportLink = String(rawReportUrl[sIndex..<eIndex])
+        }
 
         self.hasReported = root.pick("div.content div.box div.inner span.fade")
             .contains("已对本主题进行了报告")
