@@ -138,9 +138,9 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                 Spacer()
                 
                 Button {
-                    // Star the node
+                    dispatch(UserDetailActions.Follow(id: userId!))
                 } label: {
-                    Image(systemName: "heart")
+                    Image(systemName: state.model.hasFollowed ? "heart.fill" : "heart")
                         .padding(8)
                         .font(.title3.weight(.regular))
                 }
@@ -148,9 +148,9 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                 .forceClickable()
                 
                 Button {
-                    // block user
+                    dispatch(UserDetailActions.BlockUser(id: userId!))
                 } label: {
-                    Image(systemName: "eye.slash")
+                    Image(systemName: state.model.hasBlocked ? "eye.slash.fill" : "eye.slash")
                         .padding(8)
                         .font(.body.weight(.regular))
                 }
@@ -181,7 +181,8 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                     .font(.callout)
                     .padding(.horizontal, 15)
                     .padding(.vertical, 2)
-                    .cornerBorder(radius: 99, borderWidth: 1, color: foreGroundColor)
+                    .cornerBorder(radius: 99, borderWidth: 1,
+                                  color: foreGroundColor)
             }
             Text(model.desc)
                 .font(.callout)
@@ -220,9 +221,12 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                     }
                 } else {
                     Text("根据 \(userId ?? .default) 的设置，主题列表被隐藏")
+                        .greedyFrame()
                         .font(.subheadline)
                         .padding()
+                        .padding(.bottom, 180)
                         .hide(state.refreshing)
+                        .debug(true)
                 }
             } else {
                 ForEach(model.replyInfo.items) { item in

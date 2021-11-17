@@ -118,14 +118,22 @@ struct UserDetailInfo: BaseModel {
         isOnline = root.pick("strong.online")
             .contains("ONLINE")
         let followOnClick = root.pick("div.fr input", .onclick)
-        hasFollowed = followOnClick.contains("取消")
-        //    if (confirm('确认要取消对 diskerjtr 的关注？')) { location.href = '/unfollow/128373?once=15154'; }
-        let sIndex = followOnClick.index(of: (hasFollowed ? "/unfollow/" : "/follow/"))!
-        let eIndex = followOnClick.lastIndex(of: "'")!
-        followUrl = String(followOnClick[sIndex..<eIndex])
+        if followOnClick.notEmpty() {
+            hasFollowed = followOnClick.contains("取消")
+            //    if (confirm('确认要取消对 diskerjtr 的关注？')) { location.href = '/unfollow/128373?once=15154'; }
+            let sIndex = followOnClick.index(of: (hasFollowed ? "/unfollow/" : "/follow/"))!
+            let eIndex = followOnClick.lastIndex(of: "'")!
+            followUrl = String(followOnClick[sIndex..<eIndex])
+        }
+
         let blockOnClick = root.pick("div.fr input[value*=lock]", .onclick)
-        hasBlocked = blockOnClick.contains("unblock")
-        blockUrl = blockOnClick.segment(separatedBy: "'", at: 1)
+        if blockOnClick.notEmpty() {
+            hasBlocked = blockOnClick.contains("unblock")
+            let sIndex = blockOnClick.index(of: (hasBlocked ? "/unblock/" : "/block/"))!
+            let eIndex = blockOnClick.lastIndex(of: "'")!
+            blockUrl = String(blockOnClick[sIndex..<eIndex])
+        }
+
         topicInfo = TopicInfo(from: root)
         replyInfo = ReplyInfo(from: root)
     }

@@ -43,13 +43,38 @@ struct UserDetailActions {
             let result: APIResult<UserDetailInfo> = await APIService.shared
                 .htmlGet(endpoint: .general(url: state.model.followUrl),
                          requestHeaders: Headers.userReferer(id))
-            dispatch(FollowDone(id: id, result: result))
+            dispatch(FollowDone(id: id, originalFollowed: followed, result: result))
         }
     }
 
     struct FollowDone: Action {
         var target: Reducer = R
         var id: String
+        let originalFollowed: Bool
+
+        let result: APIResult<UserDetailInfo>
+    }
+
+    struct BlockUser: AwaitAction {
+        var target: Reducer = R
+        var id: String
+
+        func execute(in store: Store) async {
+            let state = store.appState.userDetailStates[id]!
+            let hadBlocked = state.model.hasBlocked
+            Toast.show(hadBlocked ? "取消屏蔽" : "屏蔽中")
+            let result: APIResult<UserDetailInfo> = await APIService.shared
+                .htmlGet(endpoint: .general(url: state.model.blockUrl),
+                         requestHeaders: Headers.userReferer(id))
+            dispatch(BlockUserDone(id: id, originalBlocked: hadBlocked, result: result))
+        }
+
+    }
+
+    struct BlockUserDone: Action {
+        var target: Reducer = R
+        var id: String
+        let originalBlocked: Bool
         let result: APIResult<UserDetailInfo>
     }
 

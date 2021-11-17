@@ -44,10 +44,18 @@ func userDetailReducer(_ states: UserDetailStates, _ action: Action) -> (UserDet
         case let action as UserDetailActions.FollowDone:
             if case let .success(result) = action.result {
                 state.model = result!
-                Toast.show("关注成功")
+                Toast.show(action.originalFollowed ? "取消成功" : "关注成功")
             } else {
-                Toast.show("关注失败")
+                Toast.show(action.originalFollowed ? "取消失败" : "关注失败")
             }
+        case let action as UserDetailActions.BlockUserDone:
+            if case let .success(result) = action.result {
+                state.model = result!
+                Toast.show(action.originalBlocked ? "取消成功" : "屏蔽成功")
+            } else {
+                Toast.show(action.originalBlocked ? "取消失败" : "屏蔽失败")
+            }
+            break
         default:
             break
     }
