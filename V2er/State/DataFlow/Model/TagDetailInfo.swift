@@ -28,6 +28,7 @@ struct TagDetailInfo: BaseModel {
     var totalPage: Int = 0
     // a[href*=favorite/], .href
     var starLink: String = .default
+    var hasStared: Bool = false
     // div.box div.cell:has(table)
     var topics: [Item] = []
 
@@ -74,6 +75,7 @@ struct TagDetailInfo: BaseModel {
         totalPage = max(lastNormalpage, currentPage)
         let favoritePath = root.pick("a[href*=/favorite/]", .href)
         starLink = APIService.baseUrlString.appending(favoritePath)
+        hasStared = starLink.notEmpty() && starLink.contains("/unfavorite/")
 
         let elements = root.pickAll("div#TopicsNode div.cell:has(table)")
         for e in elements {

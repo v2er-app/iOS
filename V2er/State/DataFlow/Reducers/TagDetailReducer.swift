@@ -40,10 +40,70 @@ func tagDetailStateReducer(_ states: TagDetailStates, _ action: Action) -> (TagD
             } else {
                 // failed
             }
+        case let action as TagDetailActions.StarNodeDone:
+            if action.success {
+                Toast.show(action.originalStared ? "取消成功" : "收藏成功")
+                state.model.hasStared = !action.originalStared
+            } else {
+                Toast.show(action.originalStared ? "取消失败" : "收藏失败")
+            }
             break;
         default:
             break
     }
     states[id] = state
     return (states, followingAction)
+}
+
+
+struct TagDetailActions {
+    static let R: Reducer = .tagdetail
+
+    struct LoadMore {
+        struct Start: AwaitAction {
+            var target: Reducer = R
+            var id: String
+            let tagId: String?
+            var willLoadPage: Int = 1
+            var autoLoad: Bool = false
+
+            func execute(in store: Store) async {
+                let result: APIResult<TagDetailInfo> = await APIService.shared
+                    .htmlGet(endpoint: .tagDetail(tagId: tagId ?? .default), ["p" : willLoadPage.string])
+                dispatch(LoadMore.Done(id: id, result: result))
+            }
+        }
+
+        struct Done: Action {
+            var target: Reducer = R
+            var id: String
+            let result: APIResult<TagDetailInfo>
+        }
+    }
+
+    struct StarNode: AwaitAction {
+        var target: Reducer = R
+        let id: String
+
+        func execute(in store: Store) async {
+            let state = store.appState.tagDetailStates[id]
+            let originalStared = state?.model.hasStared ?? false
+            Toast.show(originalStared ? "取消中" : "收藏中")
+            let result: APIResult<SimpleModel> = await APIService.shared
+                .htmlGet(endpoint: .general(url: state?.model.starLink ?? .empty), requestHeaders: Headers.TINY_REFERER)
+            var success: Bool = false
+            if case let .success(_) = result {
+                success = true
+            }
+            dispatch(StarNodeDone(id: id, success: success, originalStared: originalStared))
+        }
+    }
+
+    struct StarNodeDone: Action {
+        var target: Reducer = R
+        let id: String
+        let success: Bool
+        let originalStared: Bool
+    }
+
 }

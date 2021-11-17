@@ -165,14 +165,16 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 .font(.headline.weight(.semibold))
             Text(model.tagDesc)
                 .font(.callout)
+                .padding(.horizontal, 10)
             HStack {
                 Text("\(model.topicsCount)个主题")
                     .font(.callout)
                 Spacer()
+                let hadStared = state.model.hasStared
                 Button {
-                    // do star
+                    dispatch(TagDetailActions.StarNode(id: tagId!))
                 } label: {
-                    Text("收藏")
+                    Text(hadStared ? "已收藏" : "收藏")
                         .font(.callout)
                         .padding(.horizontal, 15)
                         .padding(.vertical, 2)
