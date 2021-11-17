@@ -59,11 +59,11 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
-            Toast.show("收藏中")
             let state = store.appState.feedDetailStates[id]
+            let hadStared = state?.model.headerInfo?.hadStared ?? false
+            Toast.show(hadStared ? "取消收藏" : "收藏中")
             let once = state?.model.once
             let headers: Params = Headers.topicReferer(id)
-            let hadStared = state?.model.headerInfo?.hadStared ?? false
 
             let result: APIResult<FeedDetailInfo> = await APIService.shared
                 .htmlGet(endpoint: hadStared ? .unStarTopic(id: id): .starTopic(id: id),
