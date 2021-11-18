@@ -11,7 +11,6 @@ import Foundation
 func tagDetailStateReducer(_ states: TagDetailStates, _ action: Action) -> (TagDetailStates, Action?) {
     guard action.id != .default else {
         fatalError("action in TagDetail must have id")
-        return (states, action)
     }
     let id = action.id
     var states = states
@@ -92,7 +91,7 @@ struct TagDetailActions {
             let result: APIResult<SimpleModel> = await APIService.shared
                 .htmlGet(endpoint: .general(url: state?.model.starLink ?? .empty), requestHeaders: Headers.TINY_REFERER)
             var success: Bool = false
-            if case let .success(_) = result {
+            if case .success(_) = result {
                 success = true
             }
             dispatch(StarNodeDone(id: id, success: success, originalStared: originalStared))

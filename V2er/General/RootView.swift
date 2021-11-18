@@ -16,6 +16,7 @@ struct RootView<Content: View> : View {
     var body:some View {
         EmptyView()
             .withHostingWindow { window in
+                V2erApp.window = window
                 V2erApp.rootViewController = RootHostingController(rootView: content)
                 window?.rootViewController = V2erApp.rootViewController
             }

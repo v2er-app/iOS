@@ -13,6 +13,7 @@ struct V2erApp: App {
     public static let deviceType = UIDevice().type
     public static var rootViewController: UIViewController?
     public static var statusBarState: UIStatusBarStyle = .darkContent
+    public static var window: UIWindow?
 
     init() {
         setupApperance()

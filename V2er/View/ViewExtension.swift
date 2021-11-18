@@ -12,7 +12,7 @@ import Combine
 
 public func topSafeAreaInset() -> UIEdgeInsets {
     var result: UIEdgeInsets
-    if let insets = UIApplication.shared.windows.first?.safeAreaInsets {
+    if let insets = V2erApp.window?.safeAreaInsets {
         result = insets
     } else {
         let isIPhoneMini = V2erApp.deviceType == .iPhone12Mini
@@ -125,7 +125,7 @@ struct KeyboardResponsiveModifier: ViewModifier {
                     let height = value.height
                     let bottomInset = topSafeAreaInset().bottom
                     withAnimation {
-                        self.offset = height - (bottomInset ?? 0)
+                        self.offset = height - (bottomInset)
                     }
                 }
                 
