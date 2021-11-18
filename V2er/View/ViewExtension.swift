@@ -27,10 +27,8 @@ public func topSafeAreaInset() -> UIEdgeInsets {
 
 extension View {
     public func debug(_ force: Bool = false, _ color: Color = .green) -> some View {
-#if DEBUG
         //        print(Mirror(reflecting: self).subjectType)
         return self.modifier(DebugModifier(force, color))
-#endif
     }
 }
 
@@ -44,12 +42,16 @@ struct DebugModifier: ViewModifier {
     }
     
     func body(content: Content) -> some View {
+#if DEBUG
         if !isSimulator() && !force {
             content
         } else {
             content
                 .border(color, width: 1)
         }
+#else
+        content
+#endif
     }
 }
 
