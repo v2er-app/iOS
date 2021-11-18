@@ -33,11 +33,13 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
             state.logining = false
             if case let .success(dailyInfo) = action.result {
                 // login success
+                Toast.show("登录成功")
                 let account = AccountInfo(username: dailyInfo!.userName,
                             avatar: dailyInfo!.avatar)
                 AccountState.saveAccount(account)
                 state.dismiss = true
             } else {
+                Toast.show("登录失败")
                 // -> is LoginParam -> psw error
                 // -> is TwoStepInfo -> enabled two step log
                 // dispatch(LoginDone())
@@ -49,3 +51,49 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
 }
 
 
+struct LoginActions {
+    static let R: Reducer = .login
+
+    struct FetchCaptchaStart: AwaitAction {
+        var target: Reducer = R
+        func execute(in store: Store) async {
+            let result: APIResult<LoginParams> = await APIService.shared
+                .htmlGet(endpoint: .captcha)
+            dispatch(FetchCaptchaDone(result: result))
+        }
+    }
+
+    struct FetchCaptchaDone: Action {
+        var target: Reducer = R
+
+        let result: APIResult<LoginParams>
+    }
+
+    struct StartLogin: AwaitAction {
+        var target: Reducer = R
+
+        func execute(in store: Store) async {
+            let state = store.appState.loginState
+            guard let loginParams = state.loginParams
+            else { return }
+            Toast.show("登录中")
+            var params: Params = [:]
+            params[loginParams.nameParam] = state.username
+            params[loginParams.pswParam] = state.password
+            params[loginParams.captchaParam] = state.captcha
+            params["once"] = loginParams.once
+            params["next"] = "/mission/daily"
+            let headers: Params = ["Referer": APIService.baseUrlString.appending("/signin")]
+            let result: APIResult<DailyInfo> = await APIService.shared
+                .post(endpoint: .signin, params, requestHeaders: headers)
+            dispatch(LoginDone(result: result))
+        }
+
+    }
+
+    struct LoginDone: Action {
+        var target: Reducer = R
+        let result: APIResult<DailyInfo>
+    }
+
+}

@@ -17,6 +17,7 @@ struct DailyInfo: BaseModel {
     var checkedInDays: String = .default
     var hadCheckedIn: Bool = false
     var once: String = .default
+    var checkedInUrl: String = .empty
 
     init() {}
     init(from html: Element?) {
@@ -27,7 +28,7 @@ struct DailyInfo: BaseModel {
         title = root.pick("h1")
         checkedInDays = root.pick("div.cell:contains(已连续)")
             .extractDigits()
-        let checkedInUrl: String = root.pick("div.cell input[type=button]", .onclick)
+        checkedInUrl = root.pick("div.cell input[type=button]", .onclick)
         hadCheckedIn = !checkedInUrl.isEmpty && checkedInUrl.contains("location.href = '/balance';")
         once = checkedInUrl
             .segment(separatedBy: "?")
@@ -35,7 +36,7 @@ struct DailyInfo: BaseModel {
     }
 
     func isValid() -> Bool {
-        return notEmpty(once)
+        return notEmpty(checkedInUrl)
     }
 
 }

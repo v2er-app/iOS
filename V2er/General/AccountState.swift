@@ -23,6 +23,11 @@ struct AccountState {
         }
     }
 
+    static func deleteAccount() {
+        Persist.save(value: String.empty, forkey: AccountState.ACCOUNT_KEY)
+        ACCOUNT = nil
+    }
+
     static func getAccount() -> AccountInfo? {
         do {
             if ACCOUNT != nil { return ACCOUNT }

@@ -26,7 +26,6 @@
 		5D1CB5BC27244618002DB087 /* Nodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1CB5BB27244618002DB087 /* Nodes.swift */; };
 		5D1D7B8426FC8323008E0C08 /* LoginState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8326FC8323008E0C08 /* LoginState.swift */; };
 		5D1D7B8726FC9B61008E0C08 /* LoginReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8626FC9B61008E0C08 /* LoginReducer.swift */; };
-		5D1D7B8926FC9C48008E0C08 /* LoginActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8826FC9C48008E0C08 /* LoginActions.swift */; };
 		5D1D7B8B26FD7FCE008E0C08 /* DailyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D7B8A26FD7FCE008E0C08 /* DailyInfo.swift */; };
 		5D1D8BFE26EBA857009DF65A /* UserDetailReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D8BFD26EBA857009DF65A /* UserDetailReducer.swift */; };
 		5D1D8C0026EBA875009DF65A /* UserDetailState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D1D8BFF26EBA875009DF65A /* UserDetailState.swift */; };
@@ -185,7 +184,6 @@
 		5D1CB5BB27244618002DB087 /* Nodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nodes.swift; sourceTree = "<group>"; };
 		5D1D7B8326FC8323008E0C08 /* LoginState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginState.swift; sourceTree = "<group>"; };
 		5D1D7B8626FC9B61008E0C08 /* LoginReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginReducer.swift; sourceTree = "<group>"; };
-		5D1D7B8826FC9C48008E0C08 /* LoginActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginActions.swift; sourceTree = "<group>"; };
 		5D1D7B8A26FD7FCE008E0C08 /* DailyInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyInfo.swift; sourceTree = "<group>"; };
 		5D1D8BFD26EBA857009DF65A /* UserDetailReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailReducer.swift; sourceTree = "<group>"; };
 		5D1D8BFF26EBA875009DF65A /* UserDetailState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailState.swift; sourceTree = "<group>"; };
@@ -418,7 +416,6 @@
 				5D0A513E26E36F15006F3D9B /* FeedDetailActions.swift */,
 				5D1D8C0326EBAC07009DF65A /* UserDetailActions.swift */,
 				5D2DD00926FB443D0001C85A /* GlobalActions.swift */,
-				5D1D7B8826FC9C48008E0C08 /* LoginActions.swift */,
 				5D143197270426FD00462661 /* MeActions.swift */,
 			);
 			path = Actions;
@@ -962,7 +959,6 @@
 				5D6B67B726D54BA1003A246B /* UA.swift in Sources */,
 				5D71DF5B247C155D00B53ED4 /* MePage.swift in Sources */,
 				5DA2AD3526C17EA5007FB1EF /* Store.swift in Sources */,
-				5D1D7B8926FC9C48008E0C08 /* LoginActions.swift in Sources */,
 				5DCE4CF6270D9865006BA98D /* MyRecentReducer.swift in Sources */,
 				5D1D7B8726FC9B61008E0C08 /* LoginReducer.swift in Sources */,
 				5DA2AD4826C18232007FB1EF /* MessageState.swift in Sources */,

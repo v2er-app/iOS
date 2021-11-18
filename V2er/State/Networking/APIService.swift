@@ -74,7 +74,7 @@ struct APIService {
         let result: (model: T?, error: APIError?) = await self.parse(from: rawResult.data!)
         guard result.error == nil else {
             log("error: \(String(describing: result.model?.rawData))")
-            Toast.show(rawResult.error!)
+            Toast.show(result.error!)
             return .failure(result.error!)
         }
         log("post.Result: \(result)")
@@ -131,7 +131,7 @@ struct APIService {
         let url = endpoint.url
         let componets = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         var request = URLRequest(url: componets.url!)
-//        request.httpMethod = "POST"
+        request.httpMethod = "POST"
         request.addValue(endpoint.ua().value(), forHTTPHeaderField: UA.key)
         if let requestHeaders = requestHeaders  {
             for (key, value) in requestHeaders {

@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct SettingsPage: View {
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         formView
@@ -48,6 +49,9 @@ struct SettingsPage: View {
 
                 Button {
                     // go to app store
+                    AccountState.deleteAccount()
+                    Toast.show("已登出")
+                    dismiss()
                 } label: {
                     SectionItemView("退出登录", showDivider: false)
                         .padding(.top, 8)
