@@ -18,6 +18,7 @@ struct LoginState: FluxState {
     var password: String = .empty
     var captcha: String = .empty
     var dismiss = false
+    var toast = Toast()
 }
 
 struct LoginParams: BaseModel {
@@ -36,7 +37,7 @@ struct LoginParams: BaseModel {
     init() {}
     init(from html: Element?) {
         guard let root = html else { return }
-        nameParam = root.pick("input[type=text][autocorrect=off]", .name)
+        nameParam = root.pick("input.sl[type=text]", .name)
         pswParam = root.pick("input[type=password]", .name)
         once = root.pick("input[name=once]", .value)
         captchaParam = root.pick("input[placeholder*=验证码]", .name)

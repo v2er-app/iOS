@@ -13,8 +13,8 @@ final class Toast {
     var title: String = ""
     var icon: String = ""
 
-    static func show(_ title: String, icon: String = .empty) {
-        dispatch(ShowToastAction(title: title, icon: icon), .default)
+    static func show(_ title: String, icon: String = .empty, target: Reducer = .global) {
+        dispatch(ShowToastAction(target: target, title: title, icon: icon), .default)
     }
 
     static func show(_ error: APIError) {
@@ -48,6 +48,7 @@ struct DefaultToastView: View {
 
 extension View {
     func toast<Content: View>(isPresented: Binding<Bool>,
+                              paddingTop: CGFloat = 0,
                               @ViewBuilder content: () -> Content?) -> some View {
         ZStack(alignment: .top) {
             self
@@ -56,7 +57,7 @@ extension View {
                     .visualBlur(bg: .white.opacity(0.95))
                     .cornerRadius(99)
                     .shadow(color: .black.opacity(0.2), radius: 1.5)
-//                    .padding(.top, 16)
+                    .padding(.top, paddingTop)
                     .transition(AnyTransition.move(edge: .top))
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {

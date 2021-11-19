@@ -44,3 +44,18 @@ extension View {
 }
 
 
+struct RootHostView: View {
+    @EnvironmentObject private var store: Store
+
+    var toast: Binding<Toast> {
+        $store.appState.globalState.toast
+    }
+
+    var body: some View {
+        MainPage()
+            .buttonStyle(.plain)
+            .toast(isPresented: toast.isPresented) {
+                DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
+            }
+    }
+}

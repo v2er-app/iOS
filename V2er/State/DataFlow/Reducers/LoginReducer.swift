@@ -39,11 +39,15 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                 AccountState.saveAccount(account)
                 state.dismiss = true
             } else {
-                Toast.show("登录失败")
+                Toast.show("登录失败", target: .login)
                 // -> is LoginParam -> psw error
                 // -> is TwoStepInfo -> enabled two step log
                 // dispatch(LoginDone())
             }
+        case let action as ShowToastAction:
+            state.toast.title = action.title
+            state.toast.icon = action.icon
+            state.toast.isPresented = true
         default:
             break
     }
@@ -76,7 +80,7 @@ struct LoginActions {
             let state = store.appState.loginState
             guard let loginParams = state.loginParams
             else { return }
-            Toast.show("登录中")
+            Toast.show("登录中", target: .login)
             var params: Params = [:]
             params[loginParams.nameParam] = state.username
             params[loginParams.pswParam] = state.password

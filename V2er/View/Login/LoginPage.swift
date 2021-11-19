@@ -18,6 +18,10 @@ struct LoginPage: StateView {
         $store.appState.loginState
     }
 
+    var toast: Binding<Toast> {
+        bindingState.toast
+    }
+
     var body: some View {
         contentView
             .onAppear {
@@ -27,6 +31,9 @@ struct LoginPage: StateView {
                 if newValue {
                     dismiss()
                 }
+            }
+            .toast(isPresented: toast.isPresented, paddingTop: 40) {
+                DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
             }
     }
 
