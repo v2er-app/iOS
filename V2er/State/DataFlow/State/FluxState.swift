@@ -8,4 +8,12 @@
 
 import Foundation
 
-public protocol FluxState{}
+public protocol FluxState{
+    mutating func reset()
+}
+
+extension FluxState {
+    mutating func reset() {
+        
+    }
+}

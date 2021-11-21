@@ -10,12 +10,10 @@ import SwiftUI
 
 struct CreateTopicPage: StateView {
     @Environment(\.dismiss) var dismiss
-    @State var title: String = .empty
-    @State var content: String = .empty
     @State var showNodeChooseView = false
     @FocusState private var focused: Bool
-    @State var seletecNode: Node?
     @State var isPreviewing = false
+//    @State var openTheCreatedTopic = false
 
     @EnvironmentObject private var store: Store
     var bindingState: Binding<CreateTopicState> {
@@ -28,6 +26,17 @@ struct CreateTopicPage: StateView {
                 .safeAreaInset(edge: .top, spacing: 0) { navBar }
                 .ignoresSafeArea(.container)
                 .navigationBarHidden(true)
+//                .to(if: $openTheCreatedTopic) {
+//                    FeedDetailPage(initData: FeedInfo.Item(id: state.createResultInfo!.id))
+//                }
+                .onChange(of: state.createResultInfo?.id) { newId in
+                    guard let newId = newId else { return }
+                    if newId.notEmpty() {
+//                        openTheCreatedTopic = true
+                        dismiss()
+                        dispatch(CreateTopicActions.Reset())
+                    }
+                }
                 .onAppear {
                     dispatch(CreateTopicActions.LoadDataStart())
                     dispatch(CreateTopicActions.LoadAllNodesStart())
@@ -63,7 +72,7 @@ struct CreateTopicPage: StateView {
                         .background(Color.tintColor)
                         .cornerRadius(10)
                 }
-                .disabled(title.isEmpty)
+                .disabled(state.title.isEmpty)
             }
             .padding(.horizontal, 10)
             .padding(.bottom, 8)
@@ -76,7 +85,7 @@ struct CreateTopicPage: StateView {
     private var contentView: some View {
         VStack(spacing: 0) {
             let paddingH: CGFloat = 16
-            TextField("标题", text: $title)
+            TextField("标题", text: bindingState.title)
                 .padding(.vertical)
                 .padding(.horizontal, paddingH)
                 .background(Color.itemBg)
@@ -84,7 +93,7 @@ struct CreateTopicPage: StateView {
                 .divider()
                 .greedyWidth()
                 .focused($focused)
-            TextEditor(text: $content)
+            TextEditor(text: bindingState.content)
                 .padding(.horizontal, 10)
                 .opacity(isPreviewing ? 0 : 1.0)
                 .background(Color.itemBg)
@@ -93,14 +102,14 @@ struct CreateTopicPage: StateView {
                 .focused($focused)
                 .overlay {
                     Group {
-                        if content.isEmpty {
+                        if state.content.isEmpty {
                             // show placeholder
                             Text("如果标题能够表达完整内容, 此处可为空")
                                 .greedyFrame(.topLeading)
                                 .foregroundColor(.gray)
                                 .debug()
                         } else if isPreviewing {
-                            Text(content.attributedString)
+                            Text(state.content.attributedString)
                                 .greedyFrame(.topLeading)
                         }
                     }
@@ -116,7 +125,7 @@ struct CreateTopicPage: StateView {
                     .background(Color.itemBg)
             }
             .sheet(isPresented: $showNodeChooseView) {
-                NodeChooserPage(nodes: state.sectionNodes, selectedNode: $seletecNode)
+                NodeChooserPage(nodes: state.sectionNodes, selectedNode: bindingState.selectedNode)
             }
 
             HStack {
@@ -132,7 +141,7 @@ struct CreateTopicPage: StateView {
                         .background(Color.tintColor)
                         .cornerRadius(10)
                 }
-                .disabled(title.isEmpty || seletecNode == nil)
+                .disabled(state.title.isEmpty || state.selectedNode == nil)
                 .padding()
             }
             Spacer()
@@ -148,7 +157,7 @@ struct CreateTopicPage: StateView {
         HStack {
             Image(systemName: "grid.circle")
                 .foregroundColor(.gray)
-            Text(seletecNode?.text ?? "选择节点")
+            Text(state.selectedNode?.text ?? "选择节点")
             Spacer()
             Image(systemName: "chevron.right")
                 .font(.body.weight(.regular))

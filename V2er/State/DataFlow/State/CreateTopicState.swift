@@ -18,6 +18,12 @@ struct CreateTopicState: FluxState {
     var content: String = .empty
     var selectedNode: Node? = nil
     var retried: Bool = false
+    var posting = false
+    var createResultInfo: CreateResultInfo? = nil
+
+    mutating func reset() {
+        self = CreateTopicState()
+    }
 }
 
 typealias SectionNodes = [SectionNode]
@@ -42,6 +48,10 @@ struct CreatePageInfo: BaseModel {
                 tips.append(e.value())
             }
         }
+
+        func noProblem() -> Bool {
+            return tips.isEmpty
+        }
     }
 
     init?(from html: Element?) {
@@ -52,4 +62,17 @@ struct CreatePageInfo: BaseModel {
     }
 
 
+}
+
+struct CreateResultInfo: BaseModel {
+    // TODO: create topic review page
+    var id: String = .empty
+    init?(from html: Element?) {
+        guard let root = html else { return }
+        self.id = parseFeedId(root.pick("div.cell.topic_content.markdown_body h1 a", .href))
+    }
+
+    func isValid() -> Bool {
+        self.id.notEmpty()
+    }
 }

@@ -43,6 +43,23 @@ func createStateReducer(_ state: CreateTopicState, _ action: Action) -> (CreateT
                     dispatch(CreateTopicActions.LoadAllNodesStart())
                 }
             }
+        case let action as CreateTopicActions.PostStart:
+            guard !state.posting else { break }
+            state.posting = true
+            Toast.show("发送中...")
+            break
+        case let action as CreateTopicActions.PostDone:
+            state.posting = false
+            if case let .success(result) = action.result {
+                Toast.show("发送成功")
+                state.createResultInfo = result
+            } else {
+                // failed
+                Toast.show("发送失败")
+                state.createResultInfo = nil
+            }
+        case let action as CreateTopicActions.Reset:
+            state.reset()
         default:
             break
     }
@@ -96,7 +113,7 @@ struct CreateTopicActions {
             params["once"] = state.pageInfo!.once
             params["syntax"] = "markdown"
 
-            let result: APIResult<FeedDetailInfo> = await APIService.shared
+            let result: APIResult<CreateResultInfo> = await APIService.shared
                 .post(endpoint: .createTopic, params)
             dispatch(PostDone(result: result))
         }
@@ -104,7 +121,11 @@ struct CreateTopicActions {
 
     struct PostDone: Action {
         var target: Reducer = R
-        let result: APIResult<FeedDetailInfo>
+        let result: APIResult<CreateResultInfo>
+    }
+
+    struct Reset: Action {
+        var target: Reducer = R
     }
 
 }
