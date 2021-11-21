@@ -108,7 +108,7 @@ struct CreateTopicActions {
             let state = store.appState.createTopicState
             var params = Params()
             params["title"] = state.title
-            params["content"] = state.content
+            params["content"] = state.content.replace(segs: "\n", with: "\n\n")
             params["node_name"] = state.selectedNode!.id
             params["once"] = state.pageInfo!.once
             params["syntax"] = "markdown"

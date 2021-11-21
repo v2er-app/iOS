@@ -26,6 +26,7 @@ struct AccountState {
     static func deleteAccount() {
         Persist.save(value: String.empty, forkey: AccountState.ACCOUNT_KEY)
         ACCOUNT = nil
+        APIService.shared.clearCookie()
     }
 
     static func getAccount() -> AccountInfo? {

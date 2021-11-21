@@ -186,6 +186,13 @@ struct APIService {
         }
     }
 
+    func clearCookie() {
+        let cookieStore = HTTPCookieStorage.shared
+        for cookie in cookieStore.cookies ?? [] {
+            cookieStore.deleteCookie(cookie)
+        }
+    }
+
 }
 
 extension URLRequest {
