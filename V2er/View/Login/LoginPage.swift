@@ -123,6 +123,8 @@ struct LoginPage: StateView {
             HStack {
                 Button {
                     // start register
+                    let refUrl = APIService.baseUrlString + "/signup?r=ghui"
+                    refUrl.openURL()
                 } label: {
                     Text("Register")
                         .font(.headline)
@@ -147,16 +149,29 @@ struct LoginPage: StateView {
                                     state.captcha))
             }
             .padding(.horizontal, 20)
-            Text("Sign in with Google")
-                .font(.headline)
-                .greedyWidth(.trailing)
-                .padding(.trailing, 20)
-                .padding(.vertical)
+//            Text("Sign in with Google")
+//                .font(.headline)
+//                .greedyWidth(.trailing)
+//                .padding(.trailing, 20)
+//                .padding(.vertical)
+
             Spacer()
             HStack {
                 Text("FAQ")
+                    .onTapGesture {
+                        let url = APIService.baseUrlString + "/faq"
+                        url.openURL()
+                    }
                 Text("About")
+                    .onTapGesture {
+                        let url = APIService.baseUrlString + "/about"
+                        url.openURL()
+                    }
                 Text("Password")
+                    .onTapGesture {
+                        let url = APIService.baseUrlString + "/forgot"
+                        url.openURL()
+                    }
             }
             .font(.callout)
         }

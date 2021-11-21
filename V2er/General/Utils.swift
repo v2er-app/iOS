@@ -79,3 +79,19 @@ func notEmpty(_ strs: String?...) -> Bool {
     }
     return true
 }
+
+extension URL {
+    init?(_ url: String) {
+        self.init(string: url)
+    }
+
+    func start() {
+        UIApplication.shared.openURL(self)
+    }
+}
+
+extension String {
+    func openURL() {
+        URL(self)?.start()
+    }
+}

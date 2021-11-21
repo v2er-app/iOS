@@ -39,7 +39,8 @@ struct TopBar: View {
                         .font(.system(size: 22))
                         .padding(6)
                         .forceClickable()
-                        .to { TestView() }
+                        .hide()
+//                        .to { TestView() }
                     Spacer()
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.primary)

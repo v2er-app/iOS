@@ -17,11 +17,8 @@ struct AppearanceSettingView: View {
     @ViewBuilder
     private var formView: some View {
         ScrollView {
-            NavigationLink {
-
-            } label: {
-                SectionItemView("字体大小")
-            }
+            SectionItemView("字体大小")
+//                .to {}
         }
     }
 }

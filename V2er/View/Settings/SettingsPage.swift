@@ -26,26 +26,35 @@ struct SettingsPage: View {
                 SectionItemView("其他设置", showDivider: false)
                     .padding(.top, 8)
                     .to { OtherSettingsView() }
-                SectionItemView("帮助与反馈")
-                    .padding(.top, 8)
-                    .to { FeedbackHelperView() }
-                SectionView("关于") {
-                    HStack {
-                        Text("版本1.0.0")
-                            .font(.footnote)
-                            .foregroundColor(Color.tintColor)
-                        Image(systemName: "chevron.right")
-                            .font(.body.weight(.regular))
-                            .foregroundColor(.gray)
-                            .padding(.trailing, 16)
+                Button {
+                    "https://www.v2ex.com/help".openURL()
+                } label: {
+                    SectionItemView("帮助与反馈")
+                        .padding(.top, 8)
+                }
+
+                Button {
+                    "https://v2er.app".openURL()
+                } label: {
+                    SectionView("关于") {
+                        HStack {
+                            Text("版本1.0.0")
+                                .font(.footnote)
+                                .foregroundColor(Color.tintColor)
+                            Image(systemName: "chevron.right")
+                                .font(.body.weight(.regular))
+                                .foregroundColor(.gray)
+                                .padding(.trailing, 16)
+                        }
                     }
                 }
-                .to { AboutView() }
-                Button {
-                    // go to app store
-                } label: {
-                    SectionItemView("给V2er评分", showDivider: false)
-                }
+
+//                Button {
+//                    // go to app store
+//                } label: {
+//                    SectionItemView("给V2er评分", showDivider: false)
+//                }
+//                .hide()
 
                 Button {
                     // go to app store
