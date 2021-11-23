@@ -16,7 +16,7 @@ struct TwoStepInfo: BaseModel {
     init() {}
 
     init(from html: Element?) {
-        guard let root = html else { return }
+        guard let root = html?.pickOne("form[method=post]") else { return }
         title = root.pick("tr:first-child")
         once = root.pick("input[type=hidden]", .value)
     }

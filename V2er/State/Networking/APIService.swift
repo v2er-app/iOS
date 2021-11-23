@@ -38,14 +38,14 @@ struct APIService {
         guard result.error == nil && result.model != nil else {
             return .failure(result.error!)
         }
-//        log("htmlGet: \(result)")
+        //        log("htmlGet: \(result)")
         return .success(result.model)
     }
 
     func jsonGet<T: Codable>(endpoint: Endpoint,
                              _ params: Params? = nil) async -> APIResult<T> {
         let rawResult = await get(endpoint: endpoint, params: params)
-//        log("jsonGet: \(rawResult.data?.string)")
+        //        log("jsonGet: \(rawResult.data?.string)")
         guard rawResult.error == nil else {
             return .failure(rawResult.error!)
         }
@@ -57,7 +57,7 @@ struct APIService {
             return .success(resultModel)
         } catch {
             log(error)
-            return .failure(.decodingError(error))
+            return .failure(.decodingError())
         }
     }
 
@@ -110,11 +110,11 @@ struct APIService {
             result.data = data
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
                 let httpError = HttpError(code: httpResponse.statusCode, msg: httpResponse.description)
-                result.error = .networkError(httpError)
+                result.error = .networkError()
                 log("request: \(request) ---> error: \(httpError)")
             } else { result.error = nil }
         } catch {
-            result.error = .networkError(error)
+            result.error = .networkError()
             result.data = nil
         }
         return result
@@ -141,10 +141,10 @@ struct APIService {
             result.data = data
             if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
                 let httpError = HttpError(code: httpResponse.statusCode, msg: httpResponse.description)
-                result.error = .networkError(httpError)
+                result.error = .networkError()
             } else { result.error = nil }
         } catch {
-            result.error = .networkError(error)
+            result.error = .networkError()
             result.data = nil
         }
         return result
@@ -164,15 +164,24 @@ struct APIService {
         do {
             result.data = try await parseTask.value
             if result.data == nil {
-                result.error = APIError.decodingError(GeneralError("Error parse: \(htmlData.string)"))
+                result.error = APIError.decodingError()
             } else if !result.data!.isValid() {
-                result.error = APIError.invalid
+                result.error = APIError.invalid(htmlData.string)
             } else {
                 result.error = nil
             }
         } catch {
-            result.error = APIError.decodingError(error)
+            result.error = APIError.decodingError()
             result.data = nil
+        }
+        return result
+    }
+
+    func parse<T: BaseModel>(from html: String) -> T? {
+        let parseResult = try? SwiftSoup.parse(html)
+        let result = T(from: parseResult)
+        if var result = result {
+            result.rawData = html
         }
         return result
     }
@@ -220,10 +229,10 @@ extension URLRequest {
 }
 
 enum APIError: Error {
-    case noResponse
-    case decodingError(_ error: Error?)
-    case networkError(_ error: Error?)
-    case invalid
+    case noResponse(_ rawData: String = "未返回数据")
+    case decodingError(_ rawData: String = "解析出错")
+    case networkError(_ rawData: String = "网络错误")
+    case invalid(_ rawData: String)
 }
 
 struct GeneralError: Error {

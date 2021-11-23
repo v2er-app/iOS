@@ -35,6 +35,20 @@ struct LoginPage: StateView {
             .toast(isPresented: toast.isPresented, paddingTop: 40) {
                 DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
             }
+            .alert(isPresented: bindingState.showAlert) {
+                Alert(
+                    title: Text("提示"),
+                    message: Text(state.problemHtml ?? .empty),
+                    primaryButton: .default(
+                        Text("确定"),
+                        action: { dispatch(LoginActions.FetchCaptchaStart()) }
+                    ),
+                    secondaryButton: .destructive(
+                        Text("取消"),
+                        action: { dismiss() }
+                    )
+                )
+            }
     }
 
     @ViewBuilder
@@ -149,12 +163,6 @@ struct LoginPage: StateView {
                                     state.captcha))
             }
             .padding(.horizontal, 20)
-//            Text("Sign in with Google")
-//                .font(.headline)
-//                .greedyWidth(.trailing)
-//                .padding(.trailing, 20)
-//                .padding(.vertical)
-
             Spacer()
             HStack {
                 Text("FAQ")

@@ -17,7 +17,7 @@ final class Toast {
         dispatch(ShowToastAction(target: target, title: title, icon: icon), .default)
     }
 
-    static func show(_ error: APIError) {
+    static func show(_ error: APIError, target: Reducer = .global) {
         let title: String
         switch error {
             case .noResponse:
@@ -31,6 +31,7 @@ final class Toast {
             default:
                 title = "未知错误"
         }
+        show(title, target: target)
     }
 }
 

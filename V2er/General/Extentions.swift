@@ -89,6 +89,10 @@ extension Optional where Wrapped == String {
         return self?.isEmpty ?? true
     }
 
+    var notEmpty: Bool {
+        !isEmpty
+    }
+
     var safe: String {
         return ifEmpty(.empty)
     }

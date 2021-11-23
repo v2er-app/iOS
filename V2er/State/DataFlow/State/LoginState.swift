@@ -19,6 +19,8 @@ struct LoginState: FluxState {
     var captcha: String = .empty
     var dismiss = false
     var toast = Toast()
+    var problemHtml: String? = .empty
+    var showAlert: Bool = false
 }
 
 struct LoginParams: BaseModel {
