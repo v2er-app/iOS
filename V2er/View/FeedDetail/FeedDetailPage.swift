@@ -159,8 +159,10 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         HStack (spacing: 10) {
             Image(systemName: "photo.on.rectangle")
                 .font(.title2.weight(.regular))
+                .hapticOnTap()
             Image(systemName: "face.smiling")
                 .font(.title2.weight(.regular))
+                .hapticOnTap()
             Spacer()
         }
         .greedyWidth()

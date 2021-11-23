@@ -79,8 +79,8 @@ struct AuthorInfoView: View {
     }
 }
 
-struct AuthorInfoView_Previews: PreviewProvider {
-    static var previews: some View {
-        AuthorInfoView()
-    }
-}
+//struct AuthorInfoView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        AuthorInfoView()
+//    }
+//}

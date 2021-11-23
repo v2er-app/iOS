@@ -25,7 +25,7 @@ struct ReplyItemView: View {
                             .font(.caption2)
                     }
                     Spacer()
-                    Image(systemName: "heart")
+//                    Image(systemName: "heart")
                 }
                 RichText { info.content }
                 Text("\(info.floor)楼")
