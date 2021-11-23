@@ -99,7 +99,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             }
         }
         .onAppear {
-            guard !state.hasLoadedOnce else { return }
             dispatch(FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id, autoLoad: !state.hasLoadedOnce))
         }
         .onDisappear {
