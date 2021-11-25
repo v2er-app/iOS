@@ -184,7 +184,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 }
                 Group {
                     // FIXME: use real value
-                    NavigationLink(destination: UserDetailPage(userId: initData?.id)) {
+                    NavigationLink(destination: UserDetailPage(userId: initData?.id ?? .empty)) {
                         AvatarView(url: state.model.headerInfo?.avatar ?? .empty, size: 32)
                     }
                     VStack(alignment: .leading) {

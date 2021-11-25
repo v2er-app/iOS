@@ -15,12 +15,11 @@ struct UserDetailActions {
         struct Start: AwaitAction {
             var target: Reducer = R
             var id: String
-            let userId: String?
             var autoLoad: Bool = false
 
             func execute(in store: Store) async {
                 let result: APIResult<UserDetailInfo> = await APIService.shared
-                    .htmlGet(endpoint: .userPage(userName: userId ?? .default))
+                    .htmlGet(endpoint: .userPage(userName: id ?? .default))
                 dispatch(FetchData.Done(id: id, result: result))
             }
         }

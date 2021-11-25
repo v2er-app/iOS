@@ -10,7 +10,7 @@ import SwiftUI
 import Kingfisher
 import Atributika
 
-struct UserDetailPage: StateView, InstanceIdentifiable {
+struct UserDetailPage: StateView {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.isPresented) private var isPresented
     @EnvironmentObject private var store: Store
@@ -20,16 +20,13 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
     @State private var currentTab: TabButton.ID = .topic
     @Namespace var animation
     // FIXME: couldn't be null
-    var userId: String?
-    var instanceId: String {
-        userId ?? .default
-    }
+    var userId: String = .empty
 
     var bindingState: Binding<UserDetailState> {
-        if store.appState.userDetailStates[instanceId] == nil {
-            store.appState.userDetailStates[instanceId] = UserDetailState()
+        if store.appState.userDetailStates[userId] == nil {
+            store.appState.userDetailStates[userId] = UserDetailState()
         }
-        return $store.appState.userDetailStates[instanceId]
+        return $store.appState.userDetailStates[userId]
     }
 
     var model: UserDetailInfo {
@@ -68,7 +65,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                 bottomDetailView
             }
             .updatable(autoRefresh: state.showProgressView) {
-                await run(action: UserDetailActions.FetchData.Start(id: instanceId, userId: self.userId))
+                await run(action: UserDetailActions.FetchData.Start(id: self.userId))
             } onScroll: {
                 self.scrollY = $0
             }
@@ -91,7 +88,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
         .navigationBarHidden(true)
         .onAppear {
             log("onAppear----")
-            dispatch(UserDetailActions.FetchData.Start(id: instanceId, userId: userId))
+            dispatch(UserDetailActions.FetchData.Start(id: userId))
         }
         .onDisappear {
             log("onDisappear----")
@@ -138,7 +135,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                 Spacer()
                 
                 Button {
-                    dispatch(UserDetailActions.Follow(id: userId!))
+                    dispatch(UserDetailActions.Follow(id: userId))
                 } label: {
                     Image(systemName: state.model.hasFollowed ? "heart.fill" : "heart")
                         .padding(8)
@@ -148,7 +145,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                 .forceClickable()
                 
                 Button {
-                    dispatch(UserDetailActions.BlockUser(id: userId!))
+                    dispatch(UserDetailActions.BlockUser(id: userId))
                 } label: {
                     Image(systemName: state.model.hasBlocked ? "eye.slash.fill" : "eye.slash")
                         .padding(8)
@@ -175,7 +172,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                     .font(.headline.weight(.semibold))
             }
             Button {
-                dispatch(UserDetailActions.Follow(id: userId!))
+                dispatch(UserDetailActions.Follow(id: userId))
             } label: {
                 Text(state.model.hasFollowed ? "已关注" : "关注")
                     .font(.callout)
@@ -213,7 +210,7 @@ struct UserDetailPage: StateView, InstanceIdentifiable {
                     }
                 }
                 if model.topicInfo.items.count > 0 {
-                    NavigationLink(destination: UserFeedPage(userId: userId!)) {
+                    NavigationLink(destination: UserFeedPage(userId: userId)) {
                         Text("\(userId ?? .default)创建的更多主题")
                             .font(.subheadline)
                             .padding()

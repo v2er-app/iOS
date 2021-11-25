@@ -14,7 +14,7 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
-                NavigationLink(destination: UserDetailPage(userId: data.userName)) {
+                NavigationLink(destination: UserDetailPage(userId: data.userName ?? .empty)) {
                     AvatarView(url: data.avatar)
                 }
                 VStack(alignment: .leading, spacing: 5) {

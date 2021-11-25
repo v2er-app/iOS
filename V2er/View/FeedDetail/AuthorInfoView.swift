@@ -48,7 +48,7 @@ struct AuthorInfoView: View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
                     AvatarView(url: avatar, size: 48)
-                        .to { UserDetailPage(userId: data?.userName) }
+                    .to { UserDetailPage(userId: data?.userName ?? .empty) }
                 VStack(alignment: .leading, spacing: 5) {
                     Text(userName)
                         .lineLimit(1)
