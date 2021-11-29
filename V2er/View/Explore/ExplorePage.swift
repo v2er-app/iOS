@@ -39,12 +39,13 @@ struct ExplorePage: BaseHomePageView {
             ForEach(state.exploreInfo.dailyHotInfo) { item in
                 HStack(spacing: 12) {
                     AvatarView(url: item.avatar, size: 30)
-                        .to { UserDetailPage(userId: item.member) }
+//                        .to { UserDetailPage(userId: item.member) }
                     Text(item.title)
+                        .foregroundColor(.bodyText)
                         .lineLimit(2)
                         .greedyWidth(.leading)
                 }
-                .padding(.vertical, 10)
+                .padding(.vertical, 12)
                 .padding(.horizontal, 10)
                 .background(Color.itemBg)
                 .divider()

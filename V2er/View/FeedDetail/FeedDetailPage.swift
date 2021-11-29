@@ -81,6 +81,9 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 withAnimation {
                     hideTitleViews = !(scrollY <= -100)
                 }
+//                replyIsFocused = false
+            }
+            .onTapGesture {
                 replyIsFocused = false
             }
             replyBar
@@ -90,9 +93,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
-        .onTapGesture {
-            replyIsFocused = false
-        }
+
         .onChange(of: state.ignored) { ignored in
             if ignored {
                 dismiss()
@@ -163,6 +164,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 .font(.title2.weight(.regular))
                 .hapticOnTap()
             Spacer()
+            Button {
+                replyIsFocused = false
+            } label: {
+                Text("完成")
+            }
         }
         .greedyWidth()
         .padding(.vertical, 10)

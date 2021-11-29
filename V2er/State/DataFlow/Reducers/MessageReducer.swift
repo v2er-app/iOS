@@ -11,8 +11,13 @@ import Foundation
 func messageStateReducer(_ state: MessageState, _ action: Action) -> (MessageState, Action?) {
     var state = state
     var followingAction: Action?
+    guard AccountState.hasSignIn() else {
+        followingAction = nil
+        return (state, followingAction)
+    }
     switch action {
         case let action as MessageActions.FetchStart:
+
             guard !state.updatableState.refreshing else { break }
             state.updatableState.showLoadingView = action.autoLoad
             state.hasLoadedOnce = true

@@ -15,8 +15,17 @@ struct ReplyItemView: View {
 
     var body: some View {
         HStack(alignment: .top) {
-            AvatarView(url: info.avatar, size: 40)
-                .to { UserDetailPage(userId: info.userName) }
+            VStack(spacing: 0) {
+                AvatarView(url: info.avatar, size: 36)
+                    .to { UserDetailPage(userId: info.userName) }
+                Text("楼主")
+                    .font(.system(size: 8))
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .cornerBorder(radius: 3, borderWidth: 0.8, color: .black)
+                    .padding(.top, 2)
+                    .hide(!info.isOwner)
+            }
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     VStack (alignment: .leading, spacing: 4) {
@@ -25,7 +34,7 @@ struct ReplyItemView: View {
                             .font(.caption2)
                     }
                     Spacer()
-//                    Image(systemName: "heart")
+                    //                    Image(systemName: "heart")
                 }
                 RichText { info.content }
                 Text("\(info.floor)楼")

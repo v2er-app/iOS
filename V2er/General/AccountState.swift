@@ -55,4 +55,8 @@ struct AccountState {
         return getAccount()?.avatar ?? .default
     }
 
+    static func isSelf(userName: String) -> Bool {
+        return userName == Self.userName && userName != .default
+    }
+
 }

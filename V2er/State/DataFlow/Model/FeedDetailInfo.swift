@@ -91,6 +91,7 @@ struct FeedDetailInfo: BaseModel {
             userName = root.pick("div.box small.gray a")
             replyUpdate = root.pick("div.box small.gray", .ownText)
                 .remove("By at")
+                .replace(segs: " · ", with: " ")
             nodeName = root.pick("div.box a[href^=/go]")
             nodeId = root.pick("div.box a[href^=/go]", .href)
                 .segment(separatedBy: "/")
@@ -159,6 +160,7 @@ struct FeedDetailInfo: BaseModel {
 
     struct ReplyInfo {
         var items: [Item] = []
+        var owner: String = .empty
 
         struct Item: HtmlItemModel, Hashable {
             // span.no
@@ -178,7 +180,10 @@ struct FeedDetailInfo: BaseModel {
             var hadThanked: Bool = false
             // id
             var replyId: String = .default
-            var isOwner: Bool = false
+            var owner: String = .empty
+            var isOwner: Bool  {
+                userName == owner && owner != .empty
+            }
 
             static func == (lhs: Self, rhs: Self) -> Bool {
                 lhs.floor == rhs.floor
@@ -187,9 +192,13 @@ struct FeedDetailInfo: BaseModel {
             func hash(into hasher: inout Hasher) {
                 hasher.combine(floor)
             }
-
             init(from html: Element?) {
+                self.init(from: html, owner: .empty)
+            }
+
+            init(from html: Element?, owner: String) {
                 guard let root = html else { return }
+                self.owner = owner
                 floor = root.pick("span.no").int
                 content = root.pick("div.reply_content", .innerHtml)
                     .replace(segs: "\n", with: "")
@@ -204,10 +213,10 @@ struct FeedDetailInfo: BaseModel {
         }
 
         init() {}
-
-        init(from elements: Elements) {
+        init(from elements: Elements, owner: String) {
+            self.owner = owner
             for e in elements {
-                let item = Item(from: e)
+                let item = Item(from: e, owner: owner)
                 items.append(item)
             }
         }
@@ -229,7 +238,8 @@ struct FeedDetailInfo: BaseModel {
         self.headerInfo = HeaderInfo(from: root.pickOne("div#Wrapper"))
         self.contentInfo = ContentInfo(from: root.pickOne("div.content div.box"))
         self.problem = ProblemInfo(from: root.pickOne("div.problem"))
-        self.replyInfo = ReplyInfo(from: root.pickAll("div[id^=r_]"))
+        let owner: String = headerInfo?.userName ?? .empty
+        self.replyInfo = ReplyInfo(from: root.pickAll("div[id^=r_]"), owner: owner)
         self.once = root.pick("input[name=once]", .value)
         let rawReportUrl = root.pick("a[onclick*=/report/topic/]", .onclick)
         if rawReportUrl.notEmpty() {

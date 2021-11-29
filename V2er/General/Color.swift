@@ -31,7 +31,7 @@ extension Color {
     static let almostClear = hex(0xFFFFFF, alpha: 0.000001)
     static let debugColor = hex(0xFF0000, alpha: 0.1)
 //    static let bodyText = hex(0x555555)
-    static let bodyText = hex(0x000000, alpha: 0.8)
+    static let bodyText = hex(0x000000, alpha: 0.75)
     static let tintColor = hex(0x383838)
     static let bgColor = hex(0xE2E2E2, alpha: 0.8)
     static let itemBg: Color = .white

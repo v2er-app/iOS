@@ -60,6 +60,7 @@ extension View {
                     .shadow(color: .black.opacity(0.2), radius: 1.5)
                     .padding(.top, paddingTop)
                     .transition(AnyTransition.move(edge: .top))
+                    .zIndex(1)
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                             withAnimation {
@@ -67,7 +68,11 @@ extension View {
                             }
                         }
                     }
-                    .zIndex(1)
+                    .onTapGesture {
+                        withAnimation {
+                            isPresented.wrappedValue = false
+                        }
+                    }
             }
         }
     }

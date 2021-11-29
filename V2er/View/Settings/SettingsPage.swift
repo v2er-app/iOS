@@ -11,6 +11,8 @@ import SwiftUI
 struct SettingsPage: View {
     @Environment(\.dismiss) var dismiss
 
+    @State var logingOut: Bool = false
+
     var body: some View {
         formView
             .navBar("设置")
@@ -20,9 +22,10 @@ struct SettingsPage: View {
     private var formView: some View {
         ScrollView {
             VStack(spacing: 0) {
-                SectionItemView("外观设置").to { AppearanceSettingView() }
+                SectionItemView("外观设置")
+//                    .to { AppearanceSettingView() }
                 SectionItemView("浏览设置", showDivider: false)
-                    .to { BrowseSettingView() }
+//                    .to { BrowseSettingView() }
                 SectionItemView("其他设置", showDivider: false)
                     .padding(.top, 8)
                     .to { OtherSettingsView() }
@@ -58,12 +61,27 @@ struct SettingsPage: View {
 
                 Button {
                     // go to app store
-                    AccountState.deleteAccount()
-                    Toast.show("已登出")
-                    dismiss()
+                    withAnimation {
+                        logingOut = true
+                    }
                 } label: {
                     SectionItemView("退出登录", showDivider: false)
+                        .foregroundColor(.red)
                         .padding(.top, 8)
+                }
+                .confirmationDialog(
+                    "登出吗?",
+                    isPresented: $logingOut,
+                    titleVisibility: .visible
+                ) {
+                    Button("确定", role: .destructive) {
+                        withAnimation {
+                            logingOut = false
+                        }
+                        AccountState.deleteAccount()
+                        Toast.show("已登出")
+                        dismiss()
+                    }
                 }
 
             }

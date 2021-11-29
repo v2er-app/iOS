@@ -17,21 +17,24 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
                 NavigationLink(destination: UserDetailPage(userId: data.userName ?? .empty)) {
                     AvatarView(url: data.avatar)
                 }
-                VStack(alignment: .leading, spacing: 5) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text(data.userName.safe)
-                        .lineLimit(1)
-                    Text(data.replyUpdate.safe)
-                        .lineLimit(1)
                         .font(.footnote)
-                        .foregroundColor(Color.tintColor)
+                    Text(data.replyUpdate.safe)
+                        .font(.caption2)
                 }
+                .lineLimit(1)
+                .foregroundColor(Color.tintColor)
                 Spacer()
                 NodeView(id: data.nodeId.safe, name: data.nodeName.safe)
             }
             Text(data.title.safe)
+//                .fontWeight(.medium)
+                .foregroundColor(.bodyText)
                 .greedyWidth(.leading)
                 .lineLimit(2)
-                .padding(.vertical, 3)
+                .padding(.top, 6)
+                .padding(.vertical, 4)
             Text("评论\(data.replyNum.safe)")
                 .font(.footnote)
                 .greedyWidth(.trailing)

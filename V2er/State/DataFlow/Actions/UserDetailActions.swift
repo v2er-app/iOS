@@ -36,6 +36,10 @@ struct UserDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            if AccountState.isSelf(userName: id) {
+                Toast.show("无法关注自己")
+                return
+            }
             let state = store.appState.userDetailStates[id]!
             let followed = state.model.hasFollowed
             Toast.show(followed ? "取消中" : "关注中")
@@ -59,6 +63,10 @@ struct UserDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            if AccountState.isSelf(userName: id) {
+                Toast.show("无法屏蔽自己")
+                return
+            }
             let state = store.appState.userDetailStates[id]!
             let hadBlocked = state.model.hasBlocked
             Toast.show(hadBlocked ? "取消屏蔽" : "屏蔽中")

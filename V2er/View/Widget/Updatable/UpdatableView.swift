@@ -84,7 +84,7 @@ struct UpdatableView<Content: View>: View {
                 ZStack {
 //                    Color.almostClear
                     ProgressView()
-                        .scaleEffect(1.3)
+                        .scaleEffect(1.5)
                 }
                 .padding(26)
                 .cornerRadius(8)

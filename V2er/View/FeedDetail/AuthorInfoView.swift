@@ -39,7 +39,7 @@ struct AuthorInfoView: View {
     private var replyNum: String {
         var result = (data?.replyNum ?? initData?.replyNum ?? .default)
         if result.notEmpty() {
-            result = " • 评论\(result)"
+            result = "评论\(result) "
         }
         return result
     }
@@ -47,12 +47,12 @@ struct AuthorInfoView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
-                    AvatarView(url: avatar, size: 48)
+                    AvatarView(url: avatar, size: 38)
                     .to { UserDetailPage(userId: data?.userName ?? .empty) }
                 VStack(alignment: .leading, spacing: 5) {
                     Text(userName)
                         .lineLimit(1)
-                    Text(timeAndClickedNum + replyNum)
+                    Text(replyNum + timeAndClickedNum)
                         .lineLimit(1)
                         .font(.caption2)
                 }

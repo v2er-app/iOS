@@ -88,7 +88,7 @@ struct UserDetailPage: StateView {
         .navigationBarHidden(true)
         .onAppear {
             log("onAppear----")
-            dispatch(UserDetailActions.FetchData.Start(id: userId))
+            dispatch(UserDetailActions.FetchData.Start(id: userId, autoLoad: true))
         }
         .onDisappear {
             log("onDisappear----")
@@ -140,6 +140,7 @@ struct UserDetailPage: StateView {
                     Image(systemName: state.model.hasFollowed ? "heart.fill" : "heart")
                         .padding(8)
                         .font(.title3.weight(.regular))
+                        .hide(isSelf())
                 }
                 .opacity(shouldHideNavbar ? 0.0 : 1.0)
                 .forceClickable()
@@ -150,6 +151,7 @@ struct UserDetailPage: StateView {
                     Image(systemName: state.model.hasBlocked ? "eye.slash.fill" : "eye.slash")
                         .padding(8)
                         .font(.body.weight(.regular))
+                        .hide(isSelf())
                 }
                 .forceClickable()
             }
@@ -157,6 +159,10 @@ struct UserDetailPage: StateView {
         }
         .foregroundColor(foreGroundColor)
         .visualBlur(alpha: shouldHideNavbar ? 0.0 : 1.0)
+    }
+
+    private func isSelf() -> Bool {
+        AccountState.isSelf(userName: userId)
     }
     
     @ViewBuilder
@@ -181,6 +187,7 @@ struct UserDetailPage: StateView {
                     .cornerBorder(radius: 99, borderWidth: 1,
                                   color: foreGroundColor)
             }
+            .hide(isSelf())
             Text(model.desc)
                 .font(.callout)
         }

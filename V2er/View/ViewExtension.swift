@@ -203,12 +203,27 @@ extension View {
         clipShape( ClipCornerShape(radius: radius, corners: corners) )
     }
 
-    func hide(_ shouldHide: Bool = true) -> some View {
-        self.opacity(shouldHide ? 0.0 : 1.0)
+    func hide(_ hide: Bool = true) -> some View {
+        self.opacity(hide ? 0.0 : 1.0)
+//        return self.modifier(HideModifier(hide: hide, keepLayout: keepLayout))
+    }
+    func remove(_ remove: Bool = true) -> some View{
+        self.modifier(HideModifier(remove: remove))
     }
 
     func divider(_ opacity: CGFloat = 1.0) -> some View {
         self.modifier(DividerModifier(opacity: opacity))
+    }
+}
+
+struct HideModifier: ViewModifier {
+    let remove: Bool
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if !remove {
+            content
+        }
     }
 }
 

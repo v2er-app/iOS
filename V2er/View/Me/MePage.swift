@@ -52,7 +52,7 @@ struct MePage: BaseHomePageView {
                 }
             }
         }
-        .opacity(selecedTab == .me ? 1.0 : 0.0)
+        .hide(selecedTab != .me)
     }
     
     @ViewBuilder

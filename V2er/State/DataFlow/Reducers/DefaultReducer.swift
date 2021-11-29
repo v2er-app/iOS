@@ -18,7 +18,7 @@ func defaultReducer(_ state: AppState, _ action: Action) -> (AppState, Action?) 
             globalState.lastSelectedTab = globalState.selectedTab
             globalState.selectedTab = action.selectedTab
             if globalState.lastSelectedTab == globalState.selectedTab {
-                hapticFeedback(.light)
+                hapticFeedback(.soft)
                 globalState.scrollTopTab = globalState.selectedTab
                 let tab = globalState.scrollTopTab
                 if tab == .message {
