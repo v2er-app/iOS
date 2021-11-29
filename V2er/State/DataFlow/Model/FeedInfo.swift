@@ -24,10 +24,25 @@ struct FeedInfo: BaseModel {
     mutating func append(feedInfo: FeedInfo) {
         self.unReadNums = feedInfo.unReadNums
         self.twoStepStr = feedInfo.twoStepStr
-        self.items.append(contentsOf: feedInfo.items)
+//        self.items.append(contentsOf: feedInfo.items)
+
+        // merge update
+        var dict: [String: Int] = [:]
+        self.items.enumerated().forEach { (index, value) in
+            dict[value.id] = index
+        }
+        for e in feedInfo.items {
+            if dict.keys.contains(e.id) {
+                if let index = dict[e.id] {
+                    self.items[index] = e
+                }
+            } else {
+                self.items.append(e)
+            }
+        }
     }
 
-    struct Item: FeedItemProtocol, HtmlItemModel, Hashable {
+    struct Item: FeedItemProtocol, HtmlItemModel {
         var id: String
         // @Pick(value = "span.item_title > a")
         var title: String?
@@ -44,13 +59,15 @@ struct FeedInfo: BaseModel {
         // @Pick("a[class^=count_]")
         var replyNum: String?
 
-        static func == (lhs: Self, rhs: Self) -> Bool {
-            lhs.id == rhs.id
-        }
-
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
-        }
+//        static func == (lhs: Self, rhs: Self) -> Bool {
+//            lhs.id == rhs.id &&
+//            lhs.replyNum == rhs.replyNum
+//        }
+//
+//        func hash(into hasher: inout Hasher) {
+//            hasher.combine(id)
+//            hasher.combine(replyNum)
+//        }
 
         init(id: String, title: String? = nil, avatar: String? = nil) {
             self.id = id

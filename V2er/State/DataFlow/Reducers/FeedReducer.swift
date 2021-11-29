@@ -35,7 +35,6 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             if case let .success(newsInfo) = action.result {
                 state.willLoadPage += 1
                 state.feedInfo.append(feedInfo: newsInfo!)
-                state.feedInfo.items = state.feedInfo.items.uniqued()
             } else {
                 // failed
             }
