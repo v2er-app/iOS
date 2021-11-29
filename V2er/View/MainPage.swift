@@ -18,6 +18,10 @@ struct MainPage: StateView {
         bindingState.selectedTab
     }
 
+    var unReadNums: Int {
+        store.appState.feedState.feedInfo.unReadNums
+    }
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -30,7 +34,7 @@ struct MainPage: StateView {
                 TopBar(selectedTab: state.selectedTab)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) {
-                TabBar()
+                TabBar(unReadNums)
             }
             .ignoresSafeArea(.container)
             .navigationBarHidden(true)
@@ -40,11 +44,11 @@ struct MainPage: StateView {
 }
 
 
-struct MainPage_Previews: PreviewProvider {
-//    @State static var selecedTab: TabId = TabId.me
-
-    static var previews: some View {
-        MainPage()
-            .environmentObject(Store.shared)
-    }
-}
+//struct MainPage_Previews: PreviewProvider {
+////    @State static var selecedTab: TabId = TabId.me
+//
+//    static var previews: some View {
+//        MainPage()
+//            .environmentObject(Store.shared)
+//    }
+//}

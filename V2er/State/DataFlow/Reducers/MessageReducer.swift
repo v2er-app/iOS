@@ -24,6 +24,7 @@ func messageStateReducer(_ state: MessageState, _ action: Action) -> (MessageSta
             if case let .success(messageInfo) = action.result {
                 state.model = messageInfo!
                 state.updatableState.willLoadPage = 2
+                dispatch(FeedActions.ClearMsgBadge(), .default)
             } else {
                 // failed
             }

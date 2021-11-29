@@ -15,7 +15,7 @@ struct FeedInfo: BaseModel {
     var rawData: String?
 
     // @Pick(value = "input.super.special.button", attr = "value")
-    var unReadNums: String?
+    var unReadNums: Int = 0
     // @Pick("form[action=/2fa]")
     var twoStepStr: String?
     // @Pick("div.cell.item")
@@ -98,7 +98,12 @@ struct FeedInfo: BaseModel {
 
     init(from html: Element?) {
         guard let root = html?.pickOne("div#Wrapper") else { return }
-        unReadNums = root.pick("input.super.special.button", .value)
+        let unReadString = root.pick("input.super.special.button", .value)
+        if unReadString.isEmpty {
+            unReadNums = 0
+        } else {
+            unReadNums = unReadString.segment(separatedBy: " ", at: .first).int
+        }
         twoStepStr = root.pick("form[action=/2fa]")
         let elements = root.pickAll("div.cell.item")
         for e in elements {

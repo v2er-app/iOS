@@ -13,12 +13,17 @@ struct TabBar: View {
     var selectedTab : TabId {
         store.appState.globalState.selectedTab
     }
+    var unReadMsg: Int = 0
+    var tabs: [TabItem]
     
-    var tabs = [TabItem(id: TabId.feed, text: "最新", icon: "feed_tab"),
-                TabItem(id: TabId.explore, text: "发现", icon: "explore_tab"),
-                TabItem(id: TabId.message, text: "通知", icon: "message_tab"),
-                TabItem(id: TabId.me, text: "我", icon: "me_tab")]
-    
+    init(_ unReadMsg: Int = 0) {
+        self.tabs = [TabItem(id: TabId.feed, text: "最新", icon: "feed_tab"),
+                     TabItem(id: TabId.explore, text: "发现", icon: "explore_tab"),
+                     TabItem(id: TabId.message, text: "通知", icon: "message_tab", badge: unReadMsg),
+                     TabItem(id: TabId.me, text: "我", icon: "me_tab")]
+    }
+
+
     var body: some View {
         VStack(spacing: 0) {
             Divider().frame(height: 0.1)
@@ -36,8 +41,17 @@ struct TabBar: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 18)
-                                .padding(.top, 8)
                                 .padding(.bottom, 2.5)
+                                .padding(.top, 8)
+                                .padding(.horizontal, 8)
+                                .overlay {
+                                    // badge
+                                    Group {
+                                        if tab.badge > 0 {
+                                            badgeView(num: tab.badge)
+                                        }
+                                    }
+                                }
                             Text(tab.text)
                                 .font(.caption)
                                 .fontWeight(isSelected ? .semibold : .regular)
@@ -47,15 +61,31 @@ struct TabBar: View {
                         .background(self.bg(isSelected: isSelected))
                         .padding(.horizontal, 16)
                         .background(Color.almostClear)
+
                     }
-//                    .debug()
                 }
             }
         }
         .padding(.bottom, topSafeAreaInset().bottom)
         .background(VEBlur())
     }
-    
+
+    private func badgeView(num: Int) -> some View {
+        HStack(alignment: .top) {
+            Spacer()
+            VStack {
+                Text(num.string)
+                    .font(.system(size: 12))
+                    .foregroundColor(.white)
+                    .padding(3.5)
+                    .background {
+                        Circle()
+                            .fill(Color.red)
+                    }
+                Spacer()
+            }
+        }
+    }
     
     func bg(isSelected : Bool) -> some View {
         return LinearGradient(
@@ -78,15 +108,18 @@ class TabItem : Hashable {
     let id : TabId
     var text : String
     var icon : String
+    var badge: Int = 0
     
-    init(id: TabId, text : String, icon : String) {
+    init(id: TabId, text : String, icon : String, badge: Int = 0) {
         self.id = id
         self.text = text
         self.icon = icon
+        self.badge = badge
     }
     
     static func == (lhs: TabItem, rhs: TabItem) -> Bool {
-        return lhs.id == rhs.id
+        return lhs.id == rhs.id &&
+               lhs.badge == rhs.badge
     }
     
     func hash(into hasher: inout Hasher) {
@@ -96,7 +129,7 @@ class TabItem : Hashable {
 }
 
 struct TabBar_Previews : PreviewProvider {
-//    @State static var selected = TabId.feed
+    //    @State static var selected = TabId.feed
     
     static var previews: some View {
         VStack {
