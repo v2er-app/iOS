@@ -167,6 +167,15 @@ struct APIService {
                 result.error = APIError.decodingError()
             } else if !result.data!.isValid() {
                 result.error = APIError.invalid(htmlData.string)
+                // TODO:
+                /*
+                 Possible general Reasons:
+                 1. need login but no login
+                 2. need login but login session is expired
+                 3. no premission to open the page
+                 4. two step login needed
+                 5. other errors
+                 */
             } else {
                 result.error = nil
             }

@@ -30,7 +30,7 @@ enum Endpoint {
     case replyTopic(id: String), blockUser(id: String)
     case followUser(id: String), unfollowUser(id: String)
     case starNode(id: String), dailyMission
-    case checkin, twoFA, downMyTopic(id: String), pinTopic(id: String)
+    case checkin, downMyTopic(id: String), pinTopic(id: String)
     case search
     case general(url: String)
 
@@ -141,8 +141,8 @@ enum Endpoint {
                 info.path = "/mission/daily"
             case .checkin:
                 info.path = "/mission/daily/redeem"
-            case .twoFA:
-                info.path = "/2fa?next=/mission/daily"
+//            case .twoFA:
+//                info.path = "/2fa?next=/mission/daily"
             case let .downMyTopic(id):
                 info.path = "/fade/topic/\(id)"
             case let .pinTopic(id):

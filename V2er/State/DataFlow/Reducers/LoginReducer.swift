@@ -66,7 +66,8 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                         // Check whether enabled two steps login
                         let twoStepInfo: TwoStepInfo? = APIService.shared.parse(from: html)
                         if twoStepInfo?.isValid() ?? false {
-                            Toast.show("暂不支持两步登录", target: .login)
+//                            Toast.show("暂不支持两步登录", target: .login)
+                            state.showTwoStepDialog = true
                         }
                     }
                 } else {
@@ -76,6 +77,18 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                 // -> is TwoStepInfo -> enabled two step log
                 // dispatch(LoginDone())
 
+            }
+        case let action as LoginActions.TwoStepLoginCancel:
+            state.showTwoStepDialog = false
+        case let action as LoginActions.TwoStepLoginDone:
+            if case let .success(twoFALoginInfo) = action.result {
+                Toast.show("2FA登录成功")
+                let account = AccountInfo(username: twoFALoginInfo!.userName,
+                                          avatar: twoFALoginInfo!.avatar)
+                AccountState.saveAccount(account)
+                state.showTwoStepDialog = false
+            } else {
+                Toast.show("2FA登录遇到问题")
             }
         case let action as ShowToastAction:
             state.toast.title = action.title
@@ -131,6 +144,36 @@ struct LoginActions {
     struct LoginDone: Action {
         var target: Reducer = R
         let result: APIResult<DailyInfo>
+    }
+
+    struct TwoStepLogin: AwaitAction {
+        var target: Reducer = R
+        let input: String
+
+        func execute(in store: Store) async {
+            let state = store.appState.loginState
+            guard let loginParams = state.loginParams
+            else { return }
+            Toast.show("2FA验证中", target: .login)
+            var params: Params = [:]
+            params["once"] = loginParams.once
+            params["code"] = input
+            var headers: Params = ["Referer": Endpoint.dailyMission.url.absoluteString]
+            let result: APIResult<TwoStepLoginResultInfo> = await APIService.shared
+                .post(endpoint: .general(url: APIService.baseUrlString + "/2fa?next=/mission/daily"),
+                      params, requestHeaders: headers)
+            dispatch(TwoStepLoginDone(result: result))
+        }
+
+    }
+
+    struct TwoStepLoginDone: Action {
+        var target: Reducer = R
+        let result: APIResult<TwoStepLoginResultInfo>
+    }
+
+    struct TwoStepLoginCancel: Action {
+        var target: Reducer = R
     }
 
 }

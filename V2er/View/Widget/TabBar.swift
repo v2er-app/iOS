@@ -75,9 +75,9 @@ struct TabBar: View {
             Spacer()
             VStack {
                 Text(num.string)
-                    .font(.system(size: 12))
+                    .font(.system(size: 10))
                     .foregroundColor(.white)
-                    .padding(3.5)
+                    .padding(4)
                     .background {
                         Circle()
                             .fill(Color.red)

@@ -21,6 +21,7 @@ struct LoginState: FluxState {
     var toast = Toast()
     var problemHtml: String? = .empty
     var showAlert: Bool = false
+    var showTwoStepDialog = false
 }
 
 struct LoginParams: BaseModel {

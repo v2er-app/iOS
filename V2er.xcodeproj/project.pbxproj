@@ -60,6 +60,7 @@
 		5D54903326AB9E2200BB0CC0 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D54903226AB9E2200BB0CC0 /* SwiftUIView.swift */; };
 		5D5677CB2721916300543FE8 /* CreateReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5677CA2721916300543FE8 /* CreateReducer.swift */; };
 		5D5677CD2721923B00543FE8 /* CreateTopicState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5677CC2721923B00543FE8 /* CreateTopicState.swift */; };
+		5D5D0473275906A7007DC546 /* TwoStepLoginResultInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5D0472275906A7007DC546 /* TwoStepLoginResultInfo.swift */; };
 		5D5DA26A24A4939B005BC60F /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5DA26924A4939B005BC60F /* ViewExtension.swift */; };
 		5D5EA3062741614700974E0F /* Headers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5EA3052741614700974E0F /* Headers.swift */; };
 		5D612FA126C7C34E0009B8F9 /* NetworkException.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D612FA026C7C34E0009B8F9 /* NetworkException.swift */; };
@@ -222,6 +223,7 @@
 		5D54903226AB9E2200BB0CC0 /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 		5D5677CA2721916300543FE8 /* CreateReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReducer.swift; sourceTree = "<group>"; };
 		5D5677CC2721923B00543FE8 /* CreateTopicState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTopicState.swift; sourceTree = "<group>"; };
+		5D5D0472275906A7007DC546 /* TwoStepLoginResultInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepLoginResultInfo.swift; sourceTree = "<group>"; };
 		5D5DA26924A4939B005BC60F /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		5D5EA3052741614700974E0F /* Headers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Headers.swift; sourceTree = "<group>"; };
 		5D612FA026C7C34E0009B8F9 /* NetworkException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkException.swift; sourceTree = "<group>"; };
@@ -572,6 +574,7 @@
 				5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */,
 				5D1CB5BB27244618002DB087 /* Nodes.swift */,
 				5D66C6732742875F00328249 /* ThxAuthorInfo.swift */,
+				5D5D0472275906A7007DC546 /* TwoStepLoginResultInfo.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -882,6 +885,7 @@
 				5D612FA126C7C34E0009B8F9 /* NetworkException.swift in Sources */,
 				5DE5B4CA2684601A00569684 /* TopBar.swift in Sources */,
 				5D2B2B3E26FF797600446F93 /* AccountState.swift in Sources */,
+				5D5D0473275906A7007DC546 /* TwoStepLoginResultInfo.swift in Sources */,
 				5D71DF55247C0FFE00B53ED4 /* FeedPage.swift in Sources */,
 				5DA2AD4226C18112007FB1EF /* ExploreState.swift in Sources */,
 				5D91F8D526F22A6F0089D72E /* TagDetailState.swift in Sources */,
