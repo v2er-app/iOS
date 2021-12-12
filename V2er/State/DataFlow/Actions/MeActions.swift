@@ -10,7 +10,7 @@ import Foundation
 
 struct MeActions {
     private static let R: Reducer = .me
-    struct ShowLoginPageAction: Action {
-        var target: Reducer = R
-    }
+//    struct ShowLoginPageAction: Action {
+//        var target: Reducer = R
+//    }
 }

@@ -89,6 +89,7 @@
 		5D88D5DC26C2016000302265 /* ExploreReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88D5DB26C2016000302265 /* ExploreReducer.swift */; };
 		5D88D5DE26C2017400302265 /* MessageReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88D5DD26C2017400302265 /* MessageReducer.swift */; };
 		5D88D5E026C2017E00302265 /* MeReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D88D5DF26C2017E00302265 /* MeReducer.swift */; };
+		5D8D752627656EF900460478 /* TwoStepLoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8D752527656EF900460478 /* TwoStepLoginPage.swift */; };
 		5D8FAA34272A70F50067766E /* Atributika in Frameworks */ = {isa = PBXBuildFile; productRef = 5D8FAA33272A70F50067766E /* Atributika */; };
 		5D8FAA36272AD27A0067766E /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8FAA35272AD27A0067766E /* TestView.swift */; };
 		5D8FAA38272D26200067766E /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8FAA37272D26200067766E /* RootView.swift */; };
@@ -252,6 +253,7 @@
 		5D88D5DB26C2016000302265 /* ExploreReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreReducer.swift; sourceTree = "<group>"; };
 		5D88D5DD26C2017400302265 /* MessageReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReducer.swift; sourceTree = "<group>"; };
 		5D88D5DF26C2017E00302265 /* MeReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeReducer.swift; sourceTree = "<group>"; };
+		5D8D752527656EF900460478 /* TwoStepLoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepLoginPage.swift; sourceTree = "<group>"; };
 		5D8FAA35272AD27A0067766E /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
 		5D8FAA37272D26200067766E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		5D91F8D426F22A6F0089D72E /* TagDetailState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailState.swift; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 			isa = PBXGroup;
 			children = (
 				5DD4639D26F70CE800A1FBA1 /* LoginPage.swift */,
+				5D8D752527656EF900460478 /* TwoStepLoginPage.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -912,6 +915,7 @@
 				5DD4639E26F70CE800A1FBA1 /* LoginPage.swift in Sources */,
 				5D1D7B8B26FD7FCE008E0C08 /* DailyInfo.swift in Sources */,
 				5DA2AD4426C18121007FB1EF /* FeedState.swift in Sources */,
+				5D8D752627656EF900460478 /* TwoStepLoginPage.swift in Sources */,
 				5D843E9526A4537C00C47D95 /* SearchPage.swift in Sources */,
 				5D612FA326C7C61C0009B8F9 /* Endpoint.swift in Sources */,
 				5D2B2B3C26FF754F00446F93 /* Persist.swift in Sources */,

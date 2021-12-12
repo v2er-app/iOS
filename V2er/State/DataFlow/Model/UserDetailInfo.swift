@@ -27,6 +27,10 @@ struct UserDetailInfo: BaseModel {
     var topicInfo: TopicInfo = TopicInfo()
     var replyInfo: ReplyInfo = ReplyInfo()
 
+    func isValid() -> Bool {
+        userName.notEmpty()
+    }
+
     struct TopicInfo {
         // div.box:has(div.cell_tabs) > div.cell.item
         var items: [Item] = []

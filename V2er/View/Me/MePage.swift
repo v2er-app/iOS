@@ -34,7 +34,7 @@ struct MePage: BaseHomePageView {
                         .foregroundColor(.white)
                         .font(.title2)
                     Button {
-                        dispatch(MeActions.ShowLoginPageAction())
+                        dispatch(LoginActions.ShowLoginPageAction())
                     } label: {
                         Text("登录")
                             .font(.headline)
@@ -47,9 +47,6 @@ struct MePage: BaseHomePageView {
                 }
                 .greedyFrame()
                 .background(Color.dim)
-                .sheet(isPresented: bindingState.showLoginView) {
-                    LoginPage()
-                }
             }
         }
         .hide(selecedTab != .me)

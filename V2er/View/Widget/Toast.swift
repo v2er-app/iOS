@@ -14,6 +14,7 @@ final class Toast {
     var icon: String = ""
 
     static func show(_ title: String, icon: String = .empty, target: Reducer = .global) {
+        guard title.notEmpty() || icon.notEmpty() else { return }
         dispatch(ShowToastAction(target: target, title: title, icon: icon), .default)
     }
 
@@ -28,6 +29,8 @@ final class Toast {
                 title = "网络出错"
             case .invalid:
                 title = "返回数据非法"
+            case .generalError:
+                title = .empty
             default:
                 title = "未知错误"
         }

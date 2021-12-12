@@ -13,7 +13,6 @@ struct LoginPage: StateView {
     @EnvironmentObject private var store: Store
     @Environment(\.dismiss) var dismiss
     @State var showPassword = false
-    @State var twoStepCode: String = .empty
 
     var bindingState: Binding<LoginState> {
         $store.appState.loginState
@@ -25,11 +24,6 @@ struct LoginPage: StateView {
 
     var body: some View {
         contentView
-            .overlay {
-                if state.showTwoStepDialog {
-                    twoStepDialogView
-                }
-            }
             .onAppear {
                 dispatch(LoginActions.FetchCaptchaStart())
             }
@@ -192,38 +186,6 @@ struct LoginPage: StateView {
         .greedyHeight()
         .background(Color.bgColor)
         .navigationBarHidden(true)
-    }
-
-    @ViewBuilder
-    private var twoStepDialogView: some View {
-        ZStack {
-            Color.dim
-            VStack {
-                Text("两步验证")
-                    .font(.subheadline)
-                TextField("2FA码", text: $twoStepCode)
-                    .padding(.horizontal)
-                    .padding(.vertical, 6)
-                    .background(Color.white.opacity(0.8))
-                    .cornerBorder(radius: 8)
-                HStack {
-                    Spacer()
-                    Button {
-                        dispatch(LoginActions.TwoStepLoginCancel())
-                        dismiss()
-                    } label: { Text("取消") }
-                    Button {
-                        dispatch(LoginActions.TwoStepLogin(input: twoStepCode))
-                    } label: { Text("确定") }
-                    .disabled(twoStepCode.isEmpty)
-                }
-                .foregroundColor(.bodyText)
-            }
-            .frame(width: UIScreen.main.bounds.width * 0.65)
-            .padding()
-            .visualBlur()
-            .cornerBorder(radius: 20)
-        }
     }
 
 }

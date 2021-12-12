@@ -13,9 +13,9 @@ func meStateReducer(_ state: MeState, _ action: Action) -> (MeState, Action?) {
     var followingAction: Action?
 
     switch action {
-        case let action as MeActions.ShowLoginPageAction:
-            guard !state.showLoginView else { break }
-            state.showLoginView = true
+//        case let action as MeActions.ShowLoginPageAction:
+//            guard !state.showLoginView else { break }
+//            state.showLoginView = true
         default:
             break
     }

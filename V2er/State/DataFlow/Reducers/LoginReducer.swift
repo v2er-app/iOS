@@ -27,7 +27,7 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                 // Load captcha failed
                 if case let .invalid(html) = error {
                     if html.contains("登录受限") {
-//                        Toast.show("登录受限", target: .login)
+                        //                        Toast.show("登录受限", target: .login)
                         state.problemHtml = "登录受限\n由于当前 IP 在短时间内的登录尝试次数太多，目前暂时不能继续尝试,你可能会需要等待至多 1 天的时间再继续尝试。"
                         state.showAlert = true
                     }
@@ -35,6 +35,10 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                     Toast.show("登录参数加载出错", target: .login)
                 }
             }
+        case let action as LoginActions.ShowLoginPageAction:
+            guard !state.showLoginView else { break }
+            state.showLoginView = true
+            Toast.show(action.reason, target: .login)
         case _ as LoginActions.StartLogin:
             guard !state.loading && !state.logining else { break }
             state.logining = true
@@ -53,31 +57,25 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                     let loginParam: LoginParams? = APIService.shared.parse(from: html)
                     guard let loginParam = loginParam else { break }
                     let problemHtml = loginParam.problem
-                    if loginParam.isValid() {
-                        if problemHtml.isEmpty {
-                            Toast.show("登录失败，用户名和密码无法匹配", target: .login)
-                        } else if problemHtml.notEmpty {
-                            state.problemHtml = problemHtml?.replace(segs: "<ul>","</ul>", "<li>", "</li>" , with: .empty)
-                            state.showAlert = true
-                        } else {
-                            Toast.show("登录中遇到未知问题", target: .login)
-                        }
+                    if problemHtml.isEmpty {
+                        Toast.show("登录失败，用户名和密码无法匹配", target: .login)
+                    } else if problemHtml.notEmpty {
+                        state.problemHtml = problemHtml?.replace(segs: "<ul>","</ul>", "<li>", "</li>" , with: .empty)
+                        state.showAlert = true
                     } else {
-                        // Check whether enabled two steps login
-                        let twoStepInfo: TwoStepInfo? = APIService.shared.parse(from: html)
-                        if twoStepInfo?.isValid() ?? false {
-//                            Toast.show("暂不支持两步登录", target: .login)
-                            state.showTwoStepDialog = true
-                        }
+                        Toast.show("登录中遇到未知问题", target: .login)
                     }
                 } else {
                     Toast.show(error, target: .login)
                 }
-                // -> is LoginParam -> psw error
-                // -> is TwoStepInfo -> enabled two step log
-                // dispatch(LoginDone())
-
             }
+        case let action as LoginActions.ShowTwoStepLogin:
+            state.showLoginView = false
+            state.showTwoStepDialog = true
+            state.twoFAonce = action.once
+        case _ as LoginActions.TwoStepLogin:
+            state.showTwoStepDialog = false
+//            state.showLoginView = false
         case let action as LoginActions.TwoStepLoginCancel:
             state.showTwoStepDialog = false
         case let action as LoginActions.TwoStepLoginDone:
@@ -87,6 +85,7 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                                           avatar: twoFALoginInfo!.avatar)
                 AccountState.saveAccount(account)
                 state.showTwoStepDialog = false
+                // todo refresh current page
             } else {
                 Toast.show("2FA登录遇到问题")
             }
@@ -152,11 +151,14 @@ struct LoginActions {
 
         func execute(in store: Store) async {
             let state = store.appState.loginState
-            guard let loginParams = state.loginParams
-            else { return }
-            Toast.show("2FA验证中", target: .login)
+            if state.twoFAonce.isEmpty && state.loginParams == nil { return }
+            Toast.show("2FA验证中")
             var params: Params = [:]
-            params["once"] = loginParams.once
+            var once = state.twoFAonce
+            if once.isEmpty {
+                once = state.loginParams!.once
+            }
+            params["once"] = once
             params["code"] = input
             var headers: Params = ["Referer": Endpoint.dailyMission.url.absoluteString]
             let result: APIResult<TwoStepLoginResultInfo> = await APIService.shared
@@ -174,6 +176,16 @@ struct LoginActions {
 
     struct TwoStepLoginCancel: Action {
         var target: Reducer = R
+    }
+
+    struct ShowLoginPageAction: Action {
+        var target: Reducer = R
+        var reason: String = .empty
+    }
+
+    struct ShowTwoStepLogin: Action {
+        var target: Reducer = R
+        var once: String
     }
 
 }

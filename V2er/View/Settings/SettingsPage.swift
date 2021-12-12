@@ -35,7 +35,9 @@ struct SettingsPage: View {
                     SectionItemView("帮助与反馈")
                         .padding(.top, 8)
                 }
-
+                Button {
+                    "https://github.com/v2er-app".openURL()
+                } label: { SectionItemView("源码开放") }
                 Button {
                     "https://v2er.app".openURL()
                 } label: {

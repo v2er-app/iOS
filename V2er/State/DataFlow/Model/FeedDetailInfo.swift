@@ -37,6 +37,10 @@ struct FeedDetailInfo: BaseModel {
          self.headerInfo?.id = id
     }
 
+    func isValid() -> Bool {
+        headerInfo != nil && headerInfo!.isValid()
+    }
+
     struct HeaderInfo: HtmlParsable, FeedItemProtocol {
         var id: String = .empty
         // div.box img.avatar, .src
@@ -64,6 +68,10 @@ struct FeedDetailInfo: BaseModel {
         var isThankable: Bool = false
         // div.box div.header a.op
         var appendText: String = .empty
+
+        func isValid() -> Bool {
+            userName.notEmpty && nodeName.notEmpty
+        }
 
         mutating func update(_ headerInfo: HeaderInfo?) {
             guard let headerInfo = headerInfo else { return }
@@ -138,6 +146,10 @@ struct FeedDetailInfo: BaseModel {
                 self.html = .default
             } else {
                 self.html = try? root.html()
+                // append https:// to the images
+                let img = "src=\"//i.v2ex.co/"
+                let httpImg = "src=\"https://i.v2ex.co/"
+                self.html = self.html?.replace(segs: img, with: httpImg)
             }
         }
     }
