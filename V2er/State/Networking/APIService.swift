@@ -166,16 +166,7 @@ struct APIService {
             if result.data == nil {
                 result.error = APIError.decodingError()
             } else if !result.data!.isValid() {
-                result.error = APIError.invalid(htmlData.string)
-                // TODO:
-                /*
-                 Possible general Reasons:
-                 1. need login but no login
-                 2. need login but login session is expired
-                 3. no premission to open the page
-                 4. two step login needed
-                 5. other errors
-                 */
+                result.error = handleGeneralError(htmlData.string)
             } else {
                 result.error = nil
             }
@@ -184,6 +175,44 @@ struct APIService {
             result.data = nil
         }
         return result
+    }
+
+    private func handleGeneralError(_ html: String) -> APIError? {
+        /*
+         Possible general Reasons:
+         1. need login but no login
+         2. need login but login session is expired
+         3. no premission to open the page
+         4. two step login needed
+         5. other errors
+         */
+        // 1. 2FA
+        let twoStepInfo: TwoStepInfo? = parse(from: html)
+        if twoStepInfo?.isValid() ?? false {
+            dispatch(LoginActions.ShowTwoStepLogin(once: twoStepInfo!.once ?? .empty), .default)
+            return .generalError
+        }
+        // 2. Login
+        let loginParams: LoginParams? = parse(from: html)
+        if loginParams?.isValid() ?? false {
+            var reason: String = .empty
+            if AccountState.hasSignIn() {
+                // Login session expired
+                reason = "登录已过期，请重新登录"
+            } else {
+                // Need login first
+                reason = "请先去登录"
+            }
+            dispatch(LoginActions.ShowLoginPageAction(reason: reason))
+            return .generalError
+        }
+        // 3. Redirect to home
+        let feedInfo: FeedInfo? = parse(from: html)
+        if feedInfo?.isValid() ?? false {
+            // todo redirect to home
+            return .generalError
+        }
+        return APIError.invalid(html)
     }
 
     func parse<T: BaseModel>(from html: String) -> T? {
@@ -242,6 +271,7 @@ enum APIError: Error {
     case decodingError(_ rawData: String = "解析出错")
     case networkError(_ rawData: String = "网络错误")
     case invalid(_ rawData: String)
+    case generalError
 }
 
 struct GeneralError: Error {

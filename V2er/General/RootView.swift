@@ -51,11 +51,24 @@ struct RootHostView: View {
         $store.appState.globalState.toast
     }
 
+    var loginState: Binding<LoginState> {
+        $store.appState.loginState
+    }
+
     var body: some View {
         MainPage()
             .buttonStyle(.plain)
             .toast(isPresented: toast.isPresented) {
                 DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
             }
+            .sheet(isPresented: loginState.showLoginView) {
+                LoginPage()
+            }
+            .overlay {
+                if loginState.raw.showTwoStepDialog {
+                    TwoStepLoginPage()
+                }
+            }
+
     }
 }

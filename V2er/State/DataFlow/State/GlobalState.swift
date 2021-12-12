@@ -18,6 +18,7 @@ struct GlobalState: FluxState {
     static var account: AccountInfo? {
         AccountState.getAccount()
     }
+    
     static var hasSignIn: Bool {
         AccountState.hasSignIn()
     }

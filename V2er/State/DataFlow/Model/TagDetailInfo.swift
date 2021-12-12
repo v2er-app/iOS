@@ -32,6 +32,10 @@ struct TagDetailInfo: BaseModel {
     // div.box div.cell:has(table)
     var topics: [Item] = []
 
+    func isValid() -> Bool {
+        topics.count == 0 || topics[0].userName.notEmpty()
+    }
+
     struct Item: HtmlItemModel {
         // span.item_title a
         var id: String = .default

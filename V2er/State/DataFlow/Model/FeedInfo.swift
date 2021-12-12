@@ -17,9 +17,16 @@ struct FeedInfo: BaseModel {
     // @Pick(value = "input.super.special.button", attr = "value")
     var unReadNums: Int = 0
     // @Pick("form[action=/2fa]")
-    var twoStepStr: String?
+    var twoStepStr: String = .empty
     // @Pick("div.cell.item")
     var items: [Item] = []
+
+    func isValid() -> Bool {
+        if twoStepStr.notEmpty() && twoStepStr.contains("两步验证") {
+            return false
+        }
+        return items.count > 0 || items[0].userName.notEmpty
+    }
 
     mutating func append(feedInfo: FeedInfo) {
         self.unReadNums = feedInfo.unReadNums
