@@ -63,6 +63,7 @@ struct MyFavoritePage: StateView {
                 }
             }
         }
+        .padding(.top, 30)
         .onAppear {
             dispatch(MyFavoriteActions.FetchFeedStart(autoLoad: !state.feedState.updatable.hasLoadedOnce))
         }
@@ -91,7 +92,7 @@ struct MyFavoritePage: StateView {
                 }
             }
         }
-        .padding()
+        .padding(.top, 30)
         .onAppear {
             dispatch(MyFavoriteActions.FetchNodeStart(autoLoad: !state.nodeState.updatable.hasLoadedOnce))
         }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4E55BE8A29D45FC00044389C /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4E55BE8929D45FC00044389C /* Kingfisher */; };
 		5D02BD5F26909146007B6A1B /* LoadmoreIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D02BD5E26909146007B6A1B /* LoadmoreIndicatorView.swift */; };
 		5D04BF9726C9FB6E0005F7E3 /* FeedInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D04BF9626C9FB6E0005F7E3 /* FeedInfo.swift */; };
 		5D096A08247ABF5E00EF3E47 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D096A07247ABF5E00EF3E47 /* TabBar.swift */; };
@@ -144,7 +145,6 @@
 		5DF417722712CD8D00E6D135 /* NodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF417712712CD8D00E6D135 /* NodeView.swift */; };
 		5DF417742712DA7500E6D135 /* MyRecentState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF417732712DA7500E6D135 /* MyRecentState.swift */; };
 		5DF80E3626A2D045002ADC79 /* MultilineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF80E3526A2D045002ADC79 /* MultilineTextField.swift */; };
-		5DF8F79726DA271D00832DC0 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 5DF8F79626DA271D00832DC0 /* Kingfisher */; };
 		5DF92A5D26859DDD00E6086E /* HeadIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF92A5C26859DDD00E6086E /* HeadIndicatorView.swift */; };
 /* End PBXBuildFile section */
 
@@ -315,7 +315,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5DF8F79726DA271D00832DC0 /* Kingfisher in Frameworks */,
+				4E55BE8A29D45FC00044389C /* Kingfisher in Frameworks */,
 				5D0CFA8526B994F5001A8A7F /* SwiftSoup in Frameworks */,
 				5D8FAA34272A70F50067766E /* Atributika in Frameworks */,
 			);
@@ -712,8 +712,8 @@
 			name = V2er;
 			packageProductDependencies = (
 				5D0CFA8426B994F5001A8A7F /* SwiftSoup */,
-				5DF8F79626DA271D00832DC0 /* Kingfisher */,
 				5D8FAA33272A70F50067766E /* Atributika */,
+				4E55BE8929D45FC00044389C /* Kingfisher */,
 			);
 			productName = V2er;
 			productReference = 5D436FE524791C2C00FFA37E /* V2er.app */;
@@ -789,8 +789,8 @@
 			mainGroup = 5D436FDC24791C2C00FFA37E;
 			packageReferences = (
 				5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */,
-				5DF8F79526DA271D00832DC0 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				5D8FAA32272A70F50067766E /* XCRemoteSwiftPackageReference "SwiftRichText" */,
+				4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = 5D436FE624791C2C00FFA37E /* Products */;
 			projectDirPath = "";
@@ -1123,15 +1123,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"V2er/Preview Content\"";
 				DEVELOPMENT_TEAM = DZCZQ4694Z;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = V2er/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = V2er;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = v2er.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1146,15 +1150,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"V2er/Preview Content\"";
 				DEVELOPMENT_TEAM = DZCZQ4694Z;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = V2er/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = V2er;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = v2er.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1289,6 +1297,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
@@ -1305,17 +1321,14 @@
 				revision = 86d3f06a48d1641e348f162afc99832b42cb9ce9;
 			};
 		};
-		5DF8F79526DA271D00832DC0 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
-			requirement = {
-				kind = exactVersion;
-				version = 7.1.1;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4E55BE8929D45FC00044389C /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
 		5D0CFA8426B994F5001A8A7F /* SwiftSoup */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */;
@@ -1325,11 +1338,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5D8FAA32272A70F50067766E /* XCRemoteSwiftPackageReference "SwiftRichText" */;
 			productName = Atributika;
-		};
-		5DF8F79626DA271D00832DC0 /* Kingfisher */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5DF8F79526DA271D00832DC0 /* XCRemoteSwiftPackageReference "Kingfisher" */;
-			productName = Kingfisher;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

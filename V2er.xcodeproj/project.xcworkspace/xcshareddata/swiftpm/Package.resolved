@@ -1,34 +1,31 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "Kingfisher",
-        "repositoryURL": "https://github.com/onevcat/Kingfisher.git",
-        "state": {
-          "branch": null,
-          "revision": "318e319998bf555c3e914d5c3adb6da05af86a32",
-          "version": "7.1.1"
-        }
-      },
-      {
-        "package": "Atributika",
-        "repositoryURL": "https://github.com/sethcreate/SwiftRichText",
-        "state": {
-          "branch": null,
-          "revision": "86d3f06a48d1641e348f162afc99832b42cb9ce9",
-          "version": null
-        }
-      },
-      {
-        "package": "SwiftSoup",
-        "repositoryURL": "https://github.com/scinfu/SwiftSoup.git",
-        "state": {
-          "branch": null,
-          "revision": "774dc9c7213085db8aa59595e27c1cd22e428904",
-          "version": "2.3.2"
-        }
+  "pins" : [
+    {
+      "identity" : "kingfisher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onevcat/Kingfisher.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "9375e4a0e5db3698c1f92bd5d1dc88b0b71caa8b"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "swiftrichtext",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sethcreate/SwiftRichText",
+      "state" : {
+        "revision" : "86d3f06a48d1641e348f162afc99832b42cb9ce9"
+      }
+    },
+    {
+      "identity" : "swiftsoup",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/scinfu/SwiftSoup.git",
+      "state" : {
+        "revision" : "774dc9c7213085db8aa59595e27c1cd22e428904",
+        "version" : "2.3.2"
+      }
+    }
+  ],
+  "version" : 2
 }
