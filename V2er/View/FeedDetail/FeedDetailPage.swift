@@ -142,10 +142,10 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 }
                 .background(Color.lightGray)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-                if isKeyboardVisiable {
-                    actionBar
-                        .transition(.opacity)
-                }
+//                if isKeyboardVisiable {
+//                    actionBar
+//                        .transition(.opacity)
+//                }
             }
             .padding(.bottom, isKeyboardVisiable ? 0 : topSafeAreaInset().bottom * 0.9)
             .padding(.top, 10)
