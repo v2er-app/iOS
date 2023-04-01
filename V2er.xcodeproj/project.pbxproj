@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		4E55BE8A29D45FC00044389C /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4E55BE8929D45FC00044389C /* Kingfisher */; };
+		4EC32AF029D81863003A3BD4 /* WebView in Frameworks */ = {isa = PBXBuildFile; productRef = 4EC32AEF29D81863003A3BD4 /* WebView */; };
+		4EC32AF229D818FC003A3BD4 /* WebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC32AF129D818FC003A3BD4 /* WebBrowserView.swift */; };
 		5D02BD5F26909146007B6A1B /* LoadmoreIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D02BD5E26909146007B6A1B /* LoadmoreIndicatorView.swift */; };
 		5D04BF9726C9FB6E0005F7E3 /* FeedInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D04BF9626C9FB6E0005F7E3 /* FeedInfo.swift */; };
 		5D096A08247ABF5E00EF3E47 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D096A07247ABF5E00EF3E47 /* TabBar.swift */; };
@@ -166,6 +168,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4EC32AF129D818FC003A3BD4 /* WebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserView.swift; sourceTree = "<group>"; };
 		5D02BD5E26909146007B6A1B /* LoadmoreIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadmoreIndicatorView.swift; sourceTree = "<group>"; };
 		5D04BF9626C9FB6E0005F7E3 /* FeedInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedInfo.swift; sourceTree = "<group>"; };
 		5D096A07247ABF5E00EF3E47 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
@@ -315,6 +318,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4EC32AF029D81863003A3BD4 /* WebView in Frameworks */,
 				4E55BE8A29D45FC00044389C /* Kingfisher in Frameworks */,
 				5D0CFA8526B994F5001A8A7F /* SwiftSoup in Frameworks */,
 				5D8FAA34272A70F50067766E /* Atributika in Frameworks */,
@@ -644,6 +648,7 @@
 				5D1D7B8526FC9AF6008E0C08 /* Login */,
 				5D843E9626A46CB800C47D95 /* Message */,
 				5D179BFD2496F6EC00E40E90 /* Widget */,
+				4EC32AF129D818FC003A3BD4 /* WebBrowserView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -714,6 +719,7 @@
 				5D0CFA8426B994F5001A8A7F /* SwiftSoup */,
 				5D8FAA33272A70F50067766E /* Atributika */,
 				4E55BE8929D45FC00044389C /* Kingfisher */,
+				4EC32AEF29D81863003A3BD4 /* WebView */,
 			);
 			productName = V2er;
 			productReference = 5D436FE524791C2C00FFA37E /* V2er.app */;
@@ -791,6 +797,7 @@
 				5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				5D8FAA32272A70F50067766E /* XCRemoteSwiftPackageReference "SwiftRichText" */,
 				4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				4EC32AEE29D81863003A3BD4 /* XCRemoteSwiftPackageReference "SwiftUI-WebView" */,
 			);
 			productRefGroup = 5D436FE624791C2C00FFA37E /* Products */;
 			projectDirPath = "";
@@ -902,6 +909,7 @@
 				5D6871822718717B00329E73 /* OtherSettingsView.swift in Sources */,
 				5D8FAA38272D26200067766E /* RootView.swift in Sources */,
 				5D04BF9726C9FB6E0005F7E3 /* FeedInfo.swift in Sources */,
+				4EC32AF229D818FC003A3BD4 /* WebBrowserView.swift in Sources */,
 				5D0A513926E26473006F3D9B /* FeedDetailReducer.swift in Sources */,
 				5D2DD00826FB353C0001C85A /* DefaultReducer.swift in Sources */,
 				5D0CFA8026B992FC001A8A7F /* MyRecentPage.swift in Sources */,
@@ -1305,6 +1313,14 @@
 				kind = branch;
 			};
 		};
+		4EC32AEE29D81863003A3BD4 /* XCRemoteSwiftPackageReference "SwiftUI-WebView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kylehickinson/SwiftUI-WebView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
+			};
+		};
 		5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
@@ -1328,6 +1344,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		4EC32AEF29D81863003A3BD4 /* WebView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4EC32AEE29D81863003A3BD4 /* XCRemoteSwiftPackageReference "SwiftUI-WebView" */;
+			productName = WebView;
 		};
 		5D0CFA8426B994F5001A8A7F /* SwiftSoup */ = {
 			isa = XCSwiftPackageProductDependency;

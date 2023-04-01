@@ -53,139 +53,142 @@ struct LoginPage: StateView {
 
     @ViewBuilder
     private var contentView: some View {
+      NavigationView {
         VStack(alignment: .center) {
-            Image("logo")
-                .cornerBorder(radius: 25)
-                .padding(.top, 20)
-            Text("Login to V2EX")
-                .font(.title2)
-                .foregroundColor(.primary)
-                .fontWeight(.heavy)
-                .padding(.vertical, 20)
-            VStack(spacing: 10) {
-                let radius: CGFloat = 12
-                let padding: CGFloat = 16
-                let height: CGFloat = 46
-                TextField("Username", text: bindingState.username)
-                    .padding(.horizontal, padding)
-                    .frame(height: height)
-                    .background(Color.lightGray)
-                    .cornerRadius(radius)
-                    .submitLabel(.next)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .keyboardType(.asciiCapable)
-                    .debug()
-                HStack(spacing: 0) {
-                    Group {
-                        if !showPassword {
-                            SecureField("Password", text: bindingState.password)
-                        } else {
-                            TextField("Password", text: bindingState.password)
-                        }
-                    }
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .keyboardType(.asciiCapable)
-                    .submitLabel(.continue)
-                    .padding(.horizontal, padding)
-                    .frame(maxWidth: .infinity, maxHeight: height)
-                    Color.gray
-                        .opacity(0.2)
-                        .padding(.vertical, 14)
-                        .frame(width: 1.5, height: height)
-                        .padding(.horizontal, 2)
-                    Button {
-                        withAnimation {
-                            showPassword.toggle()
-                        }
-                    } label: {
-                        Image(systemName: showPassword ? "eye.slash" : "eye")
-                            .foregroundColor(.tintColor)
-                            .font(.footnote.weight(.light))
-                            .padding(.horizontal, 10)
-                    }
+          Image("logo")
+            .cornerBorder(radius: 25)
+            .padding(.top, 20)
+          Text("Login to V2EX")
+            .font(.title2)
+            .foregroundColor(.primary)
+            .fontWeight(.heavy)
+            .padding(.vertical, 20)
+          VStack(spacing: 10) {
+            let radius: CGFloat = 12
+            let padding: CGFloat = 16
+            let height: CGFloat = 46
+            TextField("Username", text: bindingState.username)
+              .padding(.horizontal, padding)
+              .frame(height: height)
+              .background(Color.lightGray)
+              .cornerRadius(radius)
+              .submitLabel(.next)
+              .autocapitalization(.none)
+              .disableAutocorrection(true)
+              .keyboardType(.asciiCapable)
+              .debug()
+            HStack(spacing: 0) {
+              Group {
+                if !showPassword {
+                  SecureField("Password", text: bindingState.password)
+                } else {
+                  TextField("Password", text: bindingState.password)
                 }
-                .background(Color.lightGray)
-                .cornerRadius(radius)
-                HStack(spacing: 0) {
-                    TextField("Captcha", text: bindingState.captcha)
-                        .padding(.horizontal, padding)
-                        .frame(height: height)
-                        .submitLabel(.go)
-                        .keyboardType(.asciiCapable)
-                        .disableAutocorrection(true)
-                    Color.gray
-                        .opacity(0.2)
-                        .padding(.vertical, 14)
-                        .frame(width: 1.5, height: height)
-                        .padding(.horizontal, 2)
-                    KFImage.url(URL(string: state.captchaUrl))
-                        .placeholder { ProgressView().debug() }
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 100, height: height)
-                        .onTapGesture {
-                            dispatch(LoginActions.FetchCaptchaStart())
-                        }
+              }
+              .autocapitalization(.none)
+              .disableAutocorrection(true)
+              .keyboardType(.asciiCapable)
+              .submitLabel(.continue)
+              .padding(.horizontal, padding)
+              .frame(maxWidth: .infinity, maxHeight: height)
+              Color.gray
+                .opacity(0.2)
+                .padding(.vertical, 14)
+                .frame(width: 1.5, height: height)
+                .padding(.horizontal, 2)
+              Button {
+                withAnimation {
+                  showPassword.toggle()
                 }
-                .background(Color.lightGray)
-                .cornerRadius(radius)
+              } label: {
+                Image(systemName: showPassword ? "eye.slash" : "eye")
+                  .foregroundColor(.tintColor)
+                  .font(.footnote.weight(.light))
+                  .padding(.horizontal, 10)
+              }
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 10)
-            HStack {
-                Button {
-                    // start register
-                    let refUrl = APIService.baseUrlString + "/signup?r=ghui"
-                    refUrl.openURL()
-                } label: {
-                    Text("Register")
-                        .font(.headline)
-                        .foregroundColor(Color.tintColor)
-                        .padding()
-                        .greedyWidth()
-                        .cornerBorder(radius: 15, borderWidth: 2, color: Color.tintColor)
+            .background(Color.lightGray)
+            .cornerRadius(radius)
+            HStack(spacing: 0) {
+              TextField("Captcha", text: bindingState.captcha)
+                .padding(.horizontal, padding)
+                .frame(height: height)
+                .submitLabel(.go)
+                .keyboardType(.asciiCapable)
+                .disableAutocorrection(true)
+              Color.gray
+                .opacity(0.2)
+                .padding(.vertical, 14)
+                .frame(width: 1.5, height: height)
+                .padding(.horizontal, 2)
+              KFImage.url(URL(string: state.captchaUrl))
+                .placeholder { ProgressView().debug() }
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 100, height: height)
+                .onTapGesture {
+                  dispatch(LoginActions.FetchCaptchaStart())
                 }
-                Button {
-                    dispatch(LoginActions.StartLogin())
-                } label: {
-                    Text("Login")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding()
-                        .greedyWidth()
-                        .background(Color.tintColor)
-                        .cornerRadius(15)
-                }
-                .disabled(!notEmpty(state.username,
-                                    state.password,
-                                    state.captcha))
             }
-            .padding(.horizontal, 20)
-            Spacer()
-            HStack {
-                Text("FAQ")
-                    .onTapGesture {
-                        let url = APIService.baseUrlString + "/faq"
-                        url.openURL()
-                    }
-                Text("About")
-                    .onTapGesture {
-                        let url = APIService.baseUrlString + "/about"
-                        url.openURL()
-                    }
-                Text("Password")
-                    .onTapGesture {
-                        let url = APIService.baseUrlString + "/forgot"
-                        url.openURL()
-                    }
+            .background(Color.lightGray)
+            .cornerRadius(radius)
+          }
+          .padding(.horizontal, 20)
+          .padding(.bottom, 10)
+          HStack {
+            Text("Register")
+              .font(.headline)
+              .foregroundColor(Color.tintColor)
+              .padding()
+              .greedyWidth()
+              .cornerBorder(radius: 15, borderWidth: 2, color: Color.tintColor)
+              .to {
+                let refUrl = APIService.baseUrlString + "/signup?r=ghui"
+                WebBrowserView(url: refUrl)
+              }
+            
+            Button {
+              dispatch(LoginActions.StartLogin())
+            } label: {
+              Text("Login")
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding()
+                .greedyWidth()
+                .background(Color.tintColor)
+                .cornerRadius(15)
             }
-            .font(.callout)
+            .disabled(!notEmpty(state.username,
+                                state.password,
+                                state.captcha))
+          }
+          .padding(.horizontal, 20)
+          Spacer()
+          HStack {
+            Text("FAQ")
+              .to {
+                let url = APIService.baseUrlString + "/faq"
+                WebBrowserView(url: url)
+              }
+            Text("About")
+              .to {
+                let url = APIService.baseUrlString + "/about"
+                WebBrowserView(url: url)
+              }
+            Text("Password")
+              .to {
+                let url = APIService.baseUrlString + "/forgot"
+                WebBrowserView(url: url)
+              }
+          }
+          .font(.callout.bold())
+          .opacity(0.6)
+          .buttonStyle(.plain)
         }
         .greedyHeight()
         .background(Color.bgColor)
         .navigationBarHidden(true)
+      }
     }
 
 }
