@@ -59,25 +59,23 @@ fileprivate struct AttributedText: UIViewRepresentable {
         self._height = height
     }
 
-    func makeUIView(context: Context) -> MaxWidthAttributedLabel {
-        let label = MaxWidthAttributedLabel()
+    func makeUIView(context: Context) -> AttributedLabel {
+        let label = AttributedLabel()
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.attributedText = self.richString
-        label.maxWidth = maxWidth
         clickEvent(label: label)
         return label
     }
 
-    func updateUIView(_ label: MaxWidthAttributedLabel, context: Context) {
+    func updateUIView(_ label: AttributedLabel, context: Context) {
         label.attributedText = self.richString
-        label.maxWidth = maxWidth
         runInMain(delay: 100) {
             self.height = label.sizeThatFits(CGSize(width: maxWidth, height: .infinity)).height
         }
     }
 
-    private func clickEvent(label: MaxWidthAttributedLabel) {
+    private func clickEvent(label: AttributedLabel) {
         let baseURL = APIService.baseUrlString
         label.onClick = { label, detection in
             if let consumed = self.detection?(detection.type) {
@@ -104,14 +102,6 @@ fileprivate struct AttributedText: UIViewRepresentable {
         }
     }
 
-}
-
-fileprivate class MaxWidthAttributedLabel: AttributedLabel {
-    var maxWidth: CGFloat!
-
-    open override var intrinsicContentSize: CGSize {
-        sizeThatFits(CGSize(width: maxWidth, height: .infinity))
-    }
 }
 
 extension String {
