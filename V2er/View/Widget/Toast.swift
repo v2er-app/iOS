@@ -58,9 +58,9 @@ extension View {
             self
             if isPresented.wrappedValue {
                 content()
-                    .visualBlur(bg: .white.opacity(0.95))
+                    .visualBlur(bg: Color.itemBackground.opacity(0.95))
                     .cornerRadius(99)
-                    .shadow(color: .black.opacity(0.2), radius: 1.5)
+                    .shadow(color: Color.primaryText.opacity(0.2), radius: 1.5)
                     .padding(.top, paddingTop)
                     .transition(AnyTransition.move(edge: .top))
                     .zIndex(1)

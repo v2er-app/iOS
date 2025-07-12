@@ -31,17 +31,17 @@ struct MePage: BaseHomePageView {
             if !AccountState.hasSignIn() {
                 VStack {
                     Text("登录查看更多")
-                        .foregroundColor(.white)
+                        .foregroundColor(.primaryText)
                         .font(.title2)
                     Button {
                         dispatch(LoginActions.ShowLoginPageAction())
                     } label: {
                         Text("登录")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(Color.itemBackground)
                             .padding()
                             .padding(.horizontal, 50)
-                            .background(Color.black)
+                            .background(Color.tintColor)
                             .cornerRadius(15)
                     }
                 }
@@ -71,12 +71,12 @@ struct MePage: BaseHomePageView {
                     .foregroundColor(Color.bodyText)
                 Image(systemName: "chevron.right")
                     .font(.body.weight(.regular))
-                    .foregroundColor(Color.gray)
+                    .foregroundColor(Color.secondaryText)
             }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 16)
-        .background(.white)
+        .background(Color.itemBackground)
         .padding(.bottom, 8)
         .to {
             UserDetailPage(userId: AccountState.userName)

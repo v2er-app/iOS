@@ -91,8 +91,8 @@ struct LoginPage: StateView {
               .submitLabel(.continue)
               .padding(.horizontal, padding)
               .frame(maxWidth: .infinity, maxHeight: height)
-              Color.gray
-                .opacity(0.2)
+              Color.separator
+                .opacity(0.5)
                 .padding(.vertical, 14)
                 .frame(width: 1.5, height: height)
                 .padding(.horizontal, 2)
@@ -116,8 +116,8 @@ struct LoginPage: StateView {
                 .submitLabel(.go)
                 .keyboardType(.asciiCapable)
                 .disableAutocorrection(true)
-              Color.gray
-                .opacity(0.2)
+              Color.separator
+                .opacity(0.5)
                 .padding(.vertical, 14)
                 .frame(width: 1.5, height: height)
                 .padding(.horizontal, 2)
@@ -152,7 +152,7 @@ struct LoginPage: StateView {
             } label: {
               Text("Login")
                 .font(.headline)
-                .foregroundColor(.white)
+                .foregroundColor(Color.itemBackground)
                 .padding()
                 .greedyWidth()
                 .background(Color.tintColor)
