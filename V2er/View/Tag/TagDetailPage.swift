@@ -40,7 +40,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     }
     
     private var foreGroundColor: Color {
-        shouldHideNavbar ? .white.opacity(0.9) : .tintColor
+        shouldHideNavbar ? Color.primaryText.opacity(0.9) : .tintColor
     }
 
     private var statusBarStyle: UIStatusBarStyle {
@@ -77,7 +77,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                         .fade(duration: 0.25)
                         .resizable()
                         .blur(radius: 80, opaque: true)
-                        .overlay(Color.black.opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
+                        .overlay(Color.primaryText.opacity(withAnimation {shouldHideNavbar ? 0.6 : 0.2}))
                         .frame(height: bannerViewHeight * 1.2 + max(scrollY, 0))
                     Spacer()
                 }
@@ -206,7 +206,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 }
             }
         }
-        .background(.white)
+        .background(Color.itemBackground)
         .clipCorner(12, corners: [.topLeft, .topRight])
     }
 

@@ -111,7 +111,7 @@ struct Webview : UIViewRepresentable {
             return """
             <style type='text/css'>
                 img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #000000 \(colorImportant == false ? "" : "!important"); }
+            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #1C1C1E \(colorImportant == false ? "" : "!important"); }
                 iframe{width:100%; height:250px;}
             
             </style>
@@ -121,7 +121,7 @@ struct Webview : UIViewRepresentable {
             return """
             <style type='text/css'>
                 img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #F2F2F2 \(colorImportant == false ? "" : "!important"); }
+            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #F2F2F7 \(colorImportant == false ? "" : "!important"); }
                 iframe{width:100%; height:250px;}
             
             </style>
@@ -132,12 +132,12 @@ struct Webview : UIViewRepresentable {
             <style type='text/css'>
             @media (prefers-color-scheme: light) {
                 img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #000000 \(colorImportant == false ? "" : "!important"); }
+            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #1C1C1E \(colorImportant == false ? "" : "!important"); }
                 iframe{width:100%; height:250px;}
             }
             @media (prefers-color-scheme: dark) {
                 img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #F2F2F2 \(colorImportant == false ? "" : "!important"); }
+            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #F2F2F7 \(colorImportant == false ? "" : "!important"); }
                 iframe{width:100%; height:250px;}
             }
             </style>
