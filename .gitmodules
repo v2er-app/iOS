@@ -1,0 +1,3 @@
+[submodule "website"]
+    path = website
+    url = git@github.com:v2er-app/v2er.app.git
