@@ -22,13 +22,16 @@ jobs:
         submodules: recursive
     
     - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+      run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
     
     - name: Show Xcode version
       run: xcodebuild -version
     
+    - name: Install xcpretty
+      run: gem install xcpretty
+    
     - name: Cache SPM packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
         key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
@@ -47,7 +50,7 @@ jobs:
           -project V2er.xcodeproj \
           -scheme V2er \
           -sdk iphonesimulator \
-          -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+          -destination 'platform=iOS Simulator,name=iPhone 15' \
           ONLY_ACTIVE_ARCH=YES \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO | xcpretty --color
@@ -58,13 +61,13 @@ jobs:
           -project V2er.xcodeproj \
           -scheme V2er \
           -sdk iphonesimulator \
-          -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+          -destination 'platform=iOS Simulator,name=iPhone 15' \
           ONLY_ACTIVE_ARCH=YES \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO | xcpretty --color --test
     
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: test-results

@@ -32,7 +32,7 @@ jobs:
     
     - name: Upload format diff
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: format-diff
         path: format-diff.txt
@@ -48,7 +48,10 @@ jobs:
         submodules: recursive
     
     - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+      run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+    
+    - name: Install xcpretty
+      run: gem install xcpretty
     
     - name: Build and test with coverage
       run: |
@@ -56,7 +59,7 @@ jobs:
           -project V2er.xcodeproj \
           -scheme V2er \
           -sdk iphonesimulator \
-          -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+          -destination 'platform=iOS Simulator,name=iPhone 15' \
           -enableCodeCoverage YES \
           -derivedDataPath build/DerivedData \
           CODE_SIGN_IDENTITY="" \
