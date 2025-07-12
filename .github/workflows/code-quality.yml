@@ -1,0 +1,112 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  swiftformat:
+    name: SwiftFormat Check
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install SwiftFormat
+      run: brew install swiftformat
+    
+    - name: Check code formatting
+      run: |
+        swiftformat --version
+        swiftformat . --lint --verbose
+      continue-on-error: true
+    
+    - name: Generate format diff
+      if: failure()
+      run: |
+        swiftformat . --dryrun > format-diff.txt
+        cat format-diff.txt
+    
+    - name: Upload format diff
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: format-diff
+        path: format-diff.txt
+  
+  code-coverage:
+    name: Code Coverage
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Select Xcode version
+      run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+    
+    - name: Install xcpretty
+      run: gem install xcpretty
+    
+    - name: Build and test with coverage
+      run: |
+        xcodebuild test \
+          -project V2er.xcodeproj \
+          -scheme V2er \
+          -sdk iphonesimulator \
+          -destination 'platform=iOS Simulator,name=iPhone 15' \
+          -enableCodeCoverage YES \
+          -derivedDataPath build/DerivedData \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO | xcpretty
+    
+    - name: Generate coverage report
+      run: |
+        cd build/DerivedData
+        # Find the xcresult bundle
+        RESULT_BUNDLE=$(find . -name '*.xcresult' -type d | head -n 1)
+        
+        if [ -z "$RESULT_BUNDLE" ]; then
+          echo "No test results found, setting coverage to 0%"
+          echo "coverage=0.00" >> $GITHUB_ENV
+        else
+          xcrun xccov view --report --json "$RESULT_BUNDLE" > coverage.json || echo '{}' > coverage.json
+          
+          # Extract coverage percentage with fallback
+          COVERAGE=$(cat coverage.json | jq -r '.lineCoverage // 0' | awk '{printf "%.2f", $1 * 100}')
+          echo "Code coverage: ${COVERAGE}%"
+          echo "coverage=${COVERAGE}" >> $GITHUB_ENV
+        fi
+    
+    - name: Create coverage badge
+      if: env.GIST_SECRET != ''
+      uses: schneegans/dynamic-badges-action@v1.6.0
+      with:
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: ${{ secrets.GIST_ID }}
+        filename: v2er-ios-coverage.json
+        label: Coverage
+        message: ${{ env.coverage }}%
+        color: ${{ env.coverage > 80 && 'success' || env.coverage > 60 && 'yellow' || 'critical' }}
+      env:
+        GIST_SECRET: ${{ secrets.GIST_SECRET }}
+    
+    - name: Comment PR with coverage
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const coverage = parseFloat('${{ env.coverage }}');
+          const emoji = coverage > 80 ? '✅' : coverage > 60 ? '⚠️' : '❌';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `## Code Coverage Report ${emoji}\n\nCurrent coverage: **${coverage}%**`
+          });

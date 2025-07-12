@@ -1,0 +1,218 @@
+name: Release to App Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      testflight_only:
+        description: 'TestFlight only (no App Store release)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+    
+    - name: Select Xcode version
+      run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+    
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+        bundler-cache: true
+    
+    - name: Install Fastlane
+      run: |
+        gem install fastlane
+        gem install xcpretty
+    
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+    
+    - name: Import certificates
+      env:
+        CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
+        CERTIFICATES_PASSWORD: ${{ secrets.CERTIFICATES_PASSWORD }}
+        KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+      run: |
+        # Create variables
+        CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
+        KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+        
+        # Import certificate from secrets
+        echo -n "$CERTIFICATES_P12" | base64 --decode -o $CERTIFICATE_PATH
+        
+        # Create temporary keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+        
+        # Import certificate to keychain
+        security import $CERTIFICATE_PATH -P "$CERTIFICATES_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+        security list-keychain -d user -s $KEYCHAIN_PATH
+    
+    - name: Download provisioning profiles
+      env:
+        PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+      run: |
+        # Create the provisioning profiles directory
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        
+        # Decode and save provisioning profile
+        echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/V2er.mobileprovision
+    
+    - name: Bump version
+      id: version
+      run: |
+        # Get current version
+        CURRENT_VERSION=$(xcodebuild -project V2er.xcodeproj -showBuildSettings | grep MARKETING_VERSION | tr -d 'MARKETING_VERSION = ')
+        echo "Current version: $CURRENT_VERSION"
+        
+        # Calculate new version based on input
+        IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+        MAJOR=${VERSION_PARTS[0]}
+        MINOR=${VERSION_PARTS[1]}
+        PATCH=${VERSION_PARTS[2]}
+        
+        case "${{ github.event.inputs.release_type }}" in
+          major)
+            NEW_VERSION="$((MAJOR + 1)).0.0"
+            ;;
+          minor)
+            NEW_VERSION="$MAJOR.$((MINOR + 1)).0"
+            ;;
+          patch)
+            NEW_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+            ;;
+        esac
+        
+        echo "New version: $NEW_VERSION"
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        
+        # Update version in project
+        xcrun agvtool new-marketing-version $NEW_VERSION
+        
+        # Get and increment build number
+        BUILD_NUMBER=$(xcodebuild -project V2er.xcodeproj -showBuildSettings | grep CURRENT_PROJECT_VERSION | tr -d 'CURRENT_PROJECT_VERSION = ')
+        NEW_BUILD_NUMBER=$((BUILD_NUMBER + 1))
+        xcrun agvtool new-version -all $NEW_BUILD_NUMBER
+    
+    - name: Archive app
+      env:
+        TEAM_ID: ${{ secrets.TEAM_ID }}
+      run: |
+        xcodebuild archive \
+          -project V2er.xcodeproj \
+          -scheme V2er \
+          -sdk iphoneos \
+          -configuration Release \
+          -archivePath $PWD/build/V2er.xcarchive \
+          DEVELOPMENT_TEAM=$TEAM_ID \
+          CODE_SIGN_STYLE=Manual \
+          CODE_SIGN_IDENTITY="iPhone Distribution" \
+          PROVISIONING_PROFILE_SPECIFIER="V2er AppStore" | xcpretty
+    
+    - name: Export IPA
+      env:
+        TEAM_ID: ${{ secrets.TEAM_ID }}
+      run: |
+        # Create export options plist
+        cat > ExportOptions.plist <<EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+          <key>method</key>
+          <string>app-store</string>
+          <key>teamID</key>
+          <string>$TEAM_ID</string>
+          <key>uploadSymbols</key>
+          <true/>
+          <key>compileBitcode</key>
+          <false/>
+          <key>provisioningProfiles</key>
+          <dict>
+            <key>com.v2er.app</key>
+            <string>V2er AppStore</string>
+          </dict>
+        </dict>
+        </plist>
+        EOF
+        
+        xcodebuild -exportArchive \
+          -archivePath $PWD/build/V2er.xcarchive \
+          -exportOptionsPlist ExportOptions.plist \
+          -exportPath $PWD/build \
+          -allowProvisioningUpdates | xcpretty
+    
+    - name: Upload to TestFlight
+      env:
+        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+      run: |
+        # Create API key file
+        mkdir -p ~/.appstoreconnect/private_keys
+        echo -n "$APP_STORE_CONNECT_API_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_API_KEY_ID}.p8
+        
+        xcrun altool --upload-app \
+          --type ios \
+          --file build/V2er.ipa \
+          --apiKey $APP_STORE_CONNECT_API_KEY_ID \
+          --apiIssuer $APP_STORE_CONNECT_API_KEY_ISSUER_ID
+    
+    - name: Create release tag
+      run: |
+        git add -A
+        git commit -m "Release version ${{ steps.version.outputs.version }}"
+        git tag -a "v${{ steps.version.outputs.version }}" -m "Release version ${{ steps.version.outputs.version }}"
+        git push origin main --tags
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ steps.version.outputs.version }}
+        name: Release ${{ steps.version.outputs.version }}
+        body: |
+          ## What's New
+          
+          This release includes bug fixes and performance improvements.
+          
+          ### Changes
+          - Version bump to ${{ steps.version.outputs.version }}
+          
+          ### TestFlight
+          This version has been submitted to TestFlight for testing.
+          
+          ${{ github.event.inputs.testflight_only == 'true' && '### Note\nThis is a TestFlight-only release.' || '### App Store\nThis version will be submitted to the App Store after TestFlight testing.' }}
+        draft: false
+        prerelease: ${{ github.event.inputs.testflight_only == 'true' }}
+    
+    - name: Clean up
+      if: always()
+      run: |
+        security delete-keychain $RUNNER_TEMP/app-signing.keychain-db || true
+        rm -f ~/Library/MobileDevice/Provisioning\ Profiles/V2er.mobileprovision || true

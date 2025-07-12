@@ -1,0 +1,76 @@
+name: iOS Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    
+    - name: Select Xcode version
+      run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+    
+    - name: Show Xcode version
+      run: xcodebuild -version
+    
+    - name: Install xcpretty
+      run: gem install xcpretty
+    
+    - name: Cache SPM packages
+      uses: actions/cache@v4
+      with:
+        path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+    
+    - name: Resolve Swift packages
+      run: |
+        xcodebuild -resolvePackageDependencies \
+          -project V2er.xcodeproj \
+          -scheme V2er
+    
+    - name: Build for testing
+      run: |
+        set -o pipefail && xcodebuild build-for-testing \
+          -project V2er.xcodeproj \
+          -scheme V2er \
+          -sdk iphonesimulator \
+          -destination 'platform=iOS Simulator,name=iPhone 15' \
+          ONLY_ACTIVE_ARCH=YES \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO | xcpretty --color
+    
+    - name: Run tests
+      run: |
+        set -o pipefail && xcodebuild test-without-building \
+          -project V2er.xcodeproj \
+          -scheme V2er \
+          -sdk iphonesimulator \
+          -destination 'platform=iOS Simulator,name=iPhone 15' \
+          ONLY_ACTIVE_ARCH=YES \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO | xcpretty --color --test
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: test-results
+        path: |
+          ~/Library/Logs/DiagnosticReports/
+          ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/

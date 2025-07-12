@@ -1,0 +1,84 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Update Swift Package Dependencies
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Select Xcode version
+      run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+    
+    - name: Update Swift packages
+      run: |
+        # Update all Swift package dependencies to latest versions
+        xcodebuild -project V2er.xcodeproj \
+          -scheme V2er \
+          -resolvePackageDependencies \
+          -scmProvider system
+    
+    - name: Check for changes
+      id: git-check
+      run: |
+        git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+    
+    - name: Create Pull Request
+      if: steps.git-check.outputs.changes == 'true'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: update Swift package dependencies'
+        title: 'chore: update Swift package dependencies'
+        body: |
+          ## Automated Dependency Update
+          
+          This PR updates the Swift Package Manager dependencies to their latest compatible versions.
+          
+          ### Changes
+          - Updated Package.resolved with latest dependency versions
+          
+          ### Checklist
+          - [ ] Build passes with updated dependencies
+          - [ ] Tests pass with updated dependencies
+          - [ ] No breaking changes identified
+          
+          Please review the dependency changes and ensure they don't introduce any breaking changes.
+          
+          ---
+          *This PR was automatically created by the dependency update workflow.*
+        branch: automated/dependency-updates
+        delete-branch: true
+        labels: |
+          dependencies
+          automated
+  
+  check-vulnerabilities:
+    name: Security Vulnerability Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Run security audit
+      uses: actions/dependency-review-action@v3
+      with:
+        fail-on-severity: moderate
+    
+    - name: Upload security report
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: security-report
+        path: dependency-review-report.json
