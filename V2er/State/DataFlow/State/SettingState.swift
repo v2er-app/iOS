@@ -48,3 +48,13 @@ enum AppearanceMode: String, CaseIterable {
         }
     }
 }
+
+// Temporary: Define actions here until SettingActions.swift is properly added to project
+struct SettingActions {
+    private static let R: Reducer = .setting
+    
+    struct ChangeAppearanceAction: Action {
+        var target: Reducer = R
+        let appearance: AppearanceMode
+    }
+}

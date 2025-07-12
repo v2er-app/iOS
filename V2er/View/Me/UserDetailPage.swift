@@ -77,7 +77,7 @@ struct UserDetailPage: StateView {
                         .fade(duration: 0.25)
                         .resizable()
                         .blur(radius: 80, opaque: true)
-                        .overlay(Color.primaryText.opacity(withAnimation {shouldHideNavbar ? 0.6 : 0.2}))
+                        .overlay(Color.dynamic(light: .black, dark: .white).opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
                         .frame(maxWidth: .infinity, maxHeight: height)
                     Spacer().background(.clear)
                 }

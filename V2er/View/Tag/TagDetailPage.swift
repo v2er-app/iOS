@@ -77,7 +77,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                         .fade(duration: 0.25)
                         .resizable()
                         .blur(radius: 80, opaque: true)
-                        .overlay(Color.primaryText.opacity(withAnimation {shouldHideNavbar ? 0.6 : 0.2}))
+                        .overlay(Color.dynamic(light: .black, dark: .white).opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
                         .frame(height: bannerViewHeight * 1.2 + max(scrollY, 0))
                     Spacer()
                 }
