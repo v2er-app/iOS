@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-V2er is a beautiful V2EX forum client built for iOS platform using SwiftUI. It implements a Redux-like unidirectional data flow architecture for state management.
+V2er is a V2EX forum client built for iOS using SwiftUI. It implements a Redux-like unidirectional data flow architecture for state management.
 
 ## Development Commands
 
@@ -101,7 +101,8 @@ Currently contains only boilerplate test setup.
 
 ## Important Notes
 
-- Minimum iOS version: Compatible with iPhone (armv7)
+- Minimum iOS version: iOS 15.0
+- Supported architectures: armv7, arm64
 - Orientation: Portrait only on iPhone, all orientations on iPad
 - UI Style: Light mode enforced
 - Website submodule: Located at `website/` (separate repository)
