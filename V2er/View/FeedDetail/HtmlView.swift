@@ -42,7 +42,7 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
     @Binding var rendered: Bool
     @State var loaded: Bool = false
     let colorScheme: ColorScheme
-    let appearance: AppSettings.Appearance
+    let appearance: AppearanceMode
 
     // Make a coordinator to co-ordinate with WKWebView's default delegate functions
     func makeCoordinator() -> Coordinator {
