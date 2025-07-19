@@ -18,7 +18,12 @@ struct FeedPage: BaseHomePageView {
     var isSelected: Bool {
         let selected = selecedTab == .feed
         if selected && !state.hasLoadedOnce {
-            dispatch(FeedActions.FetchData.Start(autoLoad: true))
+            // Check if user is not logged in, load mock data for UI testing
+            if !AccountState.hasSignIn() {
+                dispatch(FeedActions.LoadMockData())
+            } else {
+                dispatch(FeedActions.FetchData.Start(autoLoad: true))
+            }
         }
         return selected
     }
@@ -33,17 +38,40 @@ struct FeedPage: BaseHomePageView {
 
     @ViewBuilder
     private var contentView: some View {
-        LazyVStack(spacing: 0) {
-            ForEach(state.feedInfo.items) { item in
-                NavigationLink(destination: FeedDetailPage(initData: item)) {
-                    FeedItemView(data: item)
+        VStack(spacing: 0) {
+            // Show debug banner when using mock data
+            if !AccountState.hasSignIn() && state.hasLoadedOnce {
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.orange)
+                    Text("Debug Mode: Showing mock data (not logged in)")
+                        .font(.caption)
+                        .foregroundColor(.secondaryText)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.dynamic(light: Color.orange.opacity(0.1), dark: Color.orange.opacity(0.2)))
+                .cornerRadius(8)
+                .padding(.horizontal, 12)
+                .padding(.top, 8)
+            }
+            
+            LazyVStack(spacing: 0) {
+                ForEach(state.feedInfo.items) { item in
+                    NavigationLink(destination: FeedDetailPage(initData: item)) {
+                        FeedItemView(data: item)
+                    }
                 }
             }
         }
         .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, scrollTop(tab: .feed)) {
-            await run(action: FeedActions.FetchData.Start())
+            if AccountState.hasSignIn() {
+                await run(action: FeedActions.FetchData.Start())
+            }
         } loadMore: {
-            await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
+            if AccountState.hasSignIn() {
+                await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
+            }
         }
         .background(Color.bgColor)
     }

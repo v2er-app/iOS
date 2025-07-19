@@ -24,6 +24,12 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
                 state.feedInfo = newsInfo ?? FeedInfo()
                 state.willLoadPage = 1
             } else { }
+        case let action as FeedActions.LoadMockData:
+            // Load mock data for UI testing when not logged in
+            state.feedInfo = FeedInfo.mockData()
+            state.hasLoadedOnce = true
+            state.showProgressView = false
+            state.refreshing = false
         case let action as FeedActions.LoadMore.Start:
             guard !state.refreshing else { break }
             guard !state.loadingMore else { break }
@@ -95,6 +101,10 @@ struct FeedActions {
     }
 
     struct ClearMsgBadge: Action {
+        var target: Reducer = reducer
+    }
+    
+    struct LoadMockData: Action {
         var target: Reducer = reducer
     }
 
