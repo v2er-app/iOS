@@ -10,14 +10,10 @@ import SwiftUI
 
 struct AppearanceSettingView: View {
     @EnvironmentObject private var store: Store
-    @State private var selectedAppearance: AppearanceMode = .system
 
     var body: some View {
         formView
             .navBar("外观设置")
-            .onAppear {
-                selectedAppearance = store.appState.settingState.appearance
-            }
     }
 
     private func updateAppearance(_ mode: AppearanceMode) {
@@ -56,7 +52,7 @@ struct AppearanceSettingView: View {
                     VStack(spacing: 0) {
                         ForEach(AppearanceMode.allCases, id: \.self) { mode in
                             Button(action: {
-                                selectedAppearance = mode
+                                print("🎨 User selected: \(mode.rawValue)")
                                 dispatch(SettingActions.ChangeAppearanceAction(appearance: mode))
                                 // Force immediate UI update
                                 updateAppearance(mode)
@@ -65,7 +61,7 @@ struct AppearanceSettingView: View {
                                     Text(mode.displayName)
                                         .foregroundColor(.primaryText)
                                     Spacer()
-                                    if selectedAppearance == mode {
+                                    if store.appState.settingState.appearance == mode {
                                         Image(systemName: "checkmark")
                                             .foregroundColor(.tintColor)
                                             .font(.system(size: 14, weight: .semibold))

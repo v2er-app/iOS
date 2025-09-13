@@ -11,12 +11,15 @@ import SwiftUI
 
 struct SettingState: FluxState {
     var appearance: AppearanceMode = .system
-    
+
     init() {
         // Load saved preference
         if let savedMode = UserDefaults.standard.string(forKey: "appearanceMode"),
            let mode = AppearanceMode(rawValue: savedMode) {
             self.appearance = mode
+            print("📱 Loaded saved appearance: \(mode.rawValue)")
+        } else {
+            print("📱 No saved appearance, using default: system")
         }
     }
 }

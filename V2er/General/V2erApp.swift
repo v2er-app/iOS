@@ -20,6 +20,12 @@ struct V2erApp: App {
     init() {
         setupApperance()
         setupNotifications()
+        // Apply saved theme on app launch
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            let savedAppearance = Store.shared.appState.settingState.appearance
+            print("🚀 Applying saved appearance on launch: \(savedAppearance.rawValue)")
+            self.updateAppearance(savedAppearance)
+        }
     }
 
     private func setupNotifications() {
@@ -58,6 +64,7 @@ struct V2erApp: App {
     }
 
     private func updateAppearance(_ appearance: AppearanceMode) {
+        print("🔄 Updating appearance to: \(appearance.rawValue)")
         updateNavigationBarAppearance(for: appearance)
         updateWindowInterfaceStyle(for: appearance)
     }
@@ -102,9 +109,6 @@ struct V2erApp: App {
     
     private func updateWindowInterfaceStyle(for appearance: AppearanceMode) {
         DispatchQueue.main.async {
-            // Get all windows and update their interface style
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
-
             let style: UIUserInterfaceStyle
             switch appearance {
             case .light:
@@ -115,20 +119,32 @@ struct V2erApp: App {
                 style = .unspecified
             }
 
-            // Update all windows in the scene
-            windowScene.windows.forEach { window in
-                window.overrideUserInterfaceStyle = style
+            print("🪟 Setting window interface style to: \(style.rawValue)")
+
+            // Update all connected scenes
+            UIApplication.shared.connectedScenes.forEach { scene in
+                if let windowScene = scene as? UIWindowScene {
+                    windowScene.windows.forEach { window in
+                        window.overrideUserInterfaceStyle = style
+                        print("  ✓ Updated window: \(window)")
+                    }
+                }
             }
 
             // Also update the stored window if available
             if let window = V2erApp.window {
                 window.overrideUserInterfaceStyle = style
+                print("  ✓ Updated stored window")
             }
 
             // Update the root hosting controller
             if let rootHostingController = V2erApp.rootViewController as? RootHostingController<RootHostView> {
                 rootHostingController.applyAppearanceFromString(appearance.rawValue)
+                print("  ✓ Updated root hosting controller")
             }
+
+            // Force a redraw
+            UIApplication.shared.windows.forEach { $0.setNeedsDisplay() }
         }
     }
 
