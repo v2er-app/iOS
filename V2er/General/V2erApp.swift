@@ -19,6 +19,20 @@ struct V2erApp: App {
 
     init() {
         setupApperance()
+        setupNotifications()
+    }
+
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("AppearanceDidChange"),
+            object: nil,
+            queue: .main
+        ) { notification in
+            if let appearance = notification.object as? AppearanceMode {
+                print("📱 Received appearance change notification: \(appearance.rawValue)")
+                self.updateAppearance(appearance)
+            }
+        }
     }
     
     private func setupApperance() {
@@ -29,20 +43,31 @@ struct V2erApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootView {
-                RootHostView()
-                    .environmentObject(store)
-                    .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
-                    .onAppear {
-                        updateNavigationBarAppearance(for: store.appState.settingState.appearance)
-                        updateWindowInterfaceStyle(for: store.appState.settingState.appearance)
-                    }
-                    .onReceive(store.$appState.map(\.settingState.appearance)) { newValue in
-                        updateNavigationBarAppearance(for: newValue)
-                        updateWindowInterfaceStyle(for: newValue)
-                    }
+            ZStack {
+                // Hidden view to trigger redraws
+                Color.clear
+                    .frame(width: 0, height: 0)
+                    .id(store.appState.settingState.appearance)
+
+                RootView {
+                    RootHostView()
+                        .environmentObject(store)
+                }
+            }
+            .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
+            .environmentObject(store)
+            .onAppear {
+                updateAppearance(store.appState.settingState.appearance)
+            }
+            .onChange(of: store.appState.settingState.appearance) { newValue in
+                updateAppearance(newValue)
             }
         }
+    }
+
+    private func updateAppearance(_ appearance: AppearanceMode) {
+        updateNavigationBarAppearance(for: appearance)
+        updateWindowInterfaceStyle(for: appearance)
     }
     
     private func updateNavigationBarAppearance(for appearance: AppearanceMode) {
@@ -106,6 +131,11 @@ struct V2erApp: App {
             // Also update the stored window if available
             if let window = V2erApp.window {
                 window.overrideUserInterfaceStyle = style
+            }
+
+            // Update the root hosting controller
+            if let rootHostingController = V2erApp.rootViewController as? RootHostingController<RootHostView> {
+                rootHostingController.applyAppearance(appearance)
             }
         }
     }

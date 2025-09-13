@@ -27,6 +27,26 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return V2erApp.statusBarState
     }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Apply the saved appearance mode
+        if let savedMode = UserDefaults.standard.string(forKey: "appearanceMode"),
+           let mode = AppearanceMode(rawValue: savedMode) {
+            applyAppearance(mode)
+        }
+    }
+
+    func applyAppearance(_ mode: AppearanceMode) {
+        switch mode {
+        case .light:
+            overrideUserInterfaceStyle = .light
+        case .dark:
+            overrideUserInterfaceStyle = .dark
+        case .system:
+            overrideUserInterfaceStyle = .unspecified
+        }
+    }
 }
 
 extension View {
