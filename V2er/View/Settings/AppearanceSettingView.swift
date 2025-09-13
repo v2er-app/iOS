@@ -11,13 +11,34 @@ import SwiftUI
 struct AppearanceSettingView: View {
     @EnvironmentObject private var store: Store
     @State private var selectedAppearance: AppearanceMode = .system
-    
+
     var body: some View {
         formView
             .navBar("外观设置")
             .onAppear {
                 selectedAppearance = store.appState.settingState.appearance
             }
+    }
+
+    private func updateAppearance(_ mode: AppearanceMode) {
+        // Force immediate window interface style update
+        DispatchQueue.main.async {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+
+            let style: UIUserInterfaceStyle
+            switch mode {
+            case .light:
+                style = .light
+            case .dark:
+                style = .dark
+            case .system:
+                style = .unspecified
+            }
+
+            windowScene.windows.forEach { window in
+                window.overrideUserInterfaceStyle = style
+            }
+        }
     }
 
     @ViewBuilder
@@ -37,6 +58,8 @@ struct AppearanceSettingView: View {
                             Button(action: {
                                 selectedAppearance = mode
                                 dispatch(SettingActions.ChangeAppearanceAction(appearance: mode))
+                                // Force immediate UI update
+                                updateAppearance(mode)
                             }) {
                                 HStack {
                                     Text(mode.displayName)
