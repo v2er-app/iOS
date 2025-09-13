@@ -66,7 +66,7 @@ struct CreateTopicPage: StateView {
                 } label: {
                     Text(isPreviewing ? "编辑" : "预览")
                         .font(.callout)
-                        .foregroundColor(Color.white)
+                        .foregroundColor(Color.background)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(Color.tintColor)
@@ -106,7 +106,7 @@ struct CreateTopicPage: StateView {
                             // show placeholder
                             Text("如果标题能够表达完整内容, 此处可为空")
                                 .greedyFrame(.topLeading)
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondaryText)
                                 .debug()
                         } else if isPreviewing {
                             Text(state.content.attributedString)
@@ -135,7 +135,7 @@ struct CreateTopicPage: StateView {
                 } label: {
                     Text("发布主题")
                         .font(.callout)
-                        .foregroundColor(Color.white)
+                        .foregroundColor(Color.background)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(Color.tintColor)
@@ -156,12 +156,12 @@ struct CreateTopicPage: StateView {
     private var sectionItemView: some View {
         HStack {
             Image(systemName: "grid.circle")
-                .foregroundColor(.gray)
+                .foregroundColor(.secondaryText)
             Text(state.selectedNode?.text ?? "选择节点")
             Spacer()
             Image(systemName: "chevron.right")
                 .font(.body.weight(.regular))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondaryText)
                 .padding(.trailing)
         }
         .padding()

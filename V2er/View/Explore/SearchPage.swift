@@ -47,7 +47,7 @@ struct SearchPage: StateView {
             HStack(spacing: 0) {
                 HStack {
                     Image(systemName: "magnifyingglass")
-                        .foregroundColor(.gray)
+                        .foregroundColor(.secondaryText)
                     TextField("sov2ex", text: bindingState.keyword)
                         .disableAutocorrection(true)
                         .autocapitalization(.none)
@@ -83,7 +83,7 @@ struct SearchPage: StateView {
             Divider()
         }
         .visualBlur()
-        .background(Color.gray.opacity(0.35))
+        .background(Color.secondaryText.opacity(0.35))
     }
 
     @ViewBuilder
