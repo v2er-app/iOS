@@ -30,7 +30,7 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
             }
             Text(data.title.safe)
 //                .fontWeight(.medium)
-                .foregroundColor(.bodyText)
+                .foregroundColor(.primaryText)
                 .greedyWidth(.leading)
                 .lineLimit(2)
                 .padding(.top, 6)

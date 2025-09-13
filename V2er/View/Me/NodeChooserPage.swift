@@ -63,7 +63,7 @@ struct NodeChooserPage: View {
         HStack {
             HStack {
                 Image(systemName: "magnifyingglass")
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
                 TextField("Search ...", text: $filterText)
                     .disableAutocorrection(true)
                     .autocapitalization(.none)

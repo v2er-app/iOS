@@ -60,7 +60,7 @@ struct AuthorInfoView: View {
                 NavigationLink(destination: TagDetailPage(tag: tag, tagId: tagId)) {
                     Text(tag)
                         .font(.footnote)
-                        .foregroundColor(.black)
+                        .foregroundColor(.primaryText)
                         .lineLimit(1)
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)

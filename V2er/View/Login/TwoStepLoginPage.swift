@@ -19,26 +19,34 @@ struct TwoStepLoginPage: View {
             VStack(spacing: 16) {
                 Text("两步验证")
                     .font(.subheadline)
+                    .foregroundColor(.primaryText)
                 TextField("2FA码", text: $twoStepCode)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.numberPad)
+                    .foregroundColor(.primaryText)
                     .padding(.vertical, 6)
                     .padding(.horizontal)
-                    .background(Color.white.opacity(0.8))
-                    .cornerBorder(radius: 8)
                 HStack(spacing: 16) {
                     Spacer()
                     Button {
                         dispatch(LoginActions.TwoStepLoginCancel())
-                    } label: { Text("取消").opacity(0.8) }
+                    } label: { 
+                        Text("取消")
+                            .foregroundColor(.secondaryText)
+                    }
                     Button {
                         dispatch(LoginActions.TwoStepLogin(input: twoStepCode))
-                    } label: { Text("确定") }
+                    } label: { 
+                        Text("确定")
+                            .foregroundColor(.tintColor)
+                            .fontWeight(.medium)
+                    }
                     .disabled(twoStepCode.isEmpty)
                 }
-                .foregroundColor(.bodyText)
             }
             .padding(20)
-            .visualBlur()
-            .cornerBorder(radius: 20, borderWidth: 0)
+            .background(Color.secondaryBackground)
+            .cornerRadius(20)
             .padding(50)
         }
 

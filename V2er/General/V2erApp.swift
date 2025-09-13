@@ -34,9 +34,11 @@ struct V2erApp: App {
                     .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
                     .onAppear {
                         updateNavigationBarAppearance(for: store.appState.settingState.appearance)
+                        updateWindowInterfaceStyle(for: store.appState.settingState.appearance)
                     }
                     .onChange(of: store.appState.settingState.appearance) { newValue in
                         updateNavigationBarAppearance(for: newValue)
+                        updateWindowInterfaceStyle(for: newValue)
                     }
             }
         }
@@ -67,6 +69,26 @@ struct V2erApp: App {
         navAppearance.scrollEdgeAppearance = navbarAppearance
         navAppearance.backgroundColor = .clear
         navAppearance.tintColor = tintColor
+    }
+    
+    private func updateWindowInterfaceStyle(for appearance: AppearanceMode) {
+        // Get all windows and update their interface style
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+        
+        let style: UIUserInterfaceStyle
+        switch appearance {
+        case .light:
+            style = .light
+        case .dark:
+            style = .dark
+        case .system:
+            style = .unspecified
+        }
+        
+        // Update all windows in the scene
+        windowScene.windows.forEach { window in
+            window.overrideUserInterfaceStyle = style
+        }
     }
 
     static func changeStatusBarStyle(_ style: UIStatusBarStyle) {

@@ -27,7 +27,8 @@ struct HtmlView: View {
 
     var body: some View {
         GeometryReader { geo in
-            Webview(html: html, imgs: imgs,height: $height, rendered: $rendered)
+            Webview(html: html, imgs: imgs, height: $height, rendered: $rendered)
+                .environmentObject(Store.shared)
         }
         .frame(height: height)
     }
@@ -39,6 +40,8 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
     @Binding var height: CGFloat
     @Binding var rendered: Bool
     @State var loaded: Bool = false
+    @EnvironmentObject var store: Store
+    @Environment(\.colorScheme) var colorScheme
 
     // Make a coordinator to co-ordinate with WKWebView's default delegate functions
     func makeCoordinator() -> Coordinator {
@@ -70,8 +73,17 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
         print("------updateUIView--------: \(self.rendered)")
 //        if rendered { return }
         var content = Bundle.readString(name: "v2er", type: "html")
-        // TODO: dark mode
-        let isDark = false
+        // Determine dark mode based on app appearance setting
+        let isDark: Bool
+        let appearance = store.appState.settingState.appearance
+        switch appearance {
+        case .dark:
+            isDark = true
+        case .light:
+            isDark = false
+        case .system:
+            isDark = colorScheme == .dark
+        }
         let fontSize = 16
         let params = "\(isDark), \(fontSize)"
         content = content?.replace(segs: "{injecttedContent}", with: html ?? .empty)

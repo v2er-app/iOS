@@ -33,17 +33,23 @@ struct FeedPage: BaseHomePageView {
 
     @ViewBuilder
     private var contentView: some View {
-        LazyVStack(spacing: 0) {
-            ForEach(state.feedInfo.items) { item in
-                NavigationLink(destination: FeedDetailPage(initData: item)) {
-                    FeedItemView(data: item)
+        VStack(spacing: 0) {
+            LazyVStack(spacing: 0) {
+                ForEach(state.feedInfo.items) { item in
+                    NavigationLink(destination: FeedDetailPage(initData: item)) {
+                        FeedItemView(data: item)
+                    }
                 }
             }
         }
         .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, scrollTop(tab: .feed)) {
-            await run(action: FeedActions.FetchData.Start())
+            if AccountState.hasSignIn() {
+                await run(action: FeedActions.FetchData.Start())
+            }
         } loadMore: {
-            await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
+            if AccountState.hasSignIn() {
+                await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
+            }
         }
         .background(Color.bgColor)
     }

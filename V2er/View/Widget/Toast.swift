@@ -44,7 +44,7 @@ struct DefaultToastView: View {
 
     var body: some View {
         Label(title, systemImage: icon)
-            .foregroundColor(.bodyText)
+            .foregroundColor(.primaryText)
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
     }
@@ -58,9 +58,9 @@ extension View {
             self
             if isPresented.wrappedValue {
                 content()
-                    .visualBlur(bg: Color.itemBackground.opacity(0.95))
+                    .background(Color.secondaryBackground.opacity(0.98))
                     .cornerRadius(99)
-                    .shadow(color: Color.primaryText.opacity(0.2), radius: 1.5)
+                    .shadow(color: Color.primaryText.opacity(0.3), radius: 3)
                     .padding(.top, paddingTop)
                     .transition(AnyTransition.move(edge: .top))
                     .zIndex(1)

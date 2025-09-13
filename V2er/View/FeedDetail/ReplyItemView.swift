@@ -22,7 +22,7 @@ struct ReplyItemView: View {
                     .font(.system(size: 8))
                     .padding(.horizontal, 4)
                     .padding(.vertical, 2)
-                    .cornerBorder(radius: 3, borderWidth: 0.8, color: .black)
+                    .cornerBorder(radius: 3, borderWidth: 0.8, color: .primaryText)
                     .padding(.top, 2)
                     .hide(!info.isOwner)
             }

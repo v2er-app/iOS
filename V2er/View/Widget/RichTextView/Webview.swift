@@ -105,25 +105,31 @@ struct Webview : UIViewRepresentable {
         
     }
     
+    private let lightTextColor = "#1C1C1E"
+    private let darkTextColor = "#F2F2F7"
+
     func css(colorScheme: colorScheme) -> String {
+        let imgStyle = "img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}"
+        let iframeStyle = "iframe{width:100%; height:250px;}"
+        let textStyleBase = "h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: "
+        let importantSuffix = colorImportant == false ? "" : "!important"
+
         switch colorScheme {
         case .light:
             return """
             <style type='text/css'>
-                img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #1C1C1E \(colorImportant == false ? "" : "!important"); }
-                iframe{width:100%; height:250px;}
-            
+                \(imgStyle)
+                \(textStyleBase)\(lightTextColor) \(importantSuffix); }
+                \(iframeStyle)
             </style>
             <BODY>
             """
-        case .dark :
+        case .dark:
             return """
             <style type='text/css'>
-                img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #F2F2F7 \(colorImportant == false ? "" : "!important"); }
-                iframe{width:100%; height:250px;}
-            
+                \(imgStyle)
+                \(textStyleBase)\(darkTextColor) \(importantSuffix); }
+                \(iframeStyle)
             </style>
             <BODY>
             """
@@ -131,14 +137,14 @@ struct Webview : UIViewRepresentable {
             return """
             <style type='text/css'>
             @media (prefers-color-scheme: light) {
-                img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #1C1C1E \(colorImportant == false ? "" : "!important"); }
-                iframe{width:100%; height:250px;}
+                \(imgStyle)
+                \(textStyleBase)\(lightTextColor) \(importantSuffix); }
+                \(iframeStyle)
             }
             @media (prefers-color-scheme: dark) {
-                img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}
-            h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: #F2F2F7 \(colorImportant == false ? "" : "!important"); }
-                iframe{width:100%; height:250px;}
+                \(imgStyle)
+                \(textStyleBase)\(darkTextColor) \(importantSuffix); }
+                \(iframeStyle)
             }
             </style>
             <BODY>
