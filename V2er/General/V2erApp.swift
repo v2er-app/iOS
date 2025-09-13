@@ -43,19 +43,11 @@ struct V2erApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                // Hidden view to trigger redraws
-                Color.clear
-                    .frame(width: 0, height: 0)
-                    .id(store.appState.settingState.appearance)
-
-                RootView {
-                    RootHostView()
-                        .environmentObject(store)
-                }
+            RootView {
+                RootHostView()
+                    .environmentObject(store)
             }
             .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
-            .environmentObject(store)
             .onAppear {
                 updateAppearance(store.appState.settingState.appearance)
             }
@@ -135,7 +127,7 @@ struct V2erApp: App {
 
             // Update the root hosting controller
             if let rootHostingController = V2erApp.rootViewController as? RootHostingController<RootHostView> {
-                rootHostingController.applyAppearance(appearance)
+                rootHostingController.applyAppearanceFromString(appearance.rawValue)
             }
         }
     }

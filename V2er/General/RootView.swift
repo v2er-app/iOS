@@ -31,21 +31,22 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Apply the saved appearance mode
-        if let savedMode = UserDefaults.standard.string(forKey: "appearanceMode"),
-           let mode = AppearanceMode(rawValue: savedMode) {
-            applyAppearance(mode)
+        if let savedMode = UserDefaults.standard.string(forKey: "appearanceMode") {
+            applyAppearanceFromString(savedMode)
         }
     }
 
-    func applyAppearance(_ mode: AppearanceMode) {
-        switch mode {
-        case .light:
-            overrideUserInterfaceStyle = .light
-        case .dark:
-            overrideUserInterfaceStyle = .dark
-        case .system:
-            overrideUserInterfaceStyle = .unspecified
+    func applyAppearanceFromString(_ modeString: String) {
+        let style: UIUserInterfaceStyle
+        switch modeString {
+        case "light":
+            style = .light
+        case "dark":
+            style = .dark
+        default:
+            style = .unspecified
         }
+        overrideUserInterfaceStyle = style
     }
 }
 
