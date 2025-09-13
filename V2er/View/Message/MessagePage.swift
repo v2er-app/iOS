@@ -49,7 +49,7 @@ struct MessagePage: BaseHomePageView {
 struct MessageItemView: View {
     let item: MessageInfo.Item
     let quoteFont = Style.font(UIFont.prfered(.subheadline))
-        .foregroundColor(Color.bodyText.uiColor)
+        .foregroundColor(Color.secondaryText.uiColor)
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -57,6 +57,7 @@ struct MessageItemView: View {
                 .to { UserDetailPage(userId: item.username)}
             VStack(alignment: .leading) {
                 Text(item.title)
+                    .foregroundColor(Color.primaryText)
                     .greedyWidth(.leading)
                     .background(Color.itemBg)
                     .to { FeedDetailPage(id: item.feedId) }

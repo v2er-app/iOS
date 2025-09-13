@@ -41,7 +41,7 @@ struct ExplorePage: BaseHomePageView {
                     AvatarView(url: item.avatar, size: 30)
 //                        .to { UserDetailPage(userId: item.member) }
                     Text(item.title)
-                        .foregroundColor(.bodyText)
+                        .foregroundColor(Color.primaryText)
                         .lineLimit(2)
                         .greedyWidth(.leading)
                 }
