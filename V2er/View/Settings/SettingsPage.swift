@@ -22,8 +22,11 @@ struct SettingsPage: View {
   private var formView: some View {
     ScrollView {
       VStack(spacing: 0) {
-        SectionItemView("通用设置", showDivider: false)
+        SectionItemView("外观设置", showDivider: false)
           .padding(.top, 8)
+          .to { AppearanceSettingView() }
+        
+        SectionItemView("通用设置")
           .to { OtherSettingsView() }
 
           SectionItemView("帮助与反馈")

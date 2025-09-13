@@ -27,7 +27,7 @@ struct SectionItemView: View {
         SectionView(title, icon: icon, showDivider: showDivider) {
             Image(systemName: "chevron.right")
                 .font(.body.weight(.regular))
-                .foregroundColor(.gray)
+                .foregroundColor(.secondaryText)
                 .padding(.trailing, paddingH)
         }
     }
@@ -65,6 +65,6 @@ struct SectionView<Content: View>: View {
             .padding(.vertical, 17)
             .divider(showDivider ? 0.8 : 0.0)
         }
-        .background(.white)
+        .background(Color.itemBackground)
     }
 }

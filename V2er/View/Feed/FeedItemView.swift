@@ -37,6 +37,7 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
                 .padding(.vertical, 4)
             Text("评论\(data.replyNum.safe)")
                 .font(.footnote)
+                .foregroundColor(.secondaryText)
                 .greedyWidth(.trailing)
         }
         .padding(12)

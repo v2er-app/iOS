@@ -42,7 +42,7 @@ struct UserDetailPage: StateView {
     }
     
     var foreGroundColor: SwiftUI.Color {
-        return shouldHideNavbar ? .white.opacity(0.9) : .tintColor
+        return shouldHideNavbar ? Color.primaryText.opacity(0.9) : .tintColor
     }
     
     var body: some View {
@@ -77,7 +77,7 @@ struct UserDetailPage: StateView {
                         .fade(duration: 0.25)
                         .resizable()
                         .blur(radius: 80, opaque: true)
-                        .overlay(Color.black.opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
+                        .overlay(Color.dynamic(light: .black, dark: .white).opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
                         .frame(maxWidth: .infinity, maxHeight: height)
                     Spacer().background(.clear)
                 }
@@ -172,7 +172,7 @@ struct UserDetailPage: StateView {
             AvatarView(url: model.avatar, size: heightOfNodeImage)
             HStack(alignment: .center,spacing: 4) {
                 Circle()
-                    .fill(state.model.isOnline ? .green : .gray)
+                    .fill(state.model.isOnline ? .green : Color.secondaryText)
                     .frame(width: 8, height: 8)
                 Text(model.userName)
                     .font(.headline.weight(.semibold))
@@ -203,7 +203,7 @@ struct UserDetailPage: StateView {
         .background(Color.lightGray, in: RoundedRectangle(cornerRadius: 10))
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
-        .background(.white)
+        .background(Color.itemBackground)
         .clipCorner(12, corners: [.topLeft, .topRight])
     }
     
@@ -298,7 +298,7 @@ struct UserDetailPage: StateView {
                         NavigationLink(destination: TagDetailPage()) {
                             Text(data.tag)
                                 .font(.footnote)
-                                .foregroundColor(.black)
+                                .foregroundColor(Color.primaryText)
                                 .lineLimit(1)
                                 .padding(.horizontal, 14)
                                 .padding(.vertical, 8)
@@ -339,14 +339,14 @@ struct UserDetailPage: StateView {
             } label: {
                 Text(title)
                     .fontWeight(.bold)
-                    .foregroundColor(isSelected ? .white.opacity(0.9) : .tintColor)
+                    .foregroundColor(isSelected ? Color.itemBackground.opacity(0.9) : .tintColor)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
                     .background {
                         VStack {
                             if isSelected {
                                 RoundedRectangle(cornerRadius: 10)
-                                    .fill(.black)
+                                    .fill(Color.primaryText)
                                     .matchedGeometryEffect(id: "TAB", in: animation)
                             }
                         }
