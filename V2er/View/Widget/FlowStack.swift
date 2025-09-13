@@ -98,7 +98,7 @@ struct FlowStack_Previews: PreviewProvider {
         {
             Text($0)
                 .font(.footnote)
-                .foregroundColor(.black)
+                .foregroundColor(.primaryText)
                 .lineLimit(1)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
