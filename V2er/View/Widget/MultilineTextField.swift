@@ -43,7 +43,10 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
             uiView.text = self.text
         }
         // Update text color to ensure it responds to theme changes
-        uiView.textColor = Color.primaryText.uiColor
+        let desiredColor = Color.primaryText.uiColor
+        if uiView.textColor != desiredColor {
+            uiView.textColor = desiredColor
+        }
         if uiView.window != nil, !uiView.isFirstResponder {
 //            uiView.becomeFirstResponder()
         }
