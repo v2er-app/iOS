@@ -34,6 +34,20 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
         if let savedMode = UserDefaults.standard.string(forKey: "appearanceMode") {
             applyAppearanceFromString(savedMode)
         }
+
+        // Listen for appearance changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAppearanceChange),
+            name: NSNotification.Name("AppearanceDidChange"),
+            object: nil
+        )
+    }
+
+    @objc private func handleAppearanceChange(_ notification: Notification) {
+        if let appearance = notification.object as? AppearanceMode {
+            applyAppearanceFromString(appearance.rawValue)
+        }
     }
 
     func applyAppearanceFromString(_ modeString: String) {
@@ -47,6 +61,14 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
             style = .unspecified
         }
         overrideUserInterfaceStyle = style
+
+        // Force the view to redraw
+        view.setNeedsDisplay()
+        view.setNeedsLayout()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 

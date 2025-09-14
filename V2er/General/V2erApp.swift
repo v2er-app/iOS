@@ -21,24 +21,12 @@ struct V2erApp: App {
         setupApperance()
         setupNotifications()
         // Apply saved theme on app launch
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            let savedAppearance = Store.shared.appState.settingState.appearance
-            print("🚀 Applying saved appearance on launch: \(savedAppearance.rawValue)")
-            V2erApp.updateAppearanceStatic(savedAppearance)
-        }
+        let savedAppearance = Store.shared.appState.settingState.appearance
+        print("🚀 Saved appearance on launch: \(savedAppearance.rawValue)")
     }
 
     private func setupNotifications() {
-        NotificationCenter.default.addObserver(
-            forName: NSNotification.Name("AppearanceDidChange"),
-            object: nil,
-            queue: .main
-        ) { notification in
-            if let appearance = notification.object as? AppearanceMode {
-                print("📱 Received appearance change notification: \(appearance.rawValue)")
-                V2erApp.updateAppearanceStatic(appearance)
-            }
-        }
+        // Notifications are now handled in RootHostingController
     }
     
     private func setupApperance() {
@@ -52,8 +40,8 @@ struct V2erApp: App {
             RootView {
                 RootHostView()
                     .environmentObject(store)
+                    .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
             }
-            .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
             .onAppear {
                 updateAppearance(store.appState.settingState.appearance)
             }

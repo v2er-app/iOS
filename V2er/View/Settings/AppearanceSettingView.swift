@@ -16,10 +16,6 @@ struct AppearanceSettingView: View {
             .navBar("外观设置")
     }
 
-    private func updateAppearance(_ mode: AppearanceMode) {
-        // Use the static method from V2erApp
-        V2erApp.updateAppearanceStatic(mode)
-    }
 
     @ViewBuilder
     private var formView: some View {
@@ -38,8 +34,6 @@ struct AppearanceSettingView: View {
                             Button(action: {
                                 print("🎨 User selected: \(mode.rawValue)")
                                 dispatch(SettingActions.ChangeAppearanceAction(appearance: mode))
-                                // Force immediate UI update
-                                updateAppearance(mode)
                             }) {
                                 HStack {
                                     Text(mode.displayName)
