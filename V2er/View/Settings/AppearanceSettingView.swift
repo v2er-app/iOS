@@ -17,24 +17,8 @@ struct AppearanceSettingView: View {
     }
 
     private func updateAppearance(_ mode: AppearanceMode) {
-        // Force immediate window interface style update
-        DispatchQueue.main.async {
-            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
-
-            let style: UIUserInterfaceStyle
-            switch mode {
-            case .light:
-                style = .light
-            case .dark:
-                style = .dark
-            case .system:
-                style = .unspecified
-            }
-
-            windowScene.windows.forEach { window in
-                window.overrideUserInterfaceStyle = style
-            }
-        }
+        // Use the static method from V2erApp
+        V2erApp.updateAppearanceStatic(mode)
     }
 
     @ViewBuilder
