@@ -25,7 +25,7 @@ struct SectionTitleView: View {
         Text(title)
             .font(style == .normal ? .headline : .subheadline)
             .fontWeight(.heavy)
-            .foregroundColor(.bodyText)
+            .foregroundColor(.primaryText)
             .padding(.vertical, 8)
             .padding(.horizontal, style == .normal ? 2 : 8)
             .background {
