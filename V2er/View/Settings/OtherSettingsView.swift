@@ -45,7 +45,7 @@ struct OtherSettingsView: View {
                             .foregroundColor(Color.tintColor)
                         Image(systemName: "chevron.right")
                             .font(.body.weight(.regular))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondaryText)
                             .padding(.trailing, 16)
                     }
                 }

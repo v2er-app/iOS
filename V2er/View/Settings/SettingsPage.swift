@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import SafariServices
 
 struct SettingsPage: View {
   @Environment(\.dismiss) var dismiss
@@ -29,8 +30,12 @@ struct SettingsPage: View {
         SectionItemView("通用设置")
           .to { OtherSettingsView() }
 
-          SectionItemView("帮助与反馈")
+          SectionItemView("问题反馈")
             .padding(.top, 8)
+            .to {
+              SafariWebView(url: "https://github.com/v2er-app/iOS/issues")
+            }
+          SectionItemView("V2EX帮助")
             .to {
               WebBrowserView(url: "https://www.v2ex.com/help")
             }
@@ -101,6 +106,25 @@ struct SettingsPage: View {
       }
     }
   }
+}
+
+struct SafariWebView: View {
+    let url: String
+    @State private var showingSafari = false
+
+    var body: some View {
+        Color.clear
+            .onAppear {
+                if let url = URL(string: url) {
+                    showingSafari = true
+                }
+            }
+            .sheet(isPresented: $showingSafari) {
+                if let url = URL(string: url) {
+                    SafariView(url: url)
+                }
+            }
+    }
 }
 
 struct SettingsPage_Previews: PreviewProvider {

@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftUI
+import SafariServices
 
 extension String {
     static let `default`: String = ""
@@ -269,5 +270,18 @@ extension URL {
         } else {
             return [ : ]
         }
+    }
+}
+
+
+// MARK: - Safari View
+struct SafariView: UIViewControllerRepresentable {
+    let url: URL
+
+    func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
+        return SFSafariViewController(url: url)
+    }
+
+    func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {
     }
 }

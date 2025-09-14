@@ -7,12 +7,15 @@
 //
 
 import SwiftUI
+import SafariServices
 
 struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Environment(\.isPresented) private var isPresented
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var store: Store
     @State var rendered: Bool = false
+    @State private var showingSafari = false
+    @State private var safariURL: URL?
 
     var bindingState: Binding<FeedDetailState> {
         if store.appState.feedDetailStates[instanceId] == nil {
@@ -57,6 +60,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     var body: some View {
         contentView
             .navigatable()
+            .sheet(isPresented: $showingSafari) {
+                if let url = safariURL {
+                    SafariView(url: url)
+                }
+            }
     }
 
     @ViewBuilder
@@ -134,7 +142,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     } label: {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.title.weight(.regular))
-                            .foregroundColor(Color.bodyText.opacity(hasReplyContent ? 1.0 : 0.6))
+                            .foregroundColor(Color.tintColor.opacity(hasReplyContent ? 1.0 : 0.6))
                             .padding(.trailing, 6)
                             .padding(.vertical, 3)
                     }
@@ -231,6 +239,17 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         Label(reported ? "已举报" : "举报", systemImage: "person.crop.circle.badge.exclamationmark")
                     }
                     .disabled(reported)
+
+                    Divider()
+
+                    Button {
+                        if let url = URL(string: APIService.baseUrlString + "/t/\(id)") {
+                            safariURL = url
+                            showingSafari = true
+                        }
+                    } label: {
+                        Label("使用浏览器打开", systemImage: "safari")
+                    }
                 } label: {
                     Image(systemName: "ellipsis")
                         .padding(8)

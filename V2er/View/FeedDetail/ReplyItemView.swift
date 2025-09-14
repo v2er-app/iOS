@@ -30,8 +30,10 @@ struct ReplyItemView: View {
                 HStack {
                     VStack (alignment: .leading, spacing: 4) {
                         Text(info.userName)
+                            .foregroundColor(.primaryText)
                         Text(info.time)
                             .font(.caption2)
+                            .foregroundColor(.secondaryText)
                     }
                     Spacer()
                     //                    Image(systemName: "heart")
