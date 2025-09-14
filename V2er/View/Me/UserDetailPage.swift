@@ -248,12 +248,13 @@ struct UserDetailPage: StateView {
     struct ReplyItemView: View {
         var data: UserDetailInfo.ReplyInfo.Item
         let quoteFont = Style.font(UIFont.prfered(.footnote))
-            .foregroundColor(Color.bodyText.uiColor)
+            .foregroundColor(Color.primaryText.uiColor)
 
         var body: some View {
             VStack(spacing: 0) {
                 Text(data.title)
                     .font(.footnote)
+                    .foregroundColor(.primaryText)
                     .greedyWidth(.leading)
                 RichText {
                     data.content
@@ -272,6 +273,7 @@ struct UserDetailPage: StateView {
                 .padding(.vertical, 6)
                 Text(data.time)
                     .font(.footnote)
+                    .foregroundColor(.secondaryText)
                     .greedyWidth(.trailing)
             }
             .padding(12)

@@ -26,7 +26,7 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         textField.isUserInteractionEnabled = true
         textField.isScrollEnabled = false
         textField.backgroundColor = UIColor.clear
-        textField.textColor = Color.bodyText.uiColor
+        textField.textColor = Color.primaryText.uiColor
         
 //        textField.textContainer.maximumNumberOfLines = 5
         
@@ -42,6 +42,8 @@ fileprivate struct UITextViewWrapper: UIViewRepresentable {
         if uiView.text != self.text {
             uiView.text = self.text
         }
+        // Update text color to ensure it responds to theme changes
+        uiView.textColor = Color.primaryText.uiColor
         if uiView.window != nil, !uiView.isFirstResponder {
 //            uiView.becomeFirstResponder()
         }
@@ -127,7 +129,7 @@ struct MultilineTextField: View {
         Group {
             if showingPlaceholder {
                 Text(placeholder)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondaryText)
                     .padding(.leading, 4)
             }
         }

@@ -38,7 +38,7 @@ struct RichText: View {
 
     struct Styles {
         public static let base = Style.font(UIFont.prfered(.body))
-            .foregroundColor(Color.bodyText.uiColor)
+            .foregroundColor(Color.primaryText.uiColor)
         public static let link = Style("a")
             .font(.boldSystemFont(ofSize: 16))
             .foregroundColor(Color.url.uiColor, .normal)

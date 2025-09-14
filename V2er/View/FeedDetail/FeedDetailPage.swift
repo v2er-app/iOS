@@ -134,7 +134,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     } label: {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.title.weight(.regular))
-                            .foregroundColor(Color.bodyText.opacity(hasReplyContent ? 1.0 : 0.6))
+                            .foregroundColor(Color.tintColor.opacity(hasReplyContent ? 1.0 : 0.6))
                             .padding(.trailing, 6)
                             .padding(.vertical, 3)
                     }

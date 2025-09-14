@@ -56,6 +56,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 5) {
                         Text(data.userName)
+                            .foregroundColor(.primaryText)
                             .lineLimit(1)
                         Text(data.replyUpdate)
                             .lineLimit(1)
@@ -67,7 +68,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                     NavigationLink(destination: TagDetailPage()) {
                         Text(data.tag)
                             .font(.footnote)
-                            .foregroundColor(.black)
+                            .foregroundColor(.primaryText)
                             .lineLimit(1)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
@@ -75,11 +76,13 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                     }
                 }
                 Text(data.title)
+                    .foregroundColor(.primaryText)
                     .greedyWidth(.leading)
                     .lineLimit(2)
                 Text("评论\(data.replyNum)")
                     .lineLimit(1)
                     .font(.footnote)
+                    .foregroundColor(.secondaryText)
                     .greedyWidth(.trailing)
             }
             .padding(12)
