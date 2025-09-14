@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Combine
 
 @main
 struct V2erApp: App {
@@ -32,63 +33,155 @@ struct V2erApp: App {
                 RootHostView()
                     .environmentObject(store)
                     .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
-                    .onAppear {
-                        updateNavigationBarAppearance(for: store.appState.settingState.appearance)
-                        updateWindowInterfaceStyle(for: store.appState.settingState.appearance)
-                    }
-                    .onChange(of: store.appState.settingState.appearance) { newValue in
-                        updateNavigationBarAppearance(for: newValue)
-                        updateWindowInterfaceStyle(for: newValue)
-                    }
+            }            .onAppear {
+                updateAppearance(store.appState.settingState.appearance)
+            }            .onChange(of: store.appState.settingState.appearance) { newValue in
+                updateAppearance(newValue)
+            }        }
+    }
+
+    private func updateAppearance(_ appearance: AppearanceMode) {
+        updateNavigationBarAppearance(for: appearance)
+        updateWindowInterfaceStyle(for: appearance)
+    }
+
+    static func updateAppearanceStatic(_ appearance: AppearanceMode) {
+        updateNavigationBarAppearanceStatic(for: appearance)
+        updateWindowInterfaceStyleStatic(for: appearance)
+    }
+    
+    static func updateNavigationBarAppearanceStatic(for appearance: AppearanceMode) {
+        DispatchQueue.main.async {
+            let navbarAppearance = UINavigationBarAppearance()
+
+            // Determine if we should use dark mode
+            let isDarkMode: Bool
+            switch appearance {
+            case .light:
+                isDarkMode = false
+            case .dark:
+                isDarkMode = true
+            case .system:
+                isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
             }
-        }
+            let tintColor = isDarkMode ? UIColor.white : UIColor.black
+            navbarAppearance.titleTextAttributes = [.foregroundColor: tintColor]
+            navbarAppearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
+            navbarAppearance.backgroundColor = .clear
+
+            let navAppearance = UINavigationBar.appearance()
+            navAppearance.standardAppearance = navbarAppearance
+            navAppearance.compactAppearance = navbarAppearance
+            navAppearance.scrollEdgeAppearance = navbarAppearance
+            navAppearance.backgroundColor = .clear
+            navAppearance.tintColor = tintColor
+
+            // Force refresh of current navigation controllers
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                windowScene.windows.forEach { window in
+                    window.subviews.forEach { _ in
+                        window.tintColor = tintColor
+                    }                }            }        }
     }
-    
+
     private func updateNavigationBarAppearance(for appearance: AppearanceMode) {
-        let navbarAppearance = UINavigationBarAppearance()
-        
-        // Determine if we should use dark mode
-        let isDarkMode: Bool
-        switch appearance {
-        case .light:
-            isDarkMode = false
-        case .dark:
-            isDarkMode = true
-        case .system:
-            isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
-        }
-        
-        let tintColor = isDarkMode ? UIColor.white : UIColor.black
-        navbarAppearance.titleTextAttributes = [.foregroundColor: tintColor]
-        navbarAppearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
-        navbarAppearance.backgroundColor = .clear
-        
-        let navAppearance = UINavigationBar.appearance()
-        navAppearance.standardAppearance = navbarAppearance
-        navAppearance.compactAppearance = navbarAppearance
-        navAppearance.scrollEdgeAppearance = navbarAppearance
-        navAppearance.backgroundColor = .clear
-        navAppearance.tintColor = tintColor
+        DispatchQueue.main.async {
+            let navbarAppearance = UINavigationBarAppearance()
+
+            // Determine if we should use dark mode
+            let isDarkMode: Bool
+            switch appearance {
+            case .light:
+                isDarkMode = false
+            case .dark:
+                isDarkMode = true
+            case .system:
+                isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
+            }
+            let tintColor = isDarkMode ? UIColor.white : UIColor.black
+            navbarAppearance.titleTextAttributes = [.foregroundColor: tintColor]
+            navbarAppearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
+            navbarAppearance.backgroundColor = .clear
+
+            let navAppearance = UINavigationBar.appearance()
+            navAppearance.standardAppearance = navbarAppearance
+            navAppearance.compactAppearance = navbarAppearance
+            navAppearance.scrollEdgeAppearance = navbarAppearance
+            navAppearance.backgroundColor = .clear
+            navAppearance.tintColor = tintColor
+
+            // Force refresh of current navigation controllers
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                windowScene.windows.forEach { window in
+                    window.subviews.forEach { _ in
+                        window.tintColor = tintColor
+                    }                }            }        }
     }
     
+    static func updateWindowInterfaceStyleStatic(for appearance: AppearanceMode) {
+        DispatchQueue.main.async {
+            let style: UIUserInterfaceStyle
+            switch appearance {
+            case .light:
+                style = .light
+            case .dark:
+                style = .dark
+            case .system:
+                style = .unspecified
+            }
+
+            // Update all connected scenes
+            UIApplication.shared.connectedScenes.forEach { scene in
+                if let windowScene = scene as? UIWindowScene {
+                    windowScene.windows.forEach { window in
+                        window.overrideUserInterfaceStyle = style
+                    }                }            }
+            // Also update the stored window if available
+            if let window = V2erApp.window {
+                window.overrideUserInterfaceStyle = style
+            }
+            // Update the root hosting controller
+            if let rootHostingController = V2erApp.rootViewController as? RootHostingController<RootHostView> {
+                rootHostingController.applyAppearanceFromString(appearance.rawValue)
+            }
+            // Force a redraw
+            UIApplication.shared.connectedScenes.forEach { scene in
+                if let windowScene = scene as? UIWindowScene {
+                    windowScene.windows.forEach { $0.setNeedsDisplay() }
+                }            }        }
+    }
+
     private func updateWindowInterfaceStyle(for appearance: AppearanceMode) {
-        // Get all windows and update their interface style
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
-        
-        let style: UIUserInterfaceStyle
-        switch appearance {
-        case .light:
-            style = .light
-        case .dark:
-            style = .dark
-        case .system:
-            style = .unspecified
-        }
-        
-        // Update all windows in the scene
-        windowScene.windows.forEach { window in
-            window.overrideUserInterfaceStyle = style
-        }
+        DispatchQueue.main.async {
+            let style: UIUserInterfaceStyle
+            switch appearance {
+            case .light:
+                style = .light
+            case .dark:
+                style = .dark
+            case .system:
+                style = .unspecified
+            }
+
+            // Update all connected scenes
+            UIApplication.shared.connectedScenes.forEach { scene in
+                if let windowScene = scene as? UIWindowScene {
+                    windowScene.windows.forEach { window in
+                        window.overrideUserInterfaceStyle = style
+                    }                }            }
+            // Also update the stored window if available
+            if let window = V2erApp.window {
+                window.overrideUserInterfaceStyle = style
+            }
+            // Update the root hosting controller
+            if let rootHostingController = V2erApp.rootViewController as? RootHostingController<RootHostView> {
+                rootHostingController.applyAppearanceFromString(appearance.rawValue)
+            }
+            // Force a redraw
+            UIApplication.shared.connectedScenes.forEach { scene in
+                if let windowScene = scene as? UIWindowScene {
+                    windowScene.windows.forEach { $0.setNeedsDisplay() }
+                }            }        }
     }
 
     static func changeStatusBarStyle(_ style: UIStatusBarStyle) {

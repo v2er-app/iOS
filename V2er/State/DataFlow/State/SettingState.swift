@@ -11,7 +11,7 @@ import SwiftUI
 
 struct SettingState: FluxState {
     var appearance: AppearanceMode = .system
-    
+
     init() {
         // Load saved preference
         if let savedMode = UserDefaults.standard.string(forKey: "appearanceMode"),

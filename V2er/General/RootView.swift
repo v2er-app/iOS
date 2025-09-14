@@ -27,6 +27,49 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return V2erApp.statusBarState
     }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Apply the saved appearance mode
+        if let savedMode = UserDefaults.standard.string(forKey: "appearanceMode") {
+            applyAppearanceFromString(savedMode)
+        }
+
+        // Listen for appearance changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAppearanceChange),
+            name: NSNotification.Name("AppearanceDidChange"),
+            object: nil
+        )
+    }
+
+    @objc private func handleAppearanceChange(_ notification: Notification) {
+        if let appearance = notification.object as? AppearanceMode {
+            applyAppearanceFromString(appearance.rawValue)
+        }
+    }
+
+    func applyAppearanceFromString(_ modeString: String) {
+        let style: UIUserInterfaceStyle
+        switch modeString {
+        case "light":
+            style = .light
+        case "dark":
+            style = .dark
+        default:
+            style = .unspecified
+        }
+        overrideUserInterfaceStyle = style
+
+        // Force the view to redraw
+        view.setNeedsDisplay()
+        view.setNeedsLayout()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 
 extension View {
