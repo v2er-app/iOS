@@ -66,6 +66,13 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
         webView.allowsBackForwardNavigationGestures = false
         webView.scrollView.isScrollEnabled = false
         webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
+
+        // Set WebView background based on current UI mode to prevent white flash
+        let isDark = determineIsDarkMode()
+        webView.isOpaque = false
+        webView.backgroundColor = isDark ? UIColor(red: 0.067, green: 0.071, blue: 0.078, alpha: 1.0) : UIColor.white
+        webView.scrollView.backgroundColor = isDark ? UIColor(red: 0.067, green: 0.071, blue: 0.078, alpha: 1.0) : UIColor.white
+
         return webView
     }
 
@@ -74,22 +81,31 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
 //        if rendered { return }
         var content = Bundle.readString(name: "v2er", type: "html")
         // Determine dark mode based on app appearance setting
-        let isDark: Bool
-        let appearance = store.appState.settingState.appearance
-        switch appearance {
-        case .dark:
-            isDark = true
-        case .light:
-            isDark = false
-        case .system:
-            isDark = colorScheme == .dark
-        }
+        let isDark = determineIsDarkMode()
+
+        // Update WebView background color to match current UI mode
+        webView.isOpaque = false
+        webView.backgroundColor = isDark ? UIColor(red: 0.067, green: 0.071, blue: 0.078, alpha: 1.0) : UIColor.white
+        webView.scrollView.backgroundColor = isDark ? UIColor(red: 0.067, green: 0.071, blue: 0.078, alpha: 1.0) : UIColor.white
+
         let fontSize = 16
         let params = "\(isDark), \(fontSize)"
         content = content?.replace(segs: "{injecttedContent}", with: html ?? .empty)
                           .replace(segs: "{INJECT_PARAMS}", with: params)
         let baseUrl = Bundle.main.bundleURL
         webView.loadHTMLString(content ?? .empty, baseURL: baseUrl)
+    }
+
+    private func determineIsDarkMode() -> Bool {
+        let appearance = store.appState.settingState.appearance
+        switch appearance {
+        case .dark:
+            return true
+        case .light:
+            return false
+        case .system:
+            return colorScheme == .dark
+        }
     }
 
     func receivedJsonValueFromWebView(value: [String : Any?]) {
