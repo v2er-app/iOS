@@ -70,8 +70,8 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
         // Set WebView background based on current UI mode to prevent white flash
         let isDark = determineIsDarkMode()
         webView.isOpaque = false
-        webView.backgroundColor = isDark ? UIColor(red: 0.067, green: 0.071, blue: 0.078, alpha: 1.0) : UIColor.white
-        webView.scrollView.backgroundColor = isDark ? UIColor(red: 0.067, green: 0.071, blue: 0.078, alpha: 1.0) : UIColor.white
+        webView.backgroundColor = isDark ? UIColor(red: 0x1C/255.0, green: 0x1C/255.0, blue: 0x1E/255.0, alpha: 1.0) : UIColor.white
+        webView.scrollView.backgroundColor = isDark ? UIColor(red: 0x1C/255.0, green: 0x1C/255.0, blue: 0x1E/255.0, alpha: 1.0) : UIColor.white
 
         return webView
     }
@@ -85,8 +85,8 @@ fileprivate struct Webview: UIViewRepresentable, WebViewHandlerDelegate {
 
         // Update WebView background color to match current UI mode
         webView.isOpaque = false
-        webView.backgroundColor = isDark ? UIColor(red: 0.067, green: 0.071, blue: 0.078, alpha: 1.0) : UIColor.white
-        webView.scrollView.backgroundColor = isDark ? UIColor(red: 0.067, green: 0.071, blue: 0.078, alpha: 1.0) : UIColor.white
+        webView.backgroundColor = isDark ? UIColor(red: 0x1C/255.0, green: 0x1C/255.0, blue: 0x1E/255.0, alpha: 1.0) : UIColor.white
+        webView.scrollView.backgroundColor = isDark ? UIColor(red: 0x1C/255.0, green: 0x1C/255.0, blue: 0x1E/255.0, alpha: 1.0) : UIColor.white
 
         let fontSize = 16
         let params = "\(isDark), \(fontSize)"
