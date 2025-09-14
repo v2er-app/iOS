@@ -277,11 +277,43 @@ extension URL {
 // MARK: - Safari View
 struct SafariView: UIViewControllerRepresentable {
     let url: URL
+    @Environment(\.colorScheme) var colorScheme
 
     func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
-        return SFSafariViewController(url: url)
+        let safariVC = SFSafariViewController(url: url)
+        updateAppearance(safariVC)
+        return safariVC
     }
 
     func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {
+        updateAppearance(uiViewController)
+    }
+
+    private func updateAppearance(_ safariVC: SFSafariViewController) {
+        // Get the actual interface style from the root view controller
+        let actualStyle = V2erApp.rootViewController?.overrideUserInterfaceStyle ?? .unspecified
+
+        // Apply the appropriate style to Safari view
+        if actualStyle != .unspecified {
+            // User has explicitly set light or dark mode
+            safariVC.overrideUserInterfaceStyle = actualStyle
+        } else {
+            // Following system setting - use the current colorScheme
+            safariVC.overrideUserInterfaceStyle = colorScheme == .dark ? .dark : .light
+        }
+
+        // Set tint colors based on the effective style
+        let effectiveStyle = safariVC.overrideUserInterfaceStyle == .dark ||
+                           (safariVC.overrideUserInterfaceStyle == .unspecified && colorScheme == .dark)
+
+        if effectiveStyle {
+            // Dark mode colors
+            safariVC.preferredControlTintColor = UIColor.systemBlue
+            safariVC.preferredBarTintColor = UIColor.systemBackground
+        } else {
+            // Light mode colors
+            safariVC.preferredControlTintColor = UIColor.systemBlue
+            safariVC.preferredBarTintColor = UIColor.systemBackground
+        }
     }
 }
