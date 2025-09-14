@@ -32,7 +32,6 @@ struct AppearanceSettingView: View {
                     VStack(spacing: 0) {
                         ForEach(AppearanceMode.allCases, id: \.self) { mode in
                             Button(action: {
-                                print("🎨 User selected: \(mode.rawValue)")
                                 dispatch(SettingActions.ChangeAppearanceAction(appearance: mode))
                             }) {
                                 HStack {

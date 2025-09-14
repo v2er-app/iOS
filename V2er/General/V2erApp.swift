@@ -19,14 +19,6 @@ struct V2erApp: App {
 
     init() {
         setupApperance()
-        setupNotifications()
-        // Apply saved theme on app launch
-        let savedAppearance = Store.shared.appState.settingState.appearance
-        print("🚀 Saved appearance on launch: \(savedAppearance.rawValue)")
-    }
-
-    private func setupNotifications() {
-        // Notifications are now handled in RootHostingController
     }
     
     private func setupApperance() {
@@ -41,24 +33,19 @@ struct V2erApp: App {
                 RootHostView()
                     .environmentObject(store)
                     .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
-            }
-            .onAppear {
+            }            .onAppear {
                 updateAppearance(store.appState.settingState.appearance)
-            }
-            .onChange(of: store.appState.settingState.appearance) { newValue in
+            }            .onChange(of: store.appState.settingState.appearance) { newValue in
                 updateAppearance(newValue)
-            }
-        }
+            }        }
     }
 
     private func updateAppearance(_ appearance: AppearanceMode) {
-        print("🔄 Updating appearance to: \(appearance.rawValue)")
         updateNavigationBarAppearance(for: appearance)
         updateWindowInterfaceStyle(for: appearance)
     }
 
     static func updateAppearanceStatic(_ appearance: AppearanceMode) {
-        print("🔄 Updating appearance to: \(appearance.rawValue)")
         updateNavigationBarAppearanceStatic(for: appearance)
         updateWindowInterfaceStyleStatic(for: appearance)
     }
@@ -77,7 +64,6 @@ struct V2erApp: App {
             case .system:
                 isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
             }
-
             let tintColor = isDarkMode ? UIColor.white : UIColor.black
             navbarAppearance.titleTextAttributes = [.foregroundColor: tintColor]
             navbarAppearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
@@ -95,10 +81,7 @@ struct V2erApp: App {
                 windowScene.windows.forEach { window in
                     window.subviews.forEach { _ in
                         window.tintColor = tintColor
-                    }
-                }
-            }
-        }
+                    }                }            }        }
     }
 
     private func updateNavigationBarAppearance(for appearance: AppearanceMode) {
@@ -115,7 +98,6 @@ struct V2erApp: App {
             case .system:
                 isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
             }
-
             let tintColor = isDarkMode ? UIColor.white : UIColor.black
             navbarAppearance.titleTextAttributes = [.foregroundColor: tintColor]
             navbarAppearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
@@ -133,10 +115,7 @@ struct V2erApp: App {
                 windowScene.windows.forEach { window in
                     window.subviews.forEach { _ in
                         window.tintColor = tintColor
-                    }
-                }
-            }
-        }
+                    }                }            }        }
     }
     
     static func updateWindowInterfaceStyleStatic(for appearance: AppearanceMode) {
@@ -151,33 +130,25 @@ struct V2erApp: App {
                 style = .unspecified
             }
 
-            print("🪟 Setting window interface style to: \(style.rawValue)")
-
             // Update all connected scenes
             UIApplication.shared.connectedScenes.forEach { scene in
                 if let windowScene = scene as? UIWindowScene {
                     windowScene.windows.forEach { window in
                         window.overrideUserInterfaceStyle = style
-                        print("  ✓ Updated window: \(window)")
-                    }
-                }
-            }
-
+                    }                }            }
             // Also update the stored window if available
             if let window = V2erApp.window {
                 window.overrideUserInterfaceStyle = style
-                print("  ✓ Updated stored window")
             }
-
             // Update the root hosting controller
             if let rootHostingController = V2erApp.rootViewController as? RootHostingController<RootHostView> {
                 rootHostingController.applyAppearanceFromString(appearance.rawValue)
-                print("  ✓ Updated root hosting controller")
             }
-
             // Force a redraw
-            UIApplication.shared.windows.forEach { $0.setNeedsDisplay() }
-        }
+            UIApplication.shared.connectedScenes.forEach { scene in
+                if let windowScene = scene as? UIWindowScene {
+                    windowScene.windows.forEach { $0.setNeedsDisplay() }
+                }            }        }
     }
 
     private func updateWindowInterfaceStyle(for appearance: AppearanceMode) {
@@ -192,33 +163,25 @@ struct V2erApp: App {
                 style = .unspecified
             }
 
-            print("🪟 Setting window interface style to: \(style.rawValue)")
-
             // Update all connected scenes
             UIApplication.shared.connectedScenes.forEach { scene in
                 if let windowScene = scene as? UIWindowScene {
                     windowScene.windows.forEach { window in
                         window.overrideUserInterfaceStyle = style
-                        print("  ✓ Updated window: \(window)")
-                    }
-                }
-            }
-
+                    }                }            }
             // Also update the stored window if available
             if let window = V2erApp.window {
                 window.overrideUserInterfaceStyle = style
-                print("  ✓ Updated stored window")
             }
-
             // Update the root hosting controller
             if let rootHostingController = V2erApp.rootViewController as? RootHostingController<RootHostView> {
                 rootHostingController.applyAppearanceFromString(appearance.rawValue)
-                print("  ✓ Updated root hosting controller")
             }
-
             // Force a redraw
-            UIApplication.shared.windows.forEach { $0.setNeedsDisplay() }
-        }
+            UIApplication.shared.connectedScenes.forEach { scene in
+                if let windowScene = scene as? UIWindowScene {
+                    windowScene.windows.forEach { $0.setNeedsDisplay() }
+                }            }        }
     }
 
     static func changeStatusBarStyle(_ style: UIStatusBarStyle) {

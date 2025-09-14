@@ -14,7 +14,6 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
 
     switch action {
     case let action as SettingActions.ChangeAppearanceAction:
-        print("🎨 Changing appearance to: \(action.appearance.rawValue)")
         state.appearance = action.appearance
         // Save to UserDefaults
         UserDefaults.standard.set(action.appearance.rawValue, forKey: "appearanceMode")
