@@ -111,16 +111,17 @@ fileprivate struct SearchResultItemView: View {
         VStack(alignment: .leading) {
             Text(data.title)
                 .fontWeight(.semibold)
+                .foregroundColor(.primaryText)
                 .greedyWidth(.leading)
                 .lineLimit(2)
             Text(data.content)
+                .foregroundColor(.secondaryText)
                 .lineLimit(5)
                 .padding(.vertical, 5)
             Text("\(data.creator) 于 \(data.created) 发表, \(data.replyNum) 回复")
                 .font(.footnote)
                 .foregroundColor(Color.tintColor.opacity(0.8))
         }
-        .foregroundColor(Color.bodyText)
         .greedyWidth()
         .padding(padding)
         .background(Color.itemBg)
