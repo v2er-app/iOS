@@ -38,6 +38,7 @@ struct TabBar: View {
                                 .frame(height: 3)
                                 .cornerRadius(0)
                             Image(tab.icon)
+                                .renderingMode(.template)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 18)
@@ -57,7 +58,7 @@ struct TabBar: View {
                                 .fontWeight(isSelected ? .semibold : .regular)
                                 .padding(.bottom, 8)
                         }
-                        .foregroundColor(Color.tintColor)
+                        .foregroundColor(isSelected ? Color.tintColor : Color.tintColor.opacity(0.6))
                         .background(self.bg(isSelected: isSelected))
                         .padding(.horizontal, 16)
                         .background(Color.almostClear)
