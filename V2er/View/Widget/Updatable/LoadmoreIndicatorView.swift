@@ -21,7 +21,8 @@ struct LoadmoreIndicatorView: View {
         Group {
             if !hasMoreData {
                 Text("No more data")
-                    .font(.callout)
+                    .font(.caption)
+                    .foregroundColor(.secondaryText)
             } else if isLoading {
                 ActivityIndicator()
             } else {
