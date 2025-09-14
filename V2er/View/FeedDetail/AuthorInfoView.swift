@@ -69,7 +69,7 @@ struct AuthorInfoView: View {
             }
             Text(title)
                 .font(.headline)
-                .foregroundColor(.bodyText)
+                .foregroundColor(.primaryText)
                 .greedyWidth(.leading)
                 .padding(.top, 10)
                 .debug()
