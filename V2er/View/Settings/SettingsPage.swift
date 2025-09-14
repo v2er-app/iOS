@@ -9,16 +9,26 @@
 import SwiftUI
 import SafariServices
 
+// Wrapper to make URL Identifiable for sheet presentation
+struct IdentifiableURL: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
 struct SettingsPage: View {
   @Environment(\.dismiss) var dismiss
   @State private var showingAlert = false
   @State var logingOut: Bool = false
-  
+  @State private var safariURL: IdentifiableURL?
+
   var body: some View {
     formView
       .navBar("设置")
+      .sheet(item: $safariURL) { item in
+        SafariView(url: item.url)
+      }
   }
-  
+
   @ViewBuilder
   private var formView: some View {
     ScrollView {
@@ -26,24 +36,40 @@ struct SettingsPage: View {
         SectionItemView("外观设置", showDivider: false)
           .padding(.top, 8)
           .to { AppearanceSettingView() }
-        
+
         SectionItemView("通用设置")
           .to { OtherSettingsView() }
 
+        Button {
+          if let url = URL(string: "https://github.com/v2er-app/iOS/issues") {
+            safariURL = IdentifiableURL(url: url)
+          }
+        } label: {
           SectionItemView("问题反馈")
             .padding(.top, 8)
-            .to {
-              SafariWebView(url: "https://github.com/v2er-app/iOS/issues")
-            }
-          SectionItemView("V2EX帮助")
-            .to {
-              WebBrowserView(url: "https://www.v2ex.com/help")
-            }
-        SectionItemView("源码开放")
-            .to {
-              WebBrowserView(url: "https://github.com/v2er-app")
-            }
+        }
 
+        Button {
+          if let url = URL(string: "https://www.v2ex.com/help") {
+            safariURL = IdentifiableURL(url: url)
+          }
+        } label: {
+          SectionItemView("V2EX帮助")
+        }
+
+        Button {
+          if let url = URL(string: "https://github.com/v2er-app") {
+            safariURL = IdentifiableURL(url: url)
+          }
+        } label: {
+          SectionItemView("源码开放")
+        }
+
+        Button {
+          if let url = URL(string: "https://v2er.app") {
+            safariURL = IdentifiableURL(url: url)
+          }
+        } label: {
           SectionView("关于") {
             HStack {
               Text("版本1.0.0")
@@ -55,9 +81,7 @@ struct SettingsPage: View {
                 .padding(.trailing, 16)
             }
           }
-          .to {
-            WebBrowserView(url: "https://v2er.app")
-          }
+        }
         
         Button {
           //                  "https://github.com/v2er-app".openURL()
@@ -108,24 +132,6 @@ struct SettingsPage: View {
   }
 }
 
-struct SafariWebView: View {
-    let url: String
-    @State private var showingSafari = false
-
-    var body: some View {
-        Color.clear
-            .onAppear {
-                if let url = URL(string: url) {
-                    showingSafari = true
-                }
-            }
-            .sheet(isPresented: $showingSafari) {
-                if let url = URL(string: url) {
-                    SafariView(url: url)
-                }
-            }
-    }
-}
 
 struct SettingsPage_Previews: PreviewProvider {
   static var previews: some View {
