@@ -258,6 +258,8 @@ struct FeedDetailInfo: BaseModel {
             let sIndex = rawReportUrl.index(of: "/report/topic/")!
             let eIndex = rawReportUrl.lastIndex(of: "'")!
             self.reportLink = String(rawReportUrl[sIndex..<eIndex])
+        } else {
+            self.reportLink = .empty
         }
 
         self.hasReported = root.pick("div.content div.box div.inner span.fade")

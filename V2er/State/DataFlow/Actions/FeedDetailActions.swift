@@ -143,9 +143,15 @@ struct FeedDetailActions {
         func execute(in store: Store) async {
             Toast.show("举报中")
             let state = store.appState.feedDetailStates[id]!
+            
+            guard let reportLink = state.model.reportLink, !reportLink.isEmpty else {
+                Toast.show("无法举报此主题")
+                dispatch(ReportTopicDone(id: id, reported: false))
+                return
+            }
 
             let result: APIResult<DailyInfo> = await APIService.shared
-                .htmlGet(endpoint: .general(url: state.model.reportLink!),
+                .htmlGet(endpoint: .general(url: reportLink),
                          requestHeaders: Headers.TINY_REFERER)
             var reported = false
             if case let .success(result) = result {

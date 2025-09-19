@@ -13,7 +13,7 @@ class V2erTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        13.5}
+    }
 
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
@@ -22,6 +22,16 @@ class V2erTests: XCTestCase {
     func testExample() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+    }
+    
+    func testReportLinkHandling() throws {
+        // Test that FeedDetailInfo correctly handles empty reportLink
+        var feedDetailInfo = FeedDetailInfo()
+        
+        // When reportLink is set to empty, it should not be nil
+        feedDetailInfo.reportLink = .empty
+        XCTAssertNotNil(feedDetailInfo.reportLink)
+        XCTAssertTrue(feedDetailInfo.reportLink!.isEmpty)
     }
 
     func testPerformanceExample() throws {

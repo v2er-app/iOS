@@ -232,13 +232,14 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         Label("忽略", systemImage: "exclamationmark.octagon")
                     }
                     let reported = state.model.hasReported ?? false
+                    let canReport = !(state.model.reportLink?.isEmpty ?? true)
                     Button {
                         replyIsFocused = false
                         dispatch(FeedDetailActions.ReportTopic(id: id))
                     } label: {
                         Label(reported ? "已举报" : "举报", systemImage: "person.crop.circle.badge.exclamationmark")
                     }
-                    .disabled(reported)
+                    .disabled(reported || !canReport)
 
                     Divider()
 
