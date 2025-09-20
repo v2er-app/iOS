@@ -18,7 +18,7 @@ struct FeedPage: BaseHomePageView {
     var isSelected: Bool {
         let selected = selecedTab == .feed
         if selected && !state.hasLoadedOnce {
-            dispatch(FeedActions.FetchData.Start(autoLoad: true))
+            dispatch(FeedActions.FetchData.Start(tab: state.selectedTab, autoLoad: true))
         }
         return selected
     }
@@ -34,6 +34,11 @@ struct FeedPage: BaseHomePageView {
     @ViewBuilder
     private var contentView: some View {
         VStack(spacing: 0) {
+            FeedTabFilter(selectedTab: bindingState.selectedTab) { tab in
+                dispatch(FeedActions.ChangeTab(tab: tab))
+            }
+            Divider()
+                .light()
             LazyVStack(spacing: 0) {
                 ForEach(state.feedInfo.items) { item in
                     NavigationLink(destination: FeedDetailPage(initData: item)) {
@@ -44,7 +49,7 @@ struct FeedPage: BaseHomePageView {
         }
         .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, scrollTop(tab: .feed)) {
             if AccountState.hasSignIn() {
-                await run(action: FeedActions.FetchData.Start())
+                await run(action: FeedActions.FetchData.Start(tab: state.selectedTab))
             }
         } loadMore: {
             if AccountState.hasSignIn() {

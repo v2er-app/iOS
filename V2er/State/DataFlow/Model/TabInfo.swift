@@ -24,36 +24,33 @@ enum Tab: String {
     case members
 
     func displayName() -> String {
-        var name: String? = nil
         switch(self) {
             case .all:
-                name = "全部"
+                return "全部"
             case .tech:
-                name = "技术"
+                return "技术"
             case .creative:
-                name = "创意"
+                return "创意"
             case .play:
-                name = "好玩"
+                return "好玩"
             case .apple:
-                name = "Apple"
+                return "Apple"
             case .jobs:
-                name = "酷工作"
+                return "酷工作"
             case .deals:
-                name = "交易"
+                return "交易"
             case .city:
-                name = "城市"
+                return "城市"
             case .qna:
-                name = "问与答"
+                return "问与答"
             case .hot:
-                name = "最热"
+                return "最热"
             case .r2:
-                name = "r2"
+                return "r2"
             case .nodes:
-                name = "节点"
+                return "节点"
             case .members:
-                name = "关注"
+                return "关注"
         }
-        assert(name != nil , "Tab display name shouldn't be null")
-        return ""
     }
 }
