@@ -21,6 +21,13 @@ struct SettingsPage: View {
   @State var logingOut: Bool = false
   @State private var safariURL: IdentifiableURL?
 
+  // Get version and build number from Bundle
+  private var appVersion: String {
+    let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+    let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+    return "版本v\(version)(\(build))"
+  }
+
   var body: some View {
     formView
       .navBar("设置")
@@ -72,7 +79,7 @@ struct SettingsPage: View {
         } label: {
           SectionView("关于") {
             HStack {
-              Text("版本1.0.0")
+              Text(appVersion)
                 .font(.footnote)
                 .foregroundColor(Color.tintColor)
               Image(systemName: "chevron.right")
