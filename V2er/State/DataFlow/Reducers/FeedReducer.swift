@@ -24,6 +24,15 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
                 state.feedInfo = newsInfo ?? FeedInfo()
                 state.willLoadPage = 1
             } else { }
+        case let action as FeedActions.ChangeTab:
+            guard action.tab != state.selectedTab else { break }
+            state.selectedTab = action.tab
+            // Reset state when changing tabs
+            state.feedInfo = FeedInfo()
+            state.willLoadPage = 0
+            state.hasLoadedOnce = false
+            // Trigger data fetch for new tab
+            followingAction = FeedActions.FetchData.Start(tab: action.tab, autoLoad: true)
         case let action as FeedActions.LoadMore.Start:
             guard !state.refreshing else { break }
             guard !state.loadingMore else { break }
@@ -53,9 +62,15 @@ struct FeedActions {
     struct FetchData {
         struct Start: AwaitAction {
             var target: Reducer = reducer
-            let tab: Tab = .all
+            let tab: Tab
             var page: Int = 0
             var autoLoad: Bool = false
+
+            init(tab: Tab = .all, page: Int = 0, autoLoad: Bool = false) {
+                self.tab = tab
+                self.page = page
+                self.autoLoad = autoLoad
+            }
 
             func execute(in store: Store) async {
                 let result: APIResult<FeedInfo> = await APIService.shared
@@ -71,6 +86,11 @@ struct FeedActions {
         }
     }
 
+    struct ChangeTab: Action {
+        var target: Reducer = reducer
+        let tab: Tab
+    }
+
     struct LoadMore {
         struct Start: AwaitAction {
             var target: Reducer = reducer
@@ -81,9 +101,13 @@ struct FeedActions {
             }
 
             func execute(in store: Store) async {
+                let state = store.appState.feedState
                 let endpoint: Endpoint = willLoadPage >= 1 ? .recent : .tab
+                let params: [String: String] = willLoadPage >= 1 ? 
+                    ["p": willLoadPage.string] : 
+                    ["tab": state.selectedTab.rawValue, "p": willLoadPage.string]
                 let result: APIResult<FeedInfo> = await APIService.shared
-                    .htmlGet(endpoint: endpoint, ["p": willLoadPage.string])
+                    .htmlGet(endpoint: endpoint, params)
                 dispatch(FeedActions.LoadMore.Done(result: result))
             }
         }

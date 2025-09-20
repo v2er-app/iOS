@@ -16,4 +16,5 @@ struct FeedState: FluxState {
     var willLoadPage: Int = 0
     var hasMoreData: Bool = true
     var feedInfo: FeedInfo = FeedInfo()
+    var selectedTab: Tab = .all
 }
