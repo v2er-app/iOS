@@ -20,31 +20,24 @@ This project uses two version identifiers:
 
 **Versions are now defined in ONE place only!**
 
-The version numbers are defined at the project level and automatically inherited by all targets (Debug and Release).
-
 ### How to Update Versions
 
-To update versions, you only need to modify **2 locations** in `V2er.xcodeproj/project.pbxproj`:
+To update versions, simply edit the file `V2er/Config/Version.xcconfig`:
 
-1. Search for the **Debug** project configuration and update:
-```
-/* Debug project configuration */
-MARKETING_VERSION = 1.1.2;        /* VERSION_NAME */
-CURRENT_PROJECT_VERSION = 29;     /* VERSION_CODE */
-```
+```bash
+# Open the file
+V2er/Config/Version.xcconfig
 
-2. Search for the **Release** project configuration and update:
-```
-/* Release project configuration */
-MARKETING_VERSION = 1.1.2;        /* VERSION_NAME */
-CURRENT_PROJECT_VERSION = 29;     /* VERSION_CODE */
+# Update these two lines:
+MARKETING_VERSION = 1.1.2         # VERSION_NAME (user-facing version)
+CURRENT_PROJECT_VERSION = 29       # VERSION_CODE (build number)
 ```
 
-That's it! The target configurations will automatically inherit these values.
+**That's it!** No need to edit project.pbxproj or any other files. The xcconfig file is automatically loaded by Xcode and applies to all build configurations.
 
 ## Important Notes
 
-1. **Both values must be updated** in both Debug and Release configurations
+1. **Only update Version.xcconfig** - Never modify version numbers in project.pbxproj
 2. **VERSION_CODE must always increase** - even for the same VERSION_NAME
 3. **Fastlane auto-increment**: Our Fastlane setup automatically increments VERSION_CODE for TestFlight builds
 4. **Info.plist**: Automatically uses these values via:
