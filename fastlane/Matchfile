@@ -1,0 +1,37 @@
+# Matchfile - Configuration for code signing
+
+# Git repository URL for storing certificates
+git_url(ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/certificates-v2er-iOS.git")
+
+# Storage mode
+storage_mode("git")
+
+# Type of certificates/profiles to sync
+type("appstore")
+
+# App Bundle ID
+app_identifier(["v2er.app"])
+
+# Your Apple Developer username (optional if using API key)
+# username("your@email.com")
+
+# Team ID
+team_id(ENV["TEAM_ID"] || "DZCZQ4694Z")
+
+# Git branch for certificates
+git_branch("main")
+
+# Clone certificates repo to a temporary directory
+shallow_clone(true)
+
+# Generate profiles if they don't exist
+generate_apple_certs(true)
+
+# Platform
+platform("ios")
+
+# Readonly mode for CI
+readonly(ENV["CI"] == "true")
+
+# Verbose output
+verbose(false)

@@ -1,0 +1,22 @@
+# Appfile - App specific configuration
+
+# App Bundle ID
+app_identifier("v2er.app")
+
+# Apple ID (optional if using API key)
+# apple_id("your@email.com")
+
+# Team ID from Apple Developer Portal
+team_id(ENV["TEAM_ID"])
+
+# iTunes Connect Team ID (if different from Developer Portal team)
+itc_team_id(ENV["ITC_TEAM_ID"] || ENV["TEAM_ID"])
+
+# You can set different app identifiers per lane
+for_lane :beta do
+  app_identifier("v2er.app")
+end
+
+for_lane :release do
+  app_identifier("v2er.app")
+end

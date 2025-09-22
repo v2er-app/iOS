@@ -1,0 +1,144 @@
+# Fastfile for V2er iOS app
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Sync certificates and provisioning profiles"
+  lane :sync_certificates do
+    match(
+      type: "appstore",
+      readonly: is_ci,
+      app_identifier: "v2er.app",
+      git_url: ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/certificates-v2er-iOS.git"
+    )
+  end
+
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    # Ensure we have the latest certificates
+    sync_certificates
+
+    # Get App Store Connect API key from environment
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+      in_house: false
+    )
+
+    # Build the app
+    build_app(
+      scheme: "V2er",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "v2er.app" => "match AppStore v2er.app"
+        }
+      },
+      clean: true,
+      output_directory: "./build",
+      output_name: "V2er.ipa"
+    )
+
+    # Upload to TestFlight
+    upload_to_testflight(
+      api_key: api_key,
+      skip_submission: false,
+      skip_waiting_for_build_processing: true,
+      distribute_external: true,
+      groups: ["Beta Testers"],
+      changelog: "Bug fixes and improvements",
+      notify_external_testers: true
+    )
+
+    # Notify success
+    notification(
+      title: "V2er iOS",
+      subtitle: "Successfully uploaded to TestFlight",
+      message: "Build has been uploaded and will be available for testing soon"
+    ) if is_ci == false
+  end
+
+  desc "Submit to App Store Review"
+  lane :release do
+    # Ensure we have the latest certificates
+    sync_certificates
+
+    # Get App Store Connect API key from environment
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+      in_house: false
+    )
+
+    # Build the app
+    build_app(
+      scheme: "V2er",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "v2er.app" => "match AppStore v2er.app"
+        }
+      },
+      clean: true,
+      output_directory: "./build",
+      output_name: "V2er.ipa"
+    )
+
+    # Upload to App Store Connect
+    upload_to_app_store(
+      api_key: api_key,
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: false,
+      precheck_include_in_app_purchases: false
+    )
+  end
+
+  desc "Create a new version on App Store Connect"
+  lane :create_app_version do |options|
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+      in_house: false
+    )
+
+    deliver(
+      api_key: api_key,
+      app_version: options[:version],
+      skip_binary_upload: true,
+      skip_metadata: false,
+      skip_screenshots: true
+    )
+  end
+
+  desc "Download metadata from App Store Connect"
+  lane :download_metadata do
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+      in_house: false
+    )
+
+    download_dsyms(api_key: api_key)
+
+    deliver(
+      api_key: api_key,
+      skip_binary_upload: true,
+      skip_screenshots: false,
+      download_metadata: true,
+      download_screenshots: true
+    )
+  end
+
+  error do |lane, exception|
+    notification(
+      title: "V2er iOS - #{lane} failed",
+      subtitle: "Error occurred",
+      message: exception.message
+    ) if is_ci == false
+  end
+end
