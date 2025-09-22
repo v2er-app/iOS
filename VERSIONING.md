@@ -22,7 +22,17 @@ This project uses two version identifiers:
 
 ### How to Update Versions
 
-To update versions, simply edit the file `V2er/Config/Version.xcconfig`:
+#### Option 1: Use the Update Script (Recommended)
+```bash
+# Interactive mode
+./scripts/update-version.sh
+
+# Or with arguments
+./scripts/update-version.sh 1.1.3 31
+```
+
+#### Option 2: Manual Edit
+Edit the file `V2er/Config/Version.xcconfig`:
 
 ```bash
 # Open the file
@@ -30,7 +40,7 @@ V2er/Config/Version.xcconfig
 
 # Update these two lines:
 MARKETING_VERSION = 1.1.2         # VERSION_NAME (user-facing version)
-CURRENT_PROJECT_VERSION = 29       # VERSION_CODE (build number)
+CURRENT_PROJECT_VERSION = 30       # VERSION_CODE (build number)
 ```
 
 **That's it!** No need to edit project.pbxproj or any other files. The xcconfig file is automatically loaded by Xcode and applies to all build configurations.

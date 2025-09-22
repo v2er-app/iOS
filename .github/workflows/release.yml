@@ -5,8 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'V2er/Info.plist'
-      - 'V2er.xcodeproj/project.pbxproj'
+      - 'V2er/Config/Version.xcconfig'
   workflow_dispatch:
     inputs:
       force_release:
@@ -38,9 +37,9 @@ jobs:
     - name: Check version and create tag if needed
       id: check
       run: |
-        # Get current version from project.pbxproj (works on Linux)
-        CURRENT_VERSION=$(grep -m1 'MARKETING_VERSION = ' V2er.xcodeproj/project.pbxproj | sed 's/.*MARKETING_VERSION = \(.*\);/\1/' | xargs)
-        CURRENT_BUILD=$(grep -m1 'CURRENT_PROJECT_VERSION = ' V2er.xcodeproj/project.pbxproj | sed 's/.*CURRENT_PROJECT_VERSION = \(.*\);/\1/' | xargs)
+        # Get current version from Version.xcconfig (works on Linux)
+        CURRENT_VERSION=$(grep '^MARKETING_VERSION = ' V2er/Config/Version.xcconfig | sed 's/.*MARKETING_VERSION = //' | xargs)
+        CURRENT_BUILD=$(grep '^CURRENT_PROJECT_VERSION = ' V2er/Config/Version.xcconfig | sed 's/.*CURRENT_PROJECT_VERSION = //' | xargs)
 
         echo "Current version: $CURRENT_VERSION (build $CURRENT_BUILD)"
 
