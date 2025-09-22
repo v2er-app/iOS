@@ -122,14 +122,61 @@ jobs:
         APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
       run: |
+        # Debug: Check if environment variables are set
+        if [ -z "$APP_STORE_CONNECT_KEY_ID" ]; then
+          echo "ERROR: APP_STORE_CONNECT_KEY_ID is not set"
+          exit 1
+        fi
+        if [ -z "$APP_STORE_CONNECT_ISSUER_ID" ]; then
+          echo "ERROR: APP_STORE_CONNECT_ISSUER_ID is not set"
+          exit 1
+        fi
+        if [ -z "$APP_STORE_CONNECT_API_KEY_BASE64" ]; then
+          echo "ERROR: APP_STORE_CONNECT_API_KEY_BASE64 is not set"
+          exit 1
+        fi
+
+        # Create directory for API key
         mkdir -p ~/.appstoreconnect/private_keys
-        echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
-        chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+
+        # Decode base64 with better error handling
+        # Try different approaches to handle potential formatting issues
+        KEY_PATH=~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+
+        # Method 1: Direct echo and decode
+        if echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 -d > "$KEY_PATH" 2>/dev/null; then
+          echo "✅ Successfully decoded API key using base64 -d"
+        # Method 2: Try with --decode flag (macOS)
+        elif echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode > "$KEY_PATH" 2>/dev/null; then
+          echo "✅ Successfully decoded API key using base64 --decode"
+        # Method 3: Remove potential whitespace/newlines and try again
+        elif echo "$APP_STORE_CONNECT_API_KEY_BASE64" | tr -d '\n\r ' | base64 -d > "$KEY_PATH" 2>/dev/null; then
+          echo "✅ Successfully decoded API key after removing whitespace"
+        else
+          echo "ERROR: Failed to decode APP_STORE_CONNECT_API_KEY_BASE64"
+          echo "Please ensure the secret is properly base64 encoded"
+          exit 1
+        fi
+
+        # Verify the file was created and has content
+        if [ ! -f "$KEY_PATH" ]; then
+          echo "ERROR: API key file was not created"
+          exit 1
+        fi
+
+        if [ ! -s "$KEY_PATH" ]; then
+          echo "ERROR: API key file is empty"
+          exit 1
+        fi
+
+        # Set proper permissions
+        chmod 600 "$KEY_PATH"
+        echo "✅ API key file created successfully at $KEY_PATH"
 
         # Set environment variables for Fastlane
         echo "APP_STORE_CONNECT_API_KEY_KEY_ID=$APP_STORE_CONNECT_KEY_ID" >> $GITHUB_ENV
         echo "APP_STORE_CONNECT_API_KEY_ISSUER_ID=$APP_STORE_CONNECT_ISSUER_ID" >> $GITHUB_ENV
-        echo "APP_STORE_CONNECT_API_KEY_KEY=~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8" >> $GITHUB_ENV
+        echo "APP_STORE_CONNECT_API_KEY_KEY=$KEY_PATH" >> $GITHUB_ENV
 
     - name: Run Fastlane Match
       env:
