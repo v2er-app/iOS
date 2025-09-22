@@ -3,6 +3,32 @@
 default_platform(:ios)
 
 platform :ios do
+  # Helper method to get App Store Connect API key
+  private_lane :get_api_key do
+    app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+      in_house: false
+    )
+  end
+
+  # Helper method for building the app
+  private_lane :build_ipa do
+    build_app(
+      scheme: "V2er",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "v2er.app" => "match AppStore v2er.app"
+        }
+      },
+      clean: true,
+      output_directory: "./build",
+      output_name: "V2er.ipa"
+    )
+  end
+
   desc "Sync certificates and provisioning profiles"
   lane :sync_certificates do
     match(
@@ -18,27 +44,11 @@ platform :ios do
     # Ensure we have the latest certificates
     sync_certificates
 
-    # Get App Store Connect API key from environment
-    api_key = app_store_connect_api_key(
-      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
-      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
-      in_house: false
-    )
+    # Get App Store Connect API key
+    api_key = get_api_key
 
     # Build the app
-    build_app(
-      scheme: "V2er",
-      export_method: "app-store",
-      export_options: {
-        provisioningProfiles: {
-          "v2er.app" => "match AppStore v2er.app"
-        }
-      },
-      clean: true,
-      output_directory: "./build",
-      output_name: "V2er.ipa"
-    )
+    build_ipa
 
     # Upload to TestFlight
     upload_to_testflight(
@@ -64,27 +74,11 @@ platform :ios do
     # Ensure we have the latest certificates
     sync_certificates
 
-    # Get App Store Connect API key from environment
-    api_key = app_store_connect_api_key(
-      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
-      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
-      in_house: false
-    )
+    # Get App Store Connect API key
+    api_key = get_api_key
 
     # Build the app
-    build_app(
-      scheme: "V2er",
-      export_method: "app-store",
-      export_options: {
-        provisioningProfiles: {
-          "v2er.app" => "match AppStore v2er.app"
-        }
-      },
-      clean: true,
-      output_directory: "./build",
-      output_name: "V2er.ipa"
-    )
+    build_ipa
 
     # Upload to App Store Connect
     upload_to_app_store(
@@ -98,12 +92,7 @@ platform :ios do
 
   desc "Create a new version on App Store Connect"
   lane :create_app_version do |options|
-    api_key = app_store_connect_api_key(
-      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
-      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
-      in_house: false
-    )
+    api_key = get_api_key
 
     deliver(
       api_key: api_key,
@@ -116,12 +105,7 @@ platform :ios do
 
   desc "Download metadata from App Store Connect"
   lane :download_metadata do
-    api_key = app_store_connect_api_key(
-      key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
-      issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
-      in_house: false
-    )
+    api_key = get_api_key
 
     download_dsyms(api_key: api_key)
 

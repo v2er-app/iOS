@@ -38,9 +38,9 @@ jobs:
     - name: Check version and create tag if needed
       id: check
       run: |
-        # Get current version from Info.plist
-        CURRENT_VERSION=$(grep -A1 "CFBundleShortVersionString" V2er/Info.plist | tail -1 | sed 's/.*<string>\(.*\)<\/string>/\1/' | xargs)
-        CURRENT_BUILD=$(grep -A1 "CFBundleVersion" V2er/Info.plist | tail -1 | sed 's/.*<string>\(.*\)<\/string>/\1/' | xargs)
+        # Get current version from Info.plist using plutil for robust XML parsing
+        CURRENT_VERSION=$(/usr/bin/plutil -extract CFBundleShortVersionString xml1 -o - V2er/Info.plist | grep '<string>' | sed 's/.*<string>\(.*\)<\/string>.*/\1/' | xargs)
+        CURRENT_BUILD=$(/usr/bin/plutil -extract CFBundleVersion xml1 -o - V2er/Info.plist | grep '<string>' | sed 's/.*<string>\(.*\)<\/string>.*/\1/' | xargs)
 
         echo "Current version: $CURRENT_VERSION (build $CURRENT_BUILD)"
 
@@ -125,6 +125,7 @@ jobs:
       run: |
         mkdir -p ~/.appstoreconnect/private_keys
         echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+        chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
 
         # Set environment variables for Fastlane
         echo "APP_STORE_CONNECT_API_KEY_KEY_ID=$APP_STORE_CONNECT_KEY_ID" >> $GITHUB_ENV
