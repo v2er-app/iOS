@@ -38,9 +38,9 @@ jobs:
     - name: Check version and create tag if needed
       id: check
       run: |
-        # Get current version from Info.plist using plutil for robust XML parsing
-        CURRENT_VERSION=$(/usr/bin/plutil -extract CFBundleShortVersionString xml1 -o - V2er/Info.plist | grep '<string>' | sed 's/.*<string>\(.*\)<\/string>.*/\1/' | xargs)
-        CURRENT_BUILD=$(/usr/bin/plutil -extract CFBundleVersion xml1 -o - V2er/Info.plist | grep '<string>' | sed 's/.*<string>\(.*\)<\/string>.*/\1/' | xargs)
+        # Get current version from project.pbxproj (works on Linux)
+        CURRENT_VERSION=$(grep -m1 'MARKETING_VERSION = ' V2er.xcodeproj/project.pbxproj | sed 's/.*MARKETING_VERSION = \(.*\);/\1/' | xargs)
+        CURRENT_BUILD=$(grep -m1 'CURRENT_PROJECT_VERSION = ' V2er.xcodeproj/project.pbxproj | sed 's/.*CURRENT_PROJECT_VERSION = \(.*\);/\1/' | xargs)
 
         echo "Current version: $CURRENT_VERSION (build $CURRENT_BUILD)"
 
