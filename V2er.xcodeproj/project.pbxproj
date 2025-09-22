@@ -203,6 +203,7 @@
 		5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfo.swift; sourceTree = "<group>"; };
 		5D2B2B3B26FF754F00446F93 /* Persist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persist.swift; sourceTree = "<group>"; };
 		5D2B2B3D26FF797600446F93 /* AccountState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountState.swift; sourceTree = "<group>"; };
+		5DA0000000000000000001 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		5D2DD00726FB353C0001C85A /* DefaultReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultReducer.swift; sourceTree = "<group>"; };
 		5D2DD00926FB443D0001C85A /* GlobalActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalActions.swift; sourceTree = "<group>"; };
 		5D368C8726C419D000794B8E /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
@@ -342,6 +343,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5DA0000000000000000002 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				5DA0000000000000000001 /* Version.xcconfig */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
 		5D179BFD2496F6EC00E40E90 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
@@ -448,6 +457,7 @@
 		5D436FE724791C2C00FFA37E /* V2er */ = {
 			isa = PBXGroup;
 			children = (
+				5DA0000000000000000002 /* Config */,
 				5DE5C577249D90690004DCC6 /* General */,
 				5DE5B4C826845F4F00569684 /* View */,
 				5DA2AD3326C17E7F007FB1EF /* State */,
@@ -1011,6 +1021,7 @@
 /* Begin XCBuildConfiguration section */
 		5D43700D24791C2D00FFA37E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5DA0000000000000000001 /* Version.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1061,19 +1072,18 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.1.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				CURRENT_PROJECT_VERSION = 29;
 			};
 			name = Debug;
 		};
 		5D43700E24791C2D00FFA37E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5DA0000000000000000001 /* Version.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -1118,14 +1128,12 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.1.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;
-				CURRENT_PROJECT_VERSION = 29;
 			};
 			name = Release;
 		};
