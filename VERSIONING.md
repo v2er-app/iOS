@@ -16,19 +16,31 @@ This project uses two version identifiers:
 - **Format**: Integer that must always increase
 - **When to change**: Every single build uploaded to TestFlight/App Store
 
-## How to Update Versions
+## ✅ Centralized Version Configuration
 
-### Update VERSION_NAME (e.g., 1.1.1 → 1.1.2)
-```bash
-# In V2er.xcodeproj/project.pbxproj, update:
-MARKETING_VERSION = 1.1.2;  # (This is VERSION_NAME)
+**Versions are now defined in ONE place only!**
+
+The version numbers are defined at the project level and automatically inherited by all targets (Debug and Release).
+
+### How to Update Versions
+
+To update versions, you only need to modify **2 locations** in `V2er.xcodeproj/project.pbxproj`:
+
+1. Search for the **Debug** project configuration and update:
+```
+/* Debug project configuration */
+MARKETING_VERSION = 1.1.2;        /* VERSION_NAME */
+CURRENT_PROJECT_VERSION = 29;     /* VERSION_CODE */
 ```
 
-### Update VERSION_CODE (e.g., 28 → 29)
-```bash
-# In V2er.xcodeproj/project.pbxproj, update:
-CURRENT_PROJECT_VERSION = 29;  # (This is VERSION_CODE)
+2. Search for the **Release** project configuration and update:
 ```
+/* Release project configuration */
+MARKETING_VERSION = 1.1.2;        /* VERSION_NAME */
+CURRENT_PROJECT_VERSION = 29;     /* VERSION_CODE */
+```
+
+That's it! The target configurations will automatically inherit these values.
 
 ## Important Notes
 
