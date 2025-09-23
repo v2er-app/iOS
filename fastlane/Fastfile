@@ -50,6 +50,39 @@ platform :ios do
     )
   end
 
+  desc "Distribute existing build to beta testers"
+  lane :distribute_beta do |options|
+    # Get App Store Connect API key
+    api_key = get_api_key
+
+    # Get the build number to distribute (optional)
+    build_number = options[:build_number]
+
+    if build_number
+      # Distribute specific build
+      distribute_build(
+        api_key: api_key,
+        build_number: build_number,
+        groups: ["Beta Testers"],
+        notify_external_testers: true,
+        uses_non_exempt_encryption: false,
+        submit_beta_review: true
+      )
+    else
+      # Wait for latest build to process and distribute
+      testflight(
+        api_key: api_key,
+        skip_submission: false,
+        distribute_external: true,
+        groups: ["Beta Testers"],
+        notify_external_testers: true,
+        uses_non_exempt_encryption: false,
+        submit_beta_review: true,
+        wait_for_uploaded_build: true
+      )
+    end
+  end
+
   desc "Build and upload to TestFlight"
   lane :beta do
     # Ensure we have the latest certificates
@@ -105,11 +138,16 @@ platform :ios do
     upload_to_testflight(
       api_key: api_key,
       skip_submission: false,
-      skip_waiting_for_build_processing: true,
-      distribute_external: true,
-      groups: ["Beta Testers"],
+      skip_waiting_for_build_processing: false,  # Wait for processing before distribution
+      wait_processing_interval: 30,  # Check every 30 seconds
+      wait_processing_timeout_duration: 900,  # Wait up to 15 minutes for processing
+      distribute_external: true,  # Distribute to external testers
+      distribute_only: false,  # Upload and distribute in one action
+      groups: ["External Testers", "Beta Testers"],  # Try common group names
       changelog: "Bug fixes and improvements",
-      notify_external_testers: true
+      notify_external_testers: true,  # Send email notifications
+      uses_non_exempt_encryption: false,  # Required for automatic distribution
+      submit_beta_review: true  # Automatically submit for beta review if needed
     )
 
     # Notify success
