@@ -24,8 +24,11 @@ platform :ios do
       export_options: {
         provisioningProfiles: {
           "v2er.app" => "match AppStore v2er.app"
-        }
+        },
+        teamID: ENV["TEAM_ID"]
       },
+      export_team_id: ENV["TEAM_ID"],
+      xcargs: "-allowProvisioningUpdates",
       clean: true,
       output_directory: "./build",
       output_name: "V2er.ipa"
@@ -50,9 +53,25 @@ platform :ios do
     # Get App Store Connect API key
     api_key = get_api_key
 
-    # Increment build number to avoid conflicts
-    increment_build_number(
-      build_number: latest_testflight_build_number(api_key: api_key) + 1
+    # Get the latest TestFlight build number and increment
+    current_build_number = get_build_number(xcodeproj: "V2er.xcodeproj").to_i
+    latest_testflight = latest_testflight_build_number(api_key: api_key)
+
+    # Only increment if needed
+    if latest_testflight >= current_build_number
+      increment_build_number(
+        build_number: latest_testflight + 1,
+        xcodeproj: "V2er.xcodeproj"
+      )
+    end
+
+    # Ensure proper code signing
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "V2er.xcodeproj",
+      team_id: ENV["TEAM_ID"],
+      profile_name: "match AppStore v2er.app",
+      code_sign_identity: "iPhone Distribution"
     )
 
     # Build the app
