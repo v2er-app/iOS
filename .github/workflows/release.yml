@@ -154,6 +154,12 @@ jobs:
           echo "⚠️ String may contain invalid base64 characters"
           # Show which characters are invalid
           echo "$APP_STORE_CONNECT_API_KEY_BASE64" | sed 's/[A-Za-z0-9+/=]//g' | od -c
+
+          # Check for URL encoding
+          if echo "$APP_STORE_CONNECT_API_KEY_BASE64" | grep -q '%'; then
+            echo "🔍 Detected URL encoding (contains % character)"
+            echo "   The secret appears to be URL-encoded. This is incorrect."
+          fi
         fi
 
         # Create directory for API key
