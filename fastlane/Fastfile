@@ -28,10 +28,13 @@ platform :ios do
         teamID: ENV["TEAM_ID"]
       },
       export_team_id: ENV["TEAM_ID"],
-      xcargs: "-allowProvisioningUpdates",
+      xcargs: "-allowProvisioningUpdates CODE_SIGN_STYLE=Manual",
       clean: true,
       output_directory: "./build",
-      output_name: "V2er.ipa"
+      output_name: "V2er.ipa",
+      verbose: true,
+      buildlog_path: "./buildlog",
+      silent: false
     )
   end
 
@@ -41,7 +44,9 @@ platform :ios do
       type: "appstore",
       readonly: is_ci,
       app_identifier: "v2er.app",
-      git_url: ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/certificates-v2er-iOS.git"
+      git_url: ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/certificates-v2er-iOS.git",
+      keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "login.keychain",
+      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || ""
     )
   end
 
@@ -79,8 +84,19 @@ platform :ios do
       path: "V2er.xcodeproj",
       team_id: ENV["TEAM_ID"],
       profile_name: "match AppStore v2er.app",
-      code_sign_identity: "iPhone Distribution"
+      code_sign_identity: "iPhone Distribution",
+      targets: ["V2er"]
     )
+
+    # Explicitly set provisioning profile for CI
+    if is_ci
+      update_project_provisioning(
+        xcodeproj: "V2er.xcodeproj",
+        profile: ENV["sigh_v2er.app_appstore_profile-path"],
+        target_filter: "V2er",
+        build_configuration: "Release"
+      )
+    end
 
     # Build the app
     build_ipa

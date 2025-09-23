@@ -116,6 +116,30 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
+    - name: Setup Keychain for Code Signing
+      run: |
+        # Create a temporary keychain for the build
+        KEYCHAIN_NAME="build-temp.keychain"
+        KEYCHAIN_PASSWORD="temp-password-$(date +%s)"
+
+        # Create keychain
+        security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+
+        # Set it as default
+        security default-keychain -s "$KEYCHAIN_NAME"
+
+        # Unlock the keychain
+        security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+
+        # Set keychain timeout to 1 hour (3600 seconds) to prevent locking during build
+        security set-keychain-settings -t 3600 -l "$KEYCHAIN_NAME"
+
+        # Add keychain to search list
+        security list-keychains -d user -s "$KEYCHAIN_NAME" $(security list-keychains -d user | sed 's/"//g')
+
+        echo "MATCH_KEYCHAIN_NAME=$KEYCHAIN_NAME" >> $GITHUB_ENV
+        echo "MATCH_KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
+
     - name: Create App Store Connect API Key
       env:
         APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
@@ -253,11 +277,16 @@ jobs:
         fastlane match appstore --readonly
 
     - name: Build and Upload to TestFlight
+      timeout-minutes: 45
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
         TEAM_ID: ${{ secrets.TEAM_ID }}
       run: |
+        # Enable verbose output for debugging
+        export FASTLANE_VERBOSE=true
+
+        # Run the beta lane
         fastlane beta
 
     - name: Create GitHub Release
