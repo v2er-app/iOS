@@ -5,10 +5,13 @@ default_platform(:ios)
 platform :ios do
   # Helper method to get App Store Connect API key
   private_lane :get_api_key do
+    # Read the key content directly
+    key_content = File.read(ENV["APP_STORE_CONNECT_API_KEY_KEY"])
+
     app_store_connect_api_key(
       key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
       issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+      key: key_content,
       in_house: false
     )
   end
