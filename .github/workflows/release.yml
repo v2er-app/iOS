@@ -127,13 +127,33 @@ jobs:
           echo "ERROR: APP_STORE_CONNECT_KEY_ID is not set"
           exit 1
         fi
+        echo "✅ APP_STORE_CONNECT_KEY_ID is set"
+
         if [ -z "$APP_STORE_CONNECT_ISSUER_ID" ]; then
           echo "ERROR: APP_STORE_CONNECT_ISSUER_ID is not set"
           exit 1
         fi
+        echo "✅ APP_STORE_CONNECT_ISSUER_ID is set"
+
         if [ -z "$APP_STORE_CONNECT_API_KEY_BASE64" ]; then
           echo "ERROR: APP_STORE_CONNECT_API_KEY_BASE64 is not set"
           exit 1
+        fi
+        echo "✅ APP_STORE_CONNECT_API_KEY_BASE64 is set"
+
+        # Debug: Check the content characteristics
+        echo "Debug: Checking base64 string characteristics..."
+        echo "Length: $(echo -n "$APP_STORE_CONNECT_API_KEY_BASE64" | wc -c)"
+        echo "First 10 chars: $(echo -n "$APP_STORE_CONNECT_API_KEY_BASE64" | head -c 10)..."
+        echo "Last 10 chars: ...$(echo -n "$APP_STORE_CONNECT_API_KEY_BASE64" | tail -c 10)"
+
+        # Check if it contains valid base64 characters
+        if echo "$APP_STORE_CONNECT_API_KEY_BASE64" | grep -qE '^[A-Za-z0-9+/]*={0,2}$'; then
+          echo "✅ String contains valid base64 characters"
+        else
+          echo "⚠️ String may contain invalid base64 characters"
+          # Show which characters are invalid
+          echo "$APP_STORE_CONNECT_API_KEY_BASE64" | sed 's/[A-Za-z0-9+/=]//g' | od -c
         fi
 
         # Create directory for API key
@@ -143,18 +163,58 @@ jobs:
         # Try different approaches to handle potential formatting issues
         KEY_PATH=~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
 
+        # Try to decode the base64 string
+        DECODE_SUCCESS=false
+
         # Method 1: Direct echo and decode
+        echo "Trying method 1: base64 -d..."
         if echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 -d > "$KEY_PATH" 2>/dev/null; then
           echo "✅ Successfully decoded API key using base64 -d"
+          DECODE_SUCCESS=true
+        fi
+
         # Method 2: Try with --decode flag (macOS)
-        elif echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode > "$KEY_PATH" 2>/dev/null; then
-          echo "✅ Successfully decoded API key using base64 --decode"
+        if [ "$DECODE_SUCCESS" = false ]; then
+          echo "Trying method 2: base64 --decode..."
+          if echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode > "$KEY_PATH" 2>/dev/null; then
+            echo "✅ Successfully decoded API key using base64 --decode"
+            DECODE_SUCCESS=true
+          fi
+        fi
+
         # Method 3: Remove potential whitespace/newlines and try again
-        elif echo "$APP_STORE_CONNECT_API_KEY_BASE64" | tr -d '\n\r ' | base64 -d > "$KEY_PATH" 2>/dev/null; then
-          echo "✅ Successfully decoded API key after removing whitespace"
-        else
+        if [ "$DECODE_SUCCESS" = false ]; then
+          echo "Trying method 3: removing whitespace first..."
+          if echo "$APP_STORE_CONNECT_API_KEY_BASE64" | tr -d '\n\r ' | base64 -d > "$KEY_PATH" 2>/dev/null; then
+            echo "✅ Successfully decoded API key after removing whitespace"
+            DECODE_SUCCESS=true
+          fi
+        fi
+
+        # Method 4: Try assuming it's not base64 encoded at all (raw .p8 content)
+        if [ "$DECODE_SUCCESS" = false ]; then
+          echo "Trying method 4: treating as raw .p8 content..."
+          if echo "$APP_STORE_CONNECT_API_KEY_BASE64" > "$KEY_PATH" 2>/dev/null; then
+            # Check if it looks like a valid .p8 file (should start with -----BEGIN PRIVATE KEY-----)
+            if grep -q "BEGIN PRIVATE KEY" "$KEY_PATH"; then
+              echo "✅ Secret appears to be raw .p8 content, not base64 encoded"
+              DECODE_SUCCESS=true
+            else
+              rm -f "$KEY_PATH"
+            fi
+          fi
+        fi
+
+        if [ "$DECODE_SUCCESS" = false ]; then
           echo "ERROR: Failed to decode APP_STORE_CONNECT_API_KEY_BASE64"
-          echo "Please ensure the secret is properly base64 encoded"
+          echo "The secret might be:"
+          echo "1. Empty or containing only whitespace"
+          echo "2. Incorrectly base64 encoded"
+          echo "3. Already in .p8 format (not base64)"
+          echo ""
+          echo "To fix this, re-create the secret with:"
+          echo "  cat AuthKey_XXXXXX.p8 | base64 | tr -d '\\n' > base64_key.txt"
+          echo "Then copy the contents of base64_key.txt to the secret"
           exit 1
         fi
 
