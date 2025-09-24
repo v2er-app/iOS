@@ -59,15 +59,25 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            // Check if user is logged in
+            guard AccountState.hasSignIn() else {
+                Toast.show("请先登录")
+                dispatch(LoginActions.ShowLoginPageAction(reason: "需要登录才能收藏主题"))
+                return
+            }
+
             let state = store.appState.feedDetailStates[id]
             let hadStared = state?.model.headerInfo?.hadStared ?? false
             Toast.show(hadStared ? "取消收藏" : "收藏中")
-            let once = state?.model.once
+            guard let once = state?.model.once else {
+                Toast.show("操作失败，请刷新页面")
+                return
+            }
             let headers: Params = Headers.topicReferer(id)
 
             let result: APIResult<FeedDetailInfo> = await APIService.shared
                 .htmlGet(endpoint: hadStared ? .unStarTopic(id: id): .starTopic(id: id),
-                         ["once": once!],
+                         ["once": once],
                          requestHeaders: headers)
             dispatch(StarTopicDone(id: id, hadStared: hadStared, result: result))
         }
@@ -86,12 +96,22 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            // Check if user is logged in
+            guard AccountState.hasSignIn() else {
+                Toast.show("请先登录")
+                dispatch(LoginActions.ShowLoginPageAction(reason: "需要登录才能感谢作者"))
+                return
+            }
+
             Toast.show("发送中")
             let state = store.appState.feedDetailStates[id]
-            let once = state?.model.once
+            guard let once = state?.model.once else {
+                Toast.show("操作失败，请刷新页面")
+                return
+            }
 
             let step1Result: APIResult<SimpleModel>  = await APIService.shared
-                .post(endpoint: .thanksAuthor(id: id), ["once": once!])
+                .post(endpoint: .thanksAuthor(id: id), ["once": once])
 
             var success: Bool = false
             var toast = "感谢发送失败"
@@ -116,11 +136,21 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            // Check if user is logged in
+            guard AccountState.hasSignIn() else {
+                Toast.show("请先登录")
+                dispatch(LoginActions.ShowLoginPageAction(reason: "需要登录才能忽略主题"))
+                return
+            }
+
             Toast.show("忽略中")
             let state = store.appState.feedDetailStates[id]
-            let once = state?.model.once
+            guard let once = state?.model.once else {
+                Toast.show("操作失败，请刷新页面")
+                return
+            }
             let result: APIResult<FeedInfo> = await APIService.shared
-                .htmlGet(endpoint: .ignoreTopic(id: id), ["once": once!])
+                .htmlGet(endpoint: .ignoreTopic(id: id), ["once": once])
             var ignored = false
             if case let .success(result) = result {
                 ignored = result?.isValid() ?? false
@@ -141,11 +171,22 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            // Check if user is logged in
+            guard AccountState.hasSignIn() else {
+                Toast.show("请先登录")
+                dispatch(LoginActions.ShowLoginPageAction(reason: "需要登录才能举报主题"))
+                return
+            }
+
             Toast.show("举报中")
-            let state = store.appState.feedDetailStates[id]!
+            guard let state = store.appState.feedDetailStates[id],
+                  let reportLink = state.model.reportLink else {
+                Toast.show("操作失败，请刷新页面")
+                return
+            }
 
             let result: APIResult<DailyInfo> = await APIService.shared
-                .htmlGet(endpoint: .general(url: state.model.reportLink!),
+                .htmlGet(endpoint: .general(url: reportLink),
                          requestHeaders: Headers.TINY_REFERER)
             var reported = false
             if case let .success(result) = result {
@@ -166,10 +207,26 @@ struct FeedDetailActions {
         var id: String
 
         func execute(in store: Store) async {
+            // Check if user is logged in
+            guard AccountState.hasSignIn() else {
+                Toast.show("请先登录")
+                dispatch(LoginActions.ShowLoginPageAction(reason: "需要登录才能回复主题"))
+                return
+            }
+
             Toast.show("回复中")
-            let state = store.appState.feedDetailStates[id]!
+            guard let state = store.appState.feedDetailStates[id] else {
+                Toast.show("操作失败，请刷新页面")
+                return
+            }
+
+            guard let once = state.model.once else {
+                Toast.show("操作失败，请刷新页面")
+                return
+            }
+
             var params: Params = Params()
-            params["once"] = state.model.once
+            params["once"] = once
             params["content"] = state.replyContent
 
             let result: APIResult<FeedDetailInfo> = await APIService.shared
