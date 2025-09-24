@@ -78,20 +78,23 @@ platform :ios do
         api_key: api_key,
         app_identifier: "v2er.app",
         skip_submission: false,
-        distribute_external: true,
-        groups: ["External"],  # Default external tester group
-        notify_external_testers: true,
+        distribute_external: true,  # 发布到外部测试者（公测）
+        groups: ["Public Beta", "External Testers", "Beta Testers"],  # 公测群组
+        notify_external_testers: true,  # 发送邮件通知
         uses_non_exempt_encryption: false,
-        submit_beta_review: true,
+        submit_beta_review: true,  # 自动提交Beta审核
         wait_for_uploaded_build: true,
+        beta_app_description: "V2er 是一个优雅的 V2EX 第三方客户端",
+        beta_app_feedback_email: "support@v2er.app",
+        demo_account_required: false,
         beta_app_review_info: {
           contact_email: "support@v2er.app",
           contact_first_name: "V2er",
           contact_last_name: "Support",
-          contact_phone: "+1234567890",
+          contact_phone: "+86 1234567890",
           demo_account_name: "",
           demo_account_password: "",
-          notes: "This is a V2EX forum client app. No special account needed for testing."
+          notes: "这是一个 V2EX 论坛的第三方客户端应用，测试不需要特殊账号。"
         }
       )
 
@@ -160,13 +163,25 @@ platform :ios do
       skip_waiting_for_build_processing: false,  # Wait for processing before distribution
       wait_processing_interval: 30,  # Check every 30 seconds
       wait_processing_timeout_duration: 900,  # Wait up to 15 minutes for processing
-      distribute_external: true,  # Distribute to external testers
+      distribute_external: true,  # 发布到外部测试者（公测）
       distribute_only: false,  # Upload and distribute in one action
-      groups: ["External Testers", "Beta Testers"],  # Try common group names
+      groups: ["Public Beta", "External Testers", "Beta Testers"],  # 公测群组
       changelog: "Bug fixes and improvements",
-      notify_external_testers: true,  # Send email notifications
+      notify_external_testers: true,  # 发送邮件通知给外部测试者
       uses_non_exempt_encryption: false,  # Required for automatic distribution
-      submit_beta_review: true  # Automatically submit for beta review if needed
+      submit_beta_review: true,  # 自动提交Beta审核
+      beta_app_description: "V2er 是一个优雅的 V2EX 第三方客户端",
+      beta_app_feedback_email: "support@v2er.app",
+      demo_account_required: false,  # 不需要演示账号
+      beta_app_review_info: {
+        contact_email: "support@v2er.app",
+        contact_first_name: "V2er",
+        contact_last_name: "Support",
+        contact_phone: "+86 1234567890",
+        demo_account_name: "",
+        demo_account_password: "",
+        notes: "这是一个 V2EX 论坛的第三方客户端应用，测试不需要特殊账号。"
+      }
     )
 
     # Notify success
