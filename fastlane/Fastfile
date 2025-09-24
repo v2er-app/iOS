@@ -91,9 +91,7 @@ platform :ios do
           contact_email: "support@v2er.app",
           contact_first_name: "V2er",
           contact_last_name: "Support",
-          contact_phone: "+86 1234567890",
-          demo_account_name: "",
-          demo_account_password: "",
+          contact_phone: "+86 13800138000",
           notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
         }
       )
@@ -177,9 +175,7 @@ platform :ios do
         contact_email: "support@v2er.app",
         contact_first_name: "V2er",
         contact_last_name: "Support",
-        contact_phone: "+86 1234567890",
-        demo_account_name: "",
-        demo_account_password: "",
+        contact_phone: "+86 13800138000",
         notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
       }
     )
