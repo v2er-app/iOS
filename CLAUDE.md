@@ -106,3 +106,4 @@ Currently contains only boilerplate test setup.
 - Orientation: Portrait only on iPhone, all orientations on iPad
 - UI Style: Light mode enforced
 - Website submodule: Located at `website/` (separate repository)
+- create PR should always use english
