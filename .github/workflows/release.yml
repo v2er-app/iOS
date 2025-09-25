@@ -84,7 +84,7 @@ jobs:
         echo "✅ Successfully created tag: $TAG_NAME"
 
   build-and-release:
-    name: Build and Release to TestFlight
+    name: Build and Release to TestFlight (Public Beta)
     needs: version-check
     if: needs.version-check.outputs.should_release == 'true'
     runs-on: macos-latest
@@ -290,7 +290,7 @@ jobs:
         export LC_ALL=en_US.UTF-8
         export LANG=en_US.UTF-8
 
-        # Run the beta lane (includes waiting for processing and distribution)
+        # Run the beta lane (includes waiting for processing and public beta distribution)
         fastlane beta
 
     - name: Create GitHub Release
@@ -302,8 +302,9 @@ jobs:
           ## 🚀 Version ${{ needs.version-check.outputs.version }}
           Build: ${{ needs.version-check.outputs.build }}
 
-          ### TestFlight
-          This version has been automatically submitted to TestFlight for beta testing.
+          ### TestFlight Public Beta
+          This version has been automatically submitted to TestFlight for public beta testing.
+          External testers will receive email notifications when the build is available.
 
           ### What's New
           - See [commit history](https://github.com/${{ github.repository }}/commits/${{ needs.version-check.outputs.new_tag }}) for changes
@@ -316,6 +317,7 @@ jobs:
     - name: Post release notification
       if: success()
       run: |
-        echo "✅ Successfully released version ${{ needs.version-check.outputs.version }} to TestFlight!"
+        echo "✅ Successfully released version ${{ needs.version-check.outputs.version }} to TestFlight Public Beta!"
         echo "🏷️ Tag: ${{ needs.version-check.outputs.new_tag }}"
         echo "🔢 Build: ${{ needs.version-check.outputs.build }}"
+        echo "📧 External testers will be notified via email"

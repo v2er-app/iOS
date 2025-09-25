@@ -78,20 +78,21 @@ platform :ios do
         api_key: api_key,
         app_identifier: "v2er.app",
         skip_submission: false,
-        distribute_external: true,
-        groups: ["External"],  # Default external tester group
-        notify_external_testers: true,
+        distribute_external: true,  # Distribute to external testers (public beta)
+        groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
+        notify_external_testers: true,  # Send email notifications
         uses_non_exempt_encryption: false,
-        submit_beta_review: true,
+        submit_beta_review: true,  # Automatically submit for Beta review
         wait_for_uploaded_build: true,
+        beta_app_description: "V2er is an elegant third-party client for V2EX forum",
+        beta_app_feedback_email: "support@v2er.app",
+        demo_account_required: false,
         beta_app_review_info: {
           contact_email: "support@v2er.app",
           contact_first_name: "V2er",
           contact_last_name: "Support",
-          contact_phone: "+1234567890",
-          demo_account_name: "",
-          demo_account_password: "",
-          notes: "This is a V2EX forum client app. No special account needed for testing."
+          contact_phone: "+86 13800138000",
+          notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
         }
       )
 
@@ -160,13 +161,23 @@ platform :ios do
       skip_waiting_for_build_processing: false,  # Wait for processing before distribution
       wait_processing_interval: 30,  # Check every 30 seconds
       wait_processing_timeout_duration: 900,  # Wait up to 15 minutes for processing
-      distribute_external: true,  # Distribute to external testers
+      distribute_external: true,  # Distribute to external testers (public beta)
       distribute_only: false,  # Upload and distribute in one action
-      groups: ["External Testers", "Beta Testers"],  # Try common group names
+      groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
       changelog: "Bug fixes and improvements",
-      notify_external_testers: true,  # Send email notifications
+      notify_external_testers: true,  # Send email notifications to external testers
       uses_non_exempt_encryption: false,  # Required for automatic distribution
-      submit_beta_review: true  # Automatically submit for beta review if needed
+      submit_beta_review: true,  # Automatically submit for Beta review
+      beta_app_description: "V2er is an elegant third-party client for V2EX forum",
+      beta_app_feedback_email: "support@v2er.app",
+      demo_account_required: false,  # No demo account required
+      beta_app_review_info: {
+        contact_email: "support@v2er.app",
+        contact_first_name: "V2er",
+        contact_last_name: "Support",
+        contact_phone: "+86 13800138000",
+        notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
+      }
     )
 
     # Notify success
