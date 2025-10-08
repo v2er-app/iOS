@@ -82,31 +82,40 @@ struct TabFilterMenuItem: View {
     let needsLogin: Bool
     let action: () -> Void
 
+    @State private var isPressed = false
+
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: iconName)
-                    .font(.system(size: 16))
+        HStack(spacing: 12) {
+            Image(systemName: iconName)
+                .font(.system(size: 16))
+                .foregroundColor(iconColor)
+                .frame(width: 24)
+
+            Text(tab.displayName())
+                .font(.system(size: 15, weight: isSelected ? .semibold : .regular))
+                .foregroundColor(textColor)
+
+            Spacer()
+
+            if isSelected {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(iconColor)
-                    .frame(width: 24)
-
-                Text(tab.displayName())
-                    .font(.system(size: 15, weight: isSelected ? .semibold : .regular))
-                    .foregroundColor(textColor)
-
-                Spacer()
-
-                if isSelected {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(iconColor)
-                }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(backgroundColor)
         }
-        .opacity(needsLogin ? 0.5 : 1.0)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(backgroundColor)
+        .scaleEffect(isPressed ? 0.97 : 1.0)
+        .opacity(needsLogin ? 0.5 : (isPressed ? 0.7 : 1.0))
+        .onTapGesture {
+            action()
+        }
+        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+            withAnimation(.easeInOut(duration: 0.1)) {
+                isPressed = pressing
+            }
+        }, perform: {})
     }
 
     private var iconName: String {
@@ -144,7 +153,10 @@ struct TabFilterMenuItem: View {
     }
 
     private var backgroundColor: Color {
-        if isSelected {
+        if isPressed {
+            // Pressed state - slightly darker background
+            return Color.dynamic(light: .hex(0xE0E0E0).opacity(0.5), dark: .hex(0x2A2A2A).opacity(0.5))
+        } else if isSelected {
             return Color.dynamic(light: .hex(0xF0F7FF), dark: .hex(0x1A2533))
         } else {
             return Color.clear
