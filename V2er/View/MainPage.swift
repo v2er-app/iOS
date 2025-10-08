@@ -45,6 +45,7 @@ struct MainPage: StateView {
                     }
                 )
                 .zIndex(1000)
+                .allowsHitTesting(state.selectedTab == .feed && store.appState.feedState.showFilterMenu)
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 TopBar(selectedTab: state.selectedTab)
