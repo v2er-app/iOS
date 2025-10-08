@@ -22,6 +22,10 @@ struct FilterMenuView: View {
                 Color.black.opacity(0.3)
                     .ignoresSafeArea()
                     .onTapGesture {
+                        // Soft haptic feedback
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
+
                         onDismiss()
                     }
                     .transition(.opacity)
@@ -38,6 +42,10 @@ struct FilterMenuView: View {
                                         isSelected: tab == selectedTab,
                                         needsLogin: tab.needsLogin() && !AccountState.hasSignIn()
                                     ) {
+                                        // Soft haptic feedback
+                                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                                        impactFeedback.impactOccurred()
+
                                         if tab.needsLogin() && !AccountState.hasSignIn() {
                                             Toast.show("登录后才能查看「\(tab.displayName())」下的内容")
                                         } else {

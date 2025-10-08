@@ -67,6 +67,10 @@ struct TopBar: View {
                                 .foregroundColor(.primary)
                         }
                         .onTapGesture {
+                            // Soft haptic feedback
+                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                            impactFeedback.impactOccurred()
+
                             dispatch(FeedActions.ToggleFilterMenu())
                         }
                     } else {
