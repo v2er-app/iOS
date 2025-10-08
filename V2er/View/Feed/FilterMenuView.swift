@@ -53,7 +53,6 @@ struct FilterMenuView: View {
                         .cornerRadius(8)
                         .shadow(color: Color.black.opacity(0.2), radius: 12, x: 0, y: 4)
                         .frame(maxHeight: 450)
-                        .padding(.top, 8)
                         Spacer()
                     }
                     .transition(.asymmetric(
