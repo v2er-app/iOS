@@ -24,11 +24,24 @@ struct FeedPage: BaseHomePageView {
     }
 
     var body: some View {
-        contentView
-            .hide(!isSelected)
-            .onAppear {
-                log("FeedPage.onAppear")
-            }
+        ZStack {
+            contentView
+                .hide(!isSelected)
+                .onAppear {
+                    log("FeedPage.onAppear")
+                }
+
+            FilterMenuView(
+                selectedTab: state.selectedTab,
+                isShowing: state.showFilterMenu,
+                onTabSelected: { tab in
+                    dispatch(FeedActions.SelectTab(tab: tab))
+                },
+                onDismiss: {
+                    dispatch(FeedActions.ToggleFilterMenu())
+                }
+            )
+        }
     }
 
     @ViewBuilder
@@ -47,7 +60,7 @@ struct FeedPage: BaseHomePageView {
                 await run(action: FeedActions.FetchData.Start())
             }
         } loadMore: {
-            if AccountState.hasSignIn() {
+            if AccountState.hasSignIn() && state.selectedTab.supportsLoadMore() {
                 await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
             }
         }

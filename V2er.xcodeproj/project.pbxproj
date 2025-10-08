@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		28CC76CC2E963D6700C939B5 /* FilterMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A490A3E111D941C4B30F0BACA6B5E984 /* FilterMenuView.swift */; };
 		4E55BE8A29D45FC00044389C /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4E55BE8929D45FC00044389C /* Kingfisher */; };
 		4EC32AF029D81863003A3BD4 /* WebView in Frameworks */ = {isa = PBXBuildFile; productRef = 4EC32AEF29D81863003A3BD4 /* WebView */; };
 		4EC32AF229D818FC003A3BD4 /* WebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC32AF129D818FC003A3BD4 /* WebBrowserView.swift */; };
@@ -168,6 +169,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A490A3E111D941C4B30F0BACA6B5E984 /* FilterMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterMenuView.swift; sourceTree = "<group>"; };
 		4EC32AF129D818FC003A3BD4 /* WebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserView.swift; sourceTree = "<group>"; };
 		5D02BD5E26909146007B6A1B /* LoadmoreIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadmoreIndicatorView.swift; sourceTree = "<group>"; };
 		5D04BF9626C9FB6E0005F7E3 /* FeedInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedInfo.swift; sourceTree = "<group>"; };
@@ -203,7 +205,6 @@
 		5D2B2B3926FF5DF800446F93 /* AccountInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountInfo.swift; sourceTree = "<group>"; };
 		5D2B2B3B26FF754F00446F93 /* Persist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persist.swift; sourceTree = "<group>"; };
 		5D2B2B3D26FF797600446F93 /* AccountState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountState.swift; sourceTree = "<group>"; };
-		5DA0000000000000000001 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		5D2DD00726FB353C0001C85A /* DefaultReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultReducer.swift; sourceTree = "<group>"; };
 		5D2DD00926FB443D0001C85A /* GlobalActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalActions.swift; sourceTree = "<group>"; };
 		5D368C8726C419D000794B8E /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
@@ -263,6 +264,7 @@
 		5D91F8D426F22A6F0089D72E /* TagDetailState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailState.swift; sourceTree = "<group>"; };
 		5D91F8D826F22CEC0089D72E /* TagDetailReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailReducer.swift; sourceTree = "<group>"; };
 		5D9D5222269543DA00D80D6B /* TagDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailPage.swift; sourceTree = "<group>"; };
+		5DA0000000000000000001 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		5DA2AD3426C17EA5007FB1EF /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		5DA2AD3626C17EB9007FB1EF /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		5DA2AD3826C17ECC007FB1EF /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
@@ -343,14 +345,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		5DA0000000000000000002 /* Config */ = {
-			isa = PBXGroup;
-			children = (
-				5DA0000000000000000001 /* Version.xcconfig */,
-			);
-			path = Config;
-			sourceTree = "<group>";
-		};
 		5D179BFD2496F6EC00E40E90 /* Widget */ = {
 			isa = PBXGroup;
 			children = (
@@ -513,6 +507,7 @@
 			children = (
 				5D71DF54247C0FFE00B53ED4 /* FeedPage.swift */,
 				5D6AAAAE2692036100F42A13 /* FeedItemView.swift */,
+				A490A3E111D941C4B30F0BACA6B5E984 /* FilterMenuView.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -564,6 +559,14 @@
 				5DD2B9FF27263E76004F357D /* SearchStateReducer.swift */,
 			);
 			path = Reducers;
+			sourceTree = "<group>";
+		};
+		5DA0000000000000000002 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				5DA0000000000000000001 /* Version.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		5DA2AD3326C17E7F007FB1EF /* State */ = {
@@ -930,6 +933,7 @@
 				5D74653D2705B97F0020F1F8 /* UpdatableState.swift in Sources */,
 				5D368C8826C419D000794B8E /* APIService.swift in Sources */,
 				5D88D5E026C2017E00302265 /* MeReducer.swift in Sources */,
+				28CC76CC2E963D6700C939B5 /* FilterMenuView.swift in Sources */,
 				5DD4639E26F70CE800A1FBA1 /* LoginPage.swift in Sources */,
 				5D1D7B8B26FD7FCE008E0C08 /* DailyInfo.swift in Sources */,
 				5DA2AD4426C18121007FB1EF /* FeedState.swift in Sources */,

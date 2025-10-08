@@ -23,15 +23,17 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             if case let .success(newsInfo) = action.result {
                 state.feedInfo = newsInfo ?? FeedInfo()
                 state.willLoadPage = 1
+                state.hasMoreData = state.selectedTab.supportsLoadMore()
             } else { }
         case let action as FeedActions.LoadMore.Start:
             guard !state.refreshing else { break }
             guard !state.loadingMore else { break }
+            guard state.selectedTab.supportsLoadMore() else { break }
             state.loadingMore = true
             break
         case let action as FeedActions.LoadMore.Done:
             state.loadingMore = false
-            state.hasMoreData = true // todo check vary tabs
+            state.hasMoreData = state.selectedTab.supportsLoadMore()
             if case let .success(newsInfo) = action.result {
                 state.willLoadPage += 1
                 state.feedInfo.append(feedInfo: newsInfo!)
@@ -40,6 +42,14 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             }
         case let action as FeedActions.ClearMsgBadge:
             state.feedInfo.unReadNums = 0
+        case let action as FeedActions.SelectTab:
+            state.selectedTab = action.tab
+            Tab.saveSelectedTab(action.tab)
+            state.showFilterMenu = false
+            state.hasMoreData = action.tab.supportsLoadMore()
+            followingAction = FeedActions.FetchData.Start()
+        case let action as FeedActions.ToggleFilterMenu:
+            state.showFilterMenu.toggle()
         default:
             break
     }
@@ -53,11 +63,11 @@ struct FeedActions {
     struct FetchData {
         struct Start: AwaitAction {
             var target: Reducer = reducer
-            let tab: Tab = .all
             var page: Int = 0
             var autoLoad: Bool = false
 
             func execute(in store: Store) async {
+                let tab = store.appState.feedState.selectedTab
                 let result: APIResult<FeedInfo> = await APIService.shared
                     .htmlGet(endpoint: .tab, ["tab": tab.rawValue])
                 dispatch(FetchData.Done(result: result))
@@ -95,6 +105,15 @@ struct FeedActions {
     }
 
     struct ClearMsgBadge: Action {
+        var target: Reducer = reducer
+    }
+
+    struct SelectTab: Action {
+        var target: Reducer = reducer
+        let tab: Tab
+    }
+
+    struct ToggleFilterMenu: Action {
         var target: Reducer = reducer
     }
 

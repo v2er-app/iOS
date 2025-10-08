@@ -9,16 +9,17 @@
 import SwiftUI
 
 struct TopBar: View {
+    @EnvironmentObject private var store: Store
     var selectedTab : TabId
-    
+
     private var isHomePage: Bool {
         return selectedTab == .feed
     }
-    
+
     private var title: String {
         switch selectedTab {
             case .feed:
-                return "V2EX"
+                return store.appState.feedState.selectedTab.displayName()
             case .explore:
                 return "发现"
             case .message:
@@ -29,7 +30,7 @@ struct TopBar: View {
                 return .empty
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             ZStack {
@@ -51,14 +52,30 @@ struct TopBar: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 8)
-                Text(title)
-                    .font(isHomePage ? .title2 : .headline)
-                    .foregroundColor(.primary)
-                    .fontWeight(isHomePage ? .heavy : .bold)
+
+                if isHomePage {
+                    HStack(spacing: 4) {
+                        Text(title)
+                            .font(.title2)
+                            .foregroundColor(.primary)
+                            .fontWeight(.heavy)
+                        Image(systemName: store.appState.feedState.showFilterMenu ? "chevron.up" : "chevron.down")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.primary)
+                    }
+                    .onTapGesture {
+                        dispatch(FeedActions.ToggleFilterMenu())
+                    }
+                } else {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                        .fontWeight(.bold)
+                }
             }
             .padding(.top, topSafeAreaInset().top)
             .background(VEBlur())
-            
+
             Divider()
                 .light()
         }
