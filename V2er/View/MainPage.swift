@@ -33,19 +33,20 @@ struct MainPage: StateView {
                     MePage(selecedTab: state.selectedTab)
                 }
 
-                // Filter menu overlay - will be rendered above content
-                FilterMenuView(
-                    selectedTab: store.appState.feedState.selectedTab,
-                    isShowing: state.selectedTab == .feed && store.appState.feedState.showFilterMenu,
-                    onTabSelected: { tab in
-                        dispatch(FeedActions.SelectTab(tab: tab))
-                    },
-                    onDismiss: {
-                        dispatch(FeedActions.ToggleFilterMenu())
-                    }
-                )
-                .zIndex(1000)
-                .allowsHitTesting(state.selectedTab == .feed && store.appState.feedState.showFilterMenu)
+                // Filter menu overlay - only render when needed
+                if state.selectedTab == .feed && store.appState.feedState.showFilterMenu {
+                    FilterMenuView(
+                        selectedTab: store.appState.feedState.selectedTab,
+                        isShowing: true,
+                        onTabSelected: { tab in
+                            dispatch(FeedActions.SelectTab(tab: tab))
+                        },
+                        onDismiss: {
+                            dispatch(FeedActions.ToggleFilterMenu())
+                        }
+                    )
+                    .zIndex(1000)
+                }
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 TopBar(selectedTab: state.selectedTab)

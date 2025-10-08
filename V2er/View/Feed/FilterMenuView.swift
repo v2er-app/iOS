@@ -17,61 +17,59 @@ struct FilterMenuView: View {
 
     var body: some View {
         ZStack {
-            if isShowing {
-                // Background overlay
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        // Soft haptic feedback
-                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                        impactFeedback.impactOccurred()
+            // Background overlay
+            Color.black.opacity(0.3)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    // Soft haptic feedback
+                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                    impactFeedback.impactOccurred()
 
-                        onDismiss()
-                    }
-                    .transition(.opacity)
+                    onDismiss()
+                }
 
-                // Menu content - positioned below navbar
-                VStack(spacing: 0) {
-                    HStack {
-                        Spacer()
-                        ScrollView {
-                            VStack(spacing: 4) {
-                                ForEach(Tab.allTabs, id: \.self) { tab in
-                                    TabFilterMenuItem(
-                                        tab: tab,
-                                        isSelected: tab == selectedTab,
-                                        needsLogin: tab.needsLogin() && !AccountState.hasSignIn()
-                                    ) {
-                                        // Soft haptic feedback
-                                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                                        impactFeedback.impactOccurred()
+            // Menu content - positioned below navbar
+            VStack(spacing: 0) {
+                HStack {
+                    Spacer()
+                    ScrollView {
+                        VStack(spacing: 4) {
+                            ForEach(Tab.allTabs, id: \.self) { tab in
+                                TabFilterMenuItem(
+                                    tab: tab,
+                                    isSelected: tab == selectedTab,
+                                    needsLogin: tab.needsLogin() && !AccountState.hasSignIn()
+                                ) {
+                                    // Soft haptic feedback
+                                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                                    impactFeedback.impactOccurred()
 
-                                        if tab.needsLogin() && !AccountState.hasSignIn() {
-                                            Toast.show("登录后才能查看「\(tab.displayName())」下的内容")
-                                        } else {
-                                            onTabSelected(tab)
-                                        }
+                                    if tab.needsLogin() && !AccountState.hasSignIn() {
+                                        Toast.show("登录后才能查看「\(tab.displayName())」下的内容")
+                                    } else {
+                                        onTabSelected(tab)
                                     }
                                 }
                             }
-                            .padding(.vertical, 8)
                         }
-                        .frame(width: 200)
-                        .background(Color.itemBg)
-                        .cornerRadius(8)
-                        .shadow(color: Color.black.opacity(0.2), radius: 12, x: 0, y: 4)
-                        .frame(maxHeight: 450)
-                        Spacer()
+                        .padding(.vertical, 8)
                     }
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .top).combined(with: .opacity),
-                        removal: .move(edge: .top).combined(with: .opacity)
-                    ))
-
+                    .frame(width: 200)
+                    .background(Color.itemBg)
+                    .cornerRadius(8)
+                    .shadow(color: Color.black.opacity(0.2), radius: 12, x: 0, y: 4)
+                    .frame(maxHeight: 450)
                     Spacer()
                 }
+                .transition(.asymmetric(
+                    insertion: .move(edge: .top).combined(with: .opacity),
+                    removal: .move(edge: .top).combined(with: .opacity)
+                ))
+
+                Spacer()
             }
         }
+        .transition(.opacity)
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isShowing)
     }
 }
