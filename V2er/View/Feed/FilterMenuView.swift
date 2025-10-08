@@ -15,12 +15,6 @@ struct FilterMenuView: View {
     let onTabSelected: (Tab) -> Void
     let onDismiss: () -> Void
 
-    private let columns = [
-        GridItem(.flexible()),
-        GridItem(.flexible()),
-        GridItem(.flexible())
-    ]
-
     var body: some View {
         ZStack(alignment: .topLeading) {
             if isShowing {
