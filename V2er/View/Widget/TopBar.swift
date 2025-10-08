@@ -19,7 +19,8 @@ struct TopBar: View {
     private var title: String {
         switch selectedTab {
             case .feed:
-                return store.appState.feedState.selectedTab.displayName()
+                let selectedTab = store.appState.feedState.selectedTab
+                return selectedTab == .all ? "V2EX" : selectedTab.displayName()
             case .explore:
                 return "发现"
             case .message:
@@ -33,26 +34,7 @@ struct TopBar: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ZStack {
-                HStack {
-                    Image(systemName: "square.grid.2x2")
-                        .foregroundColor(.primary)
-                        .font(.system(size: 22))
-                        .padding(6)
-                        .forceClickable()
-                        .hide()
-//                        .to { TestView() }
-                    Spacer()
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.primary)
-                        .font(.system(size: 22))
-                        .padding(6)
-                        .forceClickable()
-                        .to { SearchPage() }
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 8)
-
+            HStack {
                 if isHomePage {
                     HStack(spacing: 4) {
                         Text(title)
@@ -71,8 +53,20 @@ struct TopBar: View {
                         .font(.headline)
                         .foregroundColor(.primary)
                         .fontWeight(.bold)
+                        .padding(.leading, 10)
                 }
+
+                Spacer()
+
+                Image(systemName: "magnifyingglass")
+                    .foregroundColor(.primary)
+                    .font(.system(size: 22))
+                    .padding(6)
+                    .forceClickable()
+                    .to { SearchPage() }
             }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
             .padding(.top, topSafeAreaInset().top)
             .background(VEBlur())
 

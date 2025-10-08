@@ -22,7 +22,7 @@ struct FilterMenuView: View {
     ]
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
             if isShowing {
                 // Background overlay
                 Color.black.opacity(0.3)
@@ -32,12 +32,12 @@ struct FilterMenuView: View {
                     }
                     .transition(.opacity)
 
-                // Menu content
-                VStack(spacing: 0) {
+                // Menu content - positioned at top left
+                VStack(alignment: .leading, spacing: 0) {
                     ScrollView {
-                        LazyVGrid(columns: columns, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 4) {
                             ForEach(Tab.allTabs, id: \.self) { tab in
-                                TabFilterButton(
+                                TabFilterMenuItem(
                                     tab: tab,
                                     isSelected: tab == selectedTab,
                                     needsLogin: tab.needsLogin() && !AccountState.hasSignIn()
@@ -50,21 +50,27 @@ struct FilterMenuView: View {
                                 }
                             }
                         }
-                        .padding()
+                        .padding(.vertical, 8)
                     }
+                    .frame(width: 200)
                     .background(Color.itemBg)
                     .cornerRadius(12)
-                    .padding()
-                    .frame(maxHeight: 400)
+                    .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
+                    .frame(maxHeight: 450)
+                    .padding(.top, topSafeAreaInset().top + 50)
+                    .padding(.leading, 16)
                 }
-                .transition(.move(edge: .top).combined(with: .opacity))
+                .transition(.asymmetric(
+                    insertion: .move(edge: .top).combined(with: .opacity),
+                    removal: .move(edge: .top).combined(with: .opacity)
+                ))
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: isShowing)
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isShowing)
     }
 }
 
-struct TabFilterButton: View {
+struct TabFilterMenuItem: View {
     let tab: Tab
     let isSelected: Bool
     let needsLogin: Bool
@@ -72,19 +78,47 @@ struct TabFilterButton: View {
 
     var body: some View {
         Button(action: action) {
-            Text(tab.displayName())
-                .font(.system(size: 14))
-                .foregroundColor(textColor)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(backgroundColor)
-                .cornerRadius(8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(borderColor, lineWidth: isSelected ? 1.5 : 0)
-                )
+            HStack(spacing: 12) {
+                Image(systemName: iconName)
+                    .font(.system(size: 16))
+                    .foregroundColor(iconColor)
+                    .frame(width: 24)
+
+                Text(tab.displayName())
+                    .font(.system(size: 15, weight: isSelected ? .semibold : .regular))
+                    .foregroundColor(textColor)
+
+                Spacer()
+
+                if isSelected {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(iconColor)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(backgroundColor)
         }
         .opacity(needsLogin ? 0.5 : 1.0)
+    }
+
+    private var iconName: String {
+        switch tab {
+        case .all: return "house.fill"
+        case .tech: return "desktopcomputer"
+        case .creative: return "lightbulb.fill"
+        case .play: return "gamecontroller.fill"
+        case .apple: return "apple.logo"
+        case .jobs: return "briefcase.fill"
+        case .deals: return "cart.fill"
+        case .city: return "building.2.fill"
+        case .qna: return "questionmark.circle.fill"
+        case .hot: return "flame.fill"
+        case .r2: return "arrow.clockwise"
+        case .nodes: return "square.grid.3x3.fill"
+        case .members: return "person.2.fill"
+        }
     }
 
     private var textColor: Color {
@@ -95,16 +129,20 @@ struct TabFilterButton: View {
         }
     }
 
-    private var backgroundColor: Color {
+    private var iconColor: Color {
         if isSelected {
-            return Color.dynamic(light: .hex(0xE8F2FF), dark: .hex(0x1A3A52))
+            return Color.dynamic(light: .hex(0x2E7EF3), dark: .hex(0x5E9EFF))
         } else {
-            return Color.dynamic(light: .hex(0xF5F5F5), dark: .hex(0x2C2C2E))
+            return Color.dynamic(light: .hex(0x666666), dark: .hex(0x999999))
         }
     }
 
-    private var borderColor: Color {
-        return Color.dynamic(light: .hex(0x2E7EF3), dark: .hex(0x5E9EFF))
+    private var backgroundColor: Color {
+        if isSelected {
+            return Color.dynamic(light: .hex(0xF0F7FF), dark: .hex(0x1A2533))
+        } else {
+            return Color.clear
+        }
     }
 }
 
