@@ -24,24 +24,11 @@ struct FeedPage: BaseHomePageView {
     }
 
     var body: some View {
-        ZStack {
-            contentView
-                .hide(!isSelected)
-                .onAppear {
-                    log("FeedPage.onAppear")
-                }
-
-            FilterMenuView(
-                selectedTab: state.selectedTab,
-                isShowing: state.showFilterMenu,
-                onTabSelected: { tab in
-                    dispatch(FeedActions.SelectTab(tab: tab))
-                },
-                onDismiss: {
-                    dispatch(FeedActions.ToggleFilterMenu())
-                }
-            )
-        }
+        contentView
+            .hide(!isSelected)
+            .onAppear {
+                log("FeedPage.onAppear")
+            }
     }
 
     @ViewBuilder

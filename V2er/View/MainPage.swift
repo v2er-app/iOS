@@ -25,10 +25,26 @@ struct MainPage: StateView {
     var body: some View {
         NavigationView {
             ZStack {
-                FeedPage(selecedTab: state.selectedTab)
-                ExplorePage(selecedTab: state.selectedTab)
-                MessagePage(selecedTab: state.selectedTab)
-                MePage(selecedTab: state.selectedTab)
+                // Main content pages
+                ZStack {
+                    FeedPage(selecedTab: state.selectedTab)
+                    ExplorePage(selecedTab: state.selectedTab)
+                    MessagePage(selecedTab: state.selectedTab)
+                    MePage(selecedTab: state.selectedTab)
+                }
+
+                // Filter menu overlay - will be rendered above content
+                FilterMenuView(
+                    selectedTab: store.appState.feedState.selectedTab,
+                    isShowing: state.selectedTab == .feed && store.appState.feedState.showFilterMenu,
+                    onTabSelected: { tab in
+                        dispatch(FeedActions.SelectTab(tab: tab))
+                    },
+                    onDismiss: {
+                        dispatch(FeedActions.ToggleFilterMenu())
+                    }
+                )
+                .zIndex(1000)
             }
             .safeAreaInset(edge: .top, spacing: 0) {
                 TopBar(selectedTab: state.selectedTab)

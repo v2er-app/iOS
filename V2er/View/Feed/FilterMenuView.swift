@@ -16,7 +16,7 @@ struct FilterMenuView: View {
     let onDismiss: () -> Void
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
+        ZStack {
             if isShowing {
                 // Background overlay
                 Color.black.opacity(0.3)
@@ -26,38 +26,43 @@ struct FilterMenuView: View {
                     }
                     .transition(.opacity)
 
-                // Menu content - positioned at top left
-                VStack(alignment: .leading, spacing: 0) {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 4) {
-                            ForEach(Tab.allTabs, id: \.self) { tab in
-                                TabFilterMenuItem(
-                                    tab: tab,
-                                    isSelected: tab == selectedTab,
-                                    needsLogin: tab.needsLogin() && !AccountState.hasSignIn()
-                                ) {
-                                    if tab.needsLogin() && !AccountState.hasSignIn() {
-                                        Toast.show("登录后才能查看「\(tab.displayName())」下的内容")
-                                    } else {
-                                        onTabSelected(tab)
+                // Menu content - positioned below navbar
+                VStack(spacing: 0) {
+                    HStack {
+                        Spacer()
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 4) {
+                                ForEach(Tab.allTabs, id: \.self) { tab in
+                                    TabFilterMenuItem(
+                                        tab: tab,
+                                        isSelected: tab == selectedTab,
+                                        needsLogin: tab.needsLogin() && !AccountState.hasSignIn()
+                                    ) {
+                                        if tab.needsLogin() && !AccountState.hasSignIn() {
+                                            Toast.show("登录后才能查看「\(tab.displayName())」下的内容")
+                                        } else {
+                                            onTabSelected(tab)
+                                        }
                                     }
                                 }
                             }
+                            .padding(.vertical, 8)
                         }
-                        .padding(.vertical, 8)
+                        .frame(width: 200)
+                        .background(Color.itemBg)
+                        .cornerRadius(8)
+                        .shadow(color: Color.black.opacity(0.2), radius: 12, x: 0, y: 4)
+                        .frame(maxHeight: 450)
+                        .padding(.top, 8)
+                        Spacer()
                     }
-                    .frame(width: 200)
-                    .background(Color.itemBg)
-                    .cornerRadius(12)
-                    .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
-                    .frame(maxHeight: 450)
-                    .padding(.top, topSafeAreaInset().top + 50)
-                    .padding(.leading, 16)
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .top).combined(with: .opacity),
+                        removal: .move(edge: .top).combined(with: .opacity)
+                    ))
+
+                    Spacer()
                 }
-                .transition(.asymmetric(
-                    insertion: .move(edge: .top).combined(with: .opacity),
-                    removal: .move(edge: .top).combined(with: .opacity)
-                ))
             }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isShowing)

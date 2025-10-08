@@ -34,39 +34,51 @@ struct TopBar: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
-                if isHomePage {
-                    HStack(spacing: 4) {
-                        Text(title)
-                            .font(.title2)
-                            .foregroundColor(.primary)
-                            .fontWeight(.heavy)
-                        Image(systemName: store.appState.feedState.showFilterMenu ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.primary)
-                    }
-                    .onTapGesture {
-                        dispatch(FeedActions.ToggleFilterMenu())
-                    }
-                } else {
-                    Text(title)
-                        .font(.headline)
+            ZStack {
+                HStack {
+                    Image(systemName: "square.grid.2x2")
                         .foregroundColor(.primary)
-                        .fontWeight(.bold)
-                        .padding(.leading, 10)
+                        .font(.system(size: 22))
+                        .padding(6)
+                        .forceClickable()
+                        .hide()
+                    Spacer()
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.primary)
+                        .font(.system(size: 22))
+                        .padding(6)
+                        .forceClickable()
+                        .to { SearchPage() }
                 }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
 
-                Spacer()
-
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.primary)
-                    .font(.system(size: 22))
-                    .padding(6)
-                    .forceClickable()
-                    .to { SearchPage() }
+                // Centered title
+                HStack {
+                    Spacer()
+                    if isHomePage {
+                        HStack(spacing: 4) {
+                            Text(title)
+                                .font(.title2)
+                                .foregroundColor(.primary)
+                                .fontWeight(.heavy)
+                            Image(systemName: store.appState.feedState.showFilterMenu ? "chevron.up" : "chevron.down")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(.primary)
+                        }
+                        .onTapGesture {
+                            dispatch(FeedActions.ToggleFilterMenu())
+                        }
+                    } else {
+                        Text(title)
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                            .fontWeight(.bold)
+                    }
+                    Spacer()
+                }
+                .allowsHitTesting(isHomePage)
             }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
             .padding(.top, topSafeAreaInset().top)
             .background(VEBlur())
 
@@ -82,7 +94,7 @@ struct TopBar: View {
 struct TopBar_Previews: PreviewProvider {
 //    @State static var selecedTab = TabId.feed
     static var selecedTab = TabId.explore
-    
+
     static var previews: some View {
         VStack {
             TopBar(selectedTab: selecedTab)
