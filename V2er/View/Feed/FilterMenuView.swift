@@ -35,7 +35,7 @@ struct FilterMenuView: View {
                     HStack {
                         Spacer()
                         ScrollView {
-                            VStack(alignment: .leading, spacing: 4) {
+                            VStack(spacing: 4) {
                                 ForEach(Tab.allTabs, id: \.self) { tab in
                                     TabFilterMenuItem(
                                         tab: tab,
@@ -105,7 +105,9 @@ struct TabFilterMenuItem: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
         .background(backgroundColor)
+        .contentShape(Rectangle())
         .scaleEffect(isPressed ? 0.97 : 1.0)
         .opacity(needsLogin ? 0.5 : (isPressed ? 0.7 : 1.0))
         .onTapGesture {
