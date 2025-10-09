@@ -24,36 +24,59 @@ enum Tab: String {
     case members
 
     func displayName() -> String {
-        var name: String? = nil
-        switch(self) {
+        switch self {
             case .all:
-                name = "全部"
+                return "全部"
             case .tech:
-                name = "技术"
+                return "技术"
             case .creative:
-                name = "创意"
+                return "创意"
             case .play:
-                name = "好玩"
+                return "好玩"
             case .apple:
-                name = "Apple"
+                return "Apple"
             case .jobs:
-                name = "酷工作"
+                return "酷工作"
             case .deals:
-                name = "交易"
+                return "交易"
             case .city:
-                name = "城市"
+                return "城市"
             case .qna:
-                name = "问与答"
+                return "问与答"
             case .hot:
-                name = "最热"
+                return "最热"
             case .r2:
-                name = "r2"
+                return "R2"
             case .nodes:
-                name = "节点"
+                return "节点"
             case .members:
-                name = "关注"
+                return "关注"
         }
-        assert(name != nil , "Tab display name shouldn't be null")
-        return ""
+    }
+
+    func needsLogin() -> Bool {
+        return self == .nodes || self == .members
+    }
+
+    func supportsLoadMore() -> Bool {
+        return self == .all
+    }
+
+    static var allTabs: [Tab] {
+        return [.all, .tech, .creative, .play, .apple, .jobs, .deals, .city, .qna, .hot, .r2, .nodes, .members]
+    }
+
+    private static let selectedTabKey = "selected_feed_tab"
+
+    static func saveSelectedTab(_ tab: Tab) {
+        UserDefaults.standard.set(tab.rawValue, forKey: selectedTabKey)
+    }
+
+    static func getSelectedTab() -> Tab {
+        if let value = UserDefaults.standard.string(forKey: selectedTabKey),
+           let tab = Tab(rawValue: value) {
+            return tab
+        }
+        return .all
     }
 }

@@ -16,4 +16,7 @@ struct FeedState: FluxState {
     var willLoadPage: Int = 0
     var hasMoreData: Bool = true
     var feedInfo: FeedInfo = FeedInfo()
+    var selectedTab: Tab = Tab.getSelectedTab()
+    var showFilterMenu: Bool = false
+    var scrollToTop: Int = 0  // Trigger scroll to top when changed
 }
