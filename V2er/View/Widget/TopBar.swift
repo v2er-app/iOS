@@ -70,7 +70,7 @@ struct TopBar: View {
             .forceClickable()
             .onChange(of: store.appState.feedState.showFilterMenu) { newValue in
               withAnimation {
-                rotationAngle = newValue ? 180 : 0
+                rotationAngle += 180
               }
             }
             .onTapGesture {

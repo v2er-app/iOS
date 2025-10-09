@@ -48,6 +48,7 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             state.selectedTab = action.tab
             Tab.saveSelectedTab(action.tab)
             state.showFilterMenu = false
+            state.showProgressView = true
             let supportsLoadMore = action.tab.supportsLoadMore()
             state.hasMoreData = supportsLoadMore
             followingAction = FeedActions.FetchData.Start()
