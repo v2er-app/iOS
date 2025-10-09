@@ -2,8 +2,8 @@
 //  FilterMenuView.swift
 //  V2er
 //
-//  Created by Claude on 2025/10/08.
-//  Copyright © 2025 lessmore.io. All rights reserved.
+//  Created by Claude on 2024/10/08.
+//  Copyright © 2024 lessmore.io. All rights reserved.
 //
 
 import SwiftUI
