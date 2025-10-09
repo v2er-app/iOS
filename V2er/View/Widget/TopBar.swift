@@ -66,6 +66,9 @@ struct TopBar: View {
                                 .font(.system(size: 14, weight: .semibold))
                                 .foregroundColor(.primary)
                         }
+                        .padding(.horizontal, 20)  // Expand tap area horizontally
+                        .padding(.vertical, 8)     // Expand tap area vertically
+                        .contentShape(Rectangle()) // Make entire padded area tappable
                         .onTapGesture {
                             // Soft haptic feedback
                             let impactFeedback = UIImpactFeedbackGenerator(style: .light)
