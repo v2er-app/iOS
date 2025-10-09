@@ -99,6 +99,57 @@ Tests are located in:
 
 Currently contains only boilerplate test setup.
 
+## Release Management
+
+### Version and Changelog Workflow
+
+Version information is centralized in `V2er/Config/Version.xcconfig`:
+- `MARKETING_VERSION`: User-facing version (e.g., 1.1.1)
+- `CURRENT_PROJECT_VERSION`: Build number (auto-incremented by CI)
+
+**When updating the version for a new release:**
+
+1. **Update Version.xcconfig**
+   ```bash
+   # Edit V2er/Config/Version.xcconfig
+   MARKETING_VERSION = 1.2.0
+   ```
+
+2. **Update CHANGELOG.md**
+   Add a new section at the top with your changes:
+   ```markdown
+   ## v1.2.0 (Build XX)
+   1. Feature: Description of new feature
+   2. Fix: Description of bug fix
+   3. Improvement: Description of enhancement
+   ```
+
+3. **Commit and push to trigger release**
+   ```bash
+   git add V2er/Config/Version.xcconfig CHANGELOG.md
+   git commit -m "chore: bump version to 1.2.0"
+   git push origin main
+   ```
+
+The CI pipeline will:
+- Validate that CHANGELOG.md contains an entry for the new version
+- Extract the changelog for TestFlight release notes
+- Auto-increment build number
+- Upload to TestFlight with your changelog
+
+### Fastlane Commands
+
+```bash
+# Build and upload to TestFlight (requires changelog)
+fastlane beta
+
+# Distribute existing build to beta testers
+fastlane distribute_beta
+
+# Sync certificates and provisioning profiles
+fastlane sync_certificates
+```
+
 ## Important Notes
 
 - Minimum iOS version: iOS 15.0
@@ -106,4 +157,5 @@ Currently contains only boilerplate test setup.
 - Orientation: Portrait only on iPhone, all orientations on iPad
 - UI Style: Light mode enforced
 - Website submodule: Located at `website/` (separate repository)
-- create PR should always use english
+- Create PR should always use English
+- **CHANGELOG.md is required** for all releases - the build will fail if the current version is missing from the changelog

@@ -1,0 +1,38 @@
+# Changelog
+
+All notable changes to V2er iOS app will be documented in this file.
+
+## v1.1.1 (Build 31)
+1. Feature: Add feed filter menu with Reddit-style dropdown for better content filtering
+2. Fix: Prevent crash when clicking Ignore/Report buttons without being logged in
+3. Fix: Improve TestFlight beta distribution configuration
+4. Feature: Enable automatic TestFlight beta distribution to public testers
+
+## v1.1.0 (Build 30)
+1. Feature: Initial public beta release
+2. Fix: Resolve iOS build hanging at code signing step
+3. Fix: Improve version management system using xcconfig
+4. Feature: Centralized version configuration in Version.xcconfig
+
+---
+
+## How to Update Changelog
+
+When updating the version in `V2er/Config/Version.xcconfig`:
+
+1. Add a new version section at the top of this file
+2. List all changes since the last version:
+   - Use "Feature:" for new features
+   - Use "Fix:" for bug fixes
+   - Use "Improvement:" for enhancements
+   - Use "Breaking:" for breaking changes
+
+Example format:
+```
+## vX.Y.Z (Build N)
+1. Feature: Description of new feature
+2. Fix: Description of bug fix
+3. Improvement: Description of enhancement
+```
+
+The changelog will be automatically extracted and used in TestFlight release notes.

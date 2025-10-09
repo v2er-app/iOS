@@ -1,5 +1,8 @@
 # Fastfile for V2er iOS app
 
+# Import changelog helper
+require_relative 'changelog_helper'
+
 default_platform(:ios)
 
 platform :ios do
@@ -105,6 +108,11 @@ platform :ios do
 
   desc "Build and upload to TestFlight"
   lane :beta do
+    # Validate that changelog exists for current version
+    unless ChangelogHelper.validate_changelog_exists
+      UI.user_error!("Please update CHANGELOG.md with an entry for the current version before releasing!")
+    end
+
     # Ensure we have the latest certificates
     sync_certificates
 
@@ -116,6 +124,7 @@ platform :ios do
     xcconfig_path = "../V2er/Config/Version.xcconfig"
     xcconfig_content = File.read(xcconfig_path)
     current_build_number = xcconfig_content.match(/CURRENT_PROJECT_VERSION = (\d+)/)[1].to_i
+    current_version = xcconfig_content.match(/MARKETING_VERSION = (.+)/)[1].strip
 
     latest_testflight = latest_testflight_build_number(api_key: api_key)
 
@@ -154,6 +163,9 @@ platform :ios do
     # Build the app
     build_ipa
 
+    # Extract changelog for the current version
+    changelog_content = ChangelogHelper.extract_changelog(current_version)
+
     # Upload to TestFlight
     upload_to_testflight(
       api_key: api_key,
@@ -164,7 +176,7 @@ platform :ios do
       distribute_external: true,  # Distribute to external testers (public beta)
       distribute_only: false,  # Upload and distribute in one action
       groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
-      changelog: "Bug fixes and improvements",
+      changelog: changelog_content,  # Use changelog from CHANGELOG.md
       notify_external_testers: true,  # Send email notifications to external testers
       uses_non_exempt_encryption: false,  # Required for automatic distribution
       submit_beta_review: true,  # Automatically submit for Beta review
