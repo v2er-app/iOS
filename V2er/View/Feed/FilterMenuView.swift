@@ -35,16 +35,17 @@ struct FilterMenuView: View {
                     ScrollView {
                         VStack(spacing: 4) {
                             ForEach(Tab.allTabs, id: \.self) { tab in
+                                let tabNeedsLogin = tab.needsLogin() && !AccountState.hasSignIn()
                                 TabFilterMenuItem(
                                     tab: tab,
                                     isSelected: tab == selectedTab,
-                                    needsLogin: tab.needsLogin() && !AccountState.hasSignIn()
+                                    needsLogin: tabNeedsLogin
                                 ) {
                                     // Soft haptic feedback
                                     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                                     impactFeedback.impactOccurred()
 
-                                    if tab.needsLogin() && !AccountState.hasSignIn() {
+                                    if tabNeedsLogin {
                                         Toast.show("登录后才能查看「\(tab.displayName())」下的内容")
                                     } else {
                                         onTabSelected(tab)

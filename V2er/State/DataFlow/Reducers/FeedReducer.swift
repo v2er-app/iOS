@@ -23,7 +23,8 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             if case let .success(newsInfo) = action.result {
                 state.feedInfo = newsInfo ?? FeedInfo()
                 state.willLoadPage = 1
-                state.hasMoreData = state.selectedTab.supportsLoadMore()
+                let supportsLoadMore = state.selectedTab.supportsLoadMore()
+                state.hasMoreData = supportsLoadMore
             } else { }
         case let action as FeedActions.LoadMore.Start:
             guard !state.refreshing else { break }
@@ -33,7 +34,8 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             break
         case let action as FeedActions.LoadMore.Done:
             state.loadingMore = false
-            state.hasMoreData = state.selectedTab.supportsLoadMore()
+            let supportsLoadMore = state.selectedTab.supportsLoadMore()
+            state.hasMoreData = supportsLoadMore
             if case let .success(newsInfo) = action.result {
                 state.willLoadPage += 1
                 state.feedInfo.append(feedInfo: newsInfo!)
@@ -46,7 +48,8 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             state.selectedTab = action.tab
             Tab.saveSelectedTab(action.tab)
             state.showFilterMenu = false
-            state.hasMoreData = action.tab.supportsLoadMore()
+            let supportsLoadMore = action.tab.supportsLoadMore()
+            state.hasMoreData = supportsLoadMore
             followingAction = FeedActions.FetchData.Start()
         case let action as FeedActions.ToggleFilterMenu:
             state.showFilterMenu.toggle()

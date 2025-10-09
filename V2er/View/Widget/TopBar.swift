@@ -2,7 +2,7 @@
 //  TopBar.swift
 //  V2er
 //
-//  Created by Seth on 2021/6/24.
+//  Created by Gray on 2021/6/24.
 //  Copyright © 2021 lessmore.io. All rights reserved.
 //
 
@@ -70,7 +70,7 @@ struct TopBar: View {
             .forceClickable()
             .onChange(of: store.appState.feedState.showFilterMenu) { newValue in
               withAnimation {
-                rotationAngle += 180
+                rotationAngle = newValue ? 180 : 0
               }
             }
             .onTapGesture {
