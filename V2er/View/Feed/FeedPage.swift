@@ -42,7 +42,7 @@ struct FeedPage: BaseHomePageView {
                 }
             }
         }
-        .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, scrollTop(tab: .feed)) {
+        .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, max(state.scrollToTop, scrollTop(tab: .feed))) {
             if AccountState.hasSignIn() {
                 await run(action: FeedActions.FetchData.Start())
             }

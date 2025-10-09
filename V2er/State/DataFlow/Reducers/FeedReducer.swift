@@ -25,6 +25,10 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
                 state.willLoadPage = 1
                 let supportsLoadMore = state.selectedTab.supportsLoadMore()
                 state.hasMoreData = supportsLoadMore
+                // Trigger scroll to top after successfully loading new filter data
+                if action.isFromFilterChange {
+                    state.scrollToTop = Int.random(in: 1...Int.max)
+                }
             } else { }
         case let action as FeedActions.LoadMore.Start:
             guard !state.refreshing else { break }
@@ -51,7 +55,7 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             state.showProgressView = true
             let supportsLoadMore = action.tab.supportsLoadMore()
             state.hasMoreData = supportsLoadMore
-            followingAction = FeedActions.FetchData.Start()
+            followingAction = FeedActions.FetchData.Start(isFromFilterChange: true)
         case let action as FeedActions.ToggleFilterMenu:
             state.showFilterMenu.toggle()
         default:
@@ -69,12 +73,19 @@ struct FeedActions {
             var target: Reducer = reducer
             var page: Int = 0
             var autoLoad: Bool = false
+            var isFromFilterChange: Bool = false
+
+            init(page: Int = 0, autoLoad: Bool = false, isFromFilterChange: Bool = false) {
+                self.page = page
+                self.autoLoad = autoLoad
+                self.isFromFilterChange = isFromFilterChange
+            }
 
             func execute(in store: Store) async {
                 let tab = store.appState.feedState.selectedTab
                 let result: APIResult<FeedInfo> = await APIService.shared
                     .htmlGet(endpoint: .tab, ["tab": tab.rawValue])
-                dispatch(FetchData.Done(result: result))
+                dispatch(FetchData.Done(result: result, isFromFilterChange: isFromFilterChange))
             }
         }
 
@@ -82,6 +93,12 @@ struct FeedActions {
             var target: Reducer = reducer
 
             let result: APIResult<FeedInfo>
+            let isFromFilterChange: Bool
+
+            init(result: APIResult<FeedInfo>, isFromFilterChange: Bool = false) {
+                self.result = result
+                self.isFromFilterChange = isFromFilterChange
+            }
         }
     }
 
