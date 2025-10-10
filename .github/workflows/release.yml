@@ -50,6 +50,7 @@ jobs:
           if [[ "${{ github.event.inputs.force_release }}" == "true" ]]; then
             echo "Tag $TAG_NAME exists but force_release is true"
             # Delete existing tag for force release
+            git tag -d "$TAG_NAME" 2>/dev/null || true
             git push origin --delete "$TAG_NAME" 2>/dev/null || true
             echo "should_release=true" >> $GITHUB_OUTPUT
           else
