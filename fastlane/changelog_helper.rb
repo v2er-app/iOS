@@ -5,7 +5,7 @@ require 'fastlane_core/ui/ui'
 
 module ChangelogHelper
   # Import Fastlane's UI for logging
-  UI = FastlaneCore::UI unless Fastlane.const_defined?(:UI)
+  UI = FastlaneCore::UI unless defined?(UI)
   # Extract changelog for a specific version from CHANGELOG.md
   # @param version [String] The version to extract (e.g., "1.1.1")
   # @return [String] The changelog content for the specified version
