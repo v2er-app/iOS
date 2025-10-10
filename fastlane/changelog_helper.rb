@@ -94,8 +94,9 @@ module ChangelogHelper
 
     # Ensure we don't exceed TestFlight's changelog length limit (4000 chars)
     if (formatted + feedback_link).length > 4000
-      max_length = 3900 - feedback_link.length
-      formatted = formatted[0...max_length] + "\n\n(See full changelog at github.com/v2er-app/iOS)"
+      extra_message = "\n\n(See full changelog at github.com/v2er-app/iOS)"
+      max_length = 4000 - feedback_link.length - extra_message.length
+      formatted = formatted[0...max_length] + extra_message
     end
 
     formatted + feedback_link
