@@ -138,27 +138,19 @@ struct TabFilterMenuItem: View {
     }
 
     private var textColor: Color {
-        if isSelected {
-            return Color.dynamic(light: .hex(0x2E7EF3), dark: .hex(0x5E9EFF))
-        } else {
-            return Color.primaryText
-        }
+        return Color.primaryText
     }
 
     private var iconColor: Color {
-        if isSelected {
-            return Color.dynamic(light: .hex(0x2E7EF3), dark: .hex(0x5E9EFF))
-        } else {
-            return Color.dynamic(light: .hex(0x666666), dark: .hex(0x999999))
-        }
+        return Color.dynamic(light: .hex(0x666666), dark: .hex(0x999999))
     }
 
     private var backgroundColor: Color {
         if isPressed {
-            // Pressed state - slightly darker background
-            return Color.dynamic(light: .hex(0xE0E0E0).opacity(0.5), dark: .hex(0x2A2A2A).opacity(0.5))
+            // Pressed state - use lightGray with reduced opacity
+            return Color.lightGray.opacity(0.6)
         } else if isSelected {
-            return Color.dynamic(light: .hex(0xF0F7FF), dark: .hex(0x1A2533))
+            return Color.lightGray
         } else {
             return Color.clear
         }
