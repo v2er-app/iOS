@@ -89,12 +89,16 @@ module ChangelogHelper
     # "1. Feature: xxx" -> "• Feature: xxx"
     formatted = content.gsub(/^\d+\.\s+/, "• ")
 
+    # Add feedback link at the end
+    feedback_link = "\n\n问题反馈: https://github.com/v2er-app/iOS/issues"
+
     # Ensure we don't exceed TestFlight's changelog length limit (4000 chars)
-    if formatted.length > 3900
-      formatted = formatted[0...3900] + "\n\n(See full changelog at github.com/v2er-app/iOS)"
+    if (formatted + feedback_link).length > 4000
+      max_length = 3900 - feedback_link.length
+      formatted = formatted[0...max_length] + "\n\n(See full changelog at github.com/v2er-app/iOS)"
     end
 
-    formatted
+    formatted + feedback_link
   end
 
   # Get the current version from Version.xcconfig
