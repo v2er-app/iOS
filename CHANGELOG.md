@@ -2,6 +2,11 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.2 (Build 32)
+1. Feature: Update app icon with single high-resolution asset for better display quality
+2. Feature: Add feedback link to TestFlight release notes for easier user communication
+3. Improvement: Set up GitHub Copilot instructions for enhanced development workflow
+
 ## v1.1.1 (Build 31)
 1. Feature: Add feed filter menu with Reddit-style dropdown for better content filtering
 2. Fix: Prevent crash when clicking Ignore/Report buttons without being logged in
