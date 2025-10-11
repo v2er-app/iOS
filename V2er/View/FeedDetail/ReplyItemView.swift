@@ -36,7 +36,14 @@ struct ReplyItemView: View {
                             .foregroundColor(.secondaryText)
                     }
                     Spacer()
-                    //                    Image(systemName: "heart")
+                    if info.love.notEmpty() {
+                        Text(info.love)
+                            .font(.caption)
+                            .foregroundColor(.secondaryText)
+                    }
+                    Image(systemName: info.hadThanked ? "heart.fill" : "heart")
+                        .font(.system(size: 14))
+                        .foregroundColor(info.hadThanked ? .red : .secondaryText)
                 }
                 RichText { info.content }
                 Text("\(info.floor)楼")
