@@ -25,7 +25,7 @@ struct FeedInfo: BaseModel {
         if twoStepStr.notEmpty() && twoStepStr.contains("两步验证") {
             return false
         }
-        return items.count > 0 || items[0].userName.notEmpty
+        return items.count > 0 && items[0].userName.notEmpty
     }
 
     mutating func append(feedInfo: FeedInfo) {
