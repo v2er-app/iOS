@@ -159,3 +159,4 @@ fastlane sync_certificates
 - Website submodule: Located at `website/` (separate repository)
 - Create PR should always use English
 - **CHANGELOG.md is required** for all releases - the build will fail if the current version is missing from the changelog
+- Always install to Gray'iPhone if it connected, otherwise install to simulator
