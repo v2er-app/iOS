@@ -7,9 +7,11 @@
 //
 
 import SwiftUI
+import Combine
 
 struct MainPage: StateView {
     @EnvironmentObject private var store: Store
+    @State private var tabReselectionPublisher = PassthroughSubject<TabId, Never>()
 
     var bindingState: Binding<GlobalState> {
         $store.appState.globalState
@@ -22,10 +24,26 @@ struct MainPage: StateView {
         store.appState.feedState.feedInfo.unReadNums
     }
 
+    // Create an intermediate binding that captures all tab selections
+    // This is the proper SwiftUI way to detect same-tab taps without UIKit
+    private var tabSelection: Binding<TabId> {
+        Binding(
+            get: { selectedTab.wrappedValue },
+            set: { newValue in
+                // Publish the tap event before changing the value
+                // This allows us to detect same-tab taps
+                tabReselectionPublisher.send(newValue)
+
+                // Always update the selection to maintain consistency
+                selectedTab.wrappedValue = newValue
+            }
+        )
+    }
+
     var body: some View {
         NavigationView {
             ZStack {
-                TabView(selection: selectedTab) {
+                TabView(selection: tabSelection) {
                     // Feed Tab
                     pageWithTopBar(
                         FeedPage(selecedTab: state.selectedTab)
@@ -82,6 +100,10 @@ struct MainPage: StateView {
                     )
                     .zIndex(1000)
                 }
+            }
+            .onReceive(tabReselectionPublisher) { tappedTab in
+                // Dispatch action for all tab taps (including same-tab taps)
+                dispatch(TabbarClickAction(selectedTab: tappedTab))
             }
             .navigationBarHidden(true)
         }
