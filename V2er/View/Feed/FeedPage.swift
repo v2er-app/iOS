@@ -25,9 +25,11 @@ struct FeedPage: BaseHomePageView {
 
     var body: some View {
         contentView
-            .hide(!isSelected)
             .onAppear {
                 log("FeedPage.onAppear")
+                if !state.hasLoadedOnce {
+                    dispatch(FeedActions.FetchData.Start(autoLoad: true))
+                }
             }
     }
 

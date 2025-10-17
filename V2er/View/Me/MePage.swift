@@ -49,7 +49,6 @@ struct MePage: BaseHomePageView {
                 .background(Color.dim)
             }
         }
-        .hide(selecedTab != .me)
     }
     
     @ViewBuilder
