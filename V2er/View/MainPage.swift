@@ -30,16 +30,12 @@ struct MainPage: StateView {
         Binding(
             get: { selectedTab.wrappedValue },
             set: { newValue in
-                let currentTab = selectedTab.wrappedValue
-
                 // Publish the tap event before changing the value
                 // This allows us to detect same-tab taps
                 tabReselectionPublisher.send(newValue)
 
-                // Update the actual selection
-                if newValue != currentTab {
-                    selectedTab.wrappedValue = newValue
-                }
+                // Always update the selection to maintain consistency
+                selectedTab.wrappedValue = newValue
             }
         )
     }
