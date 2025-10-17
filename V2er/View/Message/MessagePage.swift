@@ -28,7 +28,11 @@ struct MessagePage: BaseHomePageView {
     var body: some View {
         contentView
             .background(Color.bgColor)
-            .hide(!isSelected)
+            .onAppear {
+                if !state.hasLoadedOnce {
+                    dispatch(MessageActions.FetchStart(autoLoad: true))
+                }
+            }
     }
 
     @ViewBuilder

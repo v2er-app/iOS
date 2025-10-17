@@ -25,12 +25,47 @@ struct MainPage: StateView {
     var body: some View {
         NavigationView {
             ZStack {
-                // Main content pages
-                ZStack {
-                    FeedPage(selecedTab: state.selectedTab)
-                    ExplorePage(selecedTab: state.selectedTab)
-                    MessagePage(selecedTab: state.selectedTab)
-                    MePage(selecedTab: state.selectedTab)
+                TabView(selection: selectedTab) {
+                    // Feed Tab
+                    pageWithTopBar(
+                        FeedPage(selecedTab: state.selectedTab)
+                    )
+                    .tabItem {
+                        Label("最新", systemImage: "newspaper")
+                    }
+                    .tag(TabId.feed)
+
+                    // Explore Tab
+                    pageWithTopBar(
+                        ExplorePage(selecedTab: state.selectedTab)
+                    )
+                    .tabItem {
+                        Label("发现", systemImage: "safari")
+                    }
+                    .tag(TabId.explore)
+
+                    // Message Tab
+                    pageWithTopBar(
+                        MessagePage(selecedTab: state.selectedTab)
+                    )
+                    .tabItem {
+                        if unReadNums > 0 {
+                            Label("通知", systemImage: "bell")
+                                .badge(unReadNums)
+                        } else {
+                            Label("通知", systemImage: "bell")
+                        }
+                    }
+                    .tag(TabId.message)
+
+                    // Me Tab
+                    pageWithTopBar(
+                        MePage(selecedTab: state.selectedTab)
+                    )
+                    .tabItem {
+                        Label("我", systemImage: "person")
+                    }
+                    .tag(TabId.me)
                 }
 
                 // Filter menu overlay - only render when needed
@@ -48,17 +83,19 @@ struct MainPage: StateView {
                     .zIndex(1000)
                 }
             }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                TopBar(selectedTab: state.selectedTab)
-            }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                TabBar(unReadNums)
-            }
-            .ignoresSafeArea(.container)
             .navigationBarHidden(true)
         }
     }
-    
+
+    @ViewBuilder
+    private func pageWithTopBar<Content: View>(_ content: Content) -> some View {
+        VStack(spacing: 0) {
+            TopBar(selectedTab: state.selectedTab)
+            content
+        }
+        .ignoresSafeArea(.container, edges: .top)
+    }
+
 }
 
 

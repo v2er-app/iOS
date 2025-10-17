@@ -90,7 +90,11 @@ struct ExplorePage: BaseHomePageView {
             await run(action: ExploreActions.FetchData.Start())
         }
         .background(Color.bgColor)
-        .hide(!isSelected)
+        .onAppear {
+            if !state.hasLoadedOnce {
+                dispatch(ExploreActions.FetchData.Start(autoLoad: true))
+            }
+        }
     }
 }
 
