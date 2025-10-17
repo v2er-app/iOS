@@ -9,6 +9,11 @@
 import Foundation
 import SwiftUI
 
+enum TabId: String {
+    case none
+    case feed, explore, message, me
+}
+
 struct GlobalState: FluxState {
     var selectedTab: TabId = .feed
     var lastSelectedTab: TabId = .none
@@ -18,7 +23,7 @@ struct GlobalState: FluxState {
     static var account: AccountInfo? {
         AccountState.getAccount()
     }
-    
+
     static var hasSignIn: Bool {
         AccountState.hasSignIn()
     }
