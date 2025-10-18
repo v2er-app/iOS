@@ -15,6 +15,8 @@ struct HeadIndicatorView: View {
     @Binding var isRefreshing: Bool
     var onlineStats: OnlineStatsInfo?
 
+    @State private var animatedOnlineCount: Int = 0
+
     var offset: CGFloat {
         return isRefreshing ? (0 - scrollY) : -height
     }
@@ -25,6 +27,9 @@ struct HeadIndicatorView: View {
         self._progress = progress
         self._isRefreshing = isRefreshing
         self.onlineStats = onlineStats
+        if let stats = onlineStats {
+            self._animatedOnlineCount = State(initialValue: stats.onlineCount)
+        }
     }
 
     var body: some View {
@@ -37,9 +42,27 @@ struct HeadIndicatorView: View {
             }
 
             if let stats = onlineStats, stats.isValid() {
-                Text("\(stats.onlineCount) 人在线")
-                    .font(.caption)
-                    .foregroundColor(.secondaryText)
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(Color.hex(0x52bf1c))
+                        .frame(width: 6, height: 6)
+
+                    if #available(iOS 16.0, *) {
+                        Text("\(animatedOnlineCount) 人在线")
+                            .font(.caption)
+                            .foregroundColor(.secondaryText)
+                            .contentTransition(.numericText())
+                    } else {
+                        Text("\(animatedOnlineCount) 人在线")
+                            .font(.caption)
+                            .foregroundColor(.secondaryText)
+                    }
+                }
+                .onChange(of: stats.onlineCount) { newValue in
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        animatedOnlineCount = newValue
+                    }
+                }
             }
         }
         .frame(height: height)
