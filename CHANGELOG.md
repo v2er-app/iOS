@@ -2,6 +2,11 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.15 (Build 51)
+1. Fix: Configure automatic export compliance bypass for TestFlight releases
+2. Improvement: Added ITSAppUsesNonExemptEncryption flag to automate compliance
+3. Improvement: Enhanced Fastlane with export compliance parameters for automatic distribution
+
 ## v1.1.14 (Build 50)
 1. Test: Verify TestFlight internal distribution pipeline with explicit build number
 2. Improvement: Test automatic distribution to App Store Connect Users group
