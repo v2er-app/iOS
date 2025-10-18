@@ -65,7 +65,7 @@ struct MePage: BaseHomePageView {
                     Text(AccountState.userName)
                         .font(.headline)
                     if let balance = AccountState.balance, balance.isValid() {
-                        BalanceView(balance: balance, size: 14)
+                        BalanceView(balance: balance, size: 12)
                     }
                 }
                 Spacer()

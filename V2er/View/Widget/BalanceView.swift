@@ -10,10 +10,10 @@ import SwiftUI
 
 struct BalanceView: View {
     var balance: BalanceInfo
-    var size: CGFloat = 14
+    var size: CGFloat = 10
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 2) {
             if balance.gold > 0 {
                 BalanceBadge(count: balance.gold, icon: "🟡", color: .yellow, size: size)
             }
@@ -34,19 +34,14 @@ struct BalanceBadge: View {
     var size: CGFloat
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 0) {
             Text(icon)
-                .font(.system(size: size - 2))
+                .font(.system(size: size - 1))
             Text("\(count)")
                 .font(.system(size: size, weight: .medium))
                 .foregroundColor(.primaryText)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.lightGray.opacity(0.3))
-        )
+        .padding(.horizontal, 2)
     }
 }
 

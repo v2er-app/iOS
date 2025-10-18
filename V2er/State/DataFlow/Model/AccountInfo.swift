@@ -24,34 +24,72 @@ struct BalanceInfo: BaseModel, Codable {
     init(from html: Element?) {
         guard let root = html else { return }
 
-        // Strategy 1: Parse from div#money (main balance page)
-        // HTML: <div id="money"><a href="/balance" class="balance_area">47 <img...> 28 <img...> 26 <img...></a></div>
-        if let moneyDiv = root.pickOne("div#money a.balance_area") {
-            parseFromMoneyDiv(moneyDiv)
+        // Strategy 1: Parse from div.balance_area (main balance page from /balance endpoint)
+        // HTML: <div class="balance_area bigger">47 <img src="/static/img/gold@2x.png"> 28 <img src="/static/img/silver@2x.png"> 26 <img src="/static/img/bronze@2x.png"></div>
+        if let balanceDiv = root.pickOne("div.balance_area") {
+            parseFromBalanceDiv(balanceDiv)
         }
 
-        // Strategy 2: Parse from table cells (alternative format)
+        // Strategy 2: Parse from div#money (alternative format, might be on homepage)
+        // HTML: <div id="money"><a href="/balance" class="balance_area">47 <img...> 28 <img...> 26 <img...></a></div>
+        if gold == 0 && silver == 0 && bronze == 0 {
+            if let moneyDiv = root.pickOne("div#money a.balance_area") {
+                parseFromBalanceDiv(moneyDiv)
+            }
+        }
+
+        // Strategy 3: Parse from table cells (alternative format)
         // Structure: table.data > tbody > tr > td
         if gold == 0 && silver == 0 && bronze == 0 {
             parseFromTableCells(root: root)
         }
 
-        // Strategy 3: Parse from table rows with separate cells
+        // Strategy 4: Parse from table rows with separate cells
         // Some V2EX pages show balance as: <td align="right">47</td><td>金币</td>
         if gold == 0 && silver == 0 && bronze == 0 {
             parseFromTableRows(root: root)
         }
     }
 
-    private mutating func parseFromMoneyDiv(_ element: Element) {
+    private mutating func parseFromBalanceDiv(_ element: Element) {
         // Parse from: "47 <img src="/static/img/gold@2x.png"> 28 <img src="/static/img/silver@2x.png"> 26 <img src="/static/img/bronze@2x.png">"
-        let text = element.value(.text)
+        // Numbers can have commas: "2,025 <img> 101 <img> 344 <img>"
 
-        // Split by whitespace and filter out empty strings
-        let numbers = text.components(separatedBy: .whitespaces)
+        // Get the HTML to parse text nodes between img tags
+        guard let html = try? element.html() else { return }
+
+        // Replace img tags with a delimiter, then split
+        // The pattern is: NUMBER <img...> NUMBER <img...> NUMBER <img...>
+        let imgPattern = "<img[^>]*>"
+        guard let regex = try? NSRegularExpression(pattern: imgPattern, options: []) else { return }
+
+        let nsHtml = html as NSString
+        let cleanedHtml = regex.stringByReplacingMatches(
+            in: html,
+            range: NSRange(location: 0, length: nsHtml.length),
+            withTemplate: "|"  // Use | as delimiter
+        )
+
+        // Split by delimiter and extract numbers
+        let parts = cleanedHtml.components(separatedBy: "|")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
-            .compactMap { parseNumber($0) }
+
+        // Extract first number from each part (handling commas)
+        var numbers: [Int] = []
+        let numberPattern = "[0-9,]+"
+        guard let numberRegex = try? NSRegularExpression(pattern: numberPattern) else { return }
+
+        for part in parts {
+            let nsPart = part as NSString
+            let matches = numberRegex.matches(in: part, range: NSRange(location: 0, length: nsPart.length))
+            if let firstMatch = matches.first {
+                let numStr = nsPart.substring(with: firstMatch.range)
+                if let num = parseNumber(numStr) {
+                    numbers.append(num)
+                }
+            }
+        }
 
         // Assign in order: gold, silver, bronze
         if numbers.count >= 1 { gold = numbers[0] }
