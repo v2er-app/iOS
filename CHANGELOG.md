@@ -2,7 +2,11 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
-## v1.1.13 (Build XX)
+## v1.1.14 (Build 50)
+1. Test: Verify TestFlight internal distribution pipeline with explicit build number
+2. Improvement: Test automatic distribution to App Store Connect Users group
+
+## v1.1.13 (Build 48)
 1. Improvement: Optimize TestFlight release pipeline to skip export compliance review
 2. Improvement: Add explicit internal tester group distribution for immediate availability
 3. Improvement: Clarify automatic distribution messaging in release workflow
