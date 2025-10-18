@@ -24,6 +24,23 @@ struct MainPage: StateView {
         store.appState.feedState.feedInfo.unReadNums
     }
 
+    init() {
+        // Configure unselected item color using UITabBar.appearance()
+        // Selected color is controlled by .accentColor() modifier on TabView
+        let unselectedColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                // Dark mode: dim gray (60% white)
+                return UIColor(red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0)
+            default:
+                // Light mode: very light gray (78% gray - very subtle)
+                return UIColor(red: 0.78, green: 0.78, blue: 0.78, alpha: 1.0)
+            }
+        }
+
+        UITabBar.appearance().unselectedItemTintColor = unselectedColor
+    }
+
     // Create an intermediate binding that captures all tab selections
     // This is the proper SwiftUI way to detect same-tab taps without UIKit
     private var tabSelection: Binding<TabId> {
@@ -85,6 +102,7 @@ struct MainPage: StateView {
                     }
                     .tag(TabId.me)
                 }
+                .accentColor(Color.primary)  // This controls the selected icon color in TabView
 
                 // Filter menu overlay - only render when needed
                 if state.selectedTab == .feed && store.appState.feedState.showFilterMenu {
