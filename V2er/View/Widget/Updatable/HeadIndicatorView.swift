@@ -58,6 +58,12 @@ struct HeadIndicatorView: View {
                             .foregroundColor(.secondaryText)
                     }
                 }
+                .onAppear {
+                    // Initialize animatedOnlineCount when view appears with valid stats
+                    if animatedOnlineCount == 0 && stats.onlineCount > 0 {
+                        animatedOnlineCount = stats.onlineCount
+                    }
+                }
                 .onChange(of: stats.onlineCount) { newValue in
                     withAnimation(.easeInOut(duration: 0.3)) {
                         animatedOnlineCount = newValue
