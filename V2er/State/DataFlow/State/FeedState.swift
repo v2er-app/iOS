@@ -19,4 +19,5 @@ struct FeedState: FluxState {
     var selectedTab: Tab = Tab.getSelectedTab()
     var showFilterMenu: Bool = false
     var scrollToTop: Int = 0  // Trigger scroll to top when changed
+    var onlineStats: OnlineStatsInfo? = nil
 }

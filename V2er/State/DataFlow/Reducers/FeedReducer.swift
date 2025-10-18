@@ -58,6 +58,13 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
             followingAction = FeedActions.FetchData.Start(isFromFilterChange: true)
         case let action as FeedActions.ToggleFilterMenu:
             state.showFilterMenu.toggle()
+        case let action as FeedActions.FetchOnlineStats.Done:
+            if case .success(let onlineStats) = action.result {
+                state.onlineStats = onlineStats
+                log("FeedReducer: Received online stats: \(String(describing: onlineStats))")
+            } else if case .failure(let error) = action.result {
+                log("FeedReducer: Failed to fetch online stats: \(error)")
+            }
         default:
             break
     }
@@ -136,6 +143,23 @@ struct FeedActions {
 
     struct ToggleFilterMenu: Action {
         var target: Reducer = reducer
+    }
+
+    struct FetchOnlineStats {
+        struct Start: AwaitAction {
+            var target: Reducer = reducer
+
+            func execute(in store: Store) async {
+                let result: APIResult<OnlineStatsInfo> = await APIService.shared
+                    .htmlGet(endpoint: .onlineStats)
+                dispatch(FetchOnlineStats.Done(result: result))
+            }
+        }
+
+        struct Done: Action {
+            var target: Reducer = reducer
+            let result: APIResult<OnlineStatsInfo>
+        }
     }
 
 }
