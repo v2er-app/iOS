@@ -36,7 +36,7 @@ module ChangelogHelper
     end
 
     if start_index.nil?
-      UI.warning("Version #{version} not found in CHANGELOG.md")
+      UI.important("Version #{version} not found in CHANGELOG.md")
       UI.message("Available versions:")
       lines.each do |line|
         if line.match?(/^##\s+v?\d+\.\d+\.\d+/)
@@ -66,7 +66,7 @@ module ChangelogHelper
       .strip
 
     if changelog.empty?
-      UI.warning("No changelog content found for version #{version}")
+      UI.important("No changelog content found for version #{version}")
       return "Bug fixes and improvements"
     end
 
