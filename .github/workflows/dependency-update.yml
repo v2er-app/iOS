@@ -9,7 +9,7 @@ on:
 jobs:
   update-dependencies:
     name: Update Swift Package Dependencies
-    runs-on: macos-latest
+    runs-on: macos-26
     
     steps:
     - name: Checkout repository
@@ -18,7 +18,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+      run: sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
     
     - name: Update Swift packages
       run: |
