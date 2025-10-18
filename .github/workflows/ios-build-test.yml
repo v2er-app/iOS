@@ -13,7 +13,7 @@ env:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: macos-latest
+    runs-on: macos-26
     
     steps:
     - name: Checkout repository
@@ -22,7 +22,7 @@ jobs:
         submodules: recursive
     
     - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+      run: sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
     
     - name: Show Xcode version
       run: xcodebuild -version
@@ -50,18 +50,18 @@ jobs:
           -project V2er.xcodeproj \
           -scheme V2er \
           -sdk iphonesimulator \
-          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -destination 'platform=iOS Simulator,name=iPhone 17' \
           ONLY_ACTIVE_ARCH=YES \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO | xcpretty --color
-    
+
     - name: Run tests
       run: |
         set -o pipefail && xcodebuild test-without-building \
           -project V2er.xcodeproj \
           -scheme V2er \
           -sdk iphonesimulator \
-          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -destination 'platform=iOS Simulator,name=iPhone 17' \
           ONLY_ACTIVE_ARCH=YES \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO | xcpretty --color --test

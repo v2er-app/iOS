@@ -9,7 +9,7 @@ on:
 jobs:
   swiftformat:
     name: SwiftFormat Check
-    runs-on: macos-latest
+    runs-on: macos-26
     
     steps:
     - name: Checkout repository
@@ -39,7 +39,7 @@ jobs:
   
   code-coverage:
     name: Code Coverage
-    runs-on: macos-latest
+    runs-on: macos-26
     
     steps:
     - name: Checkout repository
@@ -48,7 +48,7 @@ jobs:
         submodules: recursive
     
     - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+      run: sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
     
     - name: Install xcpretty
       run: gem install xcpretty
@@ -59,7 +59,7 @@ jobs:
           -project V2er.xcodeproj \
           -scheme V2er \
           -sdk iphonesimulator \
-          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -destination 'platform=iOS Simulator,name=iPhone 17' \
           -enableCodeCoverage YES \
           -derivedDataPath build/DerivedData \
           CODE_SIGN_IDENTITY="" \
