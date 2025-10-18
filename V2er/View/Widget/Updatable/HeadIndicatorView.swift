@@ -37,9 +37,14 @@ struct HeadIndicatorView: View {
             }
 
             if let stats = onlineStats, stats.isValid() {
-                Text("\(stats.onlineCount) 人在线")
-                    .font(.caption)
-                    .foregroundColor(.secondaryText)
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(Color.hex(0x52bf1c))
+                        .frame(width: 6, height: 6)
+                    Text("\(stats.onlineCount) 人在线")
+                        .font(.caption)
+                        .foregroundColor(.secondaryText)
+                }
             }
         }
         .frame(height: height)
