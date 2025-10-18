@@ -30,6 +30,7 @@ struct UpdatableView<Content: View>: View {
     let damper: Float = 1.2
     @State var hapticed = false
     let state: UpdatableState
+    let onlineStats: OnlineStatsInfo?
 
     private var refreshable: Bool {
         return onRefresh != nil
@@ -43,12 +44,14 @@ struct UpdatableView<Content: View>: View {
                      onLoadMore: LoadMoreAction,
                      onScroll: ScrollAction?,
                      state: UpdatableState,
+                     onlineStats: OnlineStatsInfo? = nil,
                      @ViewBuilder content: () -> Content) {
         self.onRefresh = onRefresh
         self.onLoadMore = onLoadMore
         self.onScroll = onScroll
         self.content = content()
         self.state = state
+        self.onlineStats = onlineStats
     }
 
     var body: some View {
@@ -68,7 +71,7 @@ struct UpdatableView<Content: View>: View {
                     }
                     .alignmentGuide(.top, computeValue: { d in (self.isRefreshing ? (-self.threshold + scrollY) : 0.0) })
                     if refreshable {
-                        HeadIndicatorView(threshold: threshold, progress: $progress, scrollY: scrollY, isRefreshing: $isRefreshing)
+                        HeadIndicatorView(threshold: threshold, progress: $progress, scrollY: scrollY, isRefreshing: $isRefreshing, onlineStats: onlineStats)
                     }
                 }
             }
@@ -197,25 +200,27 @@ extension View {
     public func updatable(autoRefresh: Bool = false,
                           hasMoreData: Bool = true,
                           _ scrollToTop: Int = 0,
+                          onlineStats: OnlineStatsInfo? = nil,
                           refresh: RefreshAction = nil,
                           loadMore: LoadMoreAction = nil,
                           onScroll: ScrollAction? = nil) -> some View {
         let state = UpdatableState(hasMoreData: hasMoreData, showLoadingView: autoRefresh, scrollToTop: scrollToTop)
-        return self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, state: state))
+        return self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, state: state, onlineStats: onlineStats))
     }
 
     public func updatable(_ state: UpdatableState,
+                          onlineStats: OnlineStatsInfo? = nil,
                           refresh: RefreshAction = nil,
                           loadMore: LoadMoreAction = nil,
                           onScroll: ScrollAction? = nil) -> some View {
-        let modifier = UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, state: state)
+        let modifier = UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, state: state, onlineStats: onlineStats)
         return self.modifier(modifier)
     }
 
     public func loadMore(_ state: UpdatableState,
                          _ loadMore: LoadMoreAction = nil,
                          onScroll: ScrollAction? = nil) -> some View {
-        let modifier = UpdatableModifier(onRefresh: nil, onLoadMore: loadMore, onScroll: onScroll, state: state)
+        let modifier = UpdatableModifier(onRefresh: nil, onLoadMore: loadMore, onScroll: onScroll, state: state, onlineStats: nil)
         return self.modifier(modifier)
     }
     
@@ -223,11 +228,11 @@ extension View {
                          hasMoreData: Bool = true,
                          _ loadMore: LoadMoreAction = nil,
                          onScroll: ScrollAction? = nil) -> some View {
-        self.updatable(autoRefresh: autoRefresh, hasMoreData: hasMoreData, refresh: nil, loadMore: loadMore, onScroll: onScroll)
+        self.updatable(autoRefresh: autoRefresh, hasMoreData: hasMoreData, onlineStats: nil, refresh: nil, loadMore: loadMore, onScroll: onScroll)
     }
 
     public func onScroll(onScroll: ScrollAction?) -> some View {
-        self.updatable(onScroll: onScroll)
+        self.updatable(onlineStats: nil, onScroll: onScroll)
     }
 }
 
@@ -236,10 +241,11 @@ struct UpdatableModifier: ViewModifier {
     let onLoadMore: LoadMoreAction
     let onScroll: ScrollAction?
     let state: UpdatableState
-    
+    let onlineStats: OnlineStatsInfo?
+
     func body(content: Content) -> some View {
         UpdatableView(onRefresh: onRefresh, onLoadMore: onLoadMore,
-                      onScroll: onScroll, state: state) {
+                      onScroll: onScroll, state: state, onlineStats: onlineStats) {
             content
         }
     }

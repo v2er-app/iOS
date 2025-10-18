@@ -32,6 +32,7 @@ enum Endpoint {
     case starNode(id: String), dailyMission
     case checkin, downMyTopic(id: String), pinTopic(id: String)
     case balance
+    case onlineStats
     case search
     case general(url: String)
 
@@ -150,6 +151,9 @@ enum Endpoint {
                 info.path = "/sticky/topic/\(id)"
             case .balance:
                 info.path = "/balance"
+            case .onlineStats:
+                info.path = "/"
+                info.ua = .web
             case let .search:
                 info.path = "https://www.sov2ex.com/api/search"
             case let .general(url):

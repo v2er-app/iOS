@@ -13,25 +13,33 @@ struct HeadIndicatorView: View {
     var scrollY: CGFloat
     @Binding var progress: CGFloat
     @Binding var isRefreshing: Bool
-    
+    var onlineStats: OnlineStatsInfo?
+
     var offset: CGFloat {
         return isRefreshing ? (0 - scrollY) : -height
     }
-    
-    init(threshold: CGFloat, progress: Binding<CGFloat>, scrollY: CGFloat,isRefreshing: Binding<Bool>) {
+
+    init(threshold: CGFloat, progress: Binding<CGFloat>, scrollY: CGFloat, isRefreshing: Binding<Bool>, onlineStats: OnlineStatsInfo? = nil) {
         self.height = threshold
         self.scrollY = scrollY
         self._progress = progress
         self._isRefreshing = isRefreshing
+        self.onlineStats = onlineStats
     }
-    
+
     var body: some View {
-        Group {
+        VStack(spacing: 4) {
             if progress == 1 || isRefreshing {
                 ActivityIndicator()
             } else {
                 Image(systemName: "arrow.down")
                     .font(.title2.weight(.regular))
+            }
+
+            if let stats = onlineStats, stats.isValid() {
+                Text("\(stats.onlineCount) 人在线")
+                    .font(.caption)
+                    .foregroundColor(.secondaryText)
             }
         }
         .frame(height: height)

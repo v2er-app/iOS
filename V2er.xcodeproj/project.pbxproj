@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		28B24CA92EA3460D00F82B2A /* BalanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B24CA82EA3460D00F82B2A /* BalanceView.swift */; };
+		28B24CAB2EA3561400F82B2A /* OnlineStatsInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B24CAA2EA3561400F82B2A /* OnlineStatsInfo.swift */; };
 		28CC76CC2E963D6700C939B5 /* FilterMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A490A3E111D941C4B30F0BACA6B5E984 /* FilterMenuView.swift */; };
 		4E55BE8A29D45FC00044389C /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4E55BE8929D45FC00044389C /* Kingfisher */; };
 		4EC32AF029D81863003A3BD4 /* WebView in Frameworks */ = {isa = PBXBuildFile; productRef = 4EC32AEF29D81863003A3BD4 /* WebView */; };
@@ -170,6 +171,7 @@
 
 /* Begin PBXFileReference section */
 		28B24CA82EA3460D00F82B2A /* BalanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceView.swift; sourceTree = "<group>"; };
+		28B24CAA2EA3561400F82B2A /* OnlineStatsInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineStatsInfo.swift; sourceTree = "<group>"; };
 		4EC32AF129D818FC003A3BD4 /* WebBrowserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebBrowserView.swift; sourceTree = "<group>"; };
 		5D02BD5E26909146007B6A1B /* LoadmoreIndicatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadmoreIndicatorView.swift; sourceTree = "<group>"; };
 		5D04BF9626C9FB6E0005F7E3 /* FeedInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedInfo.swift; sourceTree = "<group>"; };
@@ -581,6 +583,7 @@
 		5DA2AD3A26C17EFE007FB1EF /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				28B24CAA2EA3561400F82B2A /* OnlineStatsInfo.swift */,
 				5D3CD31E26D0F5F600B3C2D3 /* BaseModel.swift */,
 				5D04BF9626C9FB6E0005F7E3 /* FeedInfo.swift */,
 				5D3CD32026D0F9CC00B3C2D3 /* TabInfo.swift */,
@@ -887,6 +890,7 @@
 				5D3CD32126D0F9CC00B3C2D3 /* TabInfo.swift in Sources */,
 				5D0A513F26E36F15006F3D9B /* FeedDetailActions.swift in Sources */,
 				5DA2AD3726C17EB9007FB1EF /* AppState.swift in Sources */,
+				28B24CAB2EA3561400F82B2A /* OnlineStatsInfo.swift in Sources */,
 				5D71DF59247C155400B53ED4 /* MessagePage.swift in Sources */,
 				5DA2AD4626C18208007FB1EF /* MeState.swift in Sources */,
 				5D88D5DA26C200FB00302265 /* FeedReducer.swift in Sources */,

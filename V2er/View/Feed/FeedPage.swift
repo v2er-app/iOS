@@ -44,8 +44,10 @@ struct FeedPage: BaseHomePageView {
                 }
             }
         }
-        .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, max(state.scrollToTop, scrollTop(tab: .feed))) {
+        .updatable(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData, max(state.scrollToTop, scrollTop(tab: .feed)), onlineStats: state.onlineStats) {
             if AccountState.hasSignIn() {
+                // Fetch online stats in parallel with feed data
+                Task { await run(action: FeedActions.FetchOnlineStats.Start()) }
                 await run(action: FeedActions.FetchData.Start())
             }
         } loadMore: {
