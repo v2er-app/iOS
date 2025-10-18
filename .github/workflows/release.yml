@@ -13,6 +13,14 @@ on:
         required: false
         default: false
         type: boolean
+      release_channel:
+        description: 'TestFlight release channel'
+        required: false
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - public_beta
 
 env:
   DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
@@ -85,7 +93,7 @@ jobs:
         echo "✅ Successfully created tag: $TAG_NAME"
 
   build-and-release:
-    name: Build and Release to TestFlight (Public Beta)
+    name: Build and Release to TestFlight (Internal Testing)
     needs: version-check
     if: needs.version-check.outputs.should_release == 'true'
     runs-on: macos-latest
@@ -283,6 +291,7 @@ jobs:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
         TEAM_ID: ${{ secrets.TEAM_ID }}
+        RELEASE_CHANNEL: ${{ github.event.inputs.release_channel || 'internal' }}
       run: |
         # Enable verbose output for debugging
         export FASTLANE_VERBOSE=true
@@ -291,11 +300,15 @@ jobs:
         export LC_ALL=en_US.UTF-8
         export LANG=en_US.UTF-8
 
-        # Run the beta lane (includes waiting for processing and public beta distribution)
-        fastlane beta
+        # Run the beta lane with release channel parameter
+        # Default to 'internal' for automatic releases (push to main)
+        # Can be set to 'public_beta' for manual workflow_dispatch
+        fastlane beta channel:$RELEASE_CHANNEL
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
+      env:
+        RELEASE_CHANNEL: ${{ github.event.inputs.release_channel || 'internal' }}
       with:
         tag_name: ${{ needs.version-check.outputs.new_tag }}
         name: Release ${{ needs.version-check.outputs.version }}
@@ -303,9 +316,10 @@ jobs:
           ## 🚀 Version ${{ needs.version-check.outputs.version }}
           Build: ${{ needs.version-check.outputs.build }}
 
-          ### TestFlight Public Beta
-          This version has been automatically submitted to TestFlight for public beta testing.
-          External testers will receive email notifications when the build is available.
+          ### TestFlight Distribution
+          **Channel**: ${{ github.event.inputs.release_channel || 'internal' }}
+
+          ${{ github.event.inputs.release_channel == 'public_beta' && '📧 **Public Beta**: This build has been submitted to TestFlight for public beta testing. External testers will receive email notifications when the build is available after beta review approval.' || '👥 **Internal Testing**: This build is available to internal testers immediately after processing. No beta review required.' }}
 
           ### What's New
           - See [commit history](https://github.com/${{ github.repository }}/commits/${{ needs.version-check.outputs.new_tag }}) for changes
@@ -317,8 +331,16 @@ jobs:
 
     - name: Post release notification
       if: success()
+      env:
+        RELEASE_CHANNEL: ${{ github.event.inputs.release_channel || 'internal' }}
       run: |
-        echo "✅ Successfully released version ${{ needs.version-check.outputs.version }} to TestFlight Public Beta!"
+        CHANNEL_DISPLAY=$([ "$RELEASE_CHANNEL" = "public_beta" ] && echo "Public Beta" || echo "Internal Testing")
+        echo "✅ Successfully released version ${{ needs.version-check.outputs.version }} to TestFlight $CHANNEL_DISPLAY!"
         echo "🏷️ Tag: ${{ needs.version-check.outputs.new_tag }}"
         echo "🔢 Build: ${{ needs.version-check.outputs.build }}"
-        echo "📧 External testers will be notified via email"
+        echo "📦 Channel: $RELEASE_CHANNEL"
+        if [ "$RELEASE_CHANNEL" = "public_beta" ]; then
+          echo "📧 External testers will be notified after beta review approval"
+        else
+          echo "👥 Internal testers can access the build immediately after processing"
+        fi
