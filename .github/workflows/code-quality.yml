@@ -59,7 +59,7 @@ jobs:
           -project V2er.xcodeproj \
           -scheme V2er \
           -sdk iphonesimulator \
-          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -destination 'platform=iOS Simulator,name=iPhone 17' \
           -enableCodeCoverage YES \
           -derivedDataPath build/DerivedData \
           CODE_SIGN_IDENTITY="" \

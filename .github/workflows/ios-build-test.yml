@@ -50,18 +50,18 @@ jobs:
           -project V2er.xcodeproj \
           -scheme V2er \
           -sdk iphonesimulator \
-          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -destination 'platform=iOS Simulator,name=iPhone 17' \
           ONLY_ACTIVE_ARCH=YES \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO | xcpretty --color
-    
+
     - name: Run tests
       run: |
         set -o pipefail && xcodebuild test-without-building \
           -project V2er.xcodeproj \
           -scheme V2er \
           -sdk iphonesimulator \
-          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -destination 'platform=iOS Simulator,name=iPhone 17' \
           ONLY_ACTIVE_ARCH=YES \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO | xcpretty --color --test
