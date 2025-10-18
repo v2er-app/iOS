@@ -25,12 +25,8 @@ struct MainPage: StateView {
     }
 
     init() {
-        // Configure TabBar appearance using UIKit for unselected item color
-        // This is the only way to set unselected item color in iOS 15+
-        let appearance = UITabBarAppearance()
-        appearance.configureWithDefaultBackground()
-
-        // Unselected item color - use specific colors for light/dark mode
+        // Configure unselected item color using UITabBar.appearance()
+        // Selected color is controlled by .accentColor() modifier on TabView
         let unselectedColor = UIColor { traitCollection in
             switch traitCollection.userInterfaceStyle {
             case .dark:
@@ -42,19 +38,7 @@ struct MainPage: StateView {
             }
         }
 
-        appearance.stackedLayoutAppearance.normal.iconColor = unselectedColor
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: unselectedColor]
-
-        appearance.inlineLayoutAppearance.normal.iconColor = unselectedColor
-        appearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: unselectedColor]
-
-        appearance.compactInlineLayoutAppearance.normal.iconColor = unselectedColor
-        appearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: unselectedColor]
-
-        UITabBar.appearance().standardAppearance = appearance
-        if #available(iOS 15.0, *) {
-            UITabBar.appearance().scrollEdgeAppearance = appearance
-        }
+        UITabBar.appearance().unselectedItemTintColor = unselectedColor
     }
 
     // Create an intermediate binding that captures all tab selections
@@ -118,7 +102,7 @@ struct MainPage: StateView {
                     }
                     .tag(TabId.me)
                 }
-                .tint(Color.primary)  // Use primary color for selected items (black in light, white in dark)
+                .accentColor(Color.primary)  // This controls the selected icon color in TabView
 
                 // Filter menu overlay - only render when needed
                 if state.selectedTab == .feed && store.appState.feedState.showFilterMenu {
