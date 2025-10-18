@@ -2,6 +2,12 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.4 (Build XX)
+1. Feature: Add green indicator dot to online user count for better visual indication
+2. Feature: Implement smooth numeric animation for online count changes (iOS 16+)
+3. Improvement: Add smart 300ms delay before hiding refresh indicator when online count updates
+4. Improvement: Enhance user feedback by allowing time to see count changes
+
 ## v1.1.3 (Build XX)
 1. Feature: Display online user count in pull-to-refresh view with live server data
 2. Feature: Add user balance display (gold/silver/bronze coins) to Me page
