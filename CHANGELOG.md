@@ -2,6 +2,13 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.3 (Build XX)
+1. Feature: Display online user count in pull-to-refresh view with live server data
+2. Feature: Add user balance display (gold/silver/bronze coins) to Me page
+3. Fix: Correct balance parsing to properly separate coin types
+4. Improvement: Optimize balance display UI with compact spacing and improved readability
+5. Improvement: Enhance tab bar color contrast in both light and dark modes
+
 ## v1.1.2 (Build 44)
 1. Feature: Add feed filter menu with Reddit-style dropdown for better content filtering
 1. Feature: Update app icon with single high-resolution asset for better display quality
