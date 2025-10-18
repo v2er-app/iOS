@@ -2,6 +2,11 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.16 (Build XX)
+1. Test: Pipeline validation test for CI/CD workflow
+2. Improvement: Verify automatic build number increment
+3. Improvement: Test TestFlight distribution automation
+
 ## v1.1.15 (Build 51)
 1. Fix: Configure automatic export compliance bypass for TestFlight releases
 2. Improvement: Added ITSAppUsesNonExemptEncryption flag to automate compliance
