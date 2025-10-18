@@ -181,7 +181,7 @@ platform :ios do
       uses_non_exempt_encryption: false  # Required export compliance
     }
 
-    # Add public beta specific parameters
+    # Add channel-specific distribution parameters
     if is_public_beta
       upload_params.merge!({
         groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
@@ -200,7 +200,11 @@ platform :ios do
       })
       UI.message("📧 Public beta mode: Will notify external testers and submit for beta review")
     else
-      UI.message("👥 Internal testing mode: No beta review submission required")
+      # Internal testing mode - automatically distribute to App Store Connect Users group
+      upload_params.merge!({
+        groups: ["App Store Connect Users"]  # Default internal testing group
+      })
+      UI.message("👥 Internal testing mode: Will auto-distribute to App Store Connect Users")
     end
 
     # Upload to TestFlight

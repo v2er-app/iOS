@@ -2,6 +2,10 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.12 (Build 48)
+1. Fix: Configure automatic distribution to internal testers on TestFlight
+2. Improvement: Builds now automatically appear for App Store Connect Users group after processing
+
 ## v1.1.5 (Build XX)
 1. Fix: Resolve online count display bug where count always showed as 0
 2. Feature: Add configurable TestFlight release channel (internal/public_beta)
