@@ -24,6 +24,37 @@ struct MainPage: StateView {
         store.appState.feedState.feedInfo.unReadNums
     }
 
+    init() {
+        // Configure TabBar appearance for better contrast in both light and dark modes
+        let appearance = UITabBarAppearance()
+        appearance.configureWithDefaultBackground()
+
+        // Set tint color for selected items
+        // Light Mode: deep/dark color (from Color.tintColor)
+        // Dark Mode: white (from Color.tintColor)
+        UITabBar.appearance().tintColor = UIColor(Color.tintColor)
+
+        // Set color for unselected items with subtle difference from selected
+        // Light mode: selected = dark color, unselected = slightly lighter dark color (60% opacity)
+        // Dark mode: selected = white, unselected = slightly dimmed white (60% opacity)
+        let unselectedColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                // Dark mode: slightly dimmed white (60% opacity for subtle difference)
+                return UIColor.white.withAlphaComponent(0.6)
+            default:
+                // Light mode: slightly lighter dark color (60% opacity for subtle difference)
+                return UIColor.black.withAlphaComponent(0.6)
+            }
+        }
+        UITabBar.appearance().unselectedItemTintColor = unselectedColor
+
+        UITabBar.appearance().standardAppearance = appearance
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = appearance
+        }
+    }
+
     // Create an intermediate binding that captures all tab selections
     // This is the proper SwiftUI way to detect same-tab taps without UIKit
     private var tabSelection: Binding<TabId> {
