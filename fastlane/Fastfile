@@ -94,7 +94,20 @@ platform :ios do
   end
 
   desc "Build and upload to TestFlight"
-  lane :beta do
+  desc "Parameters:"
+  desc "  channel: 'internal' (default) or 'public_beta'"
+  lane :beta do |options|
+    # Get release channel from options or environment variable
+    # Default to 'internal' if not specified
+    channel = options[:channel] || ENV['RELEASE_CHANNEL'] || 'internal'
+
+    UI.message("📦 Release channel: #{channel}")
+
+    # Validate channel parameter
+    unless ['internal', 'public_beta'].include?(channel)
+      UI.user_error!("Invalid channel: #{channel}. Must be 'internal' or 'public_beta'")
+    end
+
     # Validate that changelog exists for current version
     unless ChangelogHelper.validate_changelog_exists
       UI.user_error!("Please update CHANGELOG.md with an entry for the current version before releasing!")
@@ -153,18 +166,45 @@ platform :ios do
     # Extract changelog for the current version
     changelog_content = ChangelogHelper.extract_changelog(current_version)
 
-    # Upload to TestFlight
-    upload_to_testflight(
+    # Configure TestFlight upload based on release channel
+    is_public_beta = channel == 'public_beta'
+
+    upload_params = {
       api_key: api_key,
-      skip_submission: true,  # Skip beta review submission for internal testing
+      skip_submission: !is_public_beta,  # Skip beta review for internal, submit for public beta
       skip_waiting_for_build_processing: false,  # Wait for processing before distribution
       wait_processing_interval: 30,  # Check every 30 seconds
       wait_processing_timeout_duration: 900,  # Wait up to 15 minutes for processing
-      distribute_external: false,  # Internal testing only (not public beta)
+      distribute_external: is_public_beta,  # Internal testing by default, external for public beta
       distribute_only: false,  # Upload and distribute in one action
       changelog: changelog_content,  # Use changelog from CHANGELOG.md
       uses_non_exempt_encryption: false  # Required export compliance
-    )
+    }
+
+    # Add public beta specific parameters
+    if is_public_beta
+      upload_params.merge!({
+        groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
+        notify_external_testers: true,  # Send email notifications to external testers
+        submit_beta_review: true,  # Automatically submit for Beta review
+        beta_app_description: "V2er is an elegant third-party client for V2EX forum",
+        beta_app_feedback_email: "support@v2er.app",
+        demo_account_required: false,  # No demo account required
+        beta_app_review_info: {
+          contact_email: "support@v2er.app",
+          contact_first_name: "V2er",
+          contact_last_name: "Support",
+          contact_phone: "+86 13800138000",
+          notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
+        }
+      })
+      UI.message("📧 Public beta mode: Will notify external testers and submit for beta review")
+    else
+      UI.message("👥 Internal testing mode: No beta review submission required")
+    end
+
+    # Upload to TestFlight
+    upload_to_testflight(upload_params)
 
     # Notify success
     notification(
