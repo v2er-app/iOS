@@ -2,6 +2,12 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.5 (Build XX)
+1. Fix: Resolve online count display bug where count always showed as 0
+2. Feature: Add configurable TestFlight release channel (internal/public_beta)
+3. Improvement: Default to internal testing for faster iteration without beta review
+4. Improvement: Support manual public beta distribution through workflow parameter
+
 ## v1.1.4 (Build XX)
 1. Feature: Add green indicator dot to online user count for better visual indication
 2. Feature: Implement smooth numeric animation for online count changes (iOS 16+)
