@@ -67,7 +67,7 @@ platform :ios do
     )
   end
 
-  desc "Distribute existing build to beta testers"
+  desc "Distribute existing build to internal testers"
   lane :distribute_beta do |options|
     # Get App Store Connect API key
     api_key = get_api_key
@@ -76,30 +76,17 @@ platform :ios do
     build_number = options[:build_number]
 
     begin
-      # Distribute to beta testers
+      # Distribute to internal testers only
       testflight(
         api_key: api_key,
         app_identifier: "v2er.app",
-        skip_submission: false,
-        distribute_external: true,  # Distribute to external testers (public beta)
-        groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
-        notify_external_testers: true,  # Send email notifications
-        uses_non_exempt_encryption: false,
-        submit_beta_review: true,  # Automatically submit for Beta review
+        skip_submission: true,  # Skip beta review for internal testing
+        distribute_external: false,  # Internal testing only (not public beta)
         wait_for_uploaded_build: true,
-        beta_app_description: "V2er is an elegant third-party client for V2EX forum",
-        beta_app_feedback_email: "support@v2er.app",
-        demo_account_required: false,
-        beta_app_review_info: {
-          contact_email: "support@v2er.app",
-          contact_first_name: "V2er",
-          contact_last_name: "Support",
-          contact_phone: "+86 13800138000",
-          notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
-        }
+        uses_non_exempt_encryption: false
       )
 
-      UI.success("✅ Successfully distributed build to beta testers!")
+      UI.success("✅ Successfully distributed build to internal testers!")
     rescue => e
       UI.error("Failed to distribute: #{e.message}")
       UI.message("You may need to manually distribute the build in App Store Connect")
@@ -169,27 +156,14 @@ platform :ios do
     # Upload to TestFlight
     upload_to_testflight(
       api_key: api_key,
-      skip_submission: false,
+      skip_submission: true,  # Skip beta review submission for internal testing
       skip_waiting_for_build_processing: false,  # Wait for processing before distribution
       wait_processing_interval: 30,  # Check every 30 seconds
       wait_processing_timeout_duration: 900,  # Wait up to 15 minutes for processing
-      distribute_external: true,  # Distribute to external testers (public beta)
+      distribute_external: false,  # Internal testing only (not public beta)
       distribute_only: false,  # Upload and distribute in one action
-      groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
       changelog: changelog_content,  # Use changelog from CHANGELOG.md
-      notify_external_testers: true,  # Send email notifications to external testers
-      uses_non_exempt_encryption: false,  # Required for automatic distribution
-      submit_beta_review: true,  # Automatically submit for Beta review
-      beta_app_description: "V2er is an elegant third-party client for V2EX forum",
-      beta_app_feedback_email: "support@v2er.app",
-      demo_account_required: false,  # No demo account required
-      beta_app_review_info: {
-        contact_email: "support@v2er.app",
-        contact_first_name: "V2er",
-        contact_last_name: "Support",
-        contact_phone: "+86 13800138000",
-        notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
-      }
+      uses_non_exempt_encryption: false  # Required export compliance
     )
 
     # Notify success
