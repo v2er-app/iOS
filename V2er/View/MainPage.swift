@@ -25,29 +25,31 @@ struct MainPage: StateView {
     }
 
     init() {
-        // Configure TabBar appearance for better contrast in both light and dark modes
+        // Configure TabBar appearance using UIKit for unselected item color
+        // This is the only way to set unselected item color in iOS 15+
         let appearance = UITabBarAppearance()
         appearance.configureWithDefaultBackground()
 
-        // Set tint color for selected items
-        // Light Mode: deep/dark color (from Color.tintColor)
-        // Dark Mode: white (from Color.tintColor)
-        UITabBar.appearance().tintColor = UIColor(Color.tintColor)
-
-        // Set color for unselected items with subtle difference from selected
-        // Light mode: selected = dark color, unselected = slightly lighter dark color (60% opacity)
-        // Dark mode: selected = white, unselected = slightly dimmed white (60% opacity)
+        // Unselected item color - use specific colors for light/dark mode
         let unselectedColor = UIColor { traitCollection in
             switch traitCollection.userInterfaceStyle {
             case .dark:
-                // Dark mode: slightly dimmed white (60% opacity for subtle difference)
-                return UIColor.white.withAlphaComponent(0.6)
+                // Dark mode: dim gray (60% white)
+                return UIColor(red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0)
             default:
-                // Light mode: slightly lighter dark color (60% opacity for subtle difference)
-                return UIColor.black.withAlphaComponent(0.6)
+                // Light mode: very light gray (78% gray - very subtle)
+                return UIColor(red: 0.78, green: 0.78, blue: 0.78, alpha: 1.0)
             }
         }
-        UITabBar.appearance().unselectedItemTintColor = unselectedColor
+
+        appearance.stackedLayoutAppearance.normal.iconColor = unselectedColor
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: unselectedColor]
+
+        appearance.inlineLayoutAppearance.normal.iconColor = unselectedColor
+        appearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: unselectedColor]
+
+        appearance.compactInlineLayoutAppearance.normal.iconColor = unselectedColor
+        appearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: unselectedColor]
 
         UITabBar.appearance().standardAppearance = appearance
         if #available(iOS 15.0, *) {
@@ -116,6 +118,7 @@ struct MainPage: StateView {
                     }
                     .tag(TabId.me)
                 }
+                .tint(Color.primary)  // Use primary color for selected items (black in light, white in dark)
 
                 // Filter menu overlay - only render when needed
                 if state.selectedTab == .feed && store.appState.feedState.showFilterMenu {
