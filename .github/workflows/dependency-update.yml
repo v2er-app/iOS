@@ -18,7 +18,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+      run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
     
     - name: Update Swift packages
       run: |
