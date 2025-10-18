@@ -31,6 +31,7 @@ enum Endpoint {
     case followUser(id: String), unfollowUser(id: String)
     case starNode(id: String), dailyMission
     case checkin, downMyTopic(id: String), pinTopic(id: String)
+    case balance
     case search
     case general(url: String)
 
@@ -147,6 +148,8 @@ enum Endpoint {
                 info.path = "/fade/topic/\(id)"
             case let .pinTopic(id):
                 info.path = "/sticky/topic/\(id)"
+            case .balance:
+                info.path = "/balance"
             case let .search:
                 info.path = "https://www.sov2ex.com/api/search"
             case let .general(url):

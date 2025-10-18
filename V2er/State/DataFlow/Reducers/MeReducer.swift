@@ -13,9 +13,17 @@ func meStateReducer(_ state: MeState, _ action: Action) -> (MeState, Action?) {
     var followingAction: Action?
 
     switch action {
-//        case let action as MeActions.ShowLoginPageAction:
-//            guard !state.showLoginView else { break }
-//            state.showLoginView = true
+        case let action as MeActions.FetchBalance.Done:
+            if case .success(let balanceInfo) = action.result {
+                if let balance = balanceInfo {
+                    AccountState.updateBalance(balance)
+                    log("Balance updated: gold=\(balance.gold), silver=\(balance.silver), bronze=\(balance.bronze)")
+                } else {
+                    log("Balance info is nil")
+                }
+            } else if case .failure(let error) = action.result {
+                log("Failed to fetch balance: \(error)")
+            }
         default:
             break
     }

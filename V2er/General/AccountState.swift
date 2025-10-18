@@ -59,4 +59,14 @@ struct AccountState {
         return userName == Self.userName && userName != .default
     }
 
+    static var balance: BalanceInfo? {
+        return getAccount()?.balance
+    }
+
+    static func updateBalance(_ balance: BalanceInfo) {
+        guard var account = getAccount() else { return }
+        account.balance = balance
+        saveAccount(account)
+    }
+
 }

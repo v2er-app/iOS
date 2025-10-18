@@ -49,6 +49,11 @@ struct MePage: BaseHomePageView {
                 .background(Color.dim)
             }
         }
+        .onAppear {
+            if AccountState.hasSignIn() {
+                dispatch(MeActions.FetchBalance.Start())
+            }
+        }
     }
     
     @ViewBuilder
@@ -59,8 +64,9 @@ struct MePage: BaseHomePageView {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(AccountState.userName)
                         .font(.headline)
-                    Text("")
-                        .font(.footnote)
+                    if let balance = AccountState.balance, balance.isValid() {
+                        BalanceView(balance: balance, size: 14)
+                    }
                 }
                 Spacer()
             }
@@ -107,10 +113,9 @@ struct MePage: BaseHomePageView {
     
 }
 
-
 struct AccountPage_Previews: PreviewProvider {
     static var selected = TabId.me
-    
+
     static var previews: some View {
         MePage(selecedTab: selected)
             .environmentObject(Store.shared)

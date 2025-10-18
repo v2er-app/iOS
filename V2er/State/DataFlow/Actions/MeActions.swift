@@ -10,7 +10,21 @@ import Foundation
 
 struct MeActions {
     private static let R: Reducer = .me
-//    struct ShowLoginPageAction: Action {
-//        var target: Reducer = R
-//    }
+
+    struct FetchBalance {
+        struct Start: AwaitAction {
+            var target: Reducer = R
+
+            func execute(in store: Store) async {
+                let result: APIResult<BalanceInfo> = await APIService.shared
+                    .htmlGet(endpoint: .balance)
+                dispatch(FetchBalance.Done(result: result))
+            }
+        }
+
+        struct Done: Action {
+            var target: Reducer = R
+            let result: APIResult<BalanceInfo>
+        }
+    }
 }
