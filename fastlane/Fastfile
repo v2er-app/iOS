@@ -83,10 +83,12 @@ platform :ios do
         skip_submission: true,  # Skip beta review for internal testing
         distribute_external: false,  # Internal testing only (not public beta)
         wait_for_uploaded_build: true,
-        uses_non_exempt_encryption: false
+        groups: ["App Store Connect Users"],  # Auto-distribute to all internal testers
+        notify_external_testers: false,  # No external notifications
+        uses_non_exempt_encryption: false  # Mark as no encryption to skip export compliance review
       )
 
-      UI.success("✅ Successfully distributed build to internal testers!")
+      UI.success("✅ Successfully distributed build to internal testers (App Store Connect Users)!")
     rescue => e
       UI.error("Failed to distribute: #{e.message}")
       UI.message("You may need to manually distribute the build in App Store Connect")
@@ -178,7 +180,7 @@ platform :ios do
       distribute_external: is_public_beta,  # Internal testing by default, external for public beta
       distribute_only: false,  # Upload and distribute in one action
       changelog: changelog_content,  # Use changelog from CHANGELOG.md
-      uses_non_exempt_encryption: false  # Required export compliance
+      uses_non_exempt_encryption: false  # Mark as no encryption to skip export compliance review
     }
 
     # Add channel-specific distribution parameters
@@ -200,14 +202,16 @@ platform :ios do
       })
       UI.message("📧 Public beta mode: Will notify external testers and submit for beta review")
     else
-      # Internal testing mode - automatically distribute to App Store Connect Users group
+      # Internal testing mode - automatically distribute to internal testers
+      # Uses default "App Store Connect Users" group which includes all internal testers
       upload_params.merge!({
-        groups: ["App Store Connect Users"]  # Default internal testing group
+        groups: ["App Store Connect Users"],  # Auto-distribute to all internal testers
+        notify_external_testers: false  # No external notifications for internal testing
       })
-      UI.message("👥 Internal testing mode: Will auto-distribute to App Store Connect Users")
+      UI.message("👥 Internal testing mode: Will auto-distribute to App Store Connect Users (no beta review required)")
     end
 
-    # Upload to TestFlight
+    # Upload to TestFlight with automatic distribution
     upload_to_testflight(upload_params)
 
     # Notify success
