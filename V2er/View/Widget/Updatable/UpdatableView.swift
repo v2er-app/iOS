@@ -31,6 +31,7 @@ struct UpdatableView<Content: View>: View {
     @State var hapticed = false
     let state: UpdatableState
     let onlineStats: OnlineStatsInfo?
+    @State private var previousOnlineCount: Int? = nil
 
     private var refreshable: Bool {
         return onRefresh != nil
@@ -123,11 +124,30 @@ struct UpdatableView<Content: View>: View {
             && lastScrollY > threshold {
             isRefreshing = true
             hapticed = false
+            // Record current online count before refresh
+            previousOnlineCount = onlineStats?.onlineCount
+
             Task {
                 await onRefresh?()
                 runInMain {
-                    withAnimation {
-                        isRefreshing = false
+                    // Check if online count changed
+                    let currentCount = onlineStats?.onlineCount
+                    let onlineCountChanged = previousOnlineCount != nil && currentCount != nil && previousOnlineCount != currentCount
+
+                    if onlineCountChanged {
+                        // Delay hiding if online count changed
+                        Task {
+                            try? await Task.sleep(nanoseconds: 300_000_000) // 300ms
+                            runInMain {
+                                withAnimation {
+                                    isRefreshing = false
+                                }
+                            }
+                        }
+                    } else {
+                        withAnimation {
+                            isRefreshing = false
+                        }
                     }
                 }
             }
