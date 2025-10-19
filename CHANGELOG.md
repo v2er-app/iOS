@@ -2,6 +2,11 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.18 (Build XX)
+1. Improvement: Upgrade all CI/CD workflows to use Xcode 26.0.1 (latest version)
+2. Improvement: Use macOS 26 runners with Fastlane 2.228.0 for improved build performance
+3. Test: Verify release pipeline works correctly with new Xcode version
+
 ## v1.1.17 (Build XX)
 1. Fix: Restore stable release pipeline configuration from Oct 10
 2. Fix: Remove invalid Fastlane export_compliance parameters
