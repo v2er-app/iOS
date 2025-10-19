@@ -2,6 +2,11 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.17 (Build XX)
+1. Fix: Restore stable release pipeline configuration from Oct 10
+2. Fix: Remove invalid Fastlane export_compliance parameters
+3. Improvement: Use proven working TestFlight upload configuration
+
 ## v1.1.16 (Build XX)
 1. Test: Pipeline validation test for CI/CD workflow
 2. Improvement: Verify automatic build number increment
