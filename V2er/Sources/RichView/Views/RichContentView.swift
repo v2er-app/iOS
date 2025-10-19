@@ -19,6 +19,10 @@ public struct RichContentView: View {
     @State private var contentElements: [ContentElement] = []
     @State private var isLoading = true
     @State private var error: RenderError?
+    @State private var renderMetadata: RenderMetadata?
+
+    // Actor for background rendering
+    private let renderActor = RenderActor()
 
     // MARK: - Events
 
@@ -127,27 +131,17 @@ public struct RichContentView: View {
         error = nil
 
         do {
-            // Convert HTML to Markdown
-            let converter = HTMLToMarkdownConverter(
-                crashOnUnsupportedTags: configuration.crashOnUnsupportedTags
+            // Use actor for background rendering with caching
+            let result = try await renderActor.render(
+                html: htmlContent,
+                configuration: configuration
             )
-            let markdown = try converter.convert(htmlContent)
 
-            // Parse markdown into content elements
-            let elements = try parseMarkdownToElements(markdown)
-            self.contentElements = elements
+            self.contentElements = result.elements
+            self.renderMetadata = result.metadata
             self.isLoading = false
 
-            onRenderCompleted?(RenderMetadata(
-                renderTime: 0,
-                htmlLength: htmlContent.count,
-                markdownLength: markdown.count,
-                attributedStringLength: 0,
-                cacheHit: false,
-                imageCount: elements.filter { $0.type.isImage }.count,
-                linkCount: 0,
-                mentionCount: 0
-            ))
+            onRenderCompleted?(result.metadata)
 
         } catch let renderError as RenderError {
             self.error = renderError
@@ -161,74 +155,6 @@ public struct RichContentView: View {
         }
     }
 
-    private func parseMarkdownToElements(_ markdown: String) throws -> [ContentElement] {
-        var elements: [ContentElement] = []
-        let lines = markdown.components(separatedBy: "\n")
-        var index = 0
-
-        while index < lines.count {
-            let line = lines[index]
-
-            if line.trimmingCharacters(in: .whitespaces).isEmpty {
-                index += 1
-                continue
-            }
-
-            // Code block
-            if line.starts(with: "```") {
-                let language = String(line.dropFirst(3)).trimmingCharacters(in: .whitespaces)
-                var code = ""
-                index += 1
-
-                while index < lines.count && !lines[index].starts(with: "```") {
-                    code += lines[index] + "\n"
-                    index += 1
-                }
-
-                let detectedLanguage = language.isEmpty ? LanguageDetector.detectLanguage(from: code) : language
-                elements.append(ContentElement(
-                    type: .codeBlock(code: code.trimmingCharacters(in: .whitespacesAndNewlines), language: detectedLanguage)
-                ))
-                index += 1
-                continue
-            }
-
-            // Heading
-            if let headingMatch = line.firstMatch(of: /^(#{1,6})\s+(.+)/) {
-                let level = headingMatch.1.count
-                let text = String(headingMatch.2)
-                elements.append(ContentElement(type: .heading(text: text, level: level)))
-                index += 1
-                continue
-            }
-
-            // Image
-            if let imageMatch = line.firstMatch(of: /!\[([^\]]*)\]\(([^)]+)\)/) {
-                let altText = String(imageMatch.1)
-                let urlString = String(imageMatch.2)
-                let url = URL(string: urlString)
-                elements.append(ContentElement(
-                    type: .image(ImageInfo(url: url, altText: altText))
-                ))
-                index += 1
-                continue
-            }
-
-            // Regular text paragraph
-            let renderer = MarkdownRenderer(
-                stylesheet: configuration.stylesheet,
-                enableCodeHighlighting: configuration.enableCodeHighlighting
-            )
-            let attributed = try renderer.render(line)
-            if !attributed.characters.isEmpty {
-                elements.append(ContentElement(type: .text(attributed)))
-            }
-
-            index += 1
-        }
-
-        return elements
-    }
 }
 
 // MARK: - Content Element
