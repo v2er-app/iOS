@@ -89,9 +89,7 @@ platform :ios do
         wait_for_uploaded_build: true,
         groups: ["Github Actions Internal"],  # Auto-distribute to Github Actions Internal group
         notify_external_testers: false,  # No external notifications
-        uses_non_exempt_encryption: false,  # Mark as no encryption to skip export compliance review
-        export_compliance_uses_encryption: false,  # Explicitly state no encryption
-        export_compliance_is_exempt: true  # Exempt from export compliance
+        uses_non_exempt_encryption: false  # Mark as no encryption to skip export compliance review
       )
 
       UI.success("✅ Successfully distributed build to internal testers (Github Actions Internal)!")
@@ -186,14 +184,7 @@ platform :ios do
       distribute_external: is_public_beta,  # Internal testing by default, external for public beta
       distribute_only: false,  # Upload and distribute in one action
       changelog: changelog_content,  # Use changelog from CHANGELOG.md
-      uses_non_exempt_encryption: false,  # Mark as no encryption to skip export compliance review
-      export_compliance_uses_encryption: false,  # Explicitly state no encryption for export compliance
-      export_compliance_platform: 'ios',  # Specify platform for export compliance
-      export_compliance_compliance_required: false,  # No additional compliance documentation required
-      export_compliance_app_type: nil,  # Not applicable since we don't use encryption
-      export_compliance_encryption_updated: false,  # No encryption changes
-      export_compliance_contains_third_party_cryptography: false,  # No third-party cryptography
-      export_compliance_is_exempt: true  # Exempt from export compliance
+      uses_non_exempt_encryption: false  # Mark as no encryption to skip export compliance review
     }
 
     # Add channel-specific distribution parameters
