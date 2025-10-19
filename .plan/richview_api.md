@@ -771,31 +771,213 @@ RichView(htmlContent: content)
 
 ---
 
-## ⚠️ Migration from HtmlView
+## ⚠️ Migration Guide
 
-### Before (WebView-based)
+RichView replaces **two** existing implementations in V2er:
 
+### 1. Migration from HtmlView (Topic Content)
+
+**Current Implementation** (`NewsContentView.swift`):
 ```swift
+// WKWebView-based rendering
 HtmlView(
-    html: post.content,
-    imgs: post.images,
+    html: contentInfo?.html,
+    imgs: contentInfo?.imgs ?? [],
     rendered: $rendered
 )
 ```
 
-### After (RichView)
-
+**New Implementation**:
 ```swift
-RichView(htmlContent: post.content)
+RichView(htmlContent: contentInfo?.html ?? "")
     .onEvent { event in
         switch event {
         case .renderCompleted:
             rendered = true
+        case .imageTapped(let url):
+            showImageViewer(url)
         default:
             break
         }
     }
 ```
+
+**Benefits**:
+- 10x+ faster rendering (no WebView overhead)
+- 70%+ less memory usage
+- No height calculation delays
+- Native image preview support
+
+---
+
+### 2. Migration from RichText (Reply Content)
+
+**Current Implementation** (`ReplyItemView.swift`):
+```swift
+// NSAttributedString HTML parser
+RichText { info.content }
+```
+
+**New Implementation**:
+```swift
+RichView(htmlContent: info.content)
+    .configuration(.compact)  // Smaller fonts for replies
+    .onEvent { event in
+        handleReplyEvent(event, reply: info)
+    }
+```
+
+**Benefits**:
+- Code syntax highlighting (current implementation doesn't support)
+- @mention detection and navigation
+- Consistent rendering with topic content
+- Better performance with caching
+
+---
+
+### Side-by-Side Comparison
+
+| Feature | HtmlView (Topic) | RichText (Reply) | RichView (New) |
+|---------|------------------|------------------|----------------|
+| Render Engine | WKWebView | NSAttributedString HTML | AttributedString + Markdown |
+| Performance | Slow | Medium | Fast |
+| Memory Usage | High | Low | Low |
+| Code Highlighting | ❌ | ❌ | ✅ |
+| Image Preview | Manual | ❌ | ✅ Built-in |
+| @Mention Navigation | Manual | ❌ | ✅ Built-in |
+| Height Calculation | Async (delayed) | Sync | Sync |
+| Caching | ❌ | ❌ | ✅ Automatic |
+
+---
+
+### Complete Migration Example
+
+**Before** - Two different implementations:
+
+```swift
+// Topic content (NewsContentView.swift)
+struct NewsContentView: View {
+    var contentInfo: FeedDetailInfo.ContentInfo?
+    @Binding var rendered: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Divider()
+            HtmlView(html: contentInfo?.html, imgs: contentInfo?.imgs ?? [], rendered: $rendered)
+            Divider()
+        }
+    }
+}
+
+// Reply content (ReplyItemView.swift)
+struct ReplyItemView: View {
+    var info: FeedDetailInfo.ReplyInfo.Item
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // ... header ...
+            RichText { info.content }  // Old Atributika-based
+            // ... footer ...
+        }
+    }
+}
+```
+
+**After** - Unified RichView:
+
+```swift
+// Topic content (NewsContentView.swift)
+struct NewsContentView: View {
+    var contentInfo: FeedDetailInfo.ContentInfo?
+    @Binding var rendered: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Divider()
+            RichView(htmlContent: contentInfo?.html ?? "")
+                .configuration(.default)
+                .onEvent { event in
+                    handleTopicEvent(event)
+                }
+            Divider()
+        }
+    }
+
+    private func handleTopicEvent(_ event: RichViewEvent) {
+        switch event {
+        case .renderCompleted:
+            rendered = true
+        case .linkTapped(let url):
+            openURL(url)
+        case .imageTapped(let url):
+            showImageViewer(url)
+        case .mentionTapped(let username):
+            navigateToProfile(username)
+        default:
+            break
+        }
+    }
+}
+
+// Reply content (ReplyItemView.swift)
+struct ReplyItemView: View {
+    var info: FeedDetailInfo.ReplyInfo.Item
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // ... header ...
+            RichView(htmlContent: info.content)
+                .configuration(.compact)  // Smaller fonts for replies
+                .onEvent { event in
+                    handleReplyEvent(event)
+                }
+            // ... footer ...
+        }
+    }
+
+    private func handleReplyEvent(_ event: RichViewEvent) {
+        switch event {
+        case .linkTapped(let url):
+            openURL(url)
+        case .mentionTapped(let username):
+            navigateToProfile(username)
+        default:
+            break
+        }
+    }
+}
+```
+
+---
+
+### Migration Checklist
+
+**Phase 1: Topic Content (NewsContentView)**
+- [ ] Replace `HtmlView` with `RichView`
+- [ ] Remove `imgs` parameter (images auto-detected)
+- [ ] Add event handler for `renderCompleted`
+- [ ] Add event handlers for image/link/mention taps
+- [ ] Test with various topic types (text, images, code)
+- [ ] Verify height calculation works correctly
+
+**Phase 2: Reply Content (ReplyItemView)**
+- [ ] Replace `RichText` with `RichView`
+- [ ] Use `.compact` configuration
+- [ ] Add event handlers for interactions
+- [ ] Test with reply list scrolling performance
+- [ ] Verify cache hit rate in lists
+
+**Phase 3: Feature Flag**
+- [ ] Add `useRichView` feature flag
+- [ ] Implement A/B testing logic
+- [ ] Monitor performance metrics
+- [ ] Gradual rollout (10% → 50% → 100%)
+
+**Phase 4: Cleanup**
+- [ ] Remove `HtmlView.swift` after full rollout
+- [ ] Remove `RichText.swift` (old Atributika version)
+- [ ] Remove Atributika dependency if no longer used
+- [ ] Update related documentation
 
 ---
 
