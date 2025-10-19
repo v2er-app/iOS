@@ -42,11 +42,7 @@ platform :ios do
         provisioningProfiles: {
           "v2er.app" => "match AppStore v2er.app"
         },
-        teamID: ENV["TEAM_ID"],
-        ITSAppUsesNonExemptEncryption: false,  # Add export compliance to IPA
-        uploadBitcode: false,
-        compileBitcode: false,
-        uploadSymbols: true
+        teamID: ENV["TEAM_ID"]
       },
       export_team_id: ENV["TEAM_ID"],
       xcargs: "-allowProvisioningUpdates CODE_SIGN_STYLE=Manual",
@@ -71,7 +67,7 @@ platform :ios do
     )
   end
 
-  desc "Distribute existing build to internal testers"
+  desc "Distribute existing build to beta testers"
   lane :distribute_beta do |options|
     # Get App Store Connect API key
     api_key = get_api_key
@@ -80,21 +76,30 @@ platform :ios do
     build_number = options[:build_number]
 
     begin
-      # Distribute to internal testers only
+      # Distribute to beta testers
       testflight(
         api_key: api_key,
         app_identifier: "v2er.app",
-        skip_submission: true,  # Skip beta review for internal testing
-        distribute_external: false,  # Internal testing only (not public beta)
+        skip_submission: false,
+        distribute_external: true,  # Distribute to external testers (public beta)
+        groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
+        notify_external_testers: true,  # Send email notifications
+        uses_non_exempt_encryption: false,
+        submit_beta_review: true,  # Automatically submit for Beta review
         wait_for_uploaded_build: true,
-        groups: ["Github Actions Internal"],  # Auto-distribute to Github Actions Internal group
-        notify_external_testers: false,  # No external notifications
-        uses_non_exempt_encryption: false,  # Mark as no encryption to skip export compliance review
-        export_compliance_uses_encryption: false,  # Explicitly state no encryption
-        export_compliance_is_exempt: true  # Exempt from export compliance
+        beta_app_description: "V2er is an elegant third-party client for V2EX forum",
+        beta_app_feedback_email: "support@v2er.app",
+        demo_account_required: false,
+        beta_app_review_info: {
+          contact_email: "support@v2er.app",
+          contact_first_name: "V2er",
+          contact_last_name: "Support",
+          contact_phone: "+86 13800138000",
+          notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
+        }
       )
 
-      UI.success("✅ Successfully distributed build to internal testers (Github Actions Internal)!")
+      UI.success("✅ Successfully distributed build to beta testers!")
     rescue => e
       UI.error("Failed to distribute: #{e.message}")
       UI.message("You may need to manually distribute the build in App Store Connect")
@@ -102,20 +107,7 @@ platform :ios do
   end
 
   desc "Build and upload to TestFlight"
-  desc "Parameters:"
-  desc "  channel: 'internal' (default) or 'public_beta'"
-  lane :beta do |options|
-    # Get release channel from options or environment variable
-    # Default to 'internal' if not specified
-    channel = options[:channel] || ENV['RELEASE_CHANNEL'] || 'internal'
-
-    UI.message("📦 Release channel: #{channel}")
-
-    # Validate channel parameter
-    unless ['internal', 'public_beta'].include?(channel)
-      UI.user_error!("Invalid channel: #{channel}. Must be 'internal' or 'public_beta'")
-    end
-
+  lane :beta do
     # Validate that changelog exists for current version
     unless ChangelogHelper.validate_changelog_exists
       UI.user_error!("Please update CHANGELOG.md with an entry for the current version before releasing!")
@@ -174,58 +166,31 @@ platform :ios do
     # Extract changelog for the current version
     changelog_content = ChangelogHelper.extract_changelog(current_version)
 
-    # Configure TestFlight upload based on release channel
-    is_public_beta = channel == 'public_beta'
-
-    upload_params = {
+    # Upload to TestFlight
+    upload_to_testflight(
       api_key: api_key,
-      skip_submission: !is_public_beta,  # Skip beta review for internal, submit for public beta
+      skip_submission: false,
       skip_waiting_for_build_processing: false,  # Wait for processing before distribution
       wait_processing_interval: 30,  # Check every 30 seconds
       wait_processing_timeout_duration: 900,  # Wait up to 15 minutes for processing
-      distribute_external: is_public_beta,  # Internal testing by default, external for public beta
+      distribute_external: true,  # Distribute to external testers (public beta)
       distribute_only: false,  # Upload and distribute in one action
+      groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
       changelog: changelog_content,  # Use changelog from CHANGELOG.md
-      uses_non_exempt_encryption: false,  # Mark as no encryption to skip export compliance review
-      export_compliance_uses_encryption: false,  # Explicitly state no encryption for export compliance
-      export_compliance_platform: 'ios',  # Specify platform for export compliance
-      export_compliance_compliance_required: false,  # No additional compliance documentation required
-      export_compliance_app_type: nil,  # Not applicable since we don't use encryption
-      export_compliance_encryption_updated: false,  # No encryption changes
-      export_compliance_contains_third_party_cryptography: false,  # No third-party cryptography
-      export_compliance_is_exempt: true  # Exempt from export compliance
-    }
-
-    # Add channel-specific distribution parameters
-    if is_public_beta
-      upload_params.merge!({
-        groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
-        notify_external_testers: true,  # Send email notifications to external testers
-        submit_beta_review: true,  # Automatically submit for Beta review
-        beta_app_description: "V2er is an elegant third-party client for V2EX forum",
-        beta_app_feedback_email: "support@v2er.app",
-        demo_account_required: false,  # No demo account required
-        beta_app_review_info: {
-          contact_email: "support@v2er.app",
-          contact_first_name: "V2er",
-          contact_last_name: "Support",
-          contact_phone: "+86 13800138000",
-          notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
-        }
-      })
-      UI.message("📧 Public beta mode: Will notify external testers and submit for beta review")
-    else
-      # Internal testing mode - automatically distribute to internal testers
-      # Uses "Github Actions Internal" group configured in App Store Connect
-      upload_params.merge!({
-        groups: ["Github Actions Internal"],  # Auto-distribute to Github Actions Internal group
-        notify_external_testers: false  # No external notifications for internal testing
-      })
-      UI.message("👥 Internal testing mode: Will auto-distribute to Github Actions Internal group (no beta review required)")
-    end
-
-    # Upload to TestFlight with automatic distribution
-    upload_to_testflight(upload_params)
+      notify_external_testers: true,  # Send email notifications to external testers
+      uses_non_exempt_encryption: false,  # Required for automatic distribution
+      submit_beta_review: true,  # Automatically submit for Beta review
+      beta_app_description: "V2er is an elegant third-party client for V2EX forum",
+      beta_app_feedback_email: "support@v2er.app",
+      demo_account_required: false,  # No demo account required
+      beta_app_review_info: {
+        contact_email: "support@v2er.app",
+        contact_first_name: "V2er",
+        contact_last_name: "Support",
+        contact_phone: "+86 13800138000",
+        notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
+      }
+    )
 
     # Notify success
     notification(
