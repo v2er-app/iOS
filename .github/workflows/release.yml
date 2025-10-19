@@ -98,7 +98,7 @@ jobs:
         ref: ${{ needs.version-check.outputs.new_tag }}
 
     - name: Select Xcode version
-      run: sudo xcode-select -s /Applications/Xcode_26.0.app/Contents/Developer
+      run: sudo xcode-select -s /Applications/Xcode_26.0.1.app/Contents/Developer
 
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
