@@ -260,7 +260,7 @@ public struct ImageStyle: Equatable {
 // MARK: - Presets
 
 extension RenderStylesheet {
-    /// GitHub Markdown default styling
+    /// GitHub Markdown default styling (adaptive for dark mode)
     public static let `default`: RenderStylesheet = {
         RenderStylesheet(
             body: TextStyle(
@@ -283,17 +283,59 @@ extension RenderStylesheet {
                 color: .primary
             ),
             link: LinkStyle(
-                color: Color(hex: "#0969da"),
+                color: Color.adaptive(
+                    light: Color(hex: "#0969da"),
+                    dark: Color(hex: "#58a6ff")
+                ),
                 underline: false,
                 fontWeight: .regular
             ),
             code: CodeStyle(
+                inlineBackgroundColor: Color.adaptive(
+                    light: Color(hex: "#f6f8fa"),
+                    dark: Color(hex: "#161b22")
+                ),
+                inlineTextColor: Color.adaptive(
+                    light: Color(hex: "#24292e"),
+                    dark: Color(hex: "#e6edf3")
+                ),
+                blockBackgroundColor: Color.adaptive(
+                    light: Color(hex: "#f6f8fa"),
+                    dark: Color(hex: "#161b22")
+                ),
+                blockTextColor: Color.adaptive(
+                    light: Color(hex: "#24292e"),
+                    dark: Color(hex: "#e6edf3")
+                ),
                 highlightTheme: .github
             ),
-            blockquote: BlockquoteStyle(),
+            blockquote: BlockquoteStyle(
+                borderColor: Color.adaptive(
+                    light: Color(hex: "#d0d7de"),
+                    dark: Color(hex: "#3d444d")
+                ),
+                backgroundColor: Color.adaptive(
+                    light: Color(hex: "#f6f8fa").opacity(0.5),
+                    dark: Color(hex: "#161b22").opacity(0.5)
+                )
+            ),
             list: ListStyle(),
-            mention: MentionStyle(),
-            image: ImageStyle()
+            mention: MentionStyle(
+                textColor: Color.adaptive(
+                    light: Color(hex: "#0969da"),
+                    dark: Color(hex: "#58a6ff")
+                ),
+                backgroundColor: Color.adaptive(
+                    light: Color.blue.opacity(0.1),
+                    dark: Color.blue.opacity(0.2)
+                )
+            ),
+            image: ImageStyle(
+                borderColor: Color.adaptive(
+                    light: Color(hex: "#d0d7de"),
+                    dark: Color(hex: "#3d444d")
+                )
+            )
         )
     }()
 
@@ -417,5 +459,12 @@ extension Color {
             blue: Double(b) / 255,
             opacity: Double(a) / 255
         )
+    }
+
+    /// Create adaptive color for light/dark mode
+    static func adaptive(light: Color, dark: Color) -> Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
+        })
     }
 }
