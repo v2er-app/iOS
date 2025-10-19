@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Actor for thread-safe background rendering
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public actor RenderActor {
 
     // MARK: - Properties
@@ -177,8 +177,6 @@ public actor RenderActor {
             }
 
             // Image
-            // TODO: Reimplement with iOS 15 compatible regex
-            /* iOS 16+ only
             if let imageMatch = line.firstMatch(of: /!\[([^\]]*)\]\(([^)]+)\)/) {
                 let altText = String(imageMatch.1)
                 let urlString = String(imageMatch.2)
@@ -189,13 +187,13 @@ public actor RenderActor {
                 index += 1
                 continue
             }
-            */
 
             // Regular text paragraph
-            // TODO: Use MarkdownRenderer once iOS 15 compatible
-            var attributed = AttributedString(line)
-            attributed.font = .system(size: configuration.stylesheet.body.fontSize)
-            attributed.foregroundColor = configuration.stylesheet.body.color
+            let renderer = MarkdownRenderer(
+                stylesheet: configuration.stylesheet,
+                enableCodeHighlighting: configuration.enableCodeHighlighting
+            )
+            let attributed = try renderer.render(line)
             if !attributed.characters.isEmpty {
                 elements.append(ContentElement(type: .text(attributed)))
             }

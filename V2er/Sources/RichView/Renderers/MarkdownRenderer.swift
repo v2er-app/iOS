@@ -4,16 +4,12 @@
 //
 //  Created by RichView on 2025/1/19.
 //
-//  TODO: This file requires iOS 16+ for Regex support
-//  Currently disabled until iOS 15 compatible implementation is ready
-
-#if false  // Disabled until iOS 15 compatible
 
 import Foundation
 import SwiftUI
 
 /// Renders Markdown content to AttributedString with styling
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public class MarkdownRenderer {
 
     private let stylesheet: RenderStylesheet
@@ -113,7 +109,7 @@ public class MarkdownRenderer {
         default: fontSize = stylesheet.heading.h1Size
         }
 
-        attributed.font = .system(size: fontSize, weight: stylesheet.heading.fontWeight.uiFontWeight)
+        attributed.font = .system(size: fontSize, weight: stylesheet.heading.fontWeight)
         attributed.foregroundColor = stylesheet.heading.color.uiColor
 
         // Add spacing
@@ -263,7 +259,7 @@ public class MarkdownRenderer {
                 let linkText = String(linkMatch.1)
                 let linkURL = String(linkMatch.2)
                 var linkAttributed = AttributedString(linkText)
-                linkAttributed.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.link.fontWeight.uiFontWeight)
+                linkAttributed.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.link.fontWeight)
                 linkAttributed.foregroundColor = stylesheet.link.color.uiColor
                 if stylesheet.link.underline {
                     linkAttributed.underlineStyle = .single
@@ -290,7 +286,7 @@ public class MarkdownRenderer {
                 // Add mention
                 let username = String(mentionMatch.1)
                 var mentionText = AttributedString("@\(username)")
-                mentionText.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight.uiFontWeight)
+                mentionText.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight)
                 mentionText.foregroundColor = stylesheet.mention.textColor.uiColor
                 mentionText.backgroundColor = stylesheet.mention.backgroundColor.uiColor
                 result.append(mentionText)
@@ -310,33 +306,20 @@ public class MarkdownRenderer {
 
     private func renderPlainText(_ text: String) -> AttributedString {
         var attributed = AttributedString(text)
-        attributed.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.body.fontWeight.uiFontWeight)
+        attributed.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.body.fontWeight)
         attributed.foregroundColor = stylesheet.body.color.uiColor
         return attributed
     }
-}
 
-// MARK: - Extensions
+    // MARK: - Helper Methods
 
-extension Font.Weight {
-    var uiFontWeight: UIFont.Weight {
-        switch self {
-        case .ultraLight: return .ultraLight
-        case .thin: return .thin
-        case .light: return .light
-        case .regular: return .regular
-        case .medium: return .medium
-        case .semibold: return .semibold
-        case .bold: return .bold
-        case .heavy: return .heavy
-        case .black: return .black
-        default: return .regular
+    /// Extract ordered list item number and content from a line
+    private func extractOrderedListItem(from line: String) -> (Int, String)? {
+        guard let match = line.firstMatch(of: /^(\d+)\. (.+)/) else {
+            return nil
         }
+        let number = Int(match.1) ?? 1
+        let content = String(match.2)
+        return (number, content)
     }
 }
-
-extension Color {
-    var uiColor: UIColor {
-        UIColor(self)
-    }
-}#endif // false

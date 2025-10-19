@@ -48,22 +48,17 @@ struct ReplyItemView: View {
                         .foregroundColor(info.hadThanked ? .red : .secondaryText)
                 }
 
-                if #available(iOS 15.0, *) {
-                    RichView(htmlContent: info.content)
-                        .configuration(compactConfigurationForAppearance())
-                        .onLinkTapped { url in
-                            Task {
-                                await UIApplication.shared.openURL(url)
-                            }
+                RichView(htmlContent: info.content)
+                    .configuration(compactConfigurationForAppearance())
+                    .onLinkTapped { url in
+                        Task {
+                            await UIApplication.shared.openURL(url)
                         }
-                        .onMentionTapped { username in
-                            // TODO: Navigate to user profile
-                            print("Mention tapped: @\(username)")
-                        }
-                } else {
-                    // Fallback for iOS 14
-                    RichText { info.content }
-                }
+                    }
+                    .onMentionTapped { username in
+                        // TODO: Navigate to user profile
+                        print("Mention tapped: @\(username)")
+                    }
 
                 Text("\(info.floor)楼")
                     .font(.footnote)
@@ -75,7 +70,6 @@ struct ReplyItemView: View {
         .padding(.horizontal, 12)
     }
 
-    @available(iOS 15.0, *)
     private func compactConfigurationForAppearance() -> RenderConfiguration {
         var config = RenderConfiguration.compact
 

@@ -99,15 +99,25 @@ public struct RichView: View {
             )
             let markdown = try converter.convert(htmlContent)
 
-            // For iOS 15 compatibility, use simple AttributedString
-            // TODO: Implement full MarkdownRenderer with iOS 15 compatibility
-            var rendered = AttributedString(markdown)
-            rendered.font = .system(size: configuration.stylesheet.body.fontSize)
-            rendered.foregroundColor = configuration.stylesheet.body.color
+            // Render Markdown to AttributedString
+            if #available(iOS 16.0, *) {
+                let renderer = MarkdownRenderer(
+                    stylesheet: configuration.stylesheet,
+                    enableCodeHighlighting: configuration.enableCodeHighlighting
+                )
+                let rendered = try renderer.render(markdown)
 
-            // Update state
-            self.attributedString = rendered
-            self.isLoading = false
+                // Update state
+                self.attributedString = rendered
+                self.isLoading = false
+            } else {
+                // Fallback for iOS 15 (should not happen with iOS 18 minimum)
+                var rendered = AttributedString(markdown)
+                rendered.font = .system(size: configuration.stylesheet.body.fontSize)
+                rendered.foregroundColor = configuration.stylesheet.body.color
+                self.attributedString = rendered
+                self.isLoading = false
+            }
 
             // Create metadata
             let endTime = Date()
@@ -116,7 +126,7 @@ public struct RichView: View {
                 renderTime: renderTime,
                 htmlLength: htmlContent.count,
                 markdownLength: markdown.count,
-                attributedStringLength: rendered.characters.count,
+                attributedStringLength: self.attributedString?.characters.count ?? 0,
                 cacheHit: false,
                 imageCount: 0,
                 linkCount: 0,

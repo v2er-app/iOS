@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// Enhanced RichView that properly renders images, code blocks, and complex content
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public struct RichContentView: View {
 
     // MARK: - Properties

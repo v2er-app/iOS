@@ -23,34 +23,28 @@ struct NewsContentView: View {
         VStack(spacing: 0) {
             Divider()
 
-            if #available(iOS 15.0, *) {
-                RichView(htmlContent: contentInfo?.html ?? "")
-                    .configuration(configurationForAppearance())
-                    .onLinkTapped { url in
-                        Task {
-                            await UIApplication.shared.openURL(url)
-                        }
+            RichView(htmlContent: contentInfo?.html ?? "")
+                .configuration(configurationForAppearance())
+                .onLinkTapped { url in
+                    Task {
+                        await UIApplication.shared.openURL(url)
                     }
-                    .onRenderCompleted { metadata in
-                        // Mark as rendered after content is ready
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            self.rendered = true
-                        }
-                    }
-                    .onRenderFailed { error in
-                        print("Render error: \(error)")
+                }
+                .onRenderCompleted { metadata in
+                    // Mark as rendered after content is ready
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.rendered = true
                     }
-            } else {
-                // Fallback for iOS 14
-                HtmlView(html: contentInfo?.html, imgs: contentInfo?.imgs ?? [], rendered: $rendered)
-            }
+                }
+                .onRenderFailed { error in
+                    print("Render error: \(error)")
+                    self.rendered = true
+                }
 
             Divider()
         }
     }
 
-    @available(iOS 15.0, *)
     private func configurationForAppearance() -> RenderConfiguration {
         var config = RenderConfiguration.default
 

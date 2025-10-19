@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1AEBC3AC5DAA63523F5448F5 /* RichContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E205F350A3537A3E41B1AFC3 /* RichContentView.swift */; };
 		28B24CA92EA3460D00F82B2A /* BalanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B24CA82EA3460D00F82B2A /* BalanceView.swift */; };
 		28B24CAB2EA3561400F82B2A /* OnlineStatsInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B24CAA2EA3561400F82B2A /* OnlineStatsInfo.swift */; };
 		28CC76CC2E963D6700C939B5 /* FilterMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A490A3E111D941C4B30F0BACA6B5E984 /* FilterMenuView.swift */; };
 		36A1DC574867AA711547556C /* CodeBlockAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42D7F9F8E0B5EA32CC951FD5 /* CodeBlockAttachment.swift */; };
 		3AEADD24608B3956E80DADEA /* RenderConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 547AFEBDC601FEDCE3364643 /* RenderConfiguration.swift */; };
 		407E8B8C202BF0241BD99568 /* RichView+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72107B2148D16415A7512930 /* RichView+Preview.swift */; };
+		484A41DB3858F1C84507E54B /* RenderActor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6356D706913919766FD0EA5 /* RenderActor.swift */; };
 		4E55BE8A29D45FC00044389C /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 4E55BE8929D45FC00044389C /* Kingfisher */; };
 		4EC32AF029D81863003A3BD4 /* WebView in Frameworks */ = {isa = PBXBuildFile; productRef = 4EC32AEF29D81863003A3BD4 /* WebView */; };
 		4EC32AF229D818FC003A3BD4 /* WebBrowserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC32AF129D818FC003A3BD4 /* WebBrowserView.swift */; };
@@ -155,8 +157,10 @@
 		5DF80E3626A2D045002ADC79 /* MultilineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF80E3526A2D045002ADC79 /* MultilineTextField.swift */; };
 		5DF92A5D26859DDD00E6086E /* HeadIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF92A5C26859DDD00E6086E /* HeadIndicatorView.swift */; };
 		62367D67C6E8AE3EC837D0F4 /* MentionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44998D879D9842BBB61D639E /* MentionParser.swift */; };
+		9495B5E175158F3646169AA5 /* RichContentView+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C4B81E79369CDE4880B773 /* RichContentView+Preview.swift */; };
 		97B4326BB45897F25FAEBBD1 /* RenderStylesheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8366DEEFEB9819312F65353D /* RenderStylesheet.swift */; };
 		DAC723E23F071F71DD23FC0D /* RichViewCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A9E0C514C4D7E9DD4CBEE7 /* RichViewCache.swift */; };
+		E212778C30ED41F39D51D70B /* MarkdownRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64AB393F14CD383FE0EA98A9 /* MarkdownRenderer.swift */; };
 		E6BD52539035CEA6C56D3BDF /* HTMLToMarkdownConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C732E2652C92E5D553656A9 /* HTMLToMarkdownConverter.swift */; };
 		EC3A2A13EC68ED3A8DFA764A /* RenderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3CC744901D9A994CF6ABE7 /* RenderError.swift */; };
 		F090B4D9D3B115551BEF05B4 /* AsyncImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E707C08835B71223A7A3359 /* AsyncImageAttachment.swift */; };
@@ -1104,6 +1108,10 @@
 				407E8B8C202BF0241BD99568 /* RichView+Preview.swift in Sources */,
 				DAC723E23F071F71DD23FC0D /* RichViewCache.swift in Sources */,
 				62367D67C6E8AE3EC837D0F4 /* MentionParser.swift in Sources */,
+				E212778C30ED41F39D51D70B /* MarkdownRenderer.swift in Sources */,
+				484A41DB3858F1C84507E54B /* RenderActor.swift in Sources */,
+				1AEBC3AC5DAA63523F5448F5 /* RichContentView.swift in Sources */,
+				9495B5E175158F3646169AA5 /* RichContentView+Preview.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1191,7 +1199,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1247,7 +1255,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -1269,7 +1277,7 @@
 				INFOPLIST_FILE = V2er/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = V2er;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1294,7 +1302,7 @@
 				INFOPLIST_FILE = V2er/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = V2er;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1315,7 +1323,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3ZMN67J68N;
 				INFOPLIST_FILE = V2erTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1337,7 +1345,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 3ZMN67J68N;
 				INFOPLIST_FILE = V2erTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
