@@ -2,12 +2,12 @@
 
 ## 📊 Progress Overview
 
-- **Status**: In Progress
+- **Status**: In Progress (Partial - iOS 15 Compatibility Pending)
 - **Start Date**: 2025-01-19
 - **End Date**: TBD (actual)
 - **Estimated Duration**: 2-3 days
 - **Actual Duration**: TBD
-- **Completion**: 0/11 tasks (0%)
+- **Completion**: 7/11 tasks (64%) - Basic integration complete, iOS 15 MarkdownRenderer pending
 
 ## 🎯 Goals
 
@@ -22,96 +22,96 @@ Replace existing implementations with RichView:
 
 ### 4.1 Topic Content Migration (NewsContentView)
 
-- [ ] Replace HtmlView with RichView in NewsContentView
+- [x] Replace HtmlView with RichView in NewsContentView
   - **Estimated**: 2h
-  - **Actual**:
-  - **PR**:
-  - **Commits**:
-  - **File**: V2er/View/FeedDetail/NewsContentView.swift:23
+  - **Actual**: 0.5h
+  - **PR**: TBD
+  - **Commits**: 08b9230
+  - **File**: V2er/View/FeedDetail/NewsContentView.swift:27
   - **Before**: `HtmlView(html: contentInfo?.html, imgs: contentInfo?.imgs ?? [], rendered: $rendered)`
   - **After**: `RichView(htmlContent: contentInfo?.html ?? "").configuration(.default)`
 
-- [ ] Migrate height calculation from HtmlView
+- [x] Migrate height calculation from HtmlView
   - **Estimated**: 2h
-  - **Actual**:
-  - **PR**:
-  - **Commits**:
-  - **Details**: RichView should provide height via RenderMetadata
+  - **Actual**: 0.25h
+  - **PR**: TBD
+  - **Commits**: 08b9230
+  - **Details**: Using onRenderCompleted callback to set rendered=true after content ready
 
 - [ ] Test topic content rendering
   - **Estimated**: 1h
   - **Actual**:
   - **PR**:
-  - **Details**: Test with real V2EX topics (text, code, images, links)
+  - **Details**: Test with real V2EX topics (text, code, images, links) - PENDING manual testing
 
 ### 4.2 Reply Content Migration (ReplyItemView)
 
-- [ ] Replace RichText with RichView in ReplyItemView
+- [x] Replace RichText with RichView in ReplyItemView
   - **Estimated**: 1h
-  - **Actual**:
-  - **PR**:
-  - **Commits**:
-  - **File**: V2er/View/FeedDetail/ReplyItemView.swift:48
+  - **Actual**: 0.5h
+  - **PR**: TBD
+  - **Commits**: 08b9230
+  - **File**: V2er/View/FeedDetail/ReplyItemView.swift:52
   - **Before**: `RichText { info.content }`
   - **After**: `RichView(htmlContent: info.content).configuration(.compact)`
 
-- [ ] Configure compact style for replies
+- [x] Configure compact style for replies
   - **Estimated**: 1h
-  - **Actual**:
-  - **PR**:
-  - **Commits**:
-  - **Details**: Smaller fonts, reduced spacing vs topic content
+  - **Actual**: 0.25h
+  - **PR**: TBD
+  - **Commits**: 08b9230
+  - **Details**: Using RenderConfiguration.compact with dark mode support
 
 - [ ] Test reply content rendering
   - **Estimated**: 1h
   - **Actual**:
   - **PR**:
-  - **Details**: Test with real V2EX replies (mentions, code, quotes)
+  - **Details**: Test with real V2EX replies (mentions, code, quotes) - PENDING manual testing
 
 ### 4.3 UI Polishing
 
-- [ ] Match existing NewsContentView UI
+- [x] Match existing NewsContentView UI
   - **Estimated**: 2h
-  - **Actual**:
-  - **PR**:
-  - **Commits**:
-  - **Details**: Padding, spacing, background colors
+  - **Actual**: 0.25h
+  - **PR**: TBD
+  - **Commits**: 08b9230
+  - **Details**: Preserved Divider placement, VStack spacing
 
-- [ ] Match existing ReplyItemView UI
+- [x] Match existing ReplyItemView UI
   - **Estimated**: 1h
-  - **Actual**:
-  - **PR**:
-  - **Commits**:
-  - **Details**: Line height, text color, margins
+  - **Actual**: 0.25h
+  - **PR**: TBD
+  - **Commits**: 08b9230
+  - **Details**: Maintained existing layout, added RichView inline
 
 - [ ] Dark mode testing
   - **Estimated**: 1h
   - **Actual**:
   - **PR**:
-  - **Details**: Verify all colors adapt correctly
+  - **Details**: Verify all colors adapt correctly - PENDING manual testing
 
 ### 4.4 Interaction Features
 
-- [ ] Implement link tap handling
+- [x] Implement link tap handling
   - **Estimated**: 2h
-  - **Actual**:
-  - **PR**:
-  - **Commits**:
-  - **Details**: onLinkTapped event, handle V2EX internal links, Safari for external
+  - **Actual**: 0.25h
+  - **PR**: TBD
+  - **Commits**: 08b9230
+  - **Details**: onLinkTapped with UIApplication.shared.openURL for both views
 
 - [ ] Implement @mention tap handling
   - **Estimated**: 1h
   - **Actual**:
   - **PR**:
   - **Commits**:
-  - **Details**: onMentionTapped event, navigate to user profile
+  - **Details**: onMentionTapped event added, TODO: navigate to user profile
 
 - [ ] Implement long-press context menu
   - **Estimated**: 1h
   - **Actual**:
   - **PR**:
   - **Commits**:
-  - **Details**: Copy text, share, etc.
+  - **Details**: Copy text, share, etc. - NOT IMPLEMENTED (optional feature)
 
 ### Testing
 
@@ -181,6 +181,40 @@ Replace existing implementations with RichView:
 - **Tracking**: [tracking_strategy.md](../tracking_strategy.md)
 
 ## 📝 Notes
+
+### iOS 15 Compatibility Status
+
+**Current Implementation (08b9230)**:
+- Basic RichView integration complete
+- Using simplified AttributedString rendering (no markdown formatting)
+- iOS 16+ features temporarily disabled:
+  - MarkdownRenderer.swift (#if false - requires Regex API)
+  - RenderActor.swift (removed from build)
+  - RichContentView.swift (removed from build - depends on ContentElement)
+  - RichContentView+Preview.swift (removed from build)
+
+**What Works**:
+- HTML to Markdown conversion (HTMLToMarkdownConverter)
+- Basic text rendering with font and color styling
+- Link tap handling
+- Dark mode support
+- Height calculation via onRenderCompleted
+- Cache system (markdown and attributedString tiers)
+
+**What's Missing (iOS 15 compatible implementation needed)**:
+- **Bold**, *italic*, `code` inline formatting
+- Code block rendering with syntax highlighting
+- @mention highlighting and tap handling
+- Image rendering
+- Heading styles (H1-H6)
+- Blockquote styling
+- List rendering (bullets and numbers)
+
+**Next Steps**:
+1. Implement iOS 15-compatible MarkdownRenderer using NSRegularExpression
+2. Re-enable RenderActor with NSRegularExpression-based parsing
+3. Test with real V2EX content
+4. Compare rendering quality with HtmlView/RichText
 
 ### Migration Strategy
 1. **Parallel Implementation**: Keep old code until RichView proven stable
