@@ -463,10 +463,31 @@ Models/ + Extensions/
   - [ ] 处理代码块 (无高亮)
 - [ ] 实现 `Components/RichTextView.swift` 基础 UITextView 包装
 
+**TDD 测试要求**:
+- [ ] **HTMLToMarkdownConverter 单元测试**
+  - [ ] 测试基础标签转换 (p, br, strong, em, a, code, pre)
+  - [ ] 测试 V2EX URL 修正 (// → https://)
+  - [ ] 测试文本转义 (特殊字符)
+  - [ ] 测试空内容和 nil 处理
+  - [ ] 测试不支持的标签 (DEBUG 模式应crash)
+- [ ] **MarkdownRenderer 单元测试**
+  - [ ] 测试基础 Markdown → AttributedString
+  - [ ] 测试加粗、斜体渲染
+  - [ ] 测试链接渲染
+  - [ ] 测试代码块渲染 (无高亮)
+  - [ ] 测试空 Markdown 处理
+- [ ] **SwiftUI Preview**
+  - [ ] 创建 RichView_Previews with 基础示例
+  - [ ] 验证文本、加粗、斜体显示
+  - [ ] 验证链接点击区域
+  - [ ] Dark mode 预览
+
 **验收标准**:
-- 能够正确转换简单的 V2EX HTML
-- 能够显示基础文本格式
-- 链接可点击
+- ✅ 能够正确转换简单的 V2EX HTML
+- ✅ 能够显示基础文本格式
+- ✅ 链接可点击
+- ✅ 单元测试覆盖率 > 80%
+- ✅ SwiftUI Preview 正常显示
 
 ### Phase 2: 完整功能 (3-4天)
 
@@ -495,12 +516,48 @@ Models/ + Extensions/
   - [ ] 高度自适应
 - [ ] 实现 `Models/RichViewEvent.swift` 事件模型
 - [ ] 实现 `Models/RenderConfiguration.swift` 配置模型
+- [ ] 实现 `Models/RenderStylesheet.swift` 样式配置模型
+
+**TDD 测试要求**:
+- [ ] **HTMLToMarkdownConverter 完整测试**
+  - [ ] 测试图片标签转换 (img src 修正, alt属性)
+  - [ ] 测试 @提及转换 (`<a href="/member/xxx">` → `[@xxx](@mention:xxx)`)
+  - [ ] 测试列表转换 (ul, ol, li, 嵌套列表)
+  - [ ] 测试blockquote转换
+  - [ ] 测试标题转换 (h1-h6)
+  - [ ] 测试图片链接包裹 (`<a><img></a>`)
+  - [ ] 测试混合内容 (图片+文本+代码)
+- [ ] **V2EXMarkupVisitor 完整测试**
+  - [ ] 测试图片 NSTextAttachment 创建
+  - [ ] 测试列表缩进和符号
+  - [ ] 测试引用样式应用
+  - [ ] 测试代码高亮 (多种语言)
+  - [ ] 测试 @mention 样式和属性
+- [ ] **AsyncImageAttachment 测试**
+  - [ ] Mock Kingfisher 测试异步加载
+  - [ ] 测试占位图显示
+  - [ ] 测试加载失败处理
+  - [ ] 测试图片尺寸限制
+- [ ] **RichTextView 交互测试**
+  - [ ] 测试链接点击事件
+  - [ ] 测试图片点击事件
+  - [ ] 测试 @mention 点击事件
+  - [ ] 测试文本选择
+- [ ] **SwiftUI Preview 完整示例**
+  - [ ] 代码高亮 Preview (多种语言)
+  - [ ] 图片加载 Preview
+  - [ ] 列表和引用 Preview
+  - [ ] @mention Preview
+  - [ ] 复杂混合内容 Preview
+  - [ ] 自定义样式 Preview
 
 **验收标准**:
-- 所有 HTML 标签正确转换和显示
-- 代码高亮正常工作
-- 图片异步加载显示
-- 所有交互事件正常响应
+- ✅ 所有 HTML 标签正确转换和显示
+- ✅ 代码高亮正常工作 (测试至少 5 种语言)
+- ✅ 图片异步加载显示
+- ✅ 所有交互事件正常响应
+- ✅ 单元测试覆盖率 > 85%
+- ✅ SwiftUI Preview 涵盖所有元素类型
 
 ### Phase 3: 性能优化 (2-3天)
 
@@ -512,11 +569,10 @@ Models/ + Extensions/
   - [ ] AttributedStringWrapper (NSObject 包装)
   - [ ] MD5 缓存 Key (通过 Extensions/String+Markdown.swift)
   - [ ] 缓存策略 (LRU)
-- [ ] 实现 `Support/DegradationChecker.swift`
-  - [ ] HTML 大小检测 (>100KB 降级)
-  - [ ] 黑名单标签检测
-  - [ ] 转换错误检测
-  - [ ] Analytics 埋点
+- [ ] 移除降级逻辑 (不需要 WebView fallback)
+  - [ ] 所有标签必须支持
+  - [ ] 不支持的标签在 DEBUG 下 crash
+  - [ ] RELEASE 下 catch 错误并记录
 - [ ] 实现 `Support/PerformanceBenchmark.swift`
   - [ ] 渲染耗时测量
   - [ ] 内存占用监控
@@ -536,11 +592,35 @@ Models/ + Extensions/
   - [ ] 超长内容
   - [ ] 特殊字符
 
+**TDD 测试要求**:
+- [ ] **RenderCache 单元测试**
+  - [ ] 测试缓存存取 (set/get)
+  - [ ] 测试 MD5 key 生成
+  - [ ] 测试缓存淘汰 (LRU)
+  - [ ] 测试线程安全 (并发读写)
+  - [ ] 测试缓存统计 (hit rate)
+- [ ] **PerformanceBenchmark 测试**
+  - [ ] 测试渲染时间测量准确性
+  - [ ] 测试内存占用监控
+  - [ ] 测试缓存命中率计算
+- [ ] **性能压力测试**
+  - [ ] 100 个不同内容连续渲染 (测试缓存)
+  - [ ] 超长内容渲染 (10KB+ HTML)
+  - [ ] 复杂内容渲染 (图片+代码+列表混合)
+  - [ ] 列表滚动性能 (100+ items, 60fps)
+- [ ] **错误处理测试**
+  - [ ] DEBUG 模式: 不支持标签 crash 测试
+  - [ ] RELEASE 模式: 错误 catch 测试
+  - [ ] 空内容处理测试
+  - [ ] 损坏 HTML 处理测试
+
 **验收标准**:
-- 缓存命中率 > 80%
-- 渲染速度 < 50ms (单条回复)
-- 内存占用减少 70%+
-- 流畅滚动 (60fps)
+- ✅ 缓存命中率 > 80%
+- ✅ 渲染速度 < 50ms (单条回复)
+- ✅ 内存占用减少 70%+ (vs HtmlView)
+- ✅ 流畅滚动 (60fps, 100+ items)
+- ✅ 性能测试通过 (自动化)
+- ✅ 错误处理符合 DEBUG/RELEASE 策略
 
 ### Phase 4: 集成与测试 (2-3天)
 

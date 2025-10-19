@@ -89,33 +89,11 @@ Configuration options for customizing rendering behavior.
 /// Configuration for RichView rendering
 public struct RenderConfiguration: Equatable {
 
-    // MARK: - Typography
+    // MARK: - Stylesheet-based Configuration
 
-    /// Base font size for body text (default: 16)
-    public var fontSize: CGFloat
-
-    /// Line spacing between lines (default: 6)
-    public var lineSpacing: CGFloat
-
-    /// Spacing between paragraphs (default: 12)
-    public var paragraphSpacing: CGFloat
-
-    /// Font family (default: system)
-    public var fontFamily: String?
-
-    // MARK: - Colors
-
-    /// Text color (default: .label)
-    public var textColor: Color
-
-    /// Link color (default: .systemBlue)
-    public var linkColor: Color
-
-    /// Code background color (default: .systemGray6)
-    public var codeBackgroundColor: Color
-
-    /// Quote border color (default: .systemGray4)
-    public var quoteBorderColor: Color
+    /// Custom stylesheet for fine-grained style control
+    /// Provides CSS-like styling capabilities
+    public var stylesheet: RenderStylesheet
 
     // MARK: - Behavior
 
@@ -131,9 +109,6 @@ public struct RenderConfiguration: Equatable {
     /// Maximum image height (default: 300)
     public var maxImageHeight: CGFloat
 
-    /// Allow WebView degradation for complex content (default: true)
-    public var allowDegradation: Bool
-
     // MARK: - Performance
 
     /// Enable render caching (default: true)
@@ -141,6 +116,12 @@ public struct RenderConfiguration: Equatable {
 
     /// Cache size limit in MB (default: 50)
     public var cacheSizeLimit: Int
+
+    // MARK: - Error Handling
+
+    /// Crash on unsupported tags in DEBUG builds (default: true)
+    /// In RELEASE, errors are caught and logged
+    public var crashOnUnsupportedTags: Bool
 
     // MARK: - Presets
 
@@ -160,19 +141,12 @@ public struct RenderConfiguration: Equatable {
 
     /// Create custom configuration
     public init(
-        fontSize: CGFloat = 16,
-        lineSpacing: CGFloat = 6,
-        paragraphSpacing: CGFloat = 12,
-        fontFamily: String? = nil,
-        textColor: Color = .label,
-        linkColor: Color = .systemBlue,
-        codeBackgroundColor: Color = .systemGray6,
-        quoteBorderColor: Color = .systemGray4,
+        stylesheet: RenderStylesheet = .default,
         enableImages: Bool = true,
         enableCodeHighlighting: Bool = true,
         enableTextSelection: Bool = true,
         maxImageHeight: CGFloat = 300,
-        allowDegradation: Bool = true,
+        crashOnUnsupportedTags: Bool = true,
         enableCaching: Bool = true,
         cacheSizeLimit: Int = 50
     )
@@ -181,7 +155,363 @@ public struct RenderConfiguration: Equatable {
 
 ---
 
-### 3. RichViewEvent
+### 3. RenderStylesheet
+
+CSS-like stylesheet for fine-grained style control.
+
+```swift
+/// Stylesheet for rich text rendering
+/// Provides CSS-like styling capabilities with element-specific rules
+public struct RenderStylesheet: Equatable {
+
+    // MARK: - Element Styles
+
+    /// Style for body text
+    public var body: TextStyle
+
+    /// Style for headings (h1-h6)
+    public var heading: HeadingStyle
+
+    /// Style for links
+    public var link: LinkStyle
+
+    /// Style for code (inline and blocks)
+    public var code: CodeStyle
+
+    /// Style for blockquotes
+    public var blockquote: BlockquoteStyle
+
+    /// Style for lists
+    public var list: ListStyle
+
+    /// Style for @mentions
+    public var mention: MentionStyle
+
+    /// Style for images
+    public var image: ImageStyle
+
+    // MARK: - Presets
+
+    /// Default stylesheet (iOS system defaults)
+    public static let `default`: RenderStylesheet
+
+    /// Compact stylesheet (smaller fonts, tighter spacing)
+    public static let compact: RenderStylesheet
+
+    /// Large accessibility stylesheet
+    public static let accessibility: RenderStylesheet
+
+    // MARK: - Initializers
+
+    public init(
+        body: TextStyle = .default,
+        heading: HeadingStyle = .default,
+        link: LinkStyle = .default,
+        code: CodeStyle = .default,
+        blockquote: BlockquoteStyle = .default,
+        list: ListStyle = .default,
+        mention: MentionStyle = .default,
+        image: ImageStyle = .default
+    )
+}
+
+// MARK: - TextStyle
+
+/// Style for body text
+public struct TextStyle: Equatable {
+    /// Font family (nil = system default)
+    public var fontFamily: String?
+
+    /// Font size
+    public var fontSize: CGFloat
+
+    /// Font weight
+    public var fontWeight: Font.Weight
+
+    /// Text color
+    public var color: Color
+
+    /// Line height multiplier (1.0 = default)
+    public var lineHeight: CGFloat
+
+    /// Paragraph spacing
+    public var paragraphSpacing: CGFloat
+
+    public static let `default`: TextStyle
+
+    public init(
+        fontFamily: String? = nil,
+        fontSize: CGFloat = 16,
+        fontWeight: Font.Weight = .regular,
+        color: Color = .label,
+        lineHeight: CGFloat = 1.4,
+        paragraphSpacing: CGFloat = 12
+    )
+}
+
+// MARK: - HeadingStyle
+
+/// Style for headings with level-specific overrides
+public struct HeadingStyle: Equatable {
+    /// Base heading style
+    public var base: TextStyle
+
+    /// Level-specific overrides (h1-h6)
+    public var levels: [Int: HeadingLevelStyle]
+
+    public static let `default`: HeadingStyle
+
+    public init(
+        base: TextStyle = TextStyle(fontSize: 20, fontWeight: .bold),
+        levels: [Int: HeadingLevelStyle] = [:]
+    )
+}
+
+public struct HeadingLevelStyle: Equatable {
+    public var fontSize: CGFloat
+    public var fontWeight: Font.Weight
+    public var color: Color?
+    public var marginTop: CGFloat
+    public var marginBottom: CGFloat
+
+    public init(
+        fontSize: CGFloat,
+        fontWeight: Font.Weight = .bold,
+        color: Color? = nil,
+        marginTop: CGFloat = 16,
+        marginBottom: CGFloat = 8
+    )
+}
+
+// MARK: - LinkStyle
+
+/// Style for links
+public struct LinkStyle: Equatable {
+    /// Link text color
+    public var color: Color
+
+    /// Underline style
+    public var underlineStyle: UnderlineStyle
+
+    /// Highlight color when tapped
+    public var highlightColor: Color?
+
+    public static let `default`: LinkStyle
+
+    public init(
+        color: Color = .systemBlue,
+        underlineStyle: UnderlineStyle = .single,
+        highlightColor: Color? = nil
+    )
+
+    public enum UnderlineStyle {
+        case none
+        case single
+        case thick
+        case double
+    }
+}
+
+// MARK: - CodeStyle
+
+/// Style for code (inline and blocks)
+public struct CodeStyle: Equatable {
+    // Inline code
+    public var inlineFontFamily: String
+    public var inlineFontSize: CGFloat
+    public var inlineTextColor: Color
+    public var inlineBackgroundColor: Color
+    public var inlinePadding: EdgeInsets
+    public var inlineCornerRadius: CGFloat
+
+    // Code blocks
+    public var blockFontFamily: String
+    public var blockFontSize: CGFloat
+    public var blockTextColor: Color
+    public var blockBackgroundColor: Color
+    public var blockPadding: EdgeInsets
+    public var blockCornerRadius: CGFloat
+    public var blockBorderWidth: CGFloat
+    public var blockBorderColor: Color?
+
+    // Syntax highlighting theme
+    public var highlightTheme: HighlightTheme
+
+    public static let `default`: CodeStyle
+
+    public init(
+        inlineFontFamily: String = "Menlo",
+        inlineFontSize: CGFloat = 14,
+        inlineTextColor: Color = .label,
+        inlineBackgroundColor: Color = .systemGray6,
+        inlinePadding: EdgeInsets = EdgeInsets(top: 2, leading: 4, bottom: 2, trailing: 4),
+        inlineCornerRadius: CGFloat = 3,
+        blockFontFamily: String = "Menlo",
+        blockFontSize: CGFloat = 13,
+        blockTextColor: Color = .label,
+        blockBackgroundColor: Color = .systemGray6,
+        blockPadding: EdgeInsets = EdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12),
+        blockCornerRadius: CGFloat = 6,
+        blockBorderWidth: CGFloat = 0,
+        blockBorderColor: Color? = nil,
+        highlightTheme: HighlightTheme = .github
+    )
+
+    public enum HighlightTheme: String {
+        case github
+        case githubDark
+        case monokai
+        case solarizedLight
+        case solarizedDark
+        case xcode
+        case vs2015
+        case atomOneDark
+        case atomOneLight
+    }
+}
+
+// MARK: - BlockquoteStyle
+
+/// Style for blockquotes
+public struct BlockquoteStyle: Equatable {
+    /// Text color
+    public var textColor: Color
+
+    /// Background color
+    public var backgroundColor: Color?
+
+    /// Border width (left side)
+    public var borderWidth: CGFloat
+
+    /// Border color
+    public var borderColor: Color
+
+    /// Padding
+    public var padding: EdgeInsets
+
+    /// Font style (italic by default)
+    public var fontStyle: Font.Design
+
+    public static let `default`: BlockquoteStyle
+
+    public init(
+        textColor: Color = .secondaryLabel,
+        backgroundColor: Color? = nil,
+        borderWidth: CGFloat = 4,
+        borderColor: Color = .systemGray4,
+        padding: EdgeInsets = EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12),
+        fontStyle: Font.Design = .default
+    )
+}
+
+// MARK: - ListStyle
+
+/// Style for lists (ordered and unordered)
+public struct ListStyle: Equatable {
+    /// Indent per level
+    public var indentPerLevel: CGFloat
+
+    /// Spacing between items
+    public var itemSpacing: CGFloat
+
+    /// Bullet style for unordered lists
+    public var bulletStyle: BulletStyle
+
+    /// Number format for ordered lists
+    public var numberFormat: NumberFormat
+
+    public static let `default`: ListStyle
+
+    public init(
+        indentPerLevel: CGFloat = 20,
+        itemSpacing: CGFloat = 4,
+        bulletStyle: BulletStyle = .disc,
+        numberFormat: NumberFormat = .decimal
+    )
+
+    public enum BulletStyle {
+        case disc       // •
+        case circle     // ○
+        case square     // ▪
+        case custom(String)
+    }
+
+    public enum NumberFormat {
+        case decimal    // 1. 2. 3.
+        case roman      // i. ii. iii.
+        case letter     // a. b. c.
+    }
+}
+
+// MARK: - MentionStyle
+
+/// Style for @mentions
+public struct MentionStyle: Equatable {
+    /// Text color
+    public var color: Color
+
+    /// Background color
+    public var backgroundColor: Color?
+
+    /// Font weight
+    public var fontWeight: Font.Weight
+
+    /// Corner radius for background
+    public var cornerRadius: CGFloat
+
+    /// Padding
+    public var padding: EdgeInsets
+
+    public static let `default`: MentionStyle
+
+    public init(
+        color: Color = .systemBlue,
+        backgroundColor: Color? = nil,
+        fontWeight: Font.Weight = .semibold,
+        cornerRadius: CGFloat = 3,
+        padding: EdgeInsets = EdgeInsets(top: 2, leading: 4, bottom: 2, trailing: 4)
+    )
+}
+
+// MARK: - ImageStyle
+
+/// Style for images
+public struct ImageStyle: Equatable {
+    /// Maximum width (nil = full width)
+    public var maxWidth: CGFloat?
+
+    /// Maximum height
+    public var maxHeight: CGFloat
+
+    /// Corner radius
+    public var cornerRadius: CGFloat
+
+    /// Content mode
+    public var contentMode: ContentMode
+
+    /// Background color while loading
+    public var placeholderColor: Color
+
+    public static let `default`: ImageStyle
+
+    public init(
+        maxWidth: CGFloat? = nil,
+        maxHeight: CGFloat = 300,
+        cornerRadius: CGFloat = 6,
+        contentMode: ContentMode = .fit,
+        placeholderColor: Color = .systemGray5
+    )
+
+    public enum ContentMode {
+        case fit
+        case fill
+    }
+}
+```
+
+---
+
+### 4. RichViewEvent
 
 Events emitted by RichView for user interactions.
 
@@ -211,29 +541,8 @@ public enum RichViewEvent: Equatable {
 
     /// Rendering failed
     /// - Parameter error: The error that occurred
+    /// - Note: In DEBUG with `crashOnUnsupportedTags = true`, unsupported tags will crash before this event
     case renderFailed(RenderError)
-
-    /// WebView degradation was triggered
-    /// - Parameter reason: Why degradation happened
-    case degradedToWebView(DegradationReason)
-}
-
-/// Reasons for falling back to WebView
-public enum DegradationReason: String, Equatable {
-    /// HTML content exceeds size limit
-    case contentTooLarge
-
-    /// Unsupported HTML tags detected
-    case unsupportedTags
-
-    /// Conversion to Markdown failed
-    case conversionError
-
-    /// Rendering threw an error
-    case renderError
-
-    /// User manually requested WebView
-    case userRequested
 }
 ```
 
@@ -297,13 +606,22 @@ Errors that can occur during rendering.
 
 ```swift
 /// Errors that can occur during rich text rendering
+///
+/// ## Error Handling Policy
+/// - **DEBUG builds**: Unsupported tags trigger `fatalError()` (crash)
+/// - **RELEASE builds**: Errors are caught, logged, and event emitted
 public enum RenderError: Error, LocalizedError {
 
-    /// HTML parsing failed
+    /// HTML parsing failed (SwiftSoup error)
     case htmlParsingFailed(String)
 
+    /// Unsupported HTML tag encountered
+    /// - In DEBUG: triggers crash if `crashOnUnsupportedTags = true`
+    /// - In RELEASE: caught and logged
+    case unsupportedTag(String, context: String)
+
     /// Markdown conversion failed
-    case markdownConversionFailed(String)
+    case markdownConversionFailed(String, originalHTML: String)
 
     /// AttributedString rendering failed
     case renderingFailed(String)
@@ -314,8 +632,17 @@ public enum RenderError: Error, LocalizedError {
     /// Invalid configuration
     case invalidConfiguration(String)
 
-    /// Content size exceeds limit
-    case contentTooLarge(Int)
+    // MARK: - Debug Assertions
+
+    /// Triggers fatal error in DEBUG builds
+    /// - Parameter message: Error message
+    internal static func assertInDebug(_ message: String, file: StaticString = #file, line: UInt = #line) {
+        #if DEBUG
+        fatalError(message, file: file, line: line)
+        #else
+        print("[RichView Error] \(message)")
+        #endif
+    }
 
     // MARK: - LocalizedError
 
@@ -499,9 +826,7 @@ struct PostDetailView: View {
 
         case .renderFailed(let error):
             print("Render failed: \(error)")
-
-        case .degradedToWebView(let reason):
-            print("Degraded to WebView: \(reason)")
+            // In DEBUG, unsupported tags will crash before reaching here
 
         case .textLongPressed(let text):
             showShareSheet(text)
@@ -538,27 +863,138 @@ struct AccessiblePostView: View {
 }
 ```
 
-### Advanced Configuration
+### Advanced Stylesheet Configuration
+
+#### GitHub Markdown Style (Built-in)
+
+```swift
+struct GitHubStylePostView: View {
+    let post: Post
+
+    var body: some View {
+        // Use GitHub-flavored Markdown styling (default)
+        RichView(htmlContent: post.content)
+            .configuration(.default)  // Uses GitHub-like styling
+            .onEvent { event in
+                handleEvent(event)
+            }
+    }
+}
+```
+
+#### Custom Stylesheet
 
 ```swift
 struct CustomStyledPostView: View {
     let post: Post
 
-    var customConfig: RenderConfiguration {
-        var config = RenderConfiguration.default
-        config.fontSize = 18
-        config.lineSpacing = 8
-        config.linkColor = .purple
-        config.enableCodeHighlighting = false
-        config.maxImageHeight = 400
-        return config
+    var customStylesheet: RenderStylesheet {
+        var stylesheet = RenderStylesheet.default
+
+        // Customize body text
+        stylesheet.body.fontSize = 18
+        stylesheet.body.lineHeight = 1.6
+        stylesheet.body.color = .primary
+
+        // Customize links
+        stylesheet.link.color = .purple
+        stylesheet.link.underlineStyle = .none
+
+        // Customize code blocks
+        stylesheet.code.blockBackgroundColor = Color(hex: "#f6f8fa")
+        stylesheet.code.blockBorderWidth = 1
+        stylesheet.code.blockBorderColor = Color(hex: "#d0d7de")
+        stylesheet.code.highlightTheme = .githubDark
+
+        // Customize @mentions
+        stylesheet.mention.color = .blue
+        stylesheet.mention.backgroundColor = Color.blue.opacity(0.1)
+        stylesheet.mention.fontWeight = .semibold
+
+        // Customize headings
+        stylesheet.heading.levels = [
+            1: HeadingLevelStyle(fontSize: 28, fontWeight: .bold, marginTop: 24, marginBottom: 16),
+            2: HeadingLevelStyle(fontSize: 24, fontWeight: .bold, marginTop: 20, marginBottom: 12),
+            3: HeadingLevelStyle(fontSize: 20, fontWeight: .semibold, marginTop: 16, marginBottom: 8)
+        ]
+
+        return stylesheet
     }
 
     var body: some View {
         RichView(htmlContent: post.content)
-            .configuration(customConfig)
+            .configuration(RenderConfiguration(stylesheet: customStylesheet))
             .onEvent { event in
-                // Handle events
+                handleEvent(event)
+            }
+    }
+}
+```
+
+#### Element-Specific Styling
+
+```swift
+// Code-heavy content with custom highlighting
+var codeStylesheet: RenderStylesheet {
+    var stylesheet = RenderStylesheet.default
+    stylesheet.code.blockFontSize = 14
+    stylesheet.code.highlightTheme = .monokai
+    stylesheet.code.blockPadding = EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
+    return stylesheet
+}
+
+// Discussion-style with emphasized quotes
+var discussionStylesheet: RenderStylesheet {
+    var stylesheet = RenderStylesheet.default
+    stylesheet.blockquote.backgroundColor = Color.yellow.opacity(0.1)
+    stylesheet.blockquote.borderColor = .yellow
+    stylesheet.blockquote.borderWidth = 3
+    stylesheet.blockquote.padding = EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
+    return stylesheet
+}
+
+// Usage
+RichView(htmlContent: codeContent)
+    .configuration(RenderConfiguration(stylesheet: codeStylesheet))
+
+RichView(htmlContent: discussionContent)
+    .configuration(RenderConfiguration(stylesheet: discussionStylesheet))
+```
+
+#### Dark Mode Adaptive Styling
+
+```swift
+struct AdaptiveStyledView: View {
+    let post: Post
+    @Environment(\.colorScheme) var colorScheme
+
+    var adaptiveStylesheet: RenderStylesheet {
+        var stylesheet = RenderStylesheet.default
+
+        if colorScheme == .dark {
+            stylesheet.body.color = Color(hex: "#e6edf3")
+            stylesheet.code.blockBackgroundColor = Color(hex: "#161b22")
+            stylesheet.code.blockBorderColor = Color(hex: "#30363d")
+            stylesheet.code.highlightTheme = .githubDark
+            stylesheet.blockquote.textColor = Color(hex: "#8b949e")
+            stylesheet.blockquote.borderColor = Color(hex: "#3d444d")
+        } else {
+            stylesheet.body.color = Color(hex: "#24292f")
+            stylesheet.code.blockBackgroundColor = Color(hex: "#f6f8fa")
+            stylesheet.code.blockBorderColor = Color(hex: "#d0d7de")
+            stylesheet.code.highlightTheme = .github
+            stylesheet.blockquote.textColor = Color(hex: "#57606a")
+            stylesheet.blockquote.borderColor = Color(hex: "#d0d7de")
+        }
+
+        return stylesheet
+    }
+
+    var body: some View {
+        RichView(htmlContent: post.content)
+            .configuration(RenderConfiguration(stylesheet: adaptiveStylesheet))
+            .onEvent { event in
+                handleEvent(event)
             }
     }
 }
@@ -642,11 +1078,11 @@ struct ReplyRow: View {
 struct RobustPostView: View {
     let post: Post
     @State private var renderError: RenderError?
-    @State private var usedWebView = false
 
     var body: some View {
         VStack {
             if let error = renderError {
+                // Show error UI
                 ErrorView(error: error) {
                     renderError = nil
                 }
@@ -655,24 +1091,45 @@ struct RobustPostView: View {
                     .onEvent { event in
                         switch event {
                         case .renderFailed(let error):
+                            // In RELEASE: show error UI
+                            // In DEBUG: crash already happened for unsupported tags
                             renderError = error
-
-                        case .degradedToWebView(let reason):
-                            usedWebView = true
-                            showToast("使用备用渲染方式: \(reason.rawValue)")
 
                         default:
                             handleEvent(event)
                         }
                     }
             }
+        }
+    }
+}
 
-            if usedWebView {
-                Text("内容使用备用渲染方式显示")
+struct ErrorView: View {
+    let error: RenderError
+    let onRetry: () -> Void
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.largeTitle)
+                .foregroundColor(.orange)
+
+            Text("内容渲染失败")
+                .font(.headline)
+
+            if let description = error.errorDescription {
+                Text(description)
                     .font(.caption)
                     .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
             }
+
+            Button("重试") {
+                onRetry()
+            }
+            .buttonStyle(.bordered)
         }
+        .padding()
     }
 }
 ```
@@ -696,7 +1153,7 @@ public extension RenderConfiguration {
 }
 ```
 
-### Preview Helpers
+### SwiftUI Preview Examples
 
 ```swift
 #if DEBUG
@@ -709,7 +1166,7 @@ public extension RichView {
         RichView(htmlContent: sampleHTML, configuration: configuration)
     }
 
-    /// Sample HTML for previews
+    /// Sample HTML snippets for previews
     static let sampleHTML = """
     <p>这是一段<strong>加粗</strong>和<em>斜体</em>的文本。</p>
     <p><a href="/member/username">@username</a> 你好！</p>
@@ -718,8 +1175,141 @@ public extension RichView {
         print("Hello, World!")
     }
     </code></pre>
-    <p><img src="https://example.com/image.jpg" /></p>
+    <p><img src="https://i.v2ex.co/example.jpg" /></p>
     """
+
+    static let codeExample = """
+    <p>以下是一个 Swift 代码示例：</p>
+    <pre><code class="language-swift">
+    struct ContentView: View {
+        @State private var text = ""
+
+        var body: some View {
+            TextField("输入", text: $text)
+                .padding()
+        }
+    }
+    </code></pre>
+    """
+
+    static let quoteExample = """
+    <blockquote>
+    <p>这是一段引用文本，通常用于引用其他人的话。</p>
+    </blockquote>
+    """
+
+    static let listExample = """
+    <h3>无序列表</h3>
+    <ul>
+        <li>第一项</li>
+        <li>第二项</li>
+        <li>第三项</li>
+    </ul>
+    <h3>有序列表</h3>
+    <ol>
+        <li>步骤一</li>
+        <li>步骤二</li>
+        <li>步骤三</li>
+    </ol>
+    """
+
+    static let complexExample = """
+    <h2>综合示例</h2>
+    <p>这是一段包含 <strong>加粗</strong>、<em>斜体</em> 和 <code>内联代码</code> 的文本。</p>
+    <p><a href="/member/livid">@livid</a> 在 V2EX 上分享了一个有趣的想法。</p>
+    <blockquote>
+    <p>技术的本质是为人服务。</p>
+    </blockquote>
+    <pre><code class="language-python">
+    def fibonacci(n):
+        if n <= 1:
+            return n
+        return fibonacci(n-1) + fibonacci(n-2)
+    </code></pre>
+    <p><img src="https://i.v2ex.co/example.jpg" alt="示例图片" /></p>
+    """
+}
+
+// MARK: - Preview Provider
+
+struct RichView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // Basic preview
+            VStack(alignment: .leading) {
+                Text("Basic").font(.headline)
+                RichView.preview()
+            }
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("Basic")
+
+            // Code highlighting
+            VStack(alignment: .leading) {
+                Text("Code Highlighting").font(.headline)
+                RichView.preview(RichView.codeExample)
+            }
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("Code")
+
+            // Blockquote
+            VStack(alignment: .leading) {
+                Text("Blockquote").font(.headline)
+                RichView.preview(RichView.quoteExample)
+            }
+            .previewLayout(.sizeThatFits)
+            .previewDisplayName("Quote")
+
+            // Lists
+            ScrollView {
+                RichView.preview(RichView.listExample)
+            }
+            .previewLayout(.fixed(width: 375, height: 400))
+            .previewDisplayName("Lists")
+
+            // Complex
+            ScrollView {
+                RichView.preview(RichView.complexExample)
+            }
+            .previewLayout(.fixed(width: 375, height: 600))
+            .previewDisplayName("Complex")
+
+            // Dark mode
+            ScrollView {
+                RichView.preview(RichView.complexExample)
+            }
+            .preferredColorScheme(.dark)
+            .previewLayout(.fixed(width: 375, height: 600))
+            .previewDisplayName("Dark Mode")
+
+            // Compact configuration
+            ScrollView {
+                RichView.preview(
+                    RichView.complexExample,
+                    configuration: RenderConfiguration(stylesheet: .compact)
+                )
+            }
+            .previewLayout(.fixed(width: 375, height: 600))
+            .previewDisplayName("Compact")
+
+            // Custom stylesheet
+            ScrollView {
+                RichView.preview(
+                    RichView.complexExample,
+                    configuration: RenderConfiguration(stylesheet: customPreviewStylesheet)
+                )
+            }
+            .previewLayout(.fixed(width: 375, height: 600))
+            .previewDisplayName("Custom Style")
+        }
+    }
+
+    static var customPreviewStylesheet: RenderStylesheet {
+        var stylesheet = RenderStylesheet.default
+        stylesheet.body.fontSize = 18
+        stylesheet.link.color = .purple
+        stylesheet.code.highlightTheme = .monokai
+        return stylesheet
+    }
 }
 #endif
 ```
