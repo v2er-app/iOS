@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A SwiftUI view for rendering HTML content as rich text
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 public struct RichView: View {
 
     // MARK: - Properties
@@ -100,24 +100,15 @@ public struct RichView: View {
             let markdown = try converter.convert(htmlContent)
 
             // Render Markdown to AttributedString
-            if #available(iOS 16.0, *) {
-                let renderer = MarkdownRenderer(
-                    stylesheet: configuration.stylesheet,
-                    enableCodeHighlighting: configuration.enableCodeHighlighting
-                )
-                let rendered = try renderer.render(markdown)
+            let renderer = MarkdownRenderer(
+                stylesheet: configuration.stylesheet,
+                enableCodeHighlighting: configuration.enableCodeHighlighting
+            )
+            let rendered = try renderer.render(markdown)
 
-                // Update state
-                self.attributedString = rendered
-                self.isLoading = false
-            } else {
-                // Fallback for iOS 15 (should not happen with iOS 18 minimum)
-                var rendered = AttributedString(markdown)
-                rendered.font = .system(size: configuration.stylesheet.body.fontSize)
-                rendered.foregroundColor = configuration.stylesheet.body.color
-                self.attributedString = rendered
-                self.isLoading = false
-            }
+            // Update state
+            self.attributedString = rendered
+            self.isLoading = false
 
             // Create metadata
             let endTime = Date()
@@ -151,7 +142,7 @@ public struct RichView: View {
 
 // MARK: - Configuration
 
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 extension RichView {
 
     /// Apply configuration to the view
@@ -206,7 +197,7 @@ extension RichView {
 
 // MARK: - Error View
 
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 struct ErrorView: View {
     let error: RenderError
 

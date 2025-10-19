@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Three-tier caching system for RichView rendering
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 public class RichViewCache {
 
     // MARK: - Singleton
@@ -239,7 +239,7 @@ public struct CacheStatistics {
 
 // MARK: - Cached Values
 
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 private class CachedAttributedString {
     let attributedString: AttributedString
     let timestamp: Date

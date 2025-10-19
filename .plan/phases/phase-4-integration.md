@@ -182,39 +182,35 @@ Replace existing implementations with RichView:
 
 ## 📝 Notes
 
-### iOS 15 Compatibility Status
+### iOS 18.0 Minimum Version
 
-**Current Implementation (08b9230)**:
-- Basic RichView integration complete
-- Using simplified AttributedString rendering (no markdown formatting)
-- iOS 16+ features temporarily disabled:
-  - MarkdownRenderer.swift (#if false - requires Regex API)
-  - RenderActor.swift (removed from build)
-  - RichContentView.swift (removed from build - depends on ContentElement)
-  - RichContentView+Preview.swift (removed from build)
+**Status**: ✅ Minimum iOS version upgraded to 18.0
 
-**What Works**:
-- HTML to Markdown conversion (HTMLToMarkdownConverter)
-- Basic text rendering with font and color styling
-- Link tap handling
-- Dark mode support
-- Height calculation via onRenderCompleted
-- Cache system (markdown and attributedString tiers)
+**Changes Made**:
+- Updated all `@available(iOS 15.0, *)` → `@available(iOS 18.0, *)`
+- Updated all `@available(iOS 16.0, *)` → `@available(iOS 18.0, *)`
+- Removed iOS 15/16 compatibility checks and fallback code
+- All RichView features now available without version checks
 
-**What's Missing (iOS 15 compatible implementation needed)**:
-- **Bold**, *italic*, `code` inline formatting
-- Code block rendering with syntax highlighting
-- @mention highlighting and tap handling
-- Image rendering
-- Heading styles (H1-H6)
-- Blockquote styling
-- List rendering (bullets and numbers)
+**Fully Enabled Features**:
+- ✅ HTML to Markdown conversion (HTMLToMarkdownConverter)
+- ✅ **Bold**, *italic*, `code` inline formatting
+- ✅ Code block rendering with syntax highlighting (Highlightr)
+- ✅ @mention highlighting and tap handling
+- ✅ Image rendering (AsyncImageAttachment)
+- ✅ Heading styles (H1-H6)
+- ✅ Blockquote styling
+- ✅ List rendering (bullets and numbers)
+- ✅ Link tap handling
+- ✅ Dark mode support
+- ✅ Height calculation via onRenderCompleted
+- ✅ Cache system (markdown and attributedString tiers)
 
 **Next Steps**:
-1. Implement iOS 15-compatible MarkdownRenderer using NSRegularExpression
-2. Re-enable RenderActor with NSRegularExpression-based parsing
-3. Test with real V2EX content
-4. Compare rendering quality with HtmlView/RichText
+1. Manual testing with real V2EX content
+2. Performance comparison testing
+3. Integration testing
+4. Move to Phase 5 (rollout)
 
 ### Migration Strategy
 1. **Parallel Implementation**: Keep old code until RichView proven stable

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 struct RichView_Previews: PreviewProvider {
 
     static var previews: some View {
@@ -120,7 +120,7 @@ struct RichView_Previews: PreviewProvider {
 
 // MARK: - Interactive Preview
 
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 struct RichViewInteractivePreview: View {
     @State private var htmlInput = """
         <h2>Interactive RichView Preview</h2>
@@ -191,7 +191,7 @@ struct RichViewInteractivePreview: View {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 struct RichViewPlayground: View {
     var body: some View {
         NavigationView {
@@ -200,7 +200,7 @@ struct RichViewPlayground: View {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 struct RichViewPlayground_Previews: PreviewProvider {
     static var previews: some View {
         RichViewPlayground()

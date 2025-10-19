@@ -9,7 +9,7 @@ import SwiftUI
 import Kingfisher
 
 /// AsyncImage view for RichView with Kingfisher integration
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 public struct AsyncImageAttachment: View {
 
     // MARK: - Properties
@@ -216,7 +216,7 @@ public class ImageCacheManager {
 
 // MARK: - Preview
 
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 struct AsyncImageAttachment_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {

@@ -1269,10 +1269,11 @@ struct DegradationAnalytics {
 ### 开放问题响应
 
 **iOS 版本兼容性**：
-- ✅ 项目最低版本：**iOS 17.0**
+- ✅ 项目最低版本：**iOS 18.0**（2025-10-19 updated）
 - ✅ swift-markdown 要求：iOS 15.0+（满足）
 - ✅ AttributedString 要求：iOS 15.0+（满足）
-- ✅ 老设备（iOS 16 及以下）将通过应用内公告提示保持旧版 WebView 展示
+- ✅ Regex API 要求：iOS 16.0+（满足）
+- ✅ 所有功能全面启用，无需兼容性降级
 
 ### 修正任务清单
 

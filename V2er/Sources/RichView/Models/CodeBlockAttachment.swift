@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// Code block view with optional syntax highlighting
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 public struct CodeBlockAttachment: View {
 
     // MARK: - Properties
@@ -229,7 +229,7 @@ extension EdgeInsets {
 
 // MARK: - Preview
 
-@available(iOS 15.0, *)
+@available(iOS 18.0, *)
 struct CodeBlockAttachment_Previews: PreviewProvider {
     static let swiftCode = """
         func fibonacci(_ n: Int) -> Int {
