@@ -418,8 +418,8 @@ extension RenderStylesheet {
                 highlightTheme: .xcode
             ),
             blockquote: BlockquoteStyle(
-                fontSize: 17,
-                borderWidth: 6
+                borderWidth: 6,
+                fontSize: 17
             ),
             list: ListStyle(
                 indentWidth: 24,
@@ -437,7 +437,7 @@ extension RenderStylesheet {
 
 extension Color {
     /// Initialize Color from hex string
-    init(hex: String) {
+    public init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
         Scanner(string: hex).scanHexInt64(&int)

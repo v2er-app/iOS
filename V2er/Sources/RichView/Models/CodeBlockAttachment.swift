@@ -81,7 +81,7 @@ public struct CodeBlockAttachment: View {
         .cornerRadius(style.blockCornerRadius)
         .overlay(
             RoundedRectangle(cornerRadius: style.blockCornerRadius)
-                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                .stroke(Color.gray.opacity(Double(0.2)), lineWidth: 1)
         )
     }
 

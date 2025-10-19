@@ -177,6 +177,8 @@ public actor RenderActor {
             }
 
             // Image
+            // TODO: Reimplement with iOS 15 compatible regex
+            /* iOS 16+ only
             if let imageMatch = line.firstMatch(of: /!\[([^\]]*)\]\(([^)]+)\)/) {
                 let altText = String(imageMatch.1)
                 let urlString = String(imageMatch.2)
@@ -187,13 +189,13 @@ public actor RenderActor {
                 index += 1
                 continue
             }
+            */
 
             // Regular text paragraph
-            let renderer = MarkdownRenderer(
-                stylesheet: configuration.stylesheet,
-                enableCodeHighlighting: configuration.enableCodeHighlighting
-            )
-            let attributed = try renderer.render(line)
+            // TODO: Use MarkdownRenderer once iOS 15 compatible
+            var attributed = AttributedString(line)
+            attributed.font = .system(size: configuration.stylesheet.body.fontSize)
+            attributed.foregroundColor = configuration.stylesheet.body.color
             if !attributed.characters.isEmpty {
                 elements.append(ContentElement(type: .text(attributed)))
             }

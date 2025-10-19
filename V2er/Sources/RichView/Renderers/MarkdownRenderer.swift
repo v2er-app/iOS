@@ -4,6 +4,10 @@
 //
 //  Created by RichView on 2025/1/19.
 //
+//  TODO: This file requires iOS 16+ for Regex support
+//  Currently disabled until iOS 15 compatible implementation is ready
+
+#if false  // Disabled until iOS 15 compatible
 
 import Foundation
 import SwiftUI
@@ -74,10 +78,8 @@ public class MarkdownRenderer {
                 // Unordered list
                 let content = String(line.dropFirst(2))
                 attributedString.append(renderListItem(content, ordered: false, number: 0))
-            } else if let match = line.firstMatch(of: /^(\d+)\. (.+)/) {
+            } else if let (number, content) = extractOrderedListItem(from: line) {
                 // Ordered list
-                let number = Int(match.1) ?? 1
-                let content = String(match.2)
                 attributedString.append(renderListItem(content, ordered: true, number: number))
             } else if line.starts(with: "---") {
                 // Horizontal rule
@@ -337,4 +339,4 @@ extension Color {
     var uiColor: UIColor {
         UIColor(self)
     }
-}
+}#endif // false

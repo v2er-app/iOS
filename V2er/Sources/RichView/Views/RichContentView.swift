@@ -159,11 +159,15 @@ public struct RichContentView: View {
 
 // MARK: - Content Element
 
-struct ContentElement: Identifiable {
-    let id = UUID()
-    let type: ElementType
+public struct ContentElement: Identifiable {
+    public let id = UUID()
+    public let type: ElementType
 
-    enum ElementType {
+    public init(type: ElementType) {
+        self.type = type
+    }
+
+    public enum ElementType {
         case text(AttributedString)
         case codeBlock(code: String, language: String?)
         case image(ImageInfo)

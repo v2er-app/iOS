@@ -25,7 +25,8 @@ public class RichViewCache {
     private let attributedStringCache: NSCache<NSString, CachedAttributedString>
 
     /// Cache for parsed content elements
-    private let contentElementsCache: NSCache<NSString, CachedContentElements>
+    // TODO: Re-enable once ContentElement is available
+    // private let contentElementsCache: NSCache<NSString, CachedContentElements>
 
     // MARK: - Statistics
 
@@ -46,9 +47,10 @@ public class RichViewCache {
         attributedStringCache.countLimit = 100
 
         // Content elements cache: 50 MB
-        contentElementsCache = NSCache<NSString, CachedContentElements>()
-        contentElementsCache.totalCostLimit = 50 * 1024 * 1024
-        contentElementsCache.countLimit = 100
+        // TODO: Re-enable once ContentElement is available
+        // contentElementsCache = NSCache<NSString, CachedContentElements>()
+        // contentElementsCache.totalCostLimit = 50 * 1024 * 1024
+        // contentElementsCache.countLimit = 100
 
         // Observe memory warnings
         NotificationCenter.default.addObserver(
@@ -114,7 +116,9 @@ public class RichViewCache {
     }
 
     // MARK: - Content Elements Cache
+    // TODO: Re-enable once ContentElement is available (currently in disabled RichContentView)
 
+    /* Disabled until ContentElement is available
     /// Get cached content elements for HTML
     public func getContentElements(forHTML html: String) -> [ContentElement]? {
         let key = NSString(string: cacheKey(for: html))
@@ -137,6 +141,7 @@ public class RichViewCache {
         let cost = elements.count * 1024 // Rough estimate
         contentElementsCache.setObject(cached, forKey: key, cost: cost)
     }
+    */
 
     // MARK: - Cache Management
 
@@ -144,7 +149,8 @@ public class RichViewCache {
     public func clearAll() {
         markdownCache.removeAllObjects()
         attributedStringCache.removeAllObjects()
-        contentElementsCache.removeAllObjects()
+        // TODO: Re-enable once ContentElement is available
+        // contentElementsCache.removeAllObjects()
 
         statsLock.lock()
         stats = CacheStatistics()
@@ -162,9 +168,12 @@ public class RichViewCache {
     }
 
     /// Clear content elements cache only
+    // TODO: Re-enable once ContentElement is available
+    /*
     public func clearContentElementsCache() {
         contentElementsCache.removeAllObjects()
     }
+    */
 
     /// Get cache statistics
     public func getStatistics() -> CacheStatistics {
@@ -250,6 +259,7 @@ private class CachedAttributedString {
     }
 }
 
+/* Disabled until ContentElement is available
 private class CachedContentElements {
     let elements: [ContentElement]
     let timestamp: Date
@@ -259,6 +269,7 @@ private class CachedContentElements {
         self.timestamp = Date()
     }
 }
+*/
 
 // MARK: - CommonCrypto Import
 

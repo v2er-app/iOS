@@ -99,12 +99,11 @@ public struct RichView: View {
             )
             let markdown = try converter.convert(htmlContent)
 
-            // Render Markdown to AttributedString
-            let renderer = MarkdownRenderer(
-                stylesheet: configuration.stylesheet,
-                enableCodeHighlighting: configuration.enableCodeHighlighting
-            )
-            let rendered = try renderer.render(markdown)
+            // For iOS 15 compatibility, use simple AttributedString
+            // TODO: Implement full MarkdownRenderer with iOS 15 compatibility
+            var rendered = AttributedString(markdown)
+            rendered.font = .system(size: configuration.stylesheet.body.fontSize)
+            rendered.foregroundColor = configuration.stylesheet.body.color
 
             // Update state
             self.attributedString = rendered

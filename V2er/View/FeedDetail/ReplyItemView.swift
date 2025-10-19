@@ -12,6 +12,8 @@ import Atributika
 
 struct ReplyItemView: View {
     var info: FeedDetailInfo.ReplyInfo.Item
+    @EnvironmentObject var store: Store
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         HStack(alignment: .top) {
@@ -45,7 +47,24 @@ struct ReplyItemView: View {
                         .font(.system(size: 14))
                         .foregroundColor(info.hadThanked ? .red : .secondaryText)
                 }
-                RichText { info.content }
+
+                if #available(iOS 15.0, *) {
+                    RichView(htmlContent: info.content)
+                        .configuration(compactConfigurationForAppearance())
+                        .onLinkTapped { url in
+                            Task {
+                                await UIApplication.shared.openURL(url)
+                            }
+                        }
+                        .onMentionTapped { username in
+                            // TODO: Navigate to user profile
+                            print("Mention tapped: @\(username)")
+                        }
+                } else {
+                    // Fallback for iOS 14
+                    RichText { info.content }
+                }
+
                 Text("\(info.floor)楼")
                     .font(.footnote)
                     .foregroundColor(Color.tintColor)
@@ -54,5 +73,31 @@ struct ReplyItemView: View {
             }
         }
         .padding(.horizontal, 12)
+    }
+
+    @available(iOS 15.0, *)
+    private func compactConfigurationForAppearance() -> RenderConfiguration {
+        var config = RenderConfiguration.compact
+
+        // Determine dark mode based on app appearance setting
+        let appearance = store.appState.settingState.appearance
+        let isDark: Bool
+        switch appearance {
+        case .dark:
+            isDark = true
+        case .light:
+            isDark = false
+        case .system:
+            isDark = colorScheme == .dark
+        }
+
+        // Adjust stylesheet for dark mode
+        if isDark {
+            config.stylesheet.body.color = .adaptive(light: .black, dark: .white)
+            config.stylesheet.link.color = .adaptive(light: .blue, dark: Color(red: 0.4, green: 0.6, blue: 1.0))
+            config.stylesheet.mention.textColor = .adaptive(light: Color(red: 0.2, green: 0.4, blue: 0.8), dark: Color(red: 0.4, green: 0.6, blue: 1.0))
+        }
+
+        return config
     }
 }
