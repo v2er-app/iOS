@@ -17,3 +17,6 @@ fastlane/.env*
 ## Match
 fastlane/certificates/
 fastlane/profiles/
+
+## Documentation (working notes)
+.doc/
