@@ -66,12 +66,13 @@ public struct RichView: View {
             } else if let error = error {
                 ErrorView(error: error)
             } else if let attributedString = attributedString {
-                SelectableTextView(
-                    attributedString: attributedString,
-                    fontSize: configuration.stylesheet.body.fontSize,
-                    lineSpacing: configuration.stylesheet.body.lineSpacing,
-                    onLinkTapped: onLinkTapped
-                )
+                Text(attributedString)
+                    .font(.system(size: configuration.stylesheet.body.fontSize))
+                    .lineSpacing(configuration.stylesheet.body.lineSpacing)
+                    .environment(\.openURL, OpenURLAction { url in
+                        onLinkTapped?(url)
+                        return .handled
+                    })
             } else {
                 Text("No content")
                     .foregroundColor(.secondary)
@@ -246,70 +247,4 @@ public struct RenderMetadata {
 
     /// Number of @mentions in the content
     public let mentionCount: Int
-}
-
-// MARK: - Selectable Text View
-
-/// A UIViewRepresentable wrapper for UITextView that supports text selection
-@available(iOS 18.0, *)
-struct SelectableTextView: UIViewRepresentable {
-    let attributedString: AttributedString
-    let fontSize: CGFloat
-    let lineSpacing: CGFloat
-    let onLinkTapped: ((URL) -> Void)?
-
-    func makeUIView(context: Context) -> UITextView {
-        let textView = UITextView()
-        textView.isEditable = false
-        textView.isSelectable = true
-        textView.isScrollEnabled = false
-        textView.backgroundColor = .clear
-        textView.textContainerInset = .zero
-        textView.textContainer.lineFragmentPadding = 0
-        textView.delegate = context.coordinator
-        textView.dataDetectorTypes = []
-        textView.linkTextAttributes = [
-            .foregroundColor: UIColor.systemBlue,
-            .underlineStyle: NSUnderlineStyle.single.rawValue
-        ]
-        return textView
-    }
-
-    func updateUIView(_ textView: UITextView, context: Context) {
-        // Convert AttributedString to NSAttributedString
-        var nsAttributedString = NSAttributedString(attributedString)
-
-        // Apply line spacing
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = lineSpacing
-
-        let mutableAttributedString = NSMutableAttributedString(attributedString: nsAttributedString)
-        mutableAttributedString.addAttribute(
-            .paragraphStyle,
-            value: paragraphStyle,
-            range: NSRange(location: 0, length: mutableAttributedString.length)
-        )
-
-        textView.attributedText = mutableAttributedString
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(onLinkTapped: onLinkTapped)
-    }
-
-    class Coordinator: NSObject, UITextViewDelegate {
-        let onLinkTapped: ((URL) -> Void)?
-
-        init(onLinkTapped: ((URL) -> Void)?) {
-            self.onLinkTapped = onLinkTapped
-        }
-
-        func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-            if interaction == .invokeDefaultAction {
-                onLinkTapped?(URL)
-                return false
-            }
-            return true
-        }
-    }
 }
