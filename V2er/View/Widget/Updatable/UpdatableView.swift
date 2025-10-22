@@ -32,7 +32,7 @@ struct UpdatableView<Content: View>: View {
     let state: UpdatableState
     let onlineStats: OnlineStatsInfo?
     @State private var previousOnlineCount: Int? = nil
-
+    
     private var refreshable: Bool {
         return onRefresh != nil
     }
@@ -54,7 +54,7 @@ struct UpdatableView<Content: View>: View {
         self.state = state
         self.onlineStats = onlineStats
     }
-
+    
     var body: some View {
         ScrollViewReader { reader in
             ScrollView {
@@ -86,7 +86,7 @@ struct UpdatableView<Content: View>: View {
         .overlay {
             if state.showLoadingView {
                 ZStack {
-//                    Color.almostClear
+                    //                    Color.almostClear
                     ProgressView()
                         .scaleEffect(1.5)
                 }
@@ -113,46 +113,34 @@ struct UpdatableView<Content: View>: View {
         onScroll?(scrollY)
         //        log("scrollY: \(scrollY), lastScrollY: \(lastScrollY), isRefreshing: \(isRefreshing), boundsDelta:\(boundsDelta)")
         progress = min(1, max(scrollY / threshold, 0))
-
+        
         if progress == 1 && scrollY > lastScrollY && !hapticed {
             hapticed = true
             hapticFeedback(.soft)
         }
-
+        
         if refreshable && !isRefreshing
             && scrollY <= threshold
             && lastScrollY > threshold {
             isRefreshing = true
             hapticed = false
-            // Record current online count before refresh
+            // Record whether online stats existed before refresh
+            let hadOnlineStatsBefore = onlineStats != nil
             previousOnlineCount = onlineStats?.onlineCount
-
+            
             Task {
                 await onRefresh?()
-                runInMain {
-                    // Check if online count changed
-                    let currentCount = onlineStats?.onlineCount
-                    let onlineCountChanged = previousOnlineCount != nil && currentCount != nil && previousOnlineCount != currentCount
-
-                    if onlineCountChanged {
-                        // Delay hiding if online count changed
-                        Task {
-                            try? await Task.sleep(nanoseconds: 300_000_000) // 300ms
-                            runInMain {
-                                withAnimation {
-                                    isRefreshing = false
-                                }
-                            }
-                        }
-                    } else {
-                        withAnimation {
-                            isRefreshing = false
-                        }
+                // Decide delay (ms): 1200 if we had/now have online stats so users can notice updates; otherwise 0.
+                let hasOnlineStatsNow = onlineStats != nil
+                let delayMs = (hadOnlineStatsBefore || hasOnlineStatsNow) ? 1000 : 0
+                runInMain(delay: delayMs) {
+                    withAnimation {
+                        isRefreshing = false
                     }
                 }
             }
         }
-
+        
         if loadMoreable
             && state.hasMoreData
             && boundsDelta >= 0
@@ -175,7 +163,7 @@ struct UpdatableView<Content: View>: View {
 
 private struct AncorView: View {
     static let coordinateSpaceName = "coordinateSpace.UpdatableView"
-
+    
     var body: some View {
         GeometryReader { geometry in
             Color.clear
@@ -227,7 +215,7 @@ extension View {
         let state = UpdatableState(hasMoreData: hasMoreData, showLoadingView: autoRefresh, scrollToTop: scrollToTop)
         return self.modifier(UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, state: state, onlineStats: onlineStats))
     }
-
+    
     public func updatable(_ state: UpdatableState,
                           onlineStats: OnlineStatsInfo? = nil,
                           refresh: RefreshAction = nil,
@@ -236,7 +224,7 @@ extension View {
         let modifier = UpdatableModifier(onRefresh: refresh, onLoadMore: loadMore, onScroll: onScroll, state: state, onlineStats: onlineStats)
         return self.modifier(modifier)
     }
-
+    
     public func loadMore(_ state: UpdatableState,
                          _ loadMore: LoadMoreAction = nil,
                          onScroll: ScrollAction? = nil) -> some View {
@@ -250,7 +238,7 @@ extension View {
                          onScroll: ScrollAction? = nil) -> some View {
         self.updatable(autoRefresh: autoRefresh, hasMoreData: hasMoreData, onlineStats: nil, refresh: nil, loadMore: loadMore, onScroll: onScroll)
     }
-
+    
     public func onScroll(onScroll: ScrollAction?) -> some View {
         self.updatable(onlineStats: nil, onScroll: onScroll)
     }
@@ -262,7 +250,7 @@ struct UpdatableModifier: ViewModifier {
     let onScroll: ScrollAction?
     let state: UpdatableState
     let onlineStats: OnlineStatsInfo?
-
+    
     func body(content: Content) -> some View {
         UpdatableView(onRefresh: onRefresh, onLoadMore: onLoadMore,
                       onScroll: onScroll, state: state, onlineStats: onlineStats) {

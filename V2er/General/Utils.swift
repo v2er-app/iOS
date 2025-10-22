@@ -54,7 +54,7 @@ extension KeyboardReadable {
 
 
 func runInMain(delay: Int = 0, execute work: @escaping @convention(block) () -> Void) {
-    DispatchQueue.main.asyncAfter(deadline: .now() + .microseconds(delay), execute: work)
+    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(delay), execute: work)
 }
 
 func hapticFeedback(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
