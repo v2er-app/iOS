@@ -131,7 +131,7 @@ struct UpdatableView<Content: View>: View {
             Task {
                 await onRefresh?()
                 // Decide delay (ms): 1200 if we had/now have online stats so users can notice updates; otherwise 0.
-                let hasOnlineStatsNow = (onlineStats != nil)
+                let hasOnlineStatsNow = onlineStats != nil
                 let delayMs = (hadOnlineStatsBefore || hasOnlineStatsNow) ? 1000 : 0
                 runInMain(delay: delayMs) {
                     withAnimation {

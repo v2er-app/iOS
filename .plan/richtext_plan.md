@@ -63,8 +63,6 @@
 ### 整体流程
 
 ```
-> `RenderMetadata` 用于记录渲染耗时、图片资源等信息；`html.md5` 由 `String+Markdown.swift` 提供的扩展负责生成缓存键。
-
 ```swift
 struct RenderMetadata {
     let generatedAt: Date
@@ -73,6 +71,9 @@ struct RenderMetadata {
     let cacheHit: Bool
 }
 ```
+
+> `RenderMetadata` 用于记录渲染耗时、图片资源等信息；`html.md5` 由 `String+Markdown.swift` 提供的扩展负责生成缓存键。
+
 V2EX API Response (HTML)
          ↓
     SwiftSoup 解析
