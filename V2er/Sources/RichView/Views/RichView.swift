@@ -69,6 +69,7 @@ public struct RichView: View {
                 Text(attributedString)
                     .font(.system(size: configuration.stylesheet.body.fontSize))
                     .lineSpacing(configuration.stylesheet.body.lineSpacing)
+                    .textSelection(.enabled)
                     .environment(\.openURL, OpenURLAction { url in
                         onLinkTapped?(url)
                         return .handled
