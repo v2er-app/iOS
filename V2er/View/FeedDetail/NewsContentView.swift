@@ -13,7 +13,8 @@ struct NewsContentView: View {
     @Binding var rendered: Bool
     @EnvironmentObject var store: Store
     @Environment(\.colorScheme) var colorScheme
-    @State private var navigationPath = NavigationPath()
+    @State private var showingSafari = false
+    @State private var safariURL: URL?
 
     init(_ contentInfo: FeedDetailInfo.ContentInfo?, rendered: Binding<Bool>) {
         self.contentInfo = contentInfo
@@ -42,11 +43,15 @@ struct NewsContentView: View {
 
             Divider()
         }
+        .sheet(isPresented: $showingSafari) {
+            if let url = safariURL {
+                SafariView(url: url)
+            }
+        }
     }
 
     private func handleLinkTap(_ url: URL) {
         // Smart URL routing - parse V2EX URLs and route accordingly
-        let urlString = url.absoluteString
         let path = url.path
 
         // Check if it's a V2EX internal link
@@ -55,8 +60,8 @@ struct NewsContentView: View {
             if path.contains("/t/"), let topicId = extractTopicId(from: path) {
                 print("Navigate to topic: \(topicId)")
                 // TODO: Use proper navigation to FeedDetailPage(id: topicId)
-                // For now, open in Safari
-                UIApplication.shared.open(url)
+                // For now, open in SafariView
+                openInSafari(url)
                 return
             }
 
@@ -64,8 +69,8 @@ struct NewsContentView: View {
             if path.contains("/member/"), let username = extractUsername(from: path) {
                 print("Navigate to user: \(username)")
                 // TODO: Use proper navigation to UserDetailPage(userId: username)
-                // For now, open in Safari
-                UIApplication.shared.open(url)
+                // For now, open in SafariView
+                openInSafari(url)
                 return
             }
 
@@ -73,17 +78,22 @@ struct NewsContentView: View {
             if path.contains("/go/"), let nodeName = extractNodeName(from: path) {
                 print("Navigate to node: \(nodeName)")
                 // TODO: Use proper navigation to TagDetailPage
-                // For now, open in Safari
-                UIApplication.shared.open(url)
+                // For now, open in SafariView
+                openInSafari(url)
                 return
             }
 
-            // Other V2EX pages - open in Safari
-            UIApplication.shared.open(url)
+            // Other V2EX pages - open in SafariView
+            openInSafari(url)
         } else {
-            // External link - open in Safari
-            UIApplication.shared.open(url)
+            // External link - open in SafariView (stays in app)
+            openInSafari(url)
         }
+    }
+
+    private func openInSafari(_ url: URL) {
+        safariURL = url
+        showingSafari = true
     }
 
     private func extractTopicId(from path: String) -> String? {

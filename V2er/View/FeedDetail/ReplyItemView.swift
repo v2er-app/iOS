@@ -14,6 +14,8 @@ struct ReplyItemView: View {
     var info: FeedDetailInfo.ReplyInfo.Item
     @EnvironmentObject var store: Store
     @Environment(\.colorScheme) var colorScheme
+    @State private var showingSafari = false
+    @State private var safariURL: URL?
 
     var body: some View {
         HStack(alignment: .top) {
@@ -66,6 +68,11 @@ struct ReplyItemView: View {
             }
         }
         .padding(.horizontal, 12)
+        .sheet(isPresented: $showingSafari) {
+            if let url = safariURL {
+                SafariView(url: url)
+            }
+        }
     }
 
     private func handleLinkTap(_ url: URL) {
@@ -78,7 +85,7 @@ struct ReplyItemView: View {
             if path.contains("/t/"), let topicId = extractTopicId(from: path) {
                 print("Navigate to topic: \(topicId)")
                 // TODO: Use proper navigation to FeedDetailPage(id: topicId)
-                UIApplication.shared.open(url)
+                openInSafari(url)
                 return
             }
 
@@ -86,7 +93,7 @@ struct ReplyItemView: View {
             if path.contains("/member/"), let username = extractUsername(from: path) {
                 print("Navigate to user: \(username)")
                 // TODO: Use proper navigation to UserDetailPage(userId: username)
-                UIApplication.shared.open(url)
+                openInSafari(url)
                 return
             }
 
@@ -94,16 +101,21 @@ struct ReplyItemView: View {
             if path.contains("/go/"), let nodeName = extractNodeName(from: path) {
                 print("Navigate to node: \(nodeName)")
                 // TODO: Use proper navigation to TagDetailPage
-                UIApplication.shared.open(url)
+                openInSafari(url)
                 return
             }
 
-            // Other V2EX pages - open in Safari
-            UIApplication.shared.open(url)
+            // Other V2EX pages - open in SafariView
+            openInSafari(url)
         } else {
-            // External link - open in Safari
-            UIApplication.shared.open(url)
+            // External link - open in SafariView (stays in app)
+            openInSafari(url)
         }
+    }
+
+    private func openInSafari(_ url: URL) {
+        safariURL = url
+        showingSafari = true
     }
 
     private func extractTopicId(from path: String) -> String? {
