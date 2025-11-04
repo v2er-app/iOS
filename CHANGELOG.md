@@ -2,6 +2,11 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.19 (Build XX)
+1. Infrastructure: Migrate certificate management to shared ios-certificates repository
+2. Improvement: Update Fastlane Match to use git@github.com:graycreate/ios-certificates.git
+3. Test: Verify release pipeline works with new Match repository configuration
+
 ## v1.1.18 (Build XX)
 1. Improvement: Upgrade all CI/CD workflows to use Xcode 26.0.1 (latest version)
 2. Improvement: Use macOS 26 runners with Fastlane 2.228.0 for improved build performance

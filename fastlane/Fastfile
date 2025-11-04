@@ -61,7 +61,7 @@ platform :ios do
       type: "appstore",
       readonly: is_ci,
       app_identifier: "v2er.app",
-      git_url: ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/certificates-v2er-iOS.git",
+      git_url: ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/ios-certificates.git",
       keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "login.keychain",
       keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || ""
     )
