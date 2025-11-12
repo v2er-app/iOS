@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'V2er/Config/Version.xcconfig'
+      - 'Version.xcconfig'
   workflow_dispatch:
     inputs:
       force_release:
@@ -38,8 +38,8 @@ jobs:
       id: check
       run: |
         # Get current version from Version.xcconfig (works on Linux)
-        CURRENT_VERSION=$(grep '^MARKETING_VERSION = ' V2er/Config/Version.xcconfig | sed 's/.*MARKETING_VERSION = //' | xargs)
-        CURRENT_BUILD=$(grep '^CURRENT_PROJECT_VERSION = ' V2er/Config/Version.xcconfig | sed 's/.*CURRENT_PROJECT_VERSION = //' | xargs)
+        CURRENT_VERSION=$(grep '^MARKETING_VERSION = ' Version.xcconfig | sed 's/.*MARKETING_VERSION = //' | xargs)
+        CURRENT_BUILD=$(grep '^CURRENT_PROJECT_VERSION = ' Version.xcconfig | sed 's/.*CURRENT_PROJECT_VERSION = //' | xargs)
 
         echo "Current version: $CURRENT_VERSION (build $CURRENT_BUILD)"
 

@@ -121,7 +121,7 @@ platform :ios do
 
     # Get the latest TestFlight build number and increment
     # Read current build number from xcconfig
-    xcconfig_path = "../V2er/Config/Version.xcconfig"
+    xcconfig_path = "../Version.xcconfig"
     xcconfig_content = File.read(xcconfig_path)
     current_build_number = xcconfig_content.match(/CURRENT_PROJECT_VERSION = (\d+)/)[1].to_i
     current_version = xcconfig_content.match(/MARKETING_VERSION = (.+)/)[1].strip

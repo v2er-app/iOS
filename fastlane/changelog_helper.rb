@@ -109,7 +109,7 @@ module ChangelogHelper
   # Get the current version from Version.xcconfig
   # @return [String] The current marketing version
   def self.get_current_version
-    xcconfig_path = File.expand_path("../V2er/Config/Version.xcconfig", __dir__)
+    xcconfig_path = File.expand_path("../Version.xcconfig", __dir__)
 
     unless File.exist?(xcconfig_path)
       UI.user_error!("Version.xcconfig not found at #{xcconfig_path}")
