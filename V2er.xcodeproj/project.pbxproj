@@ -285,7 +285,7 @@
 		5D91F8D426F22A6F0089D72E /* TagDetailState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailState.swift; sourceTree = "<group>"; };
 		5D91F8D826F22CEC0089D72E /* TagDetailReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailReducer.swift; sourceTree = "<group>"; };
 		5D9D5222269543DA00D80D6B /* TagDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagDetailPage.swift; sourceTree = "<group>"; };
-		5DA0000000000000000001 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
+		5DA0000000000000000001 /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = SOURCE_ROOT; };
 		5DA2AD3426C17EA5007FB1EF /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		5DA2AD3626C17EB9007FB1EF /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		5DA2AD3826C17ECC007FB1EF /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
