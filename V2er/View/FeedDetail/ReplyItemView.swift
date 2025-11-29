@@ -16,6 +16,7 @@ struct ReplyItemView: View {
     @Environment(\.colorScheme) var colorScheme
     @State private var showingSafari = false
     @State private var safariURL: URL?
+    @State private var navigateToUser: String? = nil
 
     var body: some View {
         HStack(alignment: .top) {
@@ -50,14 +51,16 @@ struct ReplyItemView: View {
                         .foregroundColor(info.hadThanked ? .red : .secondaryText)
                 }
 
-                RichView(htmlContent: info.content)
+                RichContentView(htmlContent: info.content)
                     .configuration(compactConfigurationForAppearance())
                     .onLinkTapped { url in
                         handleLinkTap(url)
                     }
+                    .onImageTapped { url in
+                        openInSafari(url)
+                    }
                     .onMentionTapped { username in
-                        print("Navigate to mentioned user: @\(username)")
-                        // TODO: Implement proper navigation to UserDetailPage
+                        navigateToUser = username
                     }
 
                 Text("\(info.floor)楼")
@@ -73,6 +76,22 @@ struct ReplyItemView: View {
                 SafariView(url: url)
             }
         }
+        .background(
+            NavigationLink(
+                destination: Group {
+                    if let username = navigateToUser {
+                        UserDetailPage(userId: username)
+                    }
+                },
+                isActive: Binding(
+                    get: { navigateToUser != nil },
+                    set: { if !$0 { navigateToUser = nil } }
+                )
+            ) {
+                EmptyView()
+            }
+            .hidden()
+        )
     }
 
     private func handleLinkTap(_ url: URL) {

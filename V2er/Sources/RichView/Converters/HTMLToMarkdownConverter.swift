@@ -88,7 +88,8 @@ public class HTMLToMarkdownConverter {
                     result += "*\(content)*"
 
                 case "a":
-                    let text = try convertElement(childElement)
+                    // Get raw text without escaping for links
+                    let text = try childElement.text()
                     if let href = try? childElement.attr("href") {
                         result += "[\(text)](\(href))"
                     } else {
@@ -213,14 +214,16 @@ public class HTMLToMarkdownConverter {
 
     /// Escape special Markdown characters
     private func escapeMarkdown(_ text: String) -> String {
-        // Only escape if not already in a code context
-        // This is a simplified version - a full implementation would track context
+        // Only escape characters that would cause markdown parsing issues
+        // Don't escape common characters like . and - as they rarely cause problems
+        // and escaping them breaks URLs and normal text readability
         var escaped = text
 
-        // Don't escape inside code blocks (this is simplified)
+        // Don't escape inside code blocks
         if !text.contains("```") && !text.contains("`") {
-            // Escape special Markdown characters
-            let charactersToEscape = ["\\", "*", "_", "[", "]", "(", ")", "#", "+", "-", ".", "!"]
+            // Only escape the most problematic markdown characters
+            // Avoid escaping . and - as they appear frequently in URLs and text
+            let charactersToEscape = ["\\", "*", "_", "[", "]"]
             for char in charactersToEscape {
                 escaped = escaped.replacingOccurrences(of: char, with: "\\\(char)")
             }
