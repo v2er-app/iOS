@@ -1,4 +1,4 @@
-name: iOS Release Pipeline
+name: Release & Publish
 
 on:
   push:
