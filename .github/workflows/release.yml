@@ -75,6 +75,9 @@ jobs:
         VERSION="${{ steps.check.outputs.version }}"
         BUILD="${{ steps.check.outputs.build }}"
 
+        # Delete local tag if it exists (for force release)
+        git tag -d "$TAG_NAME" 2>/dev/null || true
+
         # Create annotated tag
         git tag -a "$TAG_NAME" -m "Release version $VERSION (build $BUILD)"
 
