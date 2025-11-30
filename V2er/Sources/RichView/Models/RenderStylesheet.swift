@@ -50,10 +50,10 @@ public struct TextStyle: Equatable {
     public var color: Color
 
     public init(
-        fontSize: CGFloat = 16,
+        fontSize: CGFloat = 17,
         fontWeight: Font.Weight = .regular,
-        lineSpacing: CGFloat = 4,
-        paragraphSpacing: CGFloat = 8,
+        lineSpacing: CGFloat = 5,
+        paragraphSpacing: CGFloat = 10,
         color: Color = .primary
     ) {
         self.fontSize = fontSize
@@ -264,10 +264,10 @@ extension RenderStylesheet {
     public static let `default`: RenderStylesheet = {
         RenderStylesheet(
             body: TextStyle(
-                fontSize: 16,
+                fontSize: 17,
                 fontWeight: .regular,
-                lineSpacing: 4,
-                paragraphSpacing: 8,
+                lineSpacing: 5,
+                paragraphSpacing: 10,
                 color: .primary
             ),
             heading: HeadingStyle(
@@ -343,10 +343,10 @@ extension RenderStylesheet {
     public static let compact: RenderStylesheet = {
         RenderStylesheet(
             body: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: .regular,
-                lineSpacing: 2,
-                paragraphSpacing: 6,
+                lineSpacing: 4,
+                paragraphSpacing: 8,
                 color: .primary
             ),
             heading: HeadingStyle(

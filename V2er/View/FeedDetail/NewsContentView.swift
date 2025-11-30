@@ -25,10 +25,14 @@ struct NewsContentView: View {
         VStack(spacing: 0) {
             Divider()
 
-            RichView(htmlContent: contentInfo?.html ?? "")
+            RichContentView(htmlContent: contentInfo?.html ?? "")
                 .configuration(configurationForAppearance())
                 .onLinkTapped { url in
                     handleLinkTap(url)
+                }
+                .onImageTapped { url in
+                    // Open image in SafariView for now
+                    openInSafari(url)
                 }
                 .onRenderCompleted { metadata in
                     // Mark as rendered after content is ready
@@ -40,6 +44,8 @@ struct NewsContentView: View {
                     print("Render error: \(error)")
                     self.rendered = true
                 }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
 
             Divider()
         }

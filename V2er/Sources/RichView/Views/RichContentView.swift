@@ -49,14 +49,12 @@ public struct RichContentView: View {
             } else if let error = error {
                 ErrorView(error: error)
             } else if !contentElements.isEmpty {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: configuration.stylesheet.body.paragraphSpacing) {
-                        ForEach(contentElements) { element in
-                            renderElement(element)
-                        }
+                VStack(alignment: .leading, spacing: configuration.stylesheet.body.paragraphSpacing) {
+                    ForEach(contentElements) { element in
+                        renderElement(element)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             } else {
                 Text("No content")
                     .foregroundColor(.secondary)

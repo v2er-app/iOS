@@ -28,40 +28,40 @@ struct FilterMenuView: View {
                     onDismiss()
                 }
 
-            // Menu content - positioned below navbar
+            // Menu content - positioned right below navbar
             VStack(spacing: 0) {
-                HStack {
-                    Spacer()
-                    ScrollView {
-                        VStack(spacing: 4) {
-                            ForEach(Tab.allTabs, id: \.self) { tab in
-                                let tabNeedsLogin = tab.needsLogin() && !AccountState.hasSignIn()
-                                TabFilterMenuItem(
-                                    tab: tab,
-                                    isSelected: tab == selectedTab,
-                                    needsLogin: tabNeedsLogin
-                                ) {
-                                    // Soft haptic feedback
-                                    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                                    impactFeedback.impactOccurred()
+                // Minimal spacing - just clear the safe area
+                Spacer()
+                    .frame(height: topSafeAreaInset().top)
 
-                                    if tabNeedsLogin {
-                                        Toast.show("登录后才能查看「\(tab.displayName())」下的内容")
-                                    } else {
-                                        onTabSelected(tab)
-                                    }
+                ScrollView {
+                    VStack(spacing: 4) {
+                        ForEach(Tab.allTabs, id: \.self) { tab in
+                            let tabNeedsLogin = tab.needsLogin() && !AccountState.hasSignIn()
+                            TabFilterMenuItem(
+                                tab: tab,
+                                isSelected: tab == selectedTab,
+                                needsLogin: tabNeedsLogin
+                            ) {
+                                // Soft haptic feedback
+                                let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                                impactFeedback.impactOccurred()
+
+                                if tabNeedsLogin {
+                                    Toast.show("登录后才能查看「\(tab.displayName())」下的内容")
+                                } else {
+                                    onTabSelected(tab)
                                 }
                             }
                         }
-                        .padding(.vertical, 8)
                     }
-                    .frame(width: 200)
-                    .background(Color.itemBg)
-                    .cornerRadius(8)
-                    .shadow(color: Color.black.opacity(0.2), radius: 12, x: 0, y: 4)
-                    .frame(maxHeight: 450)
-                    Spacer()
+                    .padding(.vertical, 8)
                 }
+                .frame(width: 200)
+                .background(Color.itemBg)
+                .cornerRadius(8)
+                .shadow(color: Color.black.opacity(0.2), radius: 12, x: 0, y: 4)
+                .frame(maxHeight: 450)
                 .transition(.asymmetric(
                     insertion: .move(edge: .top).combined(with: .opacity),
                     removal: .move(edge: .top).combined(with: .opacity)
