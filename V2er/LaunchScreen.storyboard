@@ -40,12 +40,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="SplashLogo" width="1024" height="1024"/>
-        <namedColor name="SplashBackground">
-            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="SplashLogoColor">
-            <color red="0.066999999999999993" green="0.070999999999999994" blue="0.078" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
+        <image name="SplashLogo" width="100" height="100"/>
+        <namedColor name="SplashBackground"/>
+        <namedColor name="SplashLogoColor"/>
     </resources>
 </document>
