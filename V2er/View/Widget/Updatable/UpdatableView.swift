@@ -76,6 +76,7 @@ struct UpdatableView<Content: View>: View {
                     }
                 }
             }
+            .background(Color.itemBg)
             .onChange(of: state.scrollToTop) { scrollToTop in
                 guard scrollToTop != 0 else { return }
                 withAnimation {
