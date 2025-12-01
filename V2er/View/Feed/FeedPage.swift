@@ -25,6 +25,9 @@ struct FeedPage: BaseHomePageView {
                 log("FeedPage.onAppear")
                 if !state.hasLoadedOnce {
                     dispatch(FeedActions.FetchData.Start(autoLoad: true))
+                    if AccountState.hasSignIn() {
+                        Task { await run(action: FeedActions.FetchOnlineStats.Start()) }
+                    }
                 }
             }
     }
