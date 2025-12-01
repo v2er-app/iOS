@@ -13,7 +13,7 @@ struct TypewriterView: View {
     var easeIn: Bool = true
 
     @State private var animatedText: AttributedString = ""
-    @State private var typingTask: Task<Void, Error>?
+    @State private var typingTask: Task<Void, Never>?
     @State private var hasAppeared = false
 
     var body: some View {
@@ -43,7 +43,7 @@ struct TypewriterView: View {
             var index = animatedText.startIndex
 
             while index < animatedText.endIndex {
-                try Task.checkCancellation()
+                guard !Task.isCancelled else { return }
 
                 // Update the style
                 animatedText[animatedText.startIndex...index]
@@ -65,7 +65,7 @@ struct TypewriterView: View {
                 }
 
                 // Wait
-                try await Task.sleep(for: delay)
+                try? await Task.sleep(for: delay)
 
                 // Advance the index, character by character
                 index = animatedText.index(afterCharacter: index)

@@ -44,15 +44,13 @@ struct SplashView: View {
         }
         .onAppear {
             // Show slogan after a short delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            runInMain(delay: 300) {
                 showSlogan = true
             }
 
             // Hide splash after animation completes
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-                withAnimation(.easeOut(duration: 0.3)) {
-                    store.appState.globalState.launchFinished = true
-                }
+            runInMain(delay: 1200) {
+                store.dispatch(LaunchFinishedAction(), animation: .easeOut(duration: 0.3))
             }
         }
     }

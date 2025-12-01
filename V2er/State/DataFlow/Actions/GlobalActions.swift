@@ -40,6 +40,10 @@ struct ShowToastAction: Action {
     var icon: String = .empty
 }
 
+struct LaunchFinishedAction: Action {
+    var target: Reducer = R
+}
+
 
 func globalStateReducer(_ state: GlobalState, _ action: Action?) -> (GlobalState, Action?) {
     var state = state
@@ -49,6 +53,9 @@ func globalStateReducer(_ state: GlobalState, _ action: Action?) -> (GlobalState
             state.toast.title = action.title
             state.toast.icon = action.icon
             state.toast.isPresented = true
+            break
+        case _ as LaunchFinishedAction:
+            state.launchFinished = true
             break
         default:
             break
