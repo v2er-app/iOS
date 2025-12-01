@@ -36,41 +36,28 @@ class V2erUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // Wait for feed to load
-        sleep(6)
-
-        // Find a feed item by looking for text that says "评论" (comment count)
+        // Wait for feed to load by waiting for the first comment label to appear
         let commentLabels = app.staticTexts.matching(NSPredicate(format: "label CONTAINS '评论'"))
-        guard commentLabels.count > 0 else {
-            XCTFail("No feed items found (no comment labels)")
-            return
-        }
+        let firstCommentLabel = commentLabels.element(boundBy: 0)
+        XCTAssertTrue(firstCommentLabel.waitForExistence(timeout: 15), "Feed should load and show at least one comment label")
 
         // Tap on the first comment label's parent area
-        let firstCommentLabel = commentLabels.element(boundBy: 0)
-        XCTAssertTrue(firstCommentLabel.waitForExistence(timeout: 10), "Comment label should exist")
         firstCommentLabel.tap()
 
-        // Wait for navigation animation
-        sleep(3)
-
-        // Verify we're on detail page - look for "话题" text or "发表回复" placeholder
+        // Wait for navigation animation by waiting for detail page element to appear
         let topicLabel = app.staticTexts["话题"]
         let replyPlaceholder = app.textViews.firstMatch
+        let appeared = topicLabel.waitForExistence(timeout: 5) || replyPlaceholder.waitForExistence(timeout: 5)
+        XCTAssertTrue(appeared, "Detail page did not appear after tapping comment label")
 
-        let onDetailPage = topicLabel.exists || replyPlaceholder.exists
-
-        XCTAssertTrue(onDetailPage, "Should be on detail page after navigation")
-
-        // Wait longer to verify page stays open (the original bug was page dismissing)
-        sleep(3)
+        // Wait to verify page stays open (the original bug was page dismissing immediately)
+        let expectation = XCTestExpectation(description: "Wait 3 seconds to verify detail page stays open")
+        let result = XCTWaiter.wait(for: [expectation], timeout: 3.0)
+        XCTAssertEqual(result, .timedOut, "Expected to wait full 3 seconds")
 
         // Verify still on detail page
         let stillOnDetail = topicLabel.exists || replyPlaceholder.exists
         XCTAssertTrue(stillOnDetail, "Detail page should remain open after 3 seconds")
-
-        // Leave app open for visual inspection
-        sleep(10)
     }
 
     func testLaunchPerformance() throws {
