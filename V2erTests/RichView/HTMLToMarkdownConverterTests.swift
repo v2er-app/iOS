@@ -233,6 +233,214 @@ class HTMLToMarkdownConverterTests: XCTestCase {
         XCTAssertTrue(markdown.contains("\\#"))
     }
 
+    // MARK: - Table Tests
+
+    func testBasicTableConversion() throws {
+        let html = """
+        <table>
+            <tr><th>Header 1</th><th>Header 2</th></tr>
+            <tr><td>Cell 1</td><td>Cell 2</td></tr>
+        </table>
+        """
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("| Header 1 | Header 2 |"))
+        XCTAssertTrue(markdown.contains("| --- | --- |"))
+        XCTAssertTrue(markdown.contains("| Cell 1 | Cell 2 |"))
+    }
+
+    func testTableWithTheadTbody() throws {
+        let html = """
+        <table>
+            <thead><tr><th>Name</th><th>Value</th></tr></thead>
+            <tbody><tr><td>Item</td><td>100</td></tr></tbody>
+        </table>
+        """
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("| Name | Value |"))
+        XCTAssertTrue(markdown.contains("| Item | 100 |"))
+    }
+
+    func testTableWithMultipleRows() throws {
+        let html = """
+        <table>
+            <tr><th>功能模块</th><th>详细说明</th></tr>
+            <tr><td>多种格式</td><td>EPUB/MOBI/AZW3</td></tr>
+            <tr><td>数据同步</td><td>多端覆盖</td></tr>
+        </table>
+        """
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("功能模块"))
+        XCTAssertTrue(markdown.contains("多种格式"))
+        XCTAssertTrue(markdown.contains("数据同步"))
+    }
+
+    // MARK: - Strikethrough Tests
+
+    func testDelTagConversion() throws {
+        let html = "<del>Deleted text</del>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("~~Deleted text~~"))
+    }
+
+    func testSTagConversion() throws {
+        let html = "<s>Strikethrough text</s>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("~~Strikethrough text~~"))
+    }
+
+    func testStrikeTagConversion() throws {
+        let html = "<strike>Old strike tag</strike>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("~~Old strike tag~~"))
+    }
+
+    // MARK: - Underline Tests
+
+    func testUnderlineTagConversion() throws {
+        let html = "<u>Underlined text</u>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("_Underlined text_"))
+    }
+
+    func testInsTagConversion() throws {
+        let html = "<ins>Inserted text</ins>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("_Inserted text_"))
+    }
+
+    // MARK: - Superscript/Subscript Tests
+
+    func testSuperscriptConversion() throws {
+        let html = "x<sup>2</sup>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("^2"))
+    }
+
+    func testSubscriptConversion() throws {
+        let html = "H<sub>2</sub>O"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("~2"))
+    }
+
+    // MARK: - Mark/Highlight Tests
+
+    func testMarkTagConversion() throws {
+        let html = "<mark>Highlighted text</mark>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("==Highlighted text=="))
+    }
+
+    // MARK: - Definition List Tests
+
+    func testDefinitionListConversion() throws {
+        let html = """
+        <dl>
+            <dt>Term</dt>
+            <dd>Definition of the term</dd>
+        </dl>
+        """
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("**Term**"))
+        XCTAssertTrue(markdown.contains(": Definition of the term"))
+    }
+
+    // MARK: - Semantic Element Tests
+
+    func testAbbreviationWithTitle() throws {
+        let html = "<abbr title=\"HyperText Markup Language\">HTML</abbr>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("HTML"))
+        XCTAssertTrue(markdown.contains("HyperText Markup Language"))
+    }
+
+    func testCiteTagConversion() throws {
+        let html = "<cite>Book Title</cite>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("*Book Title*"))
+    }
+
+    func testKbdTagConversion() throws {
+        let html = "Press <kbd>Ctrl</kbd>+<kbd>C</kbd>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("`Ctrl`"))
+        XCTAssertTrue(markdown.contains("`C`"))
+    }
+
+    func testSampTagConversion() throws {
+        let html = "<samp>Error: File not found</samp>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("`Error: File not found`"))
+    }
+
+    func testVarTagConversion() throws {
+        let html = "The variable <var>x</var> is used"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("*x*"))
+    }
+
+    func testFigcaptionConversion() throws {
+        let html = """
+        <figure>
+            <img src="image.png" alt="Image">
+            <figcaption>Image caption</figcaption>
+        </figure>
+        """
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("![Image](image.png)"))
+        XCTAssertTrue(markdown.contains("*Image caption*"))
+    }
+
+    func testAddressTagConversion() throws {
+        let html = "<address>Contact us at example@email.com</address>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("*Contact us at example@email.com*"))
+    }
+
+    func testTimeTagConversion() throws {
+        let html = "<time datetime=\"2024-01-01\">January 1, 2024</time>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("January 1, 2024"))
+    }
+
+    func testSummaryTagConversion() throws {
+        let html = """
+        <details>
+            <summary>Click to expand</summary>
+            <p>Hidden content</p>
+        </details>
+        """
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("**Click to expand**"))
+        XCTAssertTrue(markdown.contains("Hidden content"))
+    }
+
+    // MARK: - Container Element Tests
+
+    func testArticleContainerProcessing() throws {
+        let html = "<article>Article content</article>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("Article content"))
+    }
+
+    func testSectionContainerProcessing() throws {
+        let html = "<section>Section content</section>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("Section content"))
+    }
+
+    func testNavContainerProcessing() throws {
+        let html = "<nav><a href=\"#\">Link</a></nav>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("[Link]"))
+    }
+
+    func testHeaderFooterProcessing() throws {
+        let html = "<header>Header</header><footer>Footer</footer>"
+        let markdown = try converter.convert(html)
+        XCTAssertTrue(markdown.contains("Header"))
+        XCTAssertTrue(markdown.contains("Footer"))
+    }
+
     // MARK: - Performance Tests
 
     func testPerformanceLargeHTML() throws {
@@ -240,6 +448,18 @@ class HTMLToMarkdownConverterTests: XCTestCase {
 
         measure {
             _ = try? converter.convert(repeatedHTML)
+        }
+    }
+
+    func testPerformanceComplexTable() throws {
+        var tableHTML = "<table><tr><th>Header 1</th><th>Header 2</th><th>Header 3</th></tr>"
+        for i in 1...50 {
+            tableHTML += "<tr><td>Row \(i) Col 1</td><td>Row \(i) Col 2</td><td>Row \(i) Col 3</td></tr>"
+        }
+        tableHTML += "</table>"
+
+        measure {
+            _ = try? converter.convert(tableHTML)
         }
     }
 }
