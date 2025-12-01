@@ -19,6 +19,7 @@ struct GlobalState: FluxState {
     var lastSelectedTab: TabId = .none
     var scrollTopTab: TabId = .none
     var toast = Toast()
+    var launchFinished: Bool = false
 
     static var account: AccountInfo? {
         AccountState.getAccount()

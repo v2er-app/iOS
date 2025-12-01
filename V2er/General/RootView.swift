@@ -98,20 +98,30 @@ struct RootHostView: View {
         $store.appState.loginState
     }
 
-    var body: some View {
-        MainPage()
-            .buttonStyle(.plain)
-            .toast(isPresented: toast.isPresented) {
-                DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
-            }
-            .sheet(isPresented: loginState.showLoginView) {
-                LoginPage()
-            }
-            .overlay {
-                if loginState.raw.showTwoStepDialog {
-                    TwoStepLoginPage()
-                }
-            }
+    var launchFinished: Bool {
+        store.appState.globalState.launchFinished
+    }
 
+    var body: some View {
+        ZStack {
+            MainPage()
+                .buttonStyle(.plain)
+                .toast(isPresented: toast.isPresented) {
+                    DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
+                }
+                .sheet(isPresented: loginState.showLoginView) {
+                    LoginPage()
+                }
+                .overlay {
+                    if loginState.raw.showTwoStepDialog {
+                        TwoStepLoginPage()
+                    }
+                }
+
+            if !launchFinished {
+                SplashView()
+                    .transition(.opacity)
+            }
+        }
     }
 }
