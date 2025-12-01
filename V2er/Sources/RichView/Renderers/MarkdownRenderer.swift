@@ -79,7 +79,7 @@ public class MarkdownRenderer {
                 attributedString.append(renderListItem(content, ordered: true, number: number))
             } else if line.starts(with: "---") {
                 // Horizontal rule
-                attributedString.append(AttributedString("—————————————\n"))
+                attributedString.append(renderHorizontalRule())
             } else if line.starts(with: "|") && line.hasSuffix("|") {
                 // Markdown table
                 let (tableBlock, linesConsumed) = extractTableBlock(lines, startIndex: index)
@@ -166,6 +166,17 @@ public class MarkdownRenderer {
 
         attributed.append(AttributedString("\n"))
 
+        return attributed
+    }
+
+    // MARK: - Horizontal Rule Rendering
+
+    private func renderHorizontalRule() -> AttributedString {
+        var attributed = AttributedString("\n")
+        var line = AttributedString(String(repeating: "─", count: 40))
+        line.foregroundColor = stylesheet.horizontalRule.color.uiColor
+        attributed.append(line)
+        attributed.append(AttributedString("\n\n"))
         return attributed
     }
 
@@ -342,6 +353,66 @@ public class MarkdownRenderer {
                 continue
             }
 
+            // Check for underline (<u>text</u>)
+            if let underlineMatch = currentText.firstMatch(of: /<u>(.+?)<\/u>/) {
+                // Add text before underline
+                let beforeRange = currentText.startIndex..<underlineMatch.range.lowerBound
+                if !beforeRange.isEmpty {
+                    result.append(renderPlainText(String(currentText[beforeRange])))
+                }
+
+                // Add underlined text
+                var underlineText = AttributedString(String(underlineMatch.1))
+                underlineText.font = .system(size: stylesheet.body.fontSize)
+                underlineText.foregroundColor = stylesheet.body.color.uiColor
+                underlineText.underlineStyle = .single
+                result.append(underlineText)
+
+                // Continue with remaining text
+                currentText = String(currentText[underlineMatch.range.upperBound...])
+                continue
+            }
+
+            // Check for superscript (<sup>text</sup>)
+            if let supMatch = currentText.firstMatch(of: /<sup>(.+?)<\/sup>/) {
+                // Add text before superscript
+                let beforeRange = currentText.startIndex..<supMatch.range.lowerBound
+                if !beforeRange.isEmpty {
+                    result.append(renderPlainText(String(currentText[beforeRange])))
+                }
+
+                // Add superscript text (smaller font, baseline offset)
+                var supText = AttributedString(String(supMatch.1))
+                supText.font = .system(size: stylesheet.body.fontSize * 0.7)
+                supText.foregroundColor = stylesheet.body.color.uiColor
+                supText.baselineOffset = stylesheet.body.fontSize * 0.3
+                result.append(supText)
+
+                // Continue with remaining text
+                currentText = String(currentText[supMatch.range.upperBound...])
+                continue
+            }
+
+            // Check for subscript (<sub>text</sub>)
+            if let subMatch = currentText.firstMatch(of: /<sub>(.+?)<\/sub>/) {
+                // Add text before subscript
+                let beforeRange = currentText.startIndex..<subMatch.range.lowerBound
+                if !beforeRange.isEmpty {
+                    result.append(renderPlainText(String(currentText[beforeRange])))
+                }
+
+                // Add subscript text (smaller font, negative baseline offset)
+                var subText = AttributedString(String(subMatch.1))
+                subText.font = .system(size: stylesheet.body.fontSize * 0.7)
+                subText.foregroundColor = stylesheet.body.color.uiColor
+                subText.baselineOffset = -stylesheet.body.fontSize * 0.2
+                result.append(subText)
+
+                // Continue with remaining text
+                currentText = String(currentText[subMatch.range.upperBound...])
+                continue
+            }
+
             // No more special elements, add remaining text
             result.append(renderPlainText(currentText))
             break
@@ -432,7 +503,7 @@ public class MarkdownRenderer {
 
                 // Apply header style for first row
                 if rowIndex == 0 {
-                    cellText.font = .system(size: stylesheet.body.fontSize, weight: .semibold)
+                    cellText.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.table.headerFontWeight)
                 }
 
                 result.append(cellText)
@@ -440,7 +511,7 @@ public class MarkdownRenderer {
                 // Add separator between cells
                 if cellIndex < row.count - 1 {
                     var separator = AttributedString("  │  ")
-                    separator.foregroundColor = Color.gray.opacity(0.5)
+                    separator.foregroundColor = stylesheet.table.separatorColor.uiColor
                     result.append(separator)
                 }
             }
@@ -450,7 +521,7 @@ public class MarkdownRenderer {
             // Add separator line after header
             if rowIndex == 0 && rows.count > 1 {
                 var separatorLine = AttributedString(String(repeating: "─", count: 40) + "\n")
-                separatorLine.foregroundColor = Color.gray.opacity(0.3)
+                separatorLine.foregroundColor = stylesheet.table.separatorColor.uiColor
                 result.append(separatorLine)
             }
         }
