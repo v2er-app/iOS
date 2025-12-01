@@ -80,6 +80,12 @@ public class MarkdownRenderer {
             } else if line.starts(with: "---") {
                 // Horizontal rule
                 attributedString.append(AttributedString("—————————————\n"))
+            } else if line.starts(with: "|") && line.hasSuffix("|") {
+                // Markdown table
+                let (tableBlock, linesConsumed) = extractTableBlock(lines, startIndex: index)
+                attributedString.append(renderTable(tableBlock))
+                index += linesConsumed
+                continue
             } else {
                 // Regular paragraph with inline formatting
                 attributedString.append(renderInlineMarkdown(line))
@@ -296,6 +302,46 @@ public class MarkdownRenderer {
                 continue
             }
 
+            // Check for strikethrough
+            if let strikeMatch = currentText.firstMatch(of: /~~(.+?)~~/) {
+                // Add text before strikethrough
+                let beforeRange = currentText.startIndex..<strikeMatch.range.lowerBound
+                if !beforeRange.isEmpty {
+                    result.append(renderPlainText(String(currentText[beforeRange])))
+                }
+
+                // Add strikethrough text
+                var strikeText = AttributedString(String(strikeMatch.1))
+                strikeText.font = .system(size: stylesheet.body.fontSize)
+                strikeText.foregroundColor = stylesheet.body.color.uiColor
+                strikeText.strikethroughStyle = .single
+                result.append(strikeText)
+
+                // Continue with remaining text
+                currentText = String(currentText[strikeMatch.range.upperBound...])
+                continue
+            }
+
+            // Check for highlight/mark
+            if let highlightMatch = currentText.firstMatch(of: /==(.+?)==/) {
+                // Add text before highlight
+                let beforeRange = currentText.startIndex..<highlightMatch.range.lowerBound
+                if !beforeRange.isEmpty {
+                    result.append(renderPlainText(String(currentText[beforeRange])))
+                }
+
+                // Add highlighted text
+                var highlightText = AttributedString(String(highlightMatch.1))
+                highlightText.font = .system(size: stylesheet.body.fontSize)
+                highlightText.foregroundColor = stylesheet.body.color.uiColor
+                highlightText.backgroundColor = Color.yellow.opacity(0.3)
+                result.append(highlightText)
+
+                // Continue with remaining text
+                currentText = String(currentText[highlightMatch.range.upperBound...])
+                continue
+            }
+
             // No more special elements, add remaining text
             result.append(renderPlainText(currentText))
             break
@@ -321,5 +367,95 @@ public class MarkdownRenderer {
         let number = Int(match.1) ?? 1
         let content = String(match.2)
         return (number, content)
+    }
+
+    // MARK: - Table Rendering
+
+    /// Extract table block from lines
+    private func extractTableBlock(_ lines: [String], startIndex: Int) -> ([[String]], Int) {
+        var rows: [[String]] = []
+        var index = startIndex
+
+        while index < lines.count {
+            let line = lines[index]
+
+            // Check if line is a table row
+            guard line.starts(with: "|") && line.hasSuffix("|") else {
+                break
+            }
+
+            // Skip separator row (| --- | --- | or with colons for alignment)
+            if line.range(of: #"^\|\s*(:?-+:?)\s*(\|\s*(:?-+:?)\s*)*\|$"#, options: .regularExpression) != nil {
+                index += 1
+                continue
+            }
+
+            // Parse cells
+            let cells = line
+                .trimmingCharacters(in: CharacterSet(charactersIn: "|"))
+                .components(separatedBy: "|")
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+
+            if !cells.isEmpty {
+                rows.append(cells)
+            }
+
+            index += 1
+        }
+
+        return (rows, index - startIndex)
+    }
+
+    /// Render markdown table
+    private func renderTable(_ rows: [[String]]) -> AttributedString {
+        guard !rows.isEmpty else { return AttributedString() }
+
+        var result = AttributedString("\n")
+
+        // Get column count
+        let columnCount = rows.map { $0.count }.max() ?? 0
+        guard columnCount > 0 else { return AttributedString() }
+
+        // Calculate column widths for alignment
+        var columnWidths: [Int] = Array(repeating: 0, count: columnCount)
+        for row in rows {
+            for (i, cell) in row.enumerated() where i < columnCount {
+                columnWidths[i] = max(columnWidths[i], cell.count)
+            }
+        }
+
+        for (rowIndex, row) in rows.enumerated() {
+            // Render each cell
+            for (cellIndex, cell) in row.enumerated() {
+                // Add cell content
+                var cellText = renderInlineMarkdown(cell)
+
+                // Apply header style for first row
+                if rowIndex == 0 {
+                    cellText.font = .system(size: stylesheet.body.fontSize, weight: .semibold)
+                }
+
+                result.append(cellText)
+
+                // Add separator between cells
+                if cellIndex < row.count - 1 {
+                    var separator = AttributedString("  │  ")
+                    separator.foregroundColor = Color.gray.opacity(0.5)
+                    result.append(separator)
+                }
+            }
+
+            result.append(AttributedString("\n"))
+
+            // Add separator line after header
+            if rowIndex == 0 && rows.count > 1 {
+                var separatorLine = AttributedString(String(repeating: "─", count: 40) + "\n")
+                separatorLine.foregroundColor = Color.gray.opacity(0.3)
+                result.append(separatorLine)
+            }
+        }
+
+        result.append(AttributedString("\n"))
+        return result
     }
 }

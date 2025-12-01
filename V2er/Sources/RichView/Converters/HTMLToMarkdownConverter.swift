@@ -173,8 +173,117 @@ public class HTMLToMarkdownConverter {
                 case "hr":
                     result += "\n---\n"
 
+                // Table support
+                case "table":
+                    result += try convertTable(childElement)
+
+                case "thead", "tbody", "tfoot":
+                    // These are handled by table, but if encountered alone, process children
+                    result += try convertElement(childElement)
+
+                case "tr", "th", "td":
+                    // These should be handled by table, but if encountered alone, process children
+                    result += try convertElement(childElement)
+
+                // Strikethrough
+                case "del", "s", "strike":
+                    let content = try convertElement(childElement)
+                    result += "~~\(content)~~"
+
+                // Underline - no standard markdown, preserve as HTML for custom renderer
+                case "u", "ins":
+                    let content = try convertElement(childElement)
+                    result += "<u>\(content)</u>"
+
+                // Superscript/subscript - preserve as HTML for custom renderer
+                case "sup":
+                    let content = try convertElement(childElement)
+                    result += "<sup>\(content)</sup>"
+
+                case "sub":
+                    let content = try convertElement(childElement)
+                    result += "<sub>\(content)</sub>"
+
+                // Mark/highlight - render with markers
+                case "mark":
+                    let content = try convertElement(childElement)
+                    result += "==\(content)=="
+
+                // Definition list
+                case "dl":
+                    result += try convertDefinitionList(childElement)
+
+                case "dt":
+                    let content = try convertElement(childElement)
+                    result += "\n**\(content)**\n"
+
+                case "dd":
+                    let content = try convertElement(childElement)
+                    result += ": \(content)\n"
+
+                // Abbreviation - just show the text with title
+                case "abbr":
+                    let content = try convertElement(childElement)
+                    if let title = try? childElement.attr("title"), !title.isEmpty {
+                        result += "\(content) (\(title))"
+                    } else {
+                        result += content
+                    }
+
+                // Citation
+                case "cite":
+                    let content = try convertElement(childElement)
+                    result += "*\(content)*"
+
+                // Keyboard input
+                case "kbd":
+                    let content = try convertElement(childElement)
+                    result += "`\(content)`"
+
+                // Sample output
+                case "samp":
+                    let content = try convertElement(childElement)
+                    result += "`\(content)`"
+
+                // Variable
+                case "var":
+                    let content = try convertElement(childElement)
+                    result += "*\(content)*"
+
+                // Small text
+                case "small":
+                    let content = try convertElement(childElement)
+                    result += content
+
+                // Figure and figcaption
+                case "figure":
+                    result += try convertElement(childElement)
+
+                case "figcaption":
+                    let content = try convertElement(childElement)
+                    result += "\n*\(content)*\n"
+
+                // Address
+                case "address":
+                    let content = try convertElement(childElement)
+                    result += "\n*\(content)*\n"
+
+                // Time - just show the text
+                case "time":
+                    let content = try convertElement(childElement)
+                    result += content
+
+                // Details/summary - collapsible sections
+                case "details":
+                    result += try convertElement(childElement)
+
+                case "summary":
+                    let content = try convertElement(childElement)
+                    result += "\n**\(content)**\n"
+
                 // Container elements - just process children
-                case "div", "span", "body", "html":
+                case "div", "span", "body", "html", "article", "section", "nav", "aside",
+                     "header", "footer", "main", "caption":
                     result += try convertElement(childElement)
 
                 default:
@@ -205,6 +314,86 @@ public class HTMLToMarkdownConverter {
                 result += "\(index + 1). \(content)\n"
             } else {
                 result += "- \(content)\n"
+            }
+        }
+
+        result += "\n"
+        return result
+    }
+
+    /// Convert table to Markdown
+    private func convertTable(_ element: Element) throws -> String {
+        var result = "\n"
+        var rows: [[String]] = []
+
+        // Get all rows from thead and tbody
+        let allRows = try element.select("tr")
+
+        for row in allRows {
+            var cells: [String] = []
+
+            // Get th and td cells
+            for cell in row.children() {
+                let tagName = cell.tagName().lowercased()
+                if tagName == "th" || tagName == "td" {
+                    let content = try convertElement(cell)
+                        .replacingOccurrences(of: "\n", with: " ")
+                        .replacingOccurrences(of: "|", with: "\\|") // Escape pipes for Markdown tables
+                        .trimmingCharacters(in: .whitespaces)
+                    cells.append(content)
+                }
+            }
+
+            if !cells.isEmpty {
+                rows.append(cells)
+            }
+        }
+
+        guard !rows.isEmpty else { return "" }
+
+        // Calculate column widths
+        let columnCount = rows.map { $0.count }.max() ?? 0
+        guard columnCount > 0 else { return "" }
+
+        // Normalize rows to have the same column count
+        let normalizedRows = rows.map { row -> [String] in
+            var normalized = row
+            while normalized.count < columnCount {
+                normalized.append("")
+            }
+            return normalized
+        }
+
+        // Build markdown table
+        for (index, row) in normalizedRows.enumerated() {
+            result += "| " + row.joined(separator: " | ") + " |\n"
+
+            // Add separator after header row
+            if index == 0 {
+                let separator = Array(repeating: "---", count: columnCount)
+                result += "| " + separator.joined(separator: " | ") + " |\n"
+            }
+        }
+
+        result += "\n"
+        return result
+    }
+
+    /// Convert definition list to Markdown
+    private func convertDefinitionList(_ element: Element) throws -> String {
+        var result = "\n"
+
+        for child in element.children() {
+            let tagName = child.tagName().lowercased()
+            let content = try convertElement(child)
+
+            switch tagName {
+            case "dt":
+                result += "\n**\(content)**\n"
+            case "dd":
+                result += ": \(content)\n"
+            default:
+                result += content
             }
         }
 
