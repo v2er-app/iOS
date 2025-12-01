@@ -56,10 +56,9 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         return state.showProgressView
         || (!isContentEmpty && !self.rendered)
     }
-    
+
     var body: some View {
         contentView
-            .navigatable()
             .sheet(isPresented: $showingSafari) {
                 if let url = safariURL {
                     SafariView(url: url)
@@ -70,7 +69,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @ViewBuilder
     private var contentView: some View {
         VStack (spacing: 0) {
-            // TODO: improve here
             VStack(spacing: 0) {
                 AuthorInfoView(initData: initData, data: state.model.headerInfo)
                 if !isContentEmpty {
@@ -89,7 +87,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 withAnimation {
                     hideTitleViews = !(scrollY <= -100)
                 }
-//                replyIsFocused = false
             }
             .onTapGesture {
                 replyIsFocused = false
@@ -111,16 +108,15 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             dispatch(FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id, autoLoad: !state.hasLoadedOnce))
         }
         .onDisappear {
-            if !isPresented {
-                log("onPageClosed----->")
-                let data: FeedInfo.Item?
-                if state.model.headerInfo != nil {
-                    data = state.model.headerInfo?.toFeedItemInfo()
-                } else {
-                    data = initData
-                }
-                dispatch(MyRecentActions.RecordAction(data: data))
+            guard !isPresented else { return }
+            log("onPageClosed----->")
+            let data: FeedInfo.Item?
+            if state.model.headerInfo != nil {
+                data = state.model.headerInfo?.toFeedItemInfo()
+            } else {
+                data = initData
             }
+            dispatch(MyRecentActions.RecordAction(data: data))
         }
     }
 
@@ -150,10 +146,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 }
                 .background(Color.lightGray)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-//                if isKeyboardVisiable {
-//                    actionBar
-//                        .transition(.opacity)
-//                }
             }
             .padding(.bottom, isKeyboardVisiable ? 0 : topSafeAreaInset().bottom * 0.9)
             .padding(.top, 10)
@@ -161,7 +153,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             .background(Color.itemBg)
         }
     }
-    
+
     @ViewBuilder
     private var actionBar: some View {
         HStack (spacing: 10) {
@@ -182,7 +174,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .padding(.vertical, 10)
         .padding(.horizontal, 16)
     }
-    
+
     @ViewBuilder
     private var navBar: some View  {
         NavbarHostView(paddingH: 0) {
@@ -197,10 +189,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         .foregroundColor(.tintColor)
                 }
                 Group {
-                    // FIXME: use real value
-                    NavigationLink(destination: UserDetailPage(userId: initData?.id ?? .empty)) {
-                        AvatarView(url: state.model.headerInfo?.avatar ?? .empty, size: 32)
-                    }
+                    AvatarView(url: state.model.headerInfo?.avatar ?? .empty, size: 32)
                     VStack(alignment: .leading) {
                         Text("话题")
                             .font(.headline)
@@ -271,7 +260,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .visualBlur()
     }
-    
+
     @ViewBuilder
     private var replayListView: some View {
         LazyVStack(spacing: 0) {
@@ -280,12 +269,5 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             }
         }
     }
-    
-}
 
-//struct NewsDetailPage_Previews: PreviewProvider {
-//    static var previews: some View {
-//        FeedDetailPage(id: .empty)
-//            .environmentObject(Store.shared)
-//    }
-//}
+}

@@ -47,7 +47,6 @@ struct UserDetailPage: StateView {
     
     var body: some View {
         contentView
-            .navigatable()
             .statusBarStyle(statusBarStyle, original: .darkContent)
     }
 

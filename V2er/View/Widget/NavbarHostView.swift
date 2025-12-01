@@ -110,22 +110,18 @@ struct NavBarModifier: ViewModifier {
     let title: String
 
     func body(content: Content) -> some View {
-        NavigationView {
-            content
-                .safeAreaInset(edge: .top, spacing: 0) {
-                    NavbarTitleView {
-                        Text(title)
-                            .font(.headline)
-                    } onBackPressed: {
-                        dismiss()
-                    }
+        content
+            .safeAreaInset(edge: .top, spacing: 0) {
+                NavbarTitleView {
+                    Text(title)
+                        .font(.headline)
+                } onBackPressed: {
+                    dismiss()
                 }
-                .background(Color.bgColor)
-                .navigationBarHidden(true)
-                .ignoresSafeArea(.all)
-        }
-        .navigationBarHidden(true)
-        .ignoresSafeArea(.all)
+            }
+            .background(Color.bgColor)
+            .navigationBarHidden(true)
+            .ignoresSafeArea(.container)
     }
 }
 

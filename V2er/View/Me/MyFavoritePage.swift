@@ -18,7 +18,6 @@ struct MyFavoritePage: StateView {
 
     var body: some View {
         contentView
-            .navigatable()
     }
 
     @ViewBuilder

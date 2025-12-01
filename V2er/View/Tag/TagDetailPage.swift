@@ -49,7 +49,6 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
 
     var body: some View {
         contentView
-            .navigatable()
             .statusBarStyle(statusBarStyle, original: .darkContent)
     }
 
