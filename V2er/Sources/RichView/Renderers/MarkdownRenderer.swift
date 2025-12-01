@@ -384,8 +384,8 @@ public class MarkdownRenderer {
                 break
             }
 
-            // Skip separator row (| --- | --- |)
-            if line.contains("---") {
+            // Skip separator row (| --- | --- | or with colons for alignment)
+            if line.range(of: #"^\|\s*(:?-+:?)\s*(\|\s*(:?-+:?)\s*)*\|$"#, options: .regularExpression) != nil {
                 index += 1
                 continue
             }

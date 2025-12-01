@@ -190,19 +190,19 @@ public class HTMLToMarkdownConverter {
                     let content = try convertElement(childElement)
                     result += "~~\(content)~~"
 
-                // Underline - no standard markdown, render as emphasized text
+                // Underline - no standard markdown, preserve as HTML for custom renderer
                 case "u", "ins":
                     let content = try convertElement(childElement)
-                    result += "_\(content)_"
+                    result += "<u>\(content)</u>"
 
-                // Superscript/subscript - render with markers
+                // Superscript/subscript - preserve as HTML for custom renderer
                 case "sup":
                     let content = try convertElement(childElement)
-                    result += "^\(content)"
+                    result += "<sup>\(content)</sup>"
 
                 case "sub":
                     let content = try convertElement(childElement)
-                    result += "~\(content)"
+                    result += "<sub>\(content)</sub>"
 
                 // Mark/highlight - render with markers
                 case "mark":
@@ -325,16 +325,12 @@ public class HTMLToMarkdownConverter {
     private func convertTable(_ element: Element) throws -> String {
         var result = "\n"
         var rows: [[String]] = []
-        var headerRowCount = 0
 
         // Get all rows from thead and tbody
         let allRows = try element.select("tr")
 
         for row in allRows {
             var cells: [String] = []
-            let thCells = try row.select("th")
-            let isHeaderRow = row.parent()?.tagName().lowercased() == "thead"
-                || !thCells.isEmpty()
 
             // Get th and td cells
             for cell in row.children() {
@@ -342,6 +338,7 @@ public class HTMLToMarkdownConverter {
                 if tagName == "th" || tagName == "td" {
                     let content = try convertElement(cell)
                         .replacingOccurrences(of: "\n", with: " ")
+                        .replacingOccurrences(of: "|", with: "\\|") // Escape pipes for Markdown tables
                         .trimmingCharacters(in: .whitespaces)
                     cells.append(content)
                 }
@@ -349,9 +346,6 @@ public class HTMLToMarkdownConverter {
 
             if !cells.isEmpty {
                 rows.append(cells)
-                if isHeaderRow && headerRowCount == 0 {
-                    headerRowCount = 1
-                }
             }
         }
 

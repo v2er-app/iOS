@@ -274,6 +274,18 @@ class HTMLToMarkdownConverterTests: XCTestCase {
         XCTAssertTrue(markdown.contains("数据同步"))
     }
 
+    func testTableWithPipeInContent() throws {
+        let html = """
+        <table>
+            <tr><th>Option</th><th>Description</th></tr>
+            <tr><td>A | B</td><td>Choose A or B</td></tr>
+        </table>
+        """
+        let markdown = try converter.convert(html)
+        // Pipes should be escaped in cell content
+        XCTAssertTrue(markdown.contains("A \\| B"))
+    }
+
     // MARK: - Strikethrough Tests
 
     func testDelTagConversion() throws {
@@ -299,13 +311,13 @@ class HTMLToMarkdownConverterTests: XCTestCase {
     func testUnderlineTagConversion() throws {
         let html = "<u>Underlined text</u>"
         let markdown = try converter.convert(html)
-        XCTAssertTrue(markdown.contains("_Underlined text_"))
+        XCTAssertTrue(markdown.contains("<u>Underlined text</u>"))
     }
 
     func testInsTagConversion() throws {
         let html = "<ins>Inserted text</ins>"
         let markdown = try converter.convert(html)
-        XCTAssertTrue(markdown.contains("_Inserted text_"))
+        XCTAssertTrue(markdown.contains("<u>Inserted text</u>"))
     }
 
     // MARK: - Superscript/Subscript Tests
@@ -313,13 +325,13 @@ class HTMLToMarkdownConverterTests: XCTestCase {
     func testSuperscriptConversion() throws {
         let html = "x<sup>2</sup>"
         let markdown = try converter.convert(html)
-        XCTAssertTrue(markdown.contains("^2"))
+        XCTAssertTrue(markdown.contains("<sup>2</sup>"))
     }
 
     func testSubscriptConversion() throws {
         let html = "H<sub>2</sub>O"
         let markdown = try converter.convert(html)
-        XCTAssertTrue(markdown.contains("~2"))
+        XCTAssertTrue(markdown.contains("<sub>2</sub>"))
     }
 
     // MARK: - Mark/Highlight Tests
