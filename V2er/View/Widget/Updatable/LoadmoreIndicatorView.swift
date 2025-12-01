@@ -30,6 +30,8 @@ struct LoadmoreIndicatorView: View {
             }
         }
         .padding()
+        .greedyWidth()
+        .background(Color.itemBg)
     }
 }
 
