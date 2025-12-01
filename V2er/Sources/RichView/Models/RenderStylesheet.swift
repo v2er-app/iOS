@@ -17,6 +17,8 @@ public struct RenderStylesheet: Equatable {
     public var list: ListStyle
     public var mention: MentionStyle
     public var image: ImageStyle
+    public var table: TableStyle
+    public var horizontalRule: HorizontalRuleStyle
 
     public init(
         body: TextStyle = TextStyle(),
@@ -26,7 +28,9 @@ public struct RenderStylesheet: Equatable {
         blockquote: BlockquoteStyle = BlockquoteStyle(),
         list: ListStyle = ListStyle(),
         mention: MentionStyle = MentionStyle(),
-        image: ImageStyle = ImageStyle()
+        image: ImageStyle = ImageStyle(),
+        table: TableStyle = TableStyle(),
+        horizontalRule: HorizontalRuleStyle = HorizontalRuleStyle()
     ) {
         self.body = body
         self.heading = heading
@@ -36,6 +40,8 @@ public struct RenderStylesheet: Equatable {
         self.list = list
         self.mention = mention
         self.image = image
+        self.table = table
+        self.horizontalRule = horizontalRule
     }
 }
 
@@ -257,6 +263,49 @@ public struct ImageStyle: Equatable {
     }
 }
 
+/// Table styling
+public struct TableStyle: Equatable {
+    public var headerFontWeight: Font.Weight
+    public var headerBackgroundColor: Color
+    public var cellPadding: CGFloat
+    public var separatorColor: Color
+    public var separatorWidth: CGFloat
+    public var alternateRowColor: Color?
+
+    public init(
+        headerFontWeight: Font.Weight = .semibold,
+        headerBackgroundColor: Color = .clear,
+        cellPadding: CGFloat = 8,
+        separatorColor: Color = Color.gray.opacity(0.3),
+        separatorWidth: CGFloat = 0.5,
+        alternateRowColor: Color? = nil
+    ) {
+        self.headerFontWeight = headerFontWeight
+        self.headerBackgroundColor = headerBackgroundColor
+        self.cellPadding = cellPadding
+        self.separatorColor = separatorColor
+        self.separatorWidth = separatorWidth
+        self.alternateRowColor = alternateRowColor
+    }
+}
+
+/// Horizontal rule styling
+public struct HorizontalRuleStyle: Equatable {
+    public var color: Color
+    public var height: CGFloat
+    public var verticalPadding: CGFloat
+
+    public init(
+        color: Color = Color(hex: "#f4f2f2"),
+        height: CGFloat = 0.8,
+        verticalPadding: CGFloat = 8
+    ) {
+        self.color = color
+        self.height = height
+        self.verticalPadding = verticalPadding
+    }
+}
+
 // MARK: - Presets
 
 extension RenderStylesheet {
@@ -335,6 +384,132 @@ extension RenderStylesheet {
                     light: Color(hex: "#d0d7de"),
                     dark: Color(hex: "#3d444d")
                 )
+            ),
+            table: TableStyle(
+                separatorColor: Color.adaptive(
+                    light: Color.gray.opacity(0.3),
+                    dark: Color.gray.opacity(0.4)
+                )
+            ),
+            horizontalRule: HorizontalRuleStyle(
+                color: Color.adaptive(
+                    light: Color(hex: "#f4f2f2"),
+                    dark: Color(hex: "#202020")
+                )
+            )
+        )
+    }()
+
+    /// V2EX styling matching Android app
+    public static let v2ex: RenderStylesheet = {
+        RenderStylesheet(
+            body: TextStyle(
+                fontSize: 16,
+                fontWeight: .regular,
+                lineSpacing: 4,
+                paragraphSpacing: 8,
+                color: Color.adaptive(
+                    light: Color(hex: "#555555"),
+                    dark: Color.white.opacity(0.9)
+                )
+            ),
+            heading: HeadingStyle(
+                h1Size: 22,
+                h2Size: 18,
+                h3Size: 16,
+                h4Size: 15,
+                h5Size: 12,
+                h6Size: 10,
+                fontWeight: .medium,
+                topSpacing: 15,
+                bottomSpacing: 15,
+                color: Color.adaptive(
+                    light: Color.black,
+                    dark: Color(hex: "#7F8080")
+                )
+            ),
+            link: LinkStyle(
+                color: Color.adaptive(
+                    light: Color(hex: "#778087"),
+                    dark: Color(hex: "#58a6ff")
+                ),
+                underline: false,
+                fontWeight: .regular
+            ),
+            code: CodeStyle(
+                inlineFontSize: 13, // 80% of 16
+                inlineBackgroundColor: Color.adaptive(
+                    light: Color(hex: "#f6f8fa"),
+                    dark: Color.clear
+                ),
+                inlineTextColor: Color.adaptive(
+                    light: Color(hex: "#24292e"),
+                    dark: Color(hex: "#7F8082")
+                ),
+                blockFontSize: 13,
+                blockBackgroundColor: Color.adaptive(
+                    light: Color(hex: "#f6f8fa"),
+                    dark: Color(hex: "#111214")
+                ),
+                blockTextColor: Color.adaptive(
+                    light: Color(hex: "#24292e"),
+                    dark: Color(hex: "#7F8082")
+                ),
+                highlightTheme: .tomorrowNight
+            ),
+            blockquote: BlockquoteStyle(
+                borderColor: Color(hex: "#7e7e7e").opacity(0.5),
+                borderWidth: 3,
+                backgroundColor: Color.adaptive(
+                    light: Color(hex: "#fafafa").opacity(0.5),
+                    dark: Color(hex: "#08090b")
+                ),
+                padding: EdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5),
+                fontSize: 15
+            ),
+            list: ListStyle(
+                indentWidth: 16,
+                itemSpacing: 4,
+                bulletColor: Color.adaptive(
+                    light: Color(hex: "#555555"),
+                    dark: Color.white.opacity(0.9)
+                ),
+                numberColor: Color.adaptive(
+                    light: Color(hex: "#555555"),
+                    dark: Color.white.opacity(0.9)
+                )
+            ),
+            mention: MentionStyle(
+                textColor: Color.adaptive(
+                    light: Color(hex: "#778087"),
+                    dark: Color(hex: "#58a6ff")
+                ),
+                backgroundColor: Color.adaptive(
+                    light: Color(hex: "#778087").opacity(0.1),
+                    dark: Color(hex: "#58a6ff").opacity(0.15)
+                ),
+                fontWeight: .medium
+            ),
+            image: ImageStyle(
+                maxHeight: 400,
+                cornerRadius: 8,
+                borderColor: .clear,
+                borderWidth: 0
+            ),
+            table: TableStyle(
+                headerFontWeight: .medium,
+                separatorColor: Color.adaptive(
+                    light: Color(hex: "#f4f2f2"),
+                    dark: Color(hex: "#202020")
+                ),
+                separatorWidth: 0.5
+            ),
+            horizontalRule: HorizontalRuleStyle(
+                color: Color.adaptive(
+                    light: Color(hex: "#f4f2f2"),
+                    dark: Color(hex: "#202020")
+                ),
+                height: 0.8
             )
         )
     }()
