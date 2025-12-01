@@ -10,18 +10,18 @@ import SwiftUI
 
 struct TopBar: View {
   @EnvironmentObject private var store: Store
-  var selectedTab : TabId
+  var selectedTab: TabId
+  var feedFilterTab: Tab  // Explicit parameter to trigger SwiftUI re-render
   @State private var rotationAngle: Double = 0
-  
+
   private var isHomePage: Bool {
     return selectedTab == .feed
   }
-  
+
   private var title: String {
     switch selectedTab {
       case .feed:
-        let selectedTab = store.appState.feedState.selectedTab
-        return selectedTab == .all ? "V2EX" : selectedTab.displayName()
+        return feedFilterTab == .all ? "V2EX" : feedFilterTab.displayName()
       case .explore:
         return "发现"
       case .message:
@@ -104,10 +104,10 @@ struct TopBar: View {
 struct TopBar_Previews: PreviewProvider {
   //    @State static var selecedTab = TabId.feed
   static var selecedTab = TabId.explore
-  
+
   static var previews: some View {
     VStack {
-      TopBar(selectedTab: selecedTab)
+      TopBar(selectedTab: selecedTab, feedFilterTab: .all)
       Spacer()
     }
     .ignoresSafeArea(.container)
