@@ -265,11 +265,17 @@ public struct ImageStyle: Equatable {
 
 /// Table styling
 public struct TableStyle: Equatable {
+    /// Font weight for header row cells
     public var headerFontWeight: Font.Weight
+    /// Background color for header row (reserved for future use)
     public var headerBackgroundColor: Color
+    /// Padding around cell content (reserved for future use)
     public var cellPadding: CGFloat
+    /// Color for cell separators
     public var separatorColor: Color
+    /// Width of separator lines (reserved for future use)
     public var separatorWidth: CGFloat
+    /// Alternating row background color (reserved for future use)
     public var alternateRowColor: Color?
 
     public init(
@@ -291,8 +297,11 @@ public struct TableStyle: Equatable {
 
 /// Horizontal rule styling
 public struct HorizontalRuleStyle: Equatable {
+    /// Color of the horizontal rule line
     public var color: Color
+    /// Height/thickness of the rule (reserved for future use when using graphical rendering)
     public var height: CGFloat
+    /// Vertical padding above and below the rule (reserved for future use)
     public var verticalPadding: CGFloat
 
     public init(

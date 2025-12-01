@@ -160,4 +160,4 @@ fastlane sync_certificates
 - Create PR should always use English
 - **CHANGELOG.md is required** for all releases - the build will fail if the current version is missing from the changelog
 - Always install to Gray'iPhone if it connected, otherwise install to simulator
-- the coresponding android project located in ../v2er-android
+- The corresponding Android project is located in ../v2er-android

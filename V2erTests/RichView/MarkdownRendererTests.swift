@@ -187,6 +187,45 @@ class MarkdownRendererTests: XCTestCase {
         XCTAssertTrue(string.contains("3. Third"))
     }
 
+    // MARK: - HTML Tag Rendering Tests
+
+    func testUnderlineRendering() throws {
+        let markdown = "This has <u>underlined</u> text"
+        let attributed = try renderer.render(markdown)
+
+        let string = String(attributed.characters)
+        XCTAssertTrue(string.contains("underlined"))
+        // The underline should be rendered (no HTML tags in output)
+        XCTAssertFalse(string.contains("<u>"))
+        XCTAssertFalse(string.contains("</u>"))
+    }
+
+    func testSuperscriptRendering() throws {
+        let markdown = "x<sup>2</sup> + y<sup>3</sup>"
+        let attributed = try renderer.render(markdown)
+
+        let string = String(attributed.characters)
+        XCTAssertTrue(string.contains("x"))
+        XCTAssertTrue(string.contains("2"))
+        XCTAssertTrue(string.contains("3"))
+        // The superscript should be rendered (no HTML tags in output)
+        XCTAssertFalse(string.contains("<sup>"))
+        XCTAssertFalse(string.contains("</sup>"))
+    }
+
+    func testSubscriptRendering() throws {
+        let markdown = "H<sub>2</sub>O"
+        let attributed = try renderer.render(markdown)
+
+        let string = String(attributed.characters)
+        XCTAssertTrue(string.contains("H"))
+        XCTAssertTrue(string.contains("2"))
+        XCTAssertTrue(string.contains("O"))
+        // The subscript should be rendered (no HTML tags in output)
+        XCTAssertFalse(string.contains("<sub>"))
+        XCTAssertFalse(string.contains("</sub>"))
+    }
+
     // MARK: - Mixed Content Tests
 
     func testMixedFormattingRendering() throws {
@@ -287,7 +326,7 @@ class MarkdownRendererTests: XCTestCase {
         let attributed = try renderer.render(markdown)
 
         let string = String(attributed.characters)
-        XCTAssertTrue(string.contains("—"))
+        XCTAssertTrue(string.contains("─")) // Box drawing character
     }
 
     // MARK: - Performance Tests
