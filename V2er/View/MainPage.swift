@@ -60,49 +60,47 @@ struct MainPage: StateView {
     var body: some View {
         NavigationStack {
             ZStack {
-                TabView(selection: tabSelection) {
-                    // Feed Tab
-                    pageWithTopBar(
+                VStack(spacing: 0) {
+                    // TopBar outside TabView to ensure it updates immediately
+                    TopBar(selectedTab: state.selectedTab, feedFilterTab: store.appState.feedState.selectedTab)
+
+                    TabView(selection: tabSelection) {
+                        // Feed Tab
                         FeedPage(selecedTab: state.selectedTab)
-                    )
-                    .tabItem {
-                        Label("最新", systemImage: "newspaper")
-                    }
-                    .tag(TabId.feed)
+                            .tabItem {
+                                Label("最新", systemImage: "newspaper")
+                            }
+                            .tag(TabId.feed)
 
-                    // Explore Tab
-                    pageWithTopBar(
+                        // Explore Tab
                         ExplorePage(selecedTab: state.selectedTab)
-                    )
-                    .tabItem {
-                        Label("发现", systemImage: "safari")
-                    }
-                    .tag(TabId.explore)
+                            .tabItem {
+                                Label("发现", systemImage: "safari")
+                            }
+                            .tag(TabId.explore)
 
-                    // Message Tab
-                    pageWithTopBar(
+                        // Message Tab
                         MessagePage(selecedTab: state.selectedTab)
-                    )
-                    .tabItem {
-                        if unReadNums > 0 {
-                            Label("通知", systemImage: "bell")
-                                .badge(unReadNums)
-                        } else {
-                            Label("通知", systemImage: "bell")
-                        }
-                    }
-                    .tag(TabId.message)
+                            .tabItem {
+                                if unReadNums > 0 {
+                                    Label("通知", systemImage: "bell")
+                                        .badge(unReadNums)
+                                } else {
+                                    Label("通知", systemImage: "bell")
+                                }
+                            }
+                            .tag(TabId.message)
 
-                    // Me Tab
-                    pageWithTopBar(
+                        // Me Tab
                         MePage(selecedTab: state.selectedTab)
-                    )
-                    .tabItem {
-                        Label("我", systemImage: "person")
+                            .tabItem {
+                                Label("我", systemImage: "person")
+                            }
+                            .tag(TabId.me)
                     }
-                    .tag(TabId.me)
+                    .accentColor(Color.primary)  // This controls the selected icon color in TabView
                 }
-                .accentColor(Color.primary)  // This controls the selected icon color in TabView
+                .ignoresSafeArea(.container, edges: .top)
 
                 // Filter menu overlay - only render when needed
                 if state.selectedTab == .feed && store.appState.feedState.showFilterMenu {
@@ -125,15 +123,6 @@ struct MainPage: StateView {
             }
             .navigationBarHidden(true)
         }
-    }
-
-    @ViewBuilder
-    private func pageWithTopBar<Content: View>(_ content: Content) -> some View {
-        VStack(spacing: 0) {
-            TopBar(selectedTab: state.selectedTab)
-            content
-        }
-        .ignoresSafeArea(.container, edges: .top)
     }
 
 }
