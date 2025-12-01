@@ -32,6 +32,34 @@ class V2erUITests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
 
+    func testFeedNavigationStaysOpen() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        // Wait for feed to load by waiting for the first comment label to appear
+        let commentLabels = app.staticTexts.matching(NSPredicate(format: "label CONTAINS '评论'"))
+        let firstCommentLabel = commentLabels.element(boundBy: 0)
+        XCTAssertTrue(firstCommentLabel.waitForExistence(timeout: 15), "Feed should load and show at least one comment label")
+
+        // Tap on the first comment label's parent area
+        firstCommentLabel.tap()
+
+        // Wait for navigation animation by waiting for detail page element to appear
+        let topicLabel = app.staticTexts["话题"]
+        let replyPlaceholder = app.textViews.firstMatch
+        let appeared = topicLabel.waitForExistence(timeout: 5) || replyPlaceholder.waitForExistence(timeout: 5)
+        XCTAssertTrue(appeared, "Detail page did not appear after tapping comment label")
+
+        // Wait to verify page stays open (the original bug was page dismissing immediately)
+        let expectation = XCTestExpectation(description: "Wait 3 seconds to verify detail page stays open")
+        let result = XCTWaiter.wait(for: [expectation], timeout: 3.0)
+        XCTAssertEqual(result, .timedOut, "Expected to wait full 3 seconds")
+
+        // Verify still on detail page
+        let stillOnDetail = topicLabel.exists || replyPlaceholder.exists
+        XCTAssertTrue(stillOnDetail, "Detail page should remain open after 3 seconds")
+    }
+
     func testLaunchPerformance() throws {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, *) {
             // This measures how long it takes to launch your application.

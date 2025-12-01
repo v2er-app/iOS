@@ -58,7 +58,7 @@ struct MainPage: StateView {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 TabView(selection: tabSelection) {
                     // Feed Tab

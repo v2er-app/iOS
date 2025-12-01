@@ -45,9 +45,7 @@ struct RecentItemView<Data: FeedItemProtocol>: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
-                NavigationLink(destination: UserDetailPage(userId: data.userName.safe)) {
-                    AvatarView(url: data.avatar)
-                }
+                AvatarView(url: data.avatar)
                 VStack(alignment: .leading, spacing: 5) {
                     Text(data.userName.safe)
                         .lineLimit(1)
@@ -57,7 +55,9 @@ struct RecentItemView<Data: FeedItemProtocol>: View {
                         .foregroundColor(Color.tintColor)
                 }
                 Spacer()
-                NodeView(id: data.nodeId.safe, name: data.nodeName.safe)
+                Text(data.nodeName.safe)
+                    .font(.footnote)
+                    .foregroundColor(.gray)
             }
             Text(data.title.safe)
                 .greedyWidth(.leading)

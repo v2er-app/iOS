@@ -10,13 +10,11 @@ import SwiftUI
 
 struct FeedItemView<Data: FeedItemProtocol>: View {
     let data: Data
-    
+
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
-                NavigationLink(destination: UserDetailPage(userId: data.userName ?? .empty)) {
-                    AvatarView(url: data.avatar)
-                }
+                AvatarView(url: data.avatar)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(data.userName.safe)
                         .font(.footnote)
@@ -26,7 +24,9 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
                 .lineLimit(1)
                 .foregroundColor(Color.tintColor)
                 Spacer()
-                NodeView(id: data.nodeId.safe, name: data.nodeName.safe)
+                Text(data.nodeName.safe)
+                    .font(.footnote)
+                    .foregroundColor(.gray)
             }
             Text(data.title.safe)
 //                .fontWeight(.medium)
