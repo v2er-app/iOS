@@ -112,7 +112,7 @@ struct UpdatableView<Content: View>: View {
     private func onScroll(point: CGPoint) {
         let newScrollY = point.y
 
-        // Detect bottom overscroll - skip state updates to prevent LazyVStack jumping
+        // Detect bottom overscroll - skip state updates to prevent content jumping during bottom overscroll
         let isBottomOverscroll = boundsDelta > 0 && newScrollY < -boundsDelta - 5
         if isBottomOverscroll {
             lastScrollY = newScrollY

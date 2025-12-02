@@ -85,7 +85,7 @@ struct AuthorInfoView: View {
         .background(
             Group {
                 NavigationLink(destination: TagDetailPage(tag: tag, tagId: tagId), isActive: $navigateToTag) { EmptyView() }
-                NavigationLink(destination: UserDetailPage(userId: data?.userName ?? .empty), isActive: $navigateToUser) { EmptyView() }
+                NavigationLink(destination: UserDetailPage(userId: userName), isActive: $navigateToUser) { EmptyView() }
             }
             .hidden()
         )

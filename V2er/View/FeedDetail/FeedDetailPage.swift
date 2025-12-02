@@ -9,6 +9,13 @@
 import SwiftUI
 import SafariServices
 
+private struct ScrollOffsetPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Environment(\.isPresented) private var isPresented
     @Environment(\.dismiss) var dismiss
@@ -107,6 +114,14 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.itemBg)
+                .background(
+                    GeometryReader { geometry in
+                        Color.clear.preference(
+                            key: ScrollOffsetPreferenceKey.self,
+                            value: geometry.frame(in: .named("listScroll")).minY
+                        )
+                    }
+                )
 
             // Content Section
             if !isContentEmpty {
@@ -165,6 +180,12 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .onTapGesture {
             replyIsFocused = false
+        }
+        .coordinateSpace(name: "listScroll")
+        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { offset in
+            withAnimation {
+                hideTitleViews = offset > -100
+            }
         }
     }
 
