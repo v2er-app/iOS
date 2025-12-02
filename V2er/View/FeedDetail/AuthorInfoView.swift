@@ -44,11 +44,16 @@ struct AuthorInfoView: View {
         return result
     }
 
+    @State private var navigateToTag = false
+    @State private var navigateToUser = false
+
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
-                    AvatarView(url: avatar, size: 38)
-                    .to { UserDetailPage(userId: data?.userName ?? .empty) }
+                AvatarView(url: avatar, size: 38)
+                    .onTapGesture {
+                        navigateToUser = true
+                    }
                 VStack(alignment: .leading, spacing: 5) {
                     Text(userName)
                         .lineLimit(1)
@@ -57,15 +62,16 @@ struct AuthorInfoView: View {
                         .font(.caption2)
                 }
                 Spacer()
-                NavigationLink(destination: TagDetailPage(tag: tag, tagId: tagId)) {
-                    Text(tag)
-                        .font(.footnote)
-                        .foregroundColor(.primaryText)
-                        .lineLimit(1)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(Color.lightGray)
-                }
+                Text(tag)
+                    .font(.footnote)
+                    .foregroundColor(.primaryText)
+                    .lineLimit(1)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Color.lightGray)
+                    .onTapGesture {
+                        navigateToTag = true
+                    }
             }
             Text(title)
                 .font(.headline)
@@ -76,6 +82,13 @@ struct AuthorInfoView: View {
         }
         .padding(10)
         .background(Color.itemBg)
+        .background(
+            Group {
+                NavigationLink(destination: TagDetailPage(tag: tag, tagId: tagId), isActive: $navigateToTag) { EmptyView() }
+                NavigationLink(destination: UserDetailPage(userId: data?.userName ?? .empty), isActive: $navigateToUser) { EmptyView() }
+            }
+            .hidden()
+        )
     }
 }
 

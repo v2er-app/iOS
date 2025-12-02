@@ -29,6 +29,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     }
     @State var hideTitleViews = true
     @State var isKeyboardVisiable = false
+    @State private var isLoadingMore = false
     @FocusState private var replyIsFocused: Bool
     var initData: FeedInfo.Item? = nil
     var id: String
@@ -68,29 +69,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
     @ViewBuilder
     private var contentView: some View {
-        VStack (spacing: 0) {
-            VStack(spacing: 0) {
-                AuthorInfoView(initData: initData, data: state.model.headerInfo)
-                if !isContentEmpty {
-                    NewsContentView(state.model.contentInfo, rendered: $rendered)
-                        .padding(.horizontal, 10)
-                }
-                replayListView
-                    .padding(.top, 8)
-            }
-            .background(showProgressView ? .clear : Color.itemBg)
-            .updatable(autoRefresh: showProgressView, hasMoreData: state.hasMoreData) {
-                await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
-            } loadMore: {
-                await run(action: FeedDetailActions.LoadMore.Start(id: instanceId, feedId: initData?.id, willLoadPage: state.willLoadPage))
-            } onScroll: { scrollY in
-                withAnimation {
-                    hideTitleViews = !(scrollY <= -100)
-                }
-            }
-            .onTapGesture {
-                replyIsFocused = false
-            }
+        VStack(spacing: 0) {
+            listContentView
             replyBar
         }
         .safeAreaInset(edge: .top, spacing: 0) {
@@ -98,7 +78,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)
-
         .onChange(of: state.ignored) { ignored in
             if ignored {
                 dismiss()
@@ -117,6 +96,75 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 data = initData
             }
             dispatch(MyRecentActions.RecordAction(data: data))
+        }
+    }
+
+    @ViewBuilder
+    private var listContentView: some View {
+        List {
+            // Header Section
+            AuthorInfoView(initData: initData, data: state.model.headerInfo)
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.itemBg)
+
+            // Content Section
+            if !isContentEmpty {
+                NewsContentView(state.model.contentInfo, rendered: $rendered)
+                    .padding(.horizontal, 10)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBg)
+            }
+
+            // Reply Section
+            ForEach(state.model.replyInfo.items) { item in
+                ReplyItemView(info: item)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBg)
+            }
+
+            // Load More Indicator
+            if state.hasMoreData {
+                HStack {
+                    Spacer()
+                    if isLoadingMore {
+                        ProgressView()
+                    }
+                    Spacer()
+                }
+                .frame(height: 50)
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.itemBg)
+                .onAppear {
+                    guard !isLoadingMore else { return }
+                    isLoadingMore = true
+                    Task {
+                        await run(action: FeedDetailActions.LoadMore.Start(id: instanceId, feedId: initData?.id, willLoadPage: state.willLoadPage))
+                        await MainActor.run {
+                            isLoadingMore = false
+                        }
+                    }
+                }
+            }
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color.itemBg)
+        .environment(\.defaultMinListRowHeight, 1)
+        .refreshable {
+            await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
+        }
+        .overlay {
+            if showProgressView {
+                ProgressView()
+                    .scaleEffect(1.5)
+            }
+        }
+        .onTapGesture {
+            replyIsFocused = false
         }
     }
 
@@ -260,14 +308,4 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .visualBlur()
     }
-
-    @ViewBuilder
-    private var replayListView: some View {
-        LazyVStack(spacing: 0) {
-            ForEach(state.model.replyInfo.items) { item in
-                ReplyItemView(info: item)
-            }
-        }
-    }
-
 }
