@@ -423,36 +423,19 @@ public class HTMLToMarkdownConverter {
 
         // Preserve markdown image syntax ![alt](url) and link syntax [text](url)
         // by splitting text around these patterns
-        let imagePattern = /!\[[^\]]*\]\([^)]+\)/
-        let linkPattern = /\[[^\]]*\]\([^)]+\)/
+        // Use a single regex pass to find both images and links (images start with !)
+        let combinedPattern = /!?\[[^\]]*\]\([^)]+\)/
 
         var result = ""
         var currentIndex = text.startIndex
 
         // Find all markdown image and link patterns to preserve
         var preservedRanges: [(Range<String.Index>, String)] = []
-
-        // Find images first (they have higher priority due to ! prefix)
         var searchStart = text.startIndex
-        while let match = text[searchStart...].firstMatch(of: imagePattern) {
+        while let match = text[searchStart...].firstMatch(of: combinedPattern) {
             preservedRanges.append((match.range, String(match.output)))
             searchStart = match.range.upperBound
         }
-
-        // Find links that don't overlap with images
-        searchStart = text.startIndex
-        while let match = text[searchStart...].firstMatch(of: linkPattern) {
-            let overlaps = preservedRanges.contains { range, _ in
-                range.overlaps(match.range)
-            }
-            if !overlaps {
-                preservedRanges.append((match.range, String(match.output)))
-            }
-            searchStart = match.range.upperBound
-        }
-
-        // Sort by position
-        preservedRanges.sort { $0.0.lowerBound < $1.0.lowerBound }
 
         // Build result by escaping text between preserved ranges
         for (range, preserved) in preservedRanges {
