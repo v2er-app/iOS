@@ -88,12 +88,21 @@ public class HTMLToMarkdownConverter {
                     result += "*\(content)*"
 
                 case "a":
-                    // Get raw text without escaping for links
-                    let text = try childElement.text()
-                    if let href = try? childElement.attr("href") {
-                        result += "[\(text)](\(href))"
+                    // Check if this link wraps an image (common V2EX pattern)
+                    if let img = try? childElement.select("img").first(),
+                       let src = try? img.attr("src"), !src.isEmpty {
+                        // Link wrapping an image - output as markdown image
+                        // The image will be clickable via onImageTapped handler
+                        let alt = (try? img.attr("alt")) ?? "image"
+                        result += "![\(alt)](\(src))"
                     } else {
-                        result += text
+                        // Regular link with text
+                        let text = try childElement.text()
+                        if let href = try? childElement.attr("href") {
+                            result += "[\(text)](\(href))"
+                        } else {
+                            result += text
+                        }
                     }
 
                 case "code":
@@ -406,18 +415,56 @@ public class HTMLToMarkdownConverter {
         // Only escape characters that would cause markdown parsing issues
         // Don't escape common characters like . and - as they rarely cause problems
         // and escaping them breaks URLs and normal text readability
-        var escaped = text
 
         // Don't escape inside code blocks
-        if !text.contains("```") && !text.contains("`") {
-            // Only escape the most problematic markdown characters
-            // Avoid escaping . and - as they appear frequently in URLs and text
-            let charactersToEscape = ["\\", "*", "_", "[", "]"]
-            for char in charactersToEscape {
-                escaped = escaped.replacingOccurrences(of: char, with: "\\\(char)")
-            }
+        if text.contains("```") || text.contains("`") {
+            return text
         }
 
+        // Preserve markdown image syntax ![alt](url) and link syntax [text](url)
+        // by splitting text around these patterns
+        // Use a single regex pass to find both images and links (images start with !)
+        let combinedPattern = /!?\[[^\]]*\]\([^)]+\)/
+
+        var result = ""
+        var currentIndex = text.startIndex
+
+        // Find all markdown image and link patterns to preserve
+        var preservedRanges: [(Range<String.Index>, String)] = []
+        var searchStart = text.startIndex
+        while let match = text[searchStart...].firstMatch(of: combinedPattern) {
+            preservedRanges.append((match.range, String(match.output)))
+            searchStart = match.range.upperBound
+        }
+
+        // Build result by escaping text between preserved ranges
+        for (range, preserved) in preservedRanges {
+            // Escape text before this preserved range
+            if currentIndex < range.lowerBound {
+                let textBefore = String(text[currentIndex..<range.lowerBound])
+                result += escapeMarkdownCharacters(textBefore)
+            }
+            // Add preserved markdown syntax as-is
+            result += preserved
+            currentIndex = range.upperBound
+        }
+
+        // Escape remaining text after last preserved range
+        if currentIndex < text.endIndex {
+            let remainingText = String(text[currentIndex...])
+            result += escapeMarkdownCharacters(remainingText)
+        }
+
+        return result
+    }
+
+    /// Escape markdown characters in plain text (not in markdown syntax)
+    private func escapeMarkdownCharacters(_ text: String) -> String {
+        var escaped = text
+        let charactersToEscape = ["\\", "*", "_", "[", "]"]
+        for char in charactersToEscape {
+            escaped = escaped.replacingOccurrences(of: char, with: "\\\(char)")
+        }
         return escaped
     }
 
