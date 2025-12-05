@@ -26,9 +26,10 @@ struct LoadmoreIndicatorView: View {
             } else if isLoading {
                 ActivityIndicator()
             } else {
-                // hide
+                Color.clear
             }
         }
+        .frame(height: 20)
         .padding()
         .greedyWidth()
         .background(Color.itemBg)

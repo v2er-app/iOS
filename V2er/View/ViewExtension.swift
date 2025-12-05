@@ -292,18 +292,25 @@ extension View {
 struct NavigationLinkModifider<Destination: View>: ViewModifier {
     var `if`: Binding<Bool>?
     let destination: Destination
+    @State private var isActive = false
 
     func body(content: Content) -> some View {
-        if `if` == nil {
-            NavigationLink {
-                destination
-            } label: {
-                content
-            }
+        if let binding = `if` {
+            content
+                .background(
+                    NavigationLink(destination: destination, isActive: binding) { EmptyView() }
+                        .hidden()
+                )
         } else {
-            NavigationLink(destination: destination, isActive: `if`!) {
-                EmptyView()
-            }
+            content
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    isActive = true
+                }
+                .background(
+                    NavigationLink(destination: destination, isActive: $isActive) { EmptyView() }
+                        .hidden()
+                )
         }
     }
 }

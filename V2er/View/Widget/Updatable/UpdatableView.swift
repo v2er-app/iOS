@@ -70,7 +70,7 @@ struct UpdatableView<Content: View>: View {
                             }
                         }
                     }
-                    .alignmentGuide(.top, computeValue: { d in (self.isRefreshing ? (-self.threshold + scrollY) : 0.0) })
+                    .alignmentGuide(.top, computeValue: { d in (self.isRefreshing ? -self.threshold : 0.0) })
                     if refreshable {
                         HeadIndicatorView(threshold: threshold, progress: $progress, scrollY: scrollY, isRefreshing: $isRefreshing, onlineStats: onlineStats)
                     }
@@ -110,16 +110,25 @@ struct UpdatableView<Content: View>: View {
     }
     
     private func onScroll(point: CGPoint) {
-        scrollY = point.y
+        let newScrollY = point.y
+
+        // Detect bottom overscroll - skip state updates to prevent content jumping during bottom overscroll
+        let isBottomOverscroll = boundsDelta > 0 && newScrollY < -boundsDelta - 5
+        if isBottomOverscroll {
+            lastScrollY = newScrollY
+            return
+        }
+
+        scrollY = newScrollY
         onScroll?(scrollY)
         //        log("scrollY: \(scrollY), lastScrollY: \(lastScrollY), isRefreshing: \(isRefreshing), boundsDelta:\(boundsDelta)")
         progress = min(1, max(scrollY / threshold, 0))
-        
+
         if progress == 1 && scrollY > lastScrollY && !hapticed {
             hapticed = true
             hapticFeedback(.soft)
         }
-        
+
         if refreshable && !isRefreshing
             && scrollY <= threshold
             && lastScrollY > threshold {
@@ -128,7 +137,7 @@ struct UpdatableView<Content: View>: View {
             // Record whether online stats existed before refresh
             let hadOnlineStatsBefore = onlineStats != nil
             previousOnlineCount = onlineStats?.onlineCount
-            
+
             Task {
                 await onRefresh?()
                 // Minimum 800ms delay for refresh animation, 1000ms if online stats exist
@@ -141,7 +150,7 @@ struct UpdatableView<Content: View>: View {
                 }
             }
         }
-        
+
         if loadMoreable
             && state.hasMoreData
             && boundsDelta >= 0
@@ -156,8 +165,8 @@ struct UpdatableView<Content: View>: View {
                 }
             }
         }
-        
-        lastScrollY = scrollY
+
+        lastScrollY = newScrollY
     }
     
 }

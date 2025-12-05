@@ -18,7 +18,7 @@ struct HeadIndicatorView: View {
     @State private var animatedOnlineCount: Int = 0
 
     var offset: CGFloat {
-        return isRefreshing ? (0 - scrollY) : -height
+        return isRefreshing ? 0 : -height
     }
 
     init(threshold: CGFloat, progress: Binding<CGFloat>, scrollY: CGFloat, isRefreshing: Binding<Bool>, onlineStats: OnlineStatsInfo? = nil) {
