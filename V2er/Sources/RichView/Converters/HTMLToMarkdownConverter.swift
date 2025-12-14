@@ -290,6 +290,19 @@ public class HTMLToMarkdownConverter {
                     let content = try convertElement(childElement)
                     result += "\n**\(content)**\n"
 
+                // Input elements (checkboxes for task lists)
+                case "input":
+                    let inputType = (try? childElement.attr("type"))?.lowercased() ?? ""
+                    if inputType == "checkbox" {
+                        let isChecked = childElement.hasAttr("checked")
+                        result += isChecked ? "[x] " : "[ ] "
+                    }
+                    // Other input types are ignored (form elements don't render in content)
+
+                // Label elements - just show the text content
+                case "label":
+                    result += try convertElement(childElement)
+
                 // Container elements - just process children
                 case "div", "span", "body", "html", "article", "section", "nav", "aside",
                      "header", "footer", "main", "caption":

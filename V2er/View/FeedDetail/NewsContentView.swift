@@ -131,7 +131,8 @@ struct NewsContentView: View {
     }
 
     private func configurationForAppearance() -> RenderConfiguration {
-        var config = RenderConfiguration.default
+        // Use V2EX stylesheet which has heading sizes matching Android
+        var config = RenderConfiguration(stylesheet: .v2ex)
 
         // Determine dark mode based on app appearance setting
         let appearance = store.appState.settingState.appearance

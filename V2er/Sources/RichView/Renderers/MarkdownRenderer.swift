@@ -66,10 +66,24 @@ public class MarkdownRenderer {
                 attributedString.append(renderCodeBlock(codeBlock))
                 index += linesConsumed
                 continue
-            } else if line.starts(with: "> ") {
-                // Blockquote
-                let content = String(line.dropFirst(2))
-                attributedString.append(renderBlockquote(content))
+            } else if line.trimmingCharacters(in: .whitespaces).starts(with: ">") {
+                // Blockquote - handle "> ", ">", ">> ", etc.
+                var content = line.trimmingCharacters(in: .whitespaces)
+                var depth = 0
+                // Strip leading > characters and spaces
+                while content.starts(with: ">") {
+                    content = String(content.dropFirst())
+                    depth += 1
+                    // Remove space after >
+                    if content.starts(with: " ") {
+                        content = String(content.dropFirst())
+                    }
+                }
+                content = content.trimmingCharacters(in: .whitespaces)
+                // Only render if there's actual content or if it's a continuation
+                if !content.isEmpty {
+                    attributedString.append(renderBlockquote(content, depth: depth))
+                }
             } else if line.starts(with: "- ") || line.starts(with: "* ") {
                 // Unordered list
                 let content = String(line.dropFirst(2))
@@ -89,7 +103,10 @@ public class MarkdownRenderer {
             } else {
                 // Regular paragraph with inline formatting
                 attributedString.append(renderInlineMarkdown(line))
-                attributedString.append(AttributedString("\n"))
+                // Only add newline if there are more lines to process
+                if index < lines.count - 1 {
+                    attributedString.append(AttributedString("\n"))
+                }
             }
 
             index += 1
@@ -156,28 +173,42 @@ public class MarkdownRenderer {
 
     // MARK: - Blockquote Rendering
 
-    private func renderBlockquote(_ text: String) -> AttributedString {
-        var attributed = renderInlineMarkdown(text)
+    private func renderBlockquote(_ text: String, depth: Int = 1) -> AttributedString {
+        var result = AttributedString()
 
-        // Apply blockquote styling
-        attributed.font = .system(size: stylesheet.blockquote.fontSize)
-        attributed.foregroundColor = stylesheet.blockquote.borderColor.uiColor
-        attributed.backgroundColor = stylesheet.blockquote.backgroundColor.uiColor
+        // Add visual indent/border indicator based on depth
+        let indent = String(repeating: "┃ ", count: depth)
+        var indentAttr = AttributedString(indent)
+        indentAttr.foregroundColor = stylesheet.blockquote.borderColor.uiColor
 
-        attributed.append(AttributedString("\n"))
+        result.append(indentAttr)
 
-        return attributed
+        // Render the content
+        if text.isEmpty {
+            // Empty blockquote line - just show the border
+            result.append(AttributedString("\n"))
+        } else {
+            var contentAttr = renderInlineMarkdown(text)
+            contentAttr.font = .system(size: stylesheet.blockquote.fontSize)
+            contentAttr.foregroundColor = stylesheet.body.color.uiColor
+            result.append(contentAttr)
+            result.append(AttributedString("\n"))
+        }
+
+        return result
     }
 
     // MARK: - Horizontal Rule Rendering
 
     private func renderHorizontalRule() -> AttributedString {
-        var attributed = AttributedString("\n")
-        var line = AttributedString(String(repeating: "─", count: 40))
+        // Use Unicode box drawing light horizontal line (U+2500)
+        // Single line with proper spacing
+        var line = AttributedString("────────────────────────────────────────────────────────────────────────────────")
         line.foregroundColor = stylesheet.horizontalRule.color.uiColor
-        attributed.append(line)
-        attributed.append(AttributedString("\n\n"))
-        return attributed
+        var result = AttributedString("\n")
+        result.append(line)
+        result.append(AttributedString("\n"))
+        return result
     }
 
     // MARK: - List Rendering
