@@ -44,8 +44,7 @@ public struct RichContentView: View {
     public var body: some View {
         Group {
             if isLoading {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                EmptyView()
             } else if let error = error {
                 ErrorView(error: error)
             } else if !contentElements.isEmpty {
