@@ -214,6 +214,11 @@ public class MarkdownRenderer {
     // MARK: - List Rendering
 
     private func renderListItem(_ text: String, ordered: Bool, number: Int) -> AttributedString {
+        // Check for task list item (checkbox)
+        if let (isChecked, content) = extractCheckbox(from: text) {
+            return renderCheckboxItem(content: content, isChecked: isChecked)
+        }
+
         let bullet = ordered ? "\(number). " : "• "
         var attributed = AttributedString(bullet)
 
@@ -227,6 +232,45 @@ public class MarkdownRenderer {
         attributed.append(AttributedString("\n"))
 
         return attributed
+    }
+
+    /// Extract checkbox state from task list item
+    private func extractCheckbox(from text: String) -> (isChecked: Bool, content: String)? {
+        let trimmed = text.trimmingCharacters(in: .whitespaces)
+
+        // Check for [x] or [X] (checked)
+        if trimmed.hasPrefix("[x] ") || trimmed.hasPrefix("[X] ") {
+            return (true, String(trimmed.dropFirst(4)))
+        }
+
+        // Check for [ ] (unchecked)
+        if trimmed.hasPrefix("[ ] ") {
+            return (false, String(trimmed.dropFirst(4)))
+        }
+
+        return nil
+    }
+
+    /// Render a checkbox item with visual indicator
+    private func renderCheckboxItem(content: String, isChecked: Bool) -> AttributedString {
+        var result = AttributedString()
+
+        // Use SF Symbol-like Unicode characters for checkbox appearance
+        // ✓ with circle for checked, ○ for unchecked
+        let checkboxSymbol = isChecked ? "✓ " : "○ "
+        var checkboxAttr = AttributedString(checkboxSymbol)
+
+        if isChecked {
+            checkboxAttr.foregroundColor = stylesheet.list.checkboxCheckedColor.uiColor
+        } else {
+            checkboxAttr.foregroundColor = stylesheet.list.checkboxUncheckedColor.uiColor
+        }
+
+        result.append(checkboxAttr)
+        result.append(renderInlineMarkdown(content))
+        result.append(AttributedString("\n"))
+
+        return result
     }
 
     // MARK: - Inline Markdown Rendering
