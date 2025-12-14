@@ -197,6 +197,18 @@ public actor RenderActor {
                 continue
             }
 
+            // Table
+            if line.starts(with: "|") && line.hasSuffix("|") {
+                let (tableRows, linesConsumed, hasHeader) = self.extractTableBlock(lines, startIndex: index)
+                if !tableRows.isEmpty {
+                    elements.append(ContentElement(
+                        type: .table(rows: tableRows, hasHeader: hasHeader)
+                    ))
+                }
+                index += linesConsumed
+                continue
+            }
+
             // Regular text paragraph
             let renderer = MarkdownRenderer(
                 stylesheet: configuration.stylesheet,
@@ -211,6 +223,44 @@ public actor RenderActor {
         }
 
         return elements
+    }
+
+    /// Extract table block from markdown lines
+    private func extractTableBlock(_ lines: [String], startIndex: Int) -> ([[String]], Int, Bool) {
+        var rows: [[String]] = []
+        var index = startIndex
+        var hasHeader = false
+
+        while index < lines.count {
+            let line = lines[index]
+
+            // Check if line is a table row
+            guard line.starts(with: "|") && line.hasSuffix("|") else {
+                break
+            }
+
+            // Check for separator row (| --- | --- | or with colons for alignment)
+            if line.range(of: #"^\|\s*(:?-+:?)\s*(\|\s*(:?-+:?)\s*)*\|$"#, options: .regularExpression) != nil {
+                // Separator found - this means the first row is a header
+                hasHeader = true
+                index += 1
+                continue
+            }
+
+            // Parse cells
+            let cells = line
+                .trimmingCharacters(in: CharacterSet(charactersIn: "|"))
+                .components(separatedBy: "|")
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+
+            if !cells.isEmpty {
+                rows.append(cells)
+            }
+
+            index += 1
+        }
+
+        return (rows, index - startIndex, hasHeader)
     }
 }
 
