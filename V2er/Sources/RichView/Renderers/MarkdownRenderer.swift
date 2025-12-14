@@ -89,7 +89,10 @@ public class MarkdownRenderer {
             } else {
                 // Regular paragraph with inline formatting
                 attributedString.append(renderInlineMarkdown(line))
-                attributedString.append(AttributedString("\n"))
+                // Only add newline if there are more lines to process
+                if index < lines.count - 1 {
+                    attributedString.append(AttributedString("\n"))
+                }
             }
 
             index += 1

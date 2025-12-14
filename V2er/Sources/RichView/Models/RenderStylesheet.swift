@@ -430,8 +430,8 @@ extension RenderStylesheet {
                 h5Size: 13,
                 h6Size: 12,
                 fontWeight: .semibold,
-                topSpacing: 0,
-                bottomSpacing: 0,
+                topSpacing: 2,
+                bottomSpacing: 2,
                 color: Color.adaptive(
                     light: Color.black,
                     dark: Color(hex: "#7F8080")
@@ -518,7 +518,8 @@ extension RenderStylesheet {
                     light: Color(hex: "#f4f2f2"),
                     dark: Color(hex: "#202020")
                 ),
-                height: 0.8
+                height: 0.8,
+                verticalPadding: 2
             )
         )
     }()
