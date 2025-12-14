@@ -112,6 +112,14 @@ public struct RichContentView: View {
                 .fill(configuration.stylesheet.horizontalRule.color)
                 .frame(height: configuration.stylesheet.horizontalRule.height)
                 .padding(.vertical, configuration.stylesheet.horizontalRule.verticalPadding)
+
+        case .table(let rows, let hasHeader):
+            TableElementView(
+                rows: rows,
+                hasHeader: hasHeader,
+                style: configuration.stylesheet.table,
+                bodyStyle: configuration.stylesheet.body
+            )
         }
     }
 
@@ -177,6 +185,7 @@ public struct ContentElement: Identifiable {
         case image(ImageInfo)
         case heading(text: String, level: Int)
         case horizontalRule
+        case table(rows: [[String]], hasHeader: Bool)
 
         var isImage: Bool {
             if case .image = self { return true }
@@ -224,5 +233,54 @@ extension RichContentView {
         var view = self
         view.onRenderFailed = action
         return view
+    }
+}
+
+// MARK: - Table Element View
+
+@available(iOS 18.0, *)
+struct TableElementView: View {
+    let rows: [[String]]
+    let hasHeader: Bool
+    let style: TableStyle
+    let bodyStyle: TextStyle
+
+    var body: some View {
+        if rows.isEmpty {
+            EmptyView()
+        } else {
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
+                    let isHeader = hasHeader && rowIndex == 0
+
+                    HStack(spacing: 0) {
+                        ForEach(Array(row.enumerated()), id: \.offset) { cellIndex, cell in
+                            Text(cell)
+                                .font(.system(size: bodyStyle.fontSize, weight: isHeader ? style.headerFontWeight : bodyStyle.fontWeight))
+                                .foregroundColor(bodyStyle.color)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(style.cellPadding)
+                                .background(isHeader ? style.headerBackgroundColor : Color.clear)
+
+                            if cellIndex < row.count - 1 {
+                                Rectangle()
+                                    .fill(style.separatorColor)
+                                    .frame(width: style.separatorWidth)
+                            }
+                        }
+                    }
+
+                    if rowIndex < rows.count - 1 {
+                        Rectangle()
+                            .fill(style.separatorColor)
+                            .frame(height: style.separatorWidth)
+                    }
+                }
+            }
+            .overlay(
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(style.separatorColor, lineWidth: style.separatorWidth)
+            )
+        }
     }
 }

@@ -282,8 +282,8 @@ public struct TableStyle: Equatable {
         headerFontWeight: Font.Weight = .semibold,
         headerBackgroundColor: Color = .clear,
         cellPadding: CGFloat = 8,
-        separatorColor: Color = Color.gray.opacity(0.3),
-        separatorWidth: CGFloat = 0.5,
+        separatorColor: Color = Color.gray.opacity(0.5),
+        separatorWidth: CGFloat = 1.0,
         alternateRowColor: Color? = nil
     ) {
         self.headerFontWeight = headerFontWeight
@@ -396,9 +396,10 @@ extension RenderStylesheet {
             ),
             table: TableStyle(
                 separatorColor: Color.adaptive(
-                    light: Color.gray.opacity(0.3),
-                    dark: Color.gray.opacity(0.4)
-                )
+                    light: Color.gray.opacity(0.5),
+                    dark: Color.gray.opacity(0.6)
+                ),
+                separatorWidth: 1.0
             ),
             horizontalRule: HorizontalRuleStyle(
                 color: Color.adaptive(
@@ -508,10 +509,10 @@ extension RenderStylesheet {
             table: TableStyle(
                 headerFontWeight: .medium,
                 separatorColor: Color.adaptive(
-                    light: Color(hex: "#f4f2f2"),
-                    dark: Color(hex: "#202020")
+                    light: Color(hex: "#d0d7de"),
+                    dark: Color(hex: "#3d444d")
                 ),
-                separatorWidth: 0.5
+                separatorWidth: 1.0
             ),
             horizontalRule: HorizontalRuleStyle(
                 color: Color.adaptive(
