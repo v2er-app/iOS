@@ -209,17 +209,25 @@ public struct ListStyle: Equatable {
     public var itemSpacing: CGFloat
     public var bulletColor: Color
     public var numberColor: Color
+    /// Color for checked checkbox
+    public var checkboxCheckedColor: Color
+    /// Color for unchecked checkbox
+    public var checkboxUncheckedColor: Color
 
     public init(
         indentWidth: CGFloat = 20,
         itemSpacing: CGFloat = 4,
         bulletColor: Color = .primary,
-        numberColor: Color = .primary
+        numberColor: Color = .primary,
+        checkboxCheckedColor: Color = Color(hex: "#34C759"),
+        checkboxUncheckedColor: Color = Color.gray.opacity(0.5)
     ) {
         self.indentWidth = indentWidth
         self.itemSpacing = itemSpacing
         self.bulletColor = bulletColor
         self.numberColor = numberColor
+        self.checkboxCheckedColor = checkboxCheckedColor
+        self.checkboxUncheckedColor = checkboxUncheckedColor
     }
 }
 
@@ -487,6 +495,14 @@ extension RenderStylesheet {
                 numberColor: Color.adaptive(
                     light: Color(hex: "#555555"),
                     dark: Color.white.opacity(0.9)
+                ),
+                checkboxCheckedColor: Color.adaptive(
+                    light: Color(hex: "#34C759"),
+                    dark: Color(hex: "#32D74B")
+                ),
+                checkboxUncheckedColor: Color.adaptive(
+                    light: Color.gray.opacity(0.5),
+                    dark: Color.gray.opacity(0.6)
                 )
             ),
             mention: MentionStyle(
