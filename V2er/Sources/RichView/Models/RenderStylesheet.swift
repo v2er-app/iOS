@@ -415,8 +415,8 @@ extension RenderStylesheet {
             body: TextStyle(
                 fontSize: 16,
                 fontWeight: .regular,
-                lineSpacing: 0,
-                paragraphSpacing: 0,
+                lineSpacing: 2,
+                paragraphSpacing: 2,
                 color: Color.adaptive(
                     light: Color(hex: "#555555"),
                     dark: Color.white.opacity(0.9)
