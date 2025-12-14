@@ -167,6 +167,15 @@ public actor RenderActor {
                 continue
             }
 
+            // Horizontal rule
+            if line.trimmingCharacters(in: .whitespaces).starts(with: "---") ||
+               line.trimmingCharacters(in: .whitespaces).starts(with: "***") ||
+               line.trimmingCharacters(in: .whitespaces).starts(with: "___") {
+                elements.append(ContentElement(type: .horizontalRule))
+                index += 1
+                continue
+            }
+
             // Heading
             if let headingMatch = line.firstMatch(of: /^(#{1,6})\s+(.+)/) {
                 let level = headingMatch.1.count

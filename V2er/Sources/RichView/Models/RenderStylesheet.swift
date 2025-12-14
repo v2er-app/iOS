@@ -415,8 +415,8 @@ extension RenderStylesheet {
             body: TextStyle(
                 fontSize: 16,
                 fontWeight: .regular,
-                lineSpacing: 4,
-                paragraphSpacing: 8,
+                lineSpacing: 2,
+                paragraphSpacing: 4,
                 color: Color.adaptive(
                     light: Color(hex: "#555555"),
                     dark: Color.white.opacity(0.9)
@@ -427,11 +427,11 @@ extension RenderStylesheet {
                 h2Size: 18,
                 h3Size: 16,
                 h4Size: 15,
-                h5Size: 12,
-                h6Size: 10,
-                fontWeight: .medium,
-                topSpacing: 15,
-                bottomSpacing: 15,
+                h5Size: 13,
+                h6Size: 12,
+                fontWeight: .semibold,
+                topSpacing: 4,
+                bottomSpacing: 2,
                 color: Color.adaptive(
                     light: Color.black,
                     dark: Color(hex: "#7F8080")

@@ -106,6 +106,12 @@ public struct RichContentView: View {
                 .foregroundColor(configuration.stylesheet.heading.color)
                 .padding(.top, configuration.stylesheet.heading.topSpacing)
                 .padding(.bottom, configuration.stylesheet.heading.bottomSpacing)
+
+        case .horizontalRule:
+            Rectangle()
+                .fill(configuration.stylesheet.horizontalRule.color)
+                .frame(height: configuration.stylesheet.horizontalRule.height)
+                .padding(.vertical, configuration.stylesheet.horizontalRule.verticalPadding)
         }
     }
 
@@ -170,6 +176,7 @@ public struct ContentElement: Identifiable {
         case codeBlock(code: String, language: String?)
         case image(ImageInfo)
         case heading(text: String, level: Int)
+        case horizontalRule
 
         var isImage: Bool {
             if case .image = self { return true }

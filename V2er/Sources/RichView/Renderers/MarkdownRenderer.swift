@@ -172,12 +172,14 @@ public class MarkdownRenderer {
     // MARK: - Horizontal Rule Rendering
 
     private func renderHorizontalRule() -> AttributedString {
-        var attributed = AttributedString("\n")
-        var line = AttributedString(String(repeating: "─", count: 40))
+        // Use Unicode box drawing light horizontal line (U+2500)
+        // Single line with proper spacing
+        var line = AttributedString("────────────────────────────────────────────────────────────────────────────────")
         line.foregroundColor = stylesheet.horizontalRule.color.uiColor
-        attributed.append(line)
-        attributed.append(AttributedString("\n\n"))
-        return attributed
+        var result = AttributedString("\n")
+        result.append(line)
+        result.append(AttributedString("\n"))
+        return result
     }
 
     // MARK: - List Rendering
