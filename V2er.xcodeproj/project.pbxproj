@@ -10,6 +10,7 @@
 		0B1A2B3C4D5E6F7081920A03 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1A2B3C4D5E6F7081920A04 /* SplashView.swift */; };
 		0B1A2B3C4D5E6F7081920A07 /* TypewriterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1A2B3C4D5E6F7081920A08 /* TypewriterView.swift */; };
 		1AEBC3AC5DAA63523F5448F5 /* RichContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E205F350A3537A3E41B1AFC3 /* RichContentView.swift */; };
+		2348D8F06DA66332DD1552A8 /* TopicDetailRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F753A88F21800A83587E0CD /* TopicDetailRenderingTests.swift */; };
 		28B24CA92EA3460D00F82B2A /* BalanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B24CA82EA3460D00F82B2A /* BalanceView.swift */; };
 		28B24CAB2EA3561400F82B2A /* OnlineStatsInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28B24CAA2EA3561400F82B2A /* OnlineStatsInfo.swift */; };
 		28CC76CC2E963D6700C939B5 /* FilterMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A490A3E111D941C4B30F0BACA6B5E984 /* FilterMenuView.swift */; };
@@ -188,6 +189,7 @@
 /* Begin PBXFileReference section */
 		0B1A2B3C4D5E6F7081920A04 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		0B1A2B3C4D5E6F7081920A08 /* TypewriterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterView.swift; sourceTree = "<group>"; };
+		1F753A88F21800A83587E0CD /* TopicDetailRenderingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TopicDetailRenderingTests.swift; sourceTree = "<group>"; };
 		28B24CA82EA3460D00F82B2A /* BalanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceView.swift; sourceTree = "<group>"; };
 		28B24CAA2EA3561400F82B2A /* OnlineStatsInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineStatsInfo.swift; sourceTree = "<group>"; };
 		31C4B81E79369CDE4880B773 /* RichContentView+Preview.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "RichContentView+Preview.swift"; path = "V2er/Sources/RichView/Views/RichContentView+Preview.swift"; sourceTree = "<group>"; };
@@ -379,6 +381,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B1A2B3C4D5E6F7081920A06 /* Splash */ = {
+			isa = PBXGroup;
+			children = (
+				0B1A2B3C4D5E6F7081920A04 /* SplashView.swift */,
+				0B1A2B3C4D5E6F7081920A08 /* TypewriterView.swift */,
+			);
+			path = Splash;
+			sourceTree = "<group>";
+		};
 		0E6C747701BD52C742BA6D44 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -561,6 +572,7 @@
 			children = (
 				5D43700A24791C2D00FFA37E /* V2erUITests.swift */,
 				5D43700C24791C2D00FFA37E /* Info.plist */,
+				1F753A88F21800A83587E0CD /* TopicDetailRenderingTests.swift */,
 			);
 			path = V2erUITests;
 			sourceTree = "<group>";
@@ -720,15 +732,6 @@
 				5D18A2812730106000ADE1D0 /* HtmlView.swift */,
 			);
 			path = FeedDetail;
-			sourceTree = "<group>";
-		};
-		0B1A2B3C4D5E6F7081920A06 /* Splash */ = {
-			isa = PBXGroup;
-			children = (
-				0B1A2B3C4D5E6F7081920A04 /* SplashView.swift */,
-				0B1A2B3C4D5E6F7081920A08 /* TypewriterView.swift */,
-			);
-			path = Splash;
 			sourceTree = "<group>";
 		};
 		5DE5B4C826845F4F00569684 /* View */ = {
@@ -930,9 +933,9 @@
 			);
 			mainGroup = 5D436FDC24791C2C00FFA37E;
 			packageReferences = (
-				5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup.git" */,
+				5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				5D8FAA32272A70F50067766E /* XCRemoteSwiftPackageReference "SwiftRichText" */,
-				4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher.git" */,
+				4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				4EC32AEE29D81863003A3BD4 /* XCRemoteSwiftPackageReference "SwiftUI-WebView" */,
 			);
 			productRefGroup = 5D436FE624791C2C00FFA37E /* Products */;
@@ -1144,6 +1147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5D43700B24791C2D00FFA37E /* V2erUITests.swift in Sources */,
+				2348D8F06DA66332DD1552A8 /* TopicDetailRenderingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1457,7 +1461,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher.git" */ = {
+		4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
 			requirement = {
@@ -1473,7 +1477,7 @@
 				minimumVersion = 0.3.0;
 			};
 		};
-		5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup.git" */ = {
+		5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
 			requirement = {
@@ -1494,7 +1498,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		4E55BE8929D45FC00044389C /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher.git" */;
+			package = 4E55BE8829D45FC00044389C /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
 		};
 		4EC32AEF29D81863003A3BD4 /* WebView */ = {
@@ -1504,7 +1508,7 @@
 		};
 		5D0CFA8426B994F5001A8A7F /* SwiftSoup */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup.git" */;
+			package = 5D0CFA8326B994F5001A8A7F /* XCRemoteSwiftPackageReference "SwiftSoup" */;
 			productName = SwiftSoup;
 		};
 		5D8FAA33272A70F50067766E /* Atributika */ = {

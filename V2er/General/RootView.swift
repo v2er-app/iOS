@@ -89,6 +89,7 @@ extension View {
 
 struct RootHostView: View {
     @EnvironmentObject private var store: Store
+    @State private var testTopicId: String? = nil
 
     var toast: Binding<Toast> {
         $store.appState.globalState.toast
@@ -100,6 +101,21 @@ struct RootHostView: View {
 
     var launchFinished: Bool {
         store.appState.globalState.launchFinished
+    }
+
+    /// Check for UI test launch arguments
+    private var isUITesting: Bool {
+        ProcessInfo.processInfo.arguments.contains("--uitesting")
+    }
+
+    /// Get test topic ID from launch arguments
+    private func getTestTopicId() -> String? {
+        let args = ProcessInfo.processInfo.arguments
+        if let topicArgIndex = args.firstIndex(of: "--test-topic"),
+           topicArgIndex + 1 < args.count {
+            return args[topicArgIndex + 1]
+        }
+        return nil
     }
 
     var body: some View {
@@ -121,6 +137,23 @@ struct RootHostView: View {
             if !launchFinished {
                 SplashView()
                     .transition(.opacity)
+            }
+
+            // UI Test navigation overlay
+            if let topicId = testTopicId {
+                NavigationStack {
+                    FeedDetailPage(id: topicId)
+                }
+                .accessibilityIdentifier("TestTopicDetailView")
+            }
+        }
+        .onAppear {
+            // Check for test topic navigation on appear
+            if isUITesting, let topicId = getTestTopicId() {
+                // Small delay to ensure app is ready
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    testTopicId = topicId
+                }
             }
         }
     }
