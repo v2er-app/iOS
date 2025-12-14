@@ -68,10 +68,6 @@ public struct AsyncImageAttachment: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: style.maxWidth, maxHeight: style.maxHeight)
                     .cornerRadius(style.cornerRadius)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: style.cornerRadius)
-                            .stroke(style.borderColor, lineWidth: style.borderWidth)
-                    )
                     .accessibilityLabel(altText.isEmpty ? "Image" : altText)
             } else {
                 errorView
