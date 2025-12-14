@@ -62,7 +62,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
     private var showProgressView: Bool {
         return state.showProgressView
-        || (!isContentEmpty && !self.rendered)
     }
 
     var body: some View {
