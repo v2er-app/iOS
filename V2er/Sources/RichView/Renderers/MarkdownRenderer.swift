@@ -238,14 +238,20 @@ public class MarkdownRenderer {
     private func extractCheckbox(from text: String) -> (isChecked: Bool, content: String)? {
         let trimmed = text.trimmingCharacters(in: .whitespaces)
 
-        // Check for [x] or [X] (checked)
+        // Check for [x] or [X] (checked) - with or without trailing space
         if trimmed.hasPrefix("[x] ") || trimmed.hasPrefix("[X] ") {
             return (true, String(trimmed.dropFirst(4)))
         }
+        if trimmed == "[x]" || trimmed == "[X]" {
+            return (true, "")
+        }
 
-        // Check for [ ] (unchecked)
+        // Check for [ ] (unchecked) - with or without trailing space
         if trimmed.hasPrefix("[ ] ") {
             return (false, String(trimmed.dropFirst(4)))
+        }
+        if trimmed == "[ ]" {
+            return (false, "")
         }
 
         return nil
@@ -260,11 +266,7 @@ public class MarkdownRenderer {
         let checkboxSymbol = isChecked ? "✓ " : "○ "
         var checkboxAttr = AttributedString(checkboxSymbol)
 
-        if isChecked {
-            checkboxAttr.foregroundColor = stylesheet.list.checkboxCheckedColor.uiColor
-        } else {
-            checkboxAttr.foregroundColor = stylesheet.list.checkboxUncheckedColor.uiColor
-        }
+        checkboxAttr.foregroundColor = (isChecked ? stylesheet.list.checkboxCheckedColor : stylesheet.list.checkboxUncheckedColor).uiColor
 
         result.append(checkboxAttr)
         result.append(renderInlineMarkdown(content))

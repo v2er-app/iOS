@@ -496,7 +496,10 @@ extension RenderStylesheet {
                     light: Color(hex: "#555555"),
                     dark: Color.white.opacity(0.9)
                 ),
-                checkboxCheckedColor: Color(hex: "#34C759"),
+                checkboxCheckedColor: Color.adaptive(
+                    light: Color(hex: "#34C759"),
+                    dark: Color(hex: "#32D74B")
+                ),
                 checkboxUncheckedColor: Color.adaptive(
                     light: Color.gray.opacity(0.5),
                     dark: Color.gray.opacity(0.6)
