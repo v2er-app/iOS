@@ -10,6 +10,13 @@ import SwiftUI
 import Kingfisher
 import Atributika
 
+private struct UserDetailScrollOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 struct UserDetailPage: StateView {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.isPresented) private var isPresented
@@ -40,11 +47,11 @@ struct UserDetailPage: StateView {
     private var statusBarStyle: UIStatusBarStyle {
         shouldHideNavbar ? .lightContent : .darkContent
     }
-    
+
     var foreGroundColor: SwiftUI.Color {
         return shouldHideNavbar ? Color.primaryText.opacity(0.9) : .tintColor
     }
-    
+
     var body: some View {
         contentView
             .statusBarStyle(statusBarStyle, original: .darkContent)
@@ -55,18 +62,45 @@ struct UserDetailPage: StateView {
         ZStack(alignment: .top) {
             navBar
                 .zIndex(1)
-            LazyVStack(spacing: 0) {
+            List {
+                // Banner Section
                 topBannerView
                     .readSize {
                         bannerViewHeight = $0.height
                     }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .background(
+                        GeometryReader { geometry in
+                            Color.clear.preference(
+                                key: UserDetailScrollOffsetKey.self,
+                                value: geometry.frame(in: .named("userDetailScroll")).minY
+                            )
+                        }
+                    )
+
+                // Tabs Section
                 tabsTitleView
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBackground)
+
+                // Bottom Detail Section
                 bottomDetailView
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBg)
             }
-            .updatable(autoRefresh: state.showProgressView) {
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .environment(\.defaultMinListRowHeight, 1)
+            .refreshable {
                 await run(action: UserDetailActions.FetchData.Start(id: self.userId))
-            } onScroll: {
-                self.scrollY = $0
+            }
+            .coordinateSpace(name: "userDetailScroll")
+            .onPreferenceChange(UserDetailScrollOffsetKey.self) { offset in
+                self.scrollY = offset
             }
             .background {
                 VStack(spacing: 0) {
@@ -81,6 +115,12 @@ struct UserDetailPage: StateView {
                     Spacer().background(.clear)
                 }
                 .debug()
+            }
+            .overlay {
+                if state.showProgressView {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                }
             }
         }
         .ignoresSafeArea(.container)

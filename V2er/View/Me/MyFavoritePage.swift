@@ -11,6 +11,7 @@ import SwiftUI
 struct MyFavoritePage: StateView {
     @EnvironmentObject private var store: Store
     @State private var selectedTab: Int = 0
+    @State private var isFeedLoadingMore = false
 
     var bindingState: Binding<MyFavoriteState> {
         return $store.appState.myFavoriteState
@@ -29,7 +30,6 @@ struct MyFavoritePage: StateView {
                 .tag(1)
         }
         .tabViewStyle(.page)
-        .padding(.horizontal, 10)
         .debug()
         .safeAreaInset(edge: .top, spacing: 0) { navBar }
         .ignoresSafeArea(.container)
@@ -53,50 +53,99 @@ struct MyFavoritePage: StateView {
 
     @ViewBuilder
     private var feedView: some View {
-        LazyVStack(spacing: 0) {
+        List {
             ForEach(state.feedState.model?.items ?? []) { item in
                 NavigationLink {
                     FeedDetailPage(id: item.id)
                 } label: {
                     FeedItemView(data: item)
                 }
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.itemBg)
+            }
+
+            // Load More Indicator
+            if state.feedState.updatable.hasMoreData && !(state.feedState.model?.items ?? []).isEmpty {
+                HStack {
+                    Spacer()
+                    if isFeedLoadingMore {
+                        ProgressView()
+                    }
+                    Spacer()
+                }
+                .frame(height: 50)
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.bgColor)
+                .onAppear {
+                    guard !isFeedLoadingMore else { return }
+                    isFeedLoadingMore = true
+                    Task {
+                        await run(action: MyFavoriteActions.LoadMoreFeedStart())
+                        await MainActor.run {
+                            isFeedLoadingMore = false
+                        }
+                    }
+                }
             }
         }
-        .padding(.top, 30)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color.bgColor)
+        .environment(\.defaultMinListRowHeight, 1)
+        .refreshable {
+            await run(action: MyFavoriteActions.FetchFeedStart())
+        }
+        .overlay {
+            if state.feedState.updatable.showLoadingView {
+                ProgressView()
+                    .scaleEffect(1.5)
+            }
+        }
         .onAppear {
             dispatch(MyFavoriteActions.FetchFeedStart(autoLoad: !state.feedState.updatable.hasLoadedOnce))
-        }
-        .updatable(state.feedState.updatable) {
-            await run(action: MyFavoriteActions.FetchFeedStart())
-        } loadMore: {
-            await run(action: MyFavoriteActions.LoadMoreFeedStart())
         }
     }
 
     @ViewBuilder
     private var nodeView: some View {
         let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 3)
-        LazyVGrid(columns: columns) {
-            ForEach(state.nodeState.model?.items ?? []) { item in
-                NavigationLink {
-                    TagDetailPage(tagId: item.id)
-                } label: {
-                    VStack {
-                        AvatarView(url: item.img)
-                        Text(item.name)
-                        Text(item.topicNum)
-                            .font(.footnote)
+        List {
+            LazyVGrid(columns: columns) {
+                ForEach(state.nodeState.model?.items ?? []) { item in
+                    NavigationLink {
+                        TagDetailPage(tagId: item.id)
+                    } label: {
+                        VStack {
+                            AvatarView(url: item.img)
+                            Text(item.name)
+                            Text(item.topicNum)
+                                .font(.footnote)
+                        }
+                        .lineLimit(1)
                     }
-                    .lineLimit(1)
                 }
             }
+            .listRowInsets(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.itemBg)
         }
-        .padding(.top, 30)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color.bgColor)
+        .environment(\.defaultMinListRowHeight, 1)
+        .refreshable {
+            await run(action: MyFavoriteActions.FetchNodeStart())
+        }
+        .overlay {
+            if state.nodeState.updatable.showLoadingView {
+                ProgressView()
+                    .scaleEffect(1.5)
+            }
+        }
         .onAppear {
             dispatch(MyFavoriteActions.FetchNodeStart(autoLoad: !state.nodeState.updatable.hasLoadedOnce))
-        }
-        .updatable(state.nodeState.updatable) {
-            await run(action: MyFavoriteActions.FetchNodeStart())
         }
     }
 

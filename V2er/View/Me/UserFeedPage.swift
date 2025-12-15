@@ -12,6 +12,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
     @EnvironmentObject private var store: Store
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.isPresented) private var isPresented
+    @State private var isLoadingMore = false
     let userId: String
     var instanceId: String { userId }
 
@@ -24,11 +25,6 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
 
     var body: some View {
         contentView
-            .updatable(state.updatableState) {
-                await run(action: UserFeedActions.FetchStart(id: instanceId, userId: userId, autoLoad: false))
-            } loadMore: {
-                await run(action: UserFeedActions.LoadMoreStart(id: instanceId, userId: userId))
-            }
             .onAppear {
                 dispatch(UserFeedActions.FetchStart(id: instanceId, userId: userId, autoLoad: !state.hasLoadedOnce))
             }
@@ -37,13 +33,54 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
 
     @ViewBuilder
     private var contentView: some View {
-        LazyVStack(spacing: 0) {
+        List {
             ForEach(state.model.items) { item in
                 NavigationLink {
                     FeedDetailPage(id: item.id)
                 } label: {
                     ItemView(data: item)
                 }
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.itemBg)
+            }
+
+            // Load More Indicator
+            if state.updatableState.hasMoreData && !state.model.items.isEmpty {
+                HStack {
+                    Spacer()
+                    if isLoadingMore {
+                        ProgressView()
+                    }
+                    Spacer()
+                }
+                .frame(height: 50)
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.bgColor)
+                .onAppear {
+                    guard !isLoadingMore else { return }
+                    isLoadingMore = true
+                    Task {
+                        await run(action: UserFeedActions.LoadMoreStart(id: instanceId, userId: userId))
+                        await MainActor.run {
+                            isLoadingMore = false
+                        }
+                    }
+                }
+            }
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color.bgColor)
+        .environment(\.defaultMinListRowHeight, 1)
+        .refreshable {
+            await run(action: UserFeedActions.FetchStart(id: instanceId, userId: userId, autoLoad: false))
+        }
+        .overlay {
+            if state.updatableState.showLoadingView {
+                ProgressView()
+                    .scaleEffect(1.5)
             }
         }
     }

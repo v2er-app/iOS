@@ -146,7 +146,7 @@ struct CreateTopicPage: StateView {
             }
             Spacer()
         }
-        .onScroll { _ in
+        .onTapGesture {
             focused = false
         }
         .background(Color.bgColor)

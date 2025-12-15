@@ -9,10 +9,18 @@
 import SwiftUI
 import Kingfisher
 
+private struct TagDetailScrollOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 struct TagDetailPage: StateView, InstanceIdentifiable {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.isPresented) private var isPresented
     @EnvironmentObject private var store: Store
+    @State private var isLoadingMore = false
     var instanceId: String {
         tagId ?? .default
     }
@@ -38,7 +46,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     private var shouldHideNavbar: Bool {
         return scrollY > -heightOfNodeImage * 1.0
     }
-    
+
     private var foreGroundColor: Color {
         shouldHideNavbar ? Color.primaryText.opacity(0.9) : .tintColor
     }
@@ -57,17 +65,61 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         ZStack(alignment: .top) {
             navBar
                 .zIndex(1)
-            VStack(spacing: 0) {
+            List {
+                // Banner Section
                 topBannerView
                     .readSize {
                         bannerViewHeight = $0.height
                     }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .background(
+                        GeometryReader { geometry in
+                            Color.clear.preference(
+                                key: TagDetailScrollOffsetKey.self,
+                                value: geometry.frame(in: .named("tagDetailScroll")).minY
+                            )
+                        }
+                    )
+
+                // Node List Section
                 nodeListView
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBackground)
+
+                // Load More Indicator
+                if state.hasMoreData && !model.topics.isEmpty {
+                    HStack {
+                        Spacer()
+                        if isLoadingMore {
+                            ProgressView()
+                        }
+                        Spacer()
+                    }
+                    .frame(height: 50)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBackground)
+                    .onAppear {
+                        guard !isLoadingMore else { return }
+                        isLoadingMore = true
+                        Task {
+                            await run(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, willLoadPage: state.willLoadPage))
+                            await MainActor.run {
+                                isLoadingMore = false
+                            }
+                        }
+                    }
+                }
             }
-            .loadMore(autoRefresh: state.showProgressView, hasMoreData: state.hasMoreData) {
-                await run(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, willLoadPage: state.willLoadPage))
-            } onScroll: {
-                self.scrollY = $0
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .environment(\.defaultMinListRowHeight, 1)
+            .coordinateSpace(name: "tagDetailScroll")
+            .onPreferenceChange(TagDetailScrollOffsetKey.self) { offset in
+                self.scrollY = offset
             }
             .background {
                 VStack(spacing: 0) {
@@ -79,6 +131,12 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                         .overlay(Color.dynamic(light: .black, dark: .white).opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
                         .frame(height: bannerViewHeight * 1.2 + max(scrollY, 0))
                     Spacer()
+                }
+            }
+            .overlay {
+                if state.showProgressView {
+                    ProgressView()
+                        .scaleEffect(1.5)
                 }
             }
         }
