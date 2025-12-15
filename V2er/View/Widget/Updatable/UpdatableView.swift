@@ -70,7 +70,7 @@ struct UpdatableView<Content: View>: View {
                             }
                         }
                     }
-                    .alignmentGuide(.top, computeValue: { d in (self.isRefreshing ? -self.threshold : 0.0) })
+                    .alignmentGuide(.top, computeValue: { d in (self.isRefreshing ? (-self.threshold + self.scrollY) : 0.0) })
                     if refreshable {
                         HeadIndicatorView(threshold: threshold, progress: $progress, scrollY: scrollY, isRefreshing: $isRefreshing, onlineStats: onlineStats)
                     }
