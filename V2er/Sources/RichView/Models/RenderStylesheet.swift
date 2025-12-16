@@ -19,6 +19,7 @@ public struct RenderStylesheet: Equatable {
     public var image: ImageStyle
     public var table: TableStyle
     public var horizontalRule: HorizontalRuleStyle
+    public var postscript: PostscriptStyle
 
     public init(
         body: TextStyle = TextStyle(),
@@ -30,7 +31,8 @@ public struct RenderStylesheet: Equatable {
         mention: MentionStyle = MentionStyle(),
         image: ImageStyle = ImageStyle(),
         table: TableStyle = TableStyle(),
-        horizontalRule: HorizontalRuleStyle = HorizontalRuleStyle()
+        horizontalRule: HorizontalRuleStyle = HorizontalRuleStyle(),
+        postscript: PostscriptStyle = PostscriptStyle()
     ) {
         self.body = body
         self.heading = heading
@@ -42,6 +44,7 @@ public struct RenderStylesheet: Equatable {
         self.image = image
         self.table = table
         self.horizontalRule = horizontalRule
+        self.postscript = postscript
     }
 }
 
@@ -323,6 +326,38 @@ public struct HorizontalRuleStyle: Equatable {
     }
 }
 
+/// Postscript/appendix section styling (div.subtle on V2EX)
+public struct PostscriptStyle: Equatable {
+    /// Color of the left border
+    public var borderColor: Color
+    /// Width of the left border
+    public var borderWidth: CGFloat
+    /// Background color
+    public var backgroundColor: Color
+    /// Font size for the header text (e.g., "第 1 条附言")
+    public var headerFontSize: CGFloat
+    /// Color for the header text
+    public var headerColor: Color
+    /// Font size for the content
+    public var contentFontSize: CGFloat
+
+    public init(
+        borderColor: Color = Color(hex: "#D4A017"),
+        borderWidth: CGFloat = 3,
+        backgroundColor: Color = Color(hex: "#FFFBEB").opacity(0.5),
+        headerFontSize: CGFloat = 13,
+        headerColor: Color = Color.gray,
+        contentFontSize: CGFloat = 15
+    ) {
+        self.borderColor = borderColor
+        self.borderWidth = borderWidth
+        self.backgroundColor = backgroundColor
+        self.headerFontSize = headerFontSize
+        self.headerColor = headerColor
+        self.contentFontSize = contentFontSize
+    }
+}
+
 // MARK: - Presets
 
 extension RenderStylesheet {
@@ -537,6 +572,23 @@ extension RenderStylesheet {
                 ),
                 height: 0.8,
                 verticalPadding: 2
+            ),
+            postscript: PostscriptStyle(
+                borderColor: Color.adaptive(
+                    light: Color(hex: "#D4A017"),
+                    dark: Color(hex: "#E5B84C")
+                ),
+                borderWidth: 3,
+                backgroundColor: Color.adaptive(
+                    light: Color(hex: "#FFFBEB").opacity(0.5),
+                    dark: Color(hex: "#1a1a00").opacity(0.3)
+                ),
+                headerFontSize: 13,
+                headerColor: Color.adaptive(
+                    light: Color(hex: "#999999"),
+                    dark: Color(hex: "#808080")
+                ),
+                contentFontSize: 15
             )
         )
     }()

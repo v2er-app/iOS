@@ -132,6 +132,14 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     .listRowBackground(Color.itemBg)
             }
 
+            // Postscripts Section (附言)
+            ForEach(state.model.postscripts) { postscript in
+                PostscriptItemView(postscript: postscript)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBg)
+            }
+
             // Reply Section
             ForEach(state.model.replyInfo.items) { item in
                 ReplyItemView(info: item)

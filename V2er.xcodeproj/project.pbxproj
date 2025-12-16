@@ -68,6 +68,7 @@
 		5D45FC2B26CD3FCF0055C336 /* SwiftSoupExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D45FC2A26CD3FCF0055C336 /* SwiftSoupExtention.swift */; };
 		5D4E43F82699DBC600650714 /* NewsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4E43F72699DBC600650714 /* NewsContentView.swift */; };
 		5D4E43FA2699DDE200650714 /* ReplyItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4E43F92699DDE200650714 /* ReplyItemView.swift */; };
+		6CA744F9E46B4A388C7D15F1 /* PostscriptItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43141D64D5C4A65B1700BF8 /* PostscriptItemView.swift */; };
 		5D4E43FC2699E20400650714 /* AvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D4E43FB2699E20400650714 /* AvatarView.swift */; };
 		5D54903326AB9E2200BB0CC0 /* SwiftUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D54903226AB9E2200BB0CC0 /* SwiftUIView.swift */; };
 		5D5677CB2721916300543FE8 /* CreateReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D5677CA2721916300543FE8 /* CreateReducer.swift */; };
@@ -245,6 +246,7 @@
 		5D45FC2A26CD3FCF0055C336 /* SwiftSoupExtention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftSoupExtention.swift; sourceTree = "<group>"; };
 		5D4E43F72699DBC600650714 /* NewsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsContentView.swift; sourceTree = "<group>"; };
 		5D4E43F92699DDE200650714 /* ReplyItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplyItemView.swift; sourceTree = "<group>"; };
+		E43141D64D5C4A65B1700BF8 /* PostscriptItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostscriptItemView.swift; sourceTree = "<group>"; };
 		5D4E43FB2699E20400650714 /* AvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarView.swift; sourceTree = "<group>"; };
 		5D54903226AB9E2200BB0CC0 /* SwiftUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftUIView.swift; sourceTree = "<group>"; };
 		5D5677CA2721916300543FE8 /* CreateReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateReducer.swift; sourceTree = "<group>"; };
@@ -718,6 +720,7 @@
 				5DCDE3932695D16B00261385 /* AuthorInfoView.swift */,
 				5D4E43F72699DBC600650714 /* NewsContentView.swift */,
 				5D4E43F92699DDE200650714 /* ReplyItemView.swift */,
+				E43141D64D5C4A65B1700BF8 /* PostscriptItemView.swift */,
 				5D18A2812730106000ADE1D0 /* HtmlView.swift */,
 			);
 			path = FeedDetail;
@@ -1062,6 +1065,7 @@
 				5D5677CD2721923B00543FE8 /* CreateTopicState.swift in Sources */,
 				5D1D8C0026EBA875009DF65A /* UserDetailState.swift in Sources */,
 				5D4E43FA2699DDE200650714 /* ReplyItemView.swift in Sources */,
+				6CA744F9E46B4A388C7D15F1 /* PostscriptItemView.swift in Sources */,
 				5D1D8E2426B19A640040C418 /* UserDetailPage.swift in Sources */,
 				5D5DA26A24A4939B005BC60F /* ViewExtension.swift in Sources */,
 				5DCE4CF4270D9850006BA98D /* MyFollowReducer.swift in Sources */,
