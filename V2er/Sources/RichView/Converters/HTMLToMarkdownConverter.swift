@@ -306,7 +306,12 @@ public class HTMLToMarkdownConverter {
                 // Container elements - just process children
                 case "div", "span", "body", "html", "article", "section", "nav", "aside",
                      "header", "footer", "main", "caption":
-                    result += try convertElement(childElement)
+                    // Check for div.subtle (V2EX postscript/appendix section)
+                    if tagName == "div" && childElement.hasClass("subtle") {
+                        result += try convertPostscript(childElement)
+                    } else {
+                        result += try convertElement(childElement)
+                    }
 
                 default:
                     // Unsupported tag
@@ -420,6 +425,26 @@ public class HTMLToMarkdownConverter {
         }
 
         result += "\n"
+        return result
+    }
+
+    /// Convert V2EX postscript/appendix section (div.subtle) to custom markdown format
+    private func convertPostscript(_ element: Element) throws -> String {
+        var result = "\n:::postscript\n"
+
+        // Extract header (span.fade contains "第 N 条附言 · 时间")
+        if let fadeSpan = try? element.select("span.fade").first() {
+            let headerText = try fadeSpan.text()
+            result += "::header::\(headerText)\n"
+            // Remove the span from processing to avoid duplication
+            try fadeSpan.remove()
+        }
+
+        // Convert remaining content
+        let content = try convertElement(element)
+        result += content.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        result += "\n:::/postscript\n"
         return result
     }
 
