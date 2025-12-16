@@ -251,17 +251,21 @@ struct UserDetailPage: StateView {
         VStack(spacing: 0) {
             if currentTab == .topic {
                 ForEach(model.topicInfo.items) { item in
-                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
+                    ZStack {
+                        NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
+                            EmptyView()
+                        }
+                        .opacity(0)
+
                         TopicItemView(data: item)
                     }
                 }
                 if model.topicInfo.items.count > 0 {
-                    NavigationLink(destination: UserFeedPage(userId: userId)) {
-                        Text("\(userId ?? .default)创建的更多主题")
-                            .font(.subheadline)
-                            .padding()
-                            .padding(.bottom, 12)
-                    }
+                    Text("\(userId ?? .default)创建的更多主题")
+                        .font(.subheadline)
+                        .padding()
+                        .padding(.bottom, 12)
+                        .to { UserFeedPage(userId: userId) }
                 } else {
                     Text("根据 \(userId ?? .default) 的设置，主题列表被隐藏")
                         .greedyFrame()
@@ -273,7 +277,12 @@ struct UserDetailPage: StateView {
                 }
             } else {
                 ForEach(model.replyInfo.items) { item in
-                    NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
+                    ZStack {
+                        NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
+                            EmptyView()
+                        }
+                        .opacity(0)
+
                         ReplyItemView(data: item)
                     }
                 }
@@ -336,15 +345,15 @@ struct UserDetailPage: StateView {
                                 .font(.footnote)
                         }
                         Spacer()
-                        NavigationLink(destination: TagDetailPage()) {
-                            Text(data.tag)
-                                .font(.footnote)
-                                .foregroundColor(Color.primaryText)
-                                .lineLimit(1)
-                                .padding(.horizontal, 14)
-                                .padding(.vertical, 8)
-                                .background(Color.lightGray)
-                        }
+                        Text(data.tag)
+                            .font(.footnote)
+                            .foregroundColor(Color.primaryText)
+                            .lineLimit(1)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Color.lightGray)
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                            .to { TagDetailPage() }
                     }
                     Text(data.title )
                         .greedyWidth(.leading)

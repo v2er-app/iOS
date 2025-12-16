@@ -55,9 +55,12 @@ struct MyFavoritePage: StateView {
     private var feedView: some View {
         List {
             ForEach(state.feedState.model?.items ?? []) { item in
-                NavigationLink {
-                    FeedDetailPage(id: item.id)
-                } label: {
+                ZStack {
+                    NavigationLink(destination: FeedDetailPage(id: item.id)) {
+                        EmptyView()
+                    }
+                    .opacity(0)
+
                     FeedItemView(data: item)
                 }
                 .listRowInsets(EdgeInsets())
@@ -114,9 +117,12 @@ struct MyFavoritePage: StateView {
         List {
             LazyVGrid(columns: columns) {
                 ForEach(state.nodeState.model?.items ?? []) { item in
-                    NavigationLink {
-                        TagDetailPage(tagId: item.id)
-                    } label: {
+                    ZStack {
+                        NavigationLink(destination: TagDetailPage(tagId: item.id)) {
+                            EmptyView()
+                        }
+                        .opacity(0)
+
                         VStack {
                             AvatarView(url: item.img)
                             Text(item.name)

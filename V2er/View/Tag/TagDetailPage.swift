@@ -258,7 +258,12 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     id: item.id,
                     title: item.title,
                     avatar: item.avatar)
-                NavigationLink(destination: FeedDetailPage(initData: data)) {
+                ZStack {
+                    NavigationLink(destination: FeedDetailPage(initData: data)) {
+                        EmptyView()
+                    }
+                    .opacity(0)
+
                     TagFeedItemView(data: item)
                 }
             }
@@ -274,9 +279,8 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             VStack(spacing: 0) {
                 VStack {
                     HStack(alignment: .top) {
-                        NavigationLink(destination: UserDetailPage(userId: data.userName)) {
-                            AvatarView(url: data.avatar)
-                        }
+                        AvatarView(url: data.avatar)
+                            .to { UserDetailPage(userId: data.userName) }
                         VStack(alignment: .leading, spacing: 5) {
                             Text(data.userName)
                                 .lineLimit(1)

@@ -28,9 +28,12 @@ struct MyFollowPage: StateView {
     private var contentView: some View {
         List {
             ForEach(state.model?.items ?? []) { item in
-                NavigationLink {
-                    FeedDetailPage(id: item.id)
-                } label: {
+                ZStack {
+                    NavigationLink(destination: FeedDetailPage(id: item.id)) {
+                        EmptyView()
+                    }
+                    .opacity(0)
+
                     FeedItemView(data: item)
                 }
                 .listRowInsets(EdgeInsets())

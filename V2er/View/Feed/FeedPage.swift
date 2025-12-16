@@ -11,6 +11,7 @@ import SwiftUI
 struct FeedPage: BaseHomePageView {
     @EnvironmentObject private var store: Store
     @State private var isLoadingMore = false
+    @State private var showOnlineStats = false
     var bindingState: Binding<FeedState> {
         $store.appState.feedState
     }
@@ -27,26 +28,41 @@ struct FeedPage: BaseHomePageView {
                 if !state.hasLoadedOnce {
                     dispatch(FeedActions.FetchData.Start(autoLoad: true))
                     if AccountState.hasSignIn() {
-                        Task { await run(action: FeedActions.FetchOnlineStats.Start()) }
+                        Task {
+                            await run(action: FeedActions.FetchOnlineStats.Start())
+                            showOnlineStatsTemporarily()
+                        }
                     }
                 }
             }
     }
 
+    private func showOnlineStatsTemporarily() {
+        guard state.onlineStats?.isValid() == true else { return }
+        // Show online stats with animation
+        withAnimation(.easeInOut(duration: 0.3)) {
+            showOnlineStats = true
+        }
+        // Auto dismiss after 2 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                showOnlineStats = false
+            }
+        }
+    }
+
     @ViewBuilder
     private var contentView: some View {
         List {
-            // Online Stats Header
-            if let onlineStats = state.onlineStats, onlineStats.isValid() {
-                OnlineStatsHeaderView(stats: onlineStats)
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.bgColor)
-            }
-
             // Feed Items
             ForEach(state.feedInfo.items) { item in
-                NavigationLink(destination: FeedDetailPage(initData: item)) {
+                ZStack {
+                    // Hidden NavigationLink to avoid disclosure indicator
+                    NavigationLink(destination: FeedDetailPage(initData: item)) {
+                        EmptyView()
+                    }
+                    .opacity(0)
+
                     FeedItemView(data: item)
                 }
                 .listRowInsets(EdgeInsets())
@@ -86,8 +102,16 @@ struct FeedPage: BaseHomePageView {
         .refreshable {
             if AccountState.hasSignIn() {
                 // Fetch online stats in parallel with feed data
-                Task { await run(action: FeedActions.FetchOnlineStats.Start()) }
-                await run(action: FeedActions.FetchData.Start())
+                async let onlineStatsTask: () = run(action: FeedActions.FetchOnlineStats.Start())
+                async let feedTask: () = run(action: FeedActions.FetchData.Start())
+                _ = await (onlineStatsTask, feedTask)
+                showOnlineStatsTemporarily()
+            }
+        }
+        .overlay(alignment: .top) {
+            if showOnlineStats, let onlineStats = state.onlineStats, onlineStats.isValid() {
+                OnlineStatsHeaderView(stats: onlineStats)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .overlay {
@@ -107,7 +131,6 @@ private struct OnlineStatsHeaderView: View {
 
     var body: some View {
         HStack(spacing: 4) {
-            Spacer()
             Circle()
                 .fill(Color.hex(0x52bf1c))
                 .frame(width: 6, height: 6)
@@ -122,9 +145,13 @@ private struct OnlineStatsHeaderView: View {
                     .font(.caption)
                     .foregroundColor(.secondaryText)
             }
-            Spacer()
         }
-        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Color.itemBg.opacity(0.95))
+        .clipShape(Capsule())
+        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+        .padding(.top, 8)
         .onAppear {
             if animatedOnlineCount == 0 && stats.onlineCount > 0 {
                 animatedOnlineCount = stats.onlineCount

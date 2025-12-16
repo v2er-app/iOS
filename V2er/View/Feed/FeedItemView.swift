@@ -24,16 +24,15 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
                 .lineLimit(1)
                 .foregroundColor(Color.tintColor)
                 Spacer()
-                NavigationLink(destination: TagDetailPage(tagId: data.nodeId.safe)) {
-                    Text(data.nodeName.safe)
-                        .font(.footnote)
-                        .foregroundColor(Color.dynamic(light: .hex(0x666666), dark: .hex(0xCCCCCC)))
-                        .lineLimit(1)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(Color.dynamic(light: Color.hex(0xF5F5F5), dark: Color.hex(0x2C2C2E)))
-                }
-                .buttonStyle(.plain)
+                Text(data.nodeName.safe)
+                    .font(.footnote)
+                    .foregroundColor(Color.dynamic(light: .hex(0x666666), dark: .hex(0xCCCCCC)))
+                    .lineLimit(1)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.dynamic(light: Color.hex(0xF5F5F5), dark: Color.hex(0x2C2C2E)))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .to { TagDetailPage(tagId: data.nodeId.safe) }
             }
             Text(data.title.safe)
 //                .fontWeight(.medium)

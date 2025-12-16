@@ -20,17 +20,15 @@ struct NodeView: View {
     }
 
     var body: some View {
-        NavigationLink {
-            TagDetailPage(tagId: id)
-        } label: {
-            Text(name)
-                .font(.footnote)
-                .foregroundColor(Color.dynamic(light: .hex(0x666666), dark: .hex(0xCCCCCC)))
-                .lineLimit(1)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(Color.dynamic(light: Color.hex(0xF5F5F5), dark: Color.hex(0x2C2C2E)))
-        }
+        Text(name)
+            .font(.footnote)
+            .foregroundColor(Color.dynamic(light: .hex(0x666666), dark: .hex(0xCCCCCC)))
+            .lineLimit(1)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(Color.dynamic(light: Color.hex(0xF5F5F5), dark: Color.hex(0x2C2C2E)))
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .to { TagDetailPage(tagId: id) }
     }
 
 }

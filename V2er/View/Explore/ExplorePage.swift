@@ -36,9 +36,12 @@ struct ExplorePage: BaseHomePageView {
             // Today Hot Section
             Section {
                 ForEach(state.exploreInfo.dailyHotInfo) { item in
-                    NavigationLink {
-                        FeedDetailPage(initData: FeedInfo.Item(id: item.id))
-                    } label: {
+                    ZStack {
+                        NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
+                            EmptyView()
+                        }
+                        .opacity(0)
+
                         HStack(spacing: 12) {
                             AvatarView(url: item.avatar, size: 30)
                             Text(item.title)
@@ -54,6 +57,7 @@ struct ExplorePage: BaseHomePageView {
             } header: {
                 SectionTitleView("今日热议")
                     .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.itemBg)
             }
             .listRowSeparator(.hidden)
 
@@ -66,6 +70,7 @@ struct ExplorePage: BaseHomePageView {
                 .listRowBackground(Color.itemBg)
             } header: {
                 SectionTitleView("最热节点")
+                    .listRowBackground(Color.itemBg)
             }
             .listRowSeparator(.hidden)
 
@@ -78,6 +83,7 @@ struct ExplorePage: BaseHomePageView {
                 .listRowBackground(Color.itemBg)
             } header: {
                 SectionTitleView("新增节点")
+                    .listRowBackground(Color.itemBg)
             }
             .listRowSeparator(.hidden)
 
@@ -90,12 +96,13 @@ struct ExplorePage: BaseHomePageView {
                 }
             } header: {
                 SectionTitleView("节点导航")
+                    .listRowBackground(Color.itemBg)
             }
             .listRowSeparator(.hidden)
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color.bgColor)
+        .background(Color.itemBg)
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: ExploreActions.FetchData.Start())
