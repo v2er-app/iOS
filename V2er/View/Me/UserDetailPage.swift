@@ -86,11 +86,53 @@ struct UserDetailPage: StateView {
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.itemBackground)
 
-                // Bottom Detail Section
-                bottomDetailView
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.itemBg)
+                // Bottom Detail Section - Topics
+                if currentTab == .topic {
+                    ForEach(model.topicInfo.items) { item in
+                        NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
+                            TopicItemView(data: item)
+                        }
+                        .buttonStyle(.plain)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.itemBg)
+                    }
+
+                    // More topics link
+                    if model.topicInfo.items.count > 0 {
+                        Text("\(userId)创建的更多主题")
+                            .font(.subheadline)
+                            .padding()
+                            .padding(.bottom, 12)
+                            .to { UserFeedPage(userId: userId) }
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.itemBg)
+                    } else {
+                        Text("根据 \(userId) 的设置，主题列表被隐藏")
+                            .greedyFrame()
+                            .font(.subheadline)
+                            .padding()
+                            .padding(.bottom, 180)
+                            .hide(state.refreshing)
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.itemBg)
+                    }
+                }
+
+                // Bottom Detail Section - Replies
+                if currentTab == .reply {
+                    ForEach(model.replyInfo.items) { item in
+                        NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
+                            ReplyItemView(data: item)
+                        }
+                        .buttonStyle(.plain)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.itemBg)
+                    }
+                }
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
@@ -246,51 +288,6 @@ struct UserDetailPage: StateView {
         .clipCorner(12, corners: [.topLeft, .topRight])
     }
     
-    @ViewBuilder
-    private var bottomDetailView: some View {
-        VStack(spacing: 0) {
-            if currentTab == .topic {
-                ForEach(model.topicInfo.items) { item in
-                    ZStack {
-                        NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
-                            EmptyView()
-                        }
-                        .opacity(0)
-
-                        TopicItemView(data: item)
-                    }
-                }
-                if model.topicInfo.items.count > 0 {
-                    Text("\(userId ?? .default)创建的更多主题")
-                        .font(.subheadline)
-                        .padding()
-                        .padding(.bottom, 12)
-                        .to { UserFeedPage(userId: userId) }
-                } else {
-                    Text("根据 \(userId ?? .default) 的设置，主题列表被隐藏")
-                        .greedyFrame()
-                        .font(.subheadline)
-                        .padding()
-                        .padding(.bottom, 180)
-                        .hide(state.refreshing)
-                        .debug(true)
-                }
-            } else {
-                ForEach(model.replyInfo.items) { item in
-                    ZStack {
-                        NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
-                            EmptyView()
-                        }
-                        .opacity(0)
-
-                        ReplyItemView(data: item)
-                    }
-                }
-            }
-        }
-        .padding(.bottom, 36)
-        .background(Color.itemBg)
-    }
 
 
     struct ReplyItemView: View {
