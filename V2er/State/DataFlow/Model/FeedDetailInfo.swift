@@ -17,6 +17,8 @@ struct FeedDetailInfo: BaseModel {
     var contentInfo: ContentInfo?
     // div.problem
     var problem: ProblemInfo?
+    // div.subtle (postscripts/appendix)
+    var postscripts: [PostscriptInfo] = []
     // div[id^=r_]
     var replyInfo: ReplyInfo = ReplyInfo()
     // input[name=once] , value
@@ -170,6 +172,24 @@ struct FeedDetailInfo: BaseModel {
         }
     }
 
+    /// Postscript/Appendix info (附言) - div.subtle
+    struct PostscriptInfo: HtmlParsable, Identifiable {
+        var id = UUID()
+        // span.fade - e.g. "第 1 条附言  ·  2 天前"
+        var header: String = .default
+        // Content after the header (HTML)
+        var contentHtml: String = .default
+
+        init(from html: Element?) {
+            guard let root = html else { return }
+            // Extract header from span.fade
+            header = root.pick("span.fade")
+            // Remove the header span and get the remaining content
+            root.remove(selector: "span.fade")
+            contentHtml = (try? root.html()) ?? .default
+        }
+    }
+
     struct ReplyInfo {
         var items: [Item] = []
         var owner: String = .empty
@@ -248,7 +268,19 @@ struct FeedDetailInfo: BaseModel {
         guard let root = html else { return }
         self.topicId = root.pick("meta[property=og:url]", .content)
         self.headerInfo = HeaderInfo(from: root.pickOne("div#Wrapper"))
-        self.contentInfo = ContentInfo(from: root.pickOne("div.content div.box"))
+
+        // Parse postscripts (div.subtle) before content parsing
+        // They are inside div.content div.box
+        let contentBox = root.pickOne("div.content div.box")
+        let subtleElements = contentBox?.pickAll("div.subtle") ?? Elements()
+        for subtle in subtleElements {
+            let postscript = PostscriptInfo(from: subtle)
+            self.postscripts.append(postscript)
+        }
+        // Remove subtle elements from content box before parsing content
+        contentBox?.remove(selector: "div.subtle")
+
+        self.contentInfo = ContentInfo(from: contentBox)
         self.problem = ProblemInfo(from: root.pickOne("div.problem"))
         let owner: String = headerInfo?.userName ?? .empty
         self.replyInfo = ReplyInfo(from: root.pickAll("div[id^=r_]"), owner: owner)

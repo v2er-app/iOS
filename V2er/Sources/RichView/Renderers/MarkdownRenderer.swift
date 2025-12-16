@@ -66,12 +66,6 @@ public class MarkdownRenderer {
                 attributedString.append(renderCodeBlock(codeBlock))
                 index += linesConsumed
                 continue
-            } else if line.starts(with: ":::postscript") {
-                // Postscript/appendix block (V2EX div.subtle)
-                let postscriptBlock = extractPostscriptBlock(lines, startIndex: index)
-                attributedString.append(renderPostscript(postscriptBlock))
-                index += postscriptBlock.2
-                continue
             } else if line.trimmingCharacters(in: .whitespaces).starts(with: ">") {
                 // Blockquote - handle "> ", ">", ">> ", etc.
                 var content = line.trimmingCharacters(in: .whitespaces)
@@ -610,82 +604,6 @@ public class MarkdownRenderer {
         }
 
         result.append(AttributedString("\n"))
-        return result
-    }
-
-    // MARK: - Postscript/Appendix Rendering
-
-    /// Extract postscript block from lines
-    private func extractPostscriptBlock(_ lines: [String], startIndex: Int) -> (header: String?, content: String, Int) {
-        var header: String? = nil
-        var content = ""
-        var index = startIndex + 1
-
-        while index < lines.count {
-            let line = lines[index]
-
-            if line.starts(with: ":::/postscript") {
-                return (header, content, index - startIndex + 1)
-            }
-
-            // Check for header line
-            if line.starts(with: "::header::") {
-                header = String(line.dropFirst("::header::".count))
-                index += 1
-                continue
-            }
-
-            content += line + "\n"
-            index += 1
-        }
-
-        return (header, content, index - startIndex)
-    }
-
-    /// Render postscript/appendix block with gold left border
-    private func renderPostscript(_ block: (header: String?, content: String, Int)) -> AttributedString {
-        var result = AttributedString()
-
-        // Add some vertical spacing before the postscript
-        result.append(AttributedString("\n"))
-
-        // Render header if present
-        if let header = block.header, !header.isEmpty {
-            // Add visual border indicator
-            var borderAttr = AttributedString("┃ ")
-            borderAttr.foregroundColor = stylesheet.postscript.borderColor.uiColor
-
-            result.append(borderAttr)
-
-            var headerAttr = AttributedString(header)
-            headerAttr.font = .system(size: stylesheet.postscript.headerFontSize)
-            headerAttr.foregroundColor = stylesheet.postscript.headerColor.uiColor
-            result.append(headerAttr)
-            result.append(AttributedString("\n"))
-        }
-
-        // Render content with border
-        let contentLines = block.content.split(separator: "\n", omittingEmptySubsequences: false)
-        for line in contentLines {
-            // Add visual border indicator
-            var borderAttr = AttributedString("┃ ")
-            borderAttr.foregroundColor = stylesheet.postscript.borderColor.uiColor
-            result.append(borderAttr)
-
-            // Render inline content
-            if line.isEmpty {
-                result.append(AttributedString("\n"))
-            } else {
-                var contentAttr = renderInlineMarkdown(String(line))
-                contentAttr.font = .system(size: stylesheet.postscript.contentFontSize)
-                result.append(contentAttr)
-                result.append(AttributedString("\n"))
-            }
-        }
-
-        // Add vertical spacing after the postscript
-        result.append(AttributedString("\n"))
-
         return result
     }
 }
