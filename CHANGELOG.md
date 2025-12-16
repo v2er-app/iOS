@@ -2,6 +2,17 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.1.20 (Build XX)
+1. Feature: Add splash screen with centered logo on app launch
+2. Feature: Improved markdown rendering with support for task list checkboxes
+3. Feature: Enhanced HTML content display with additional tag support
+4. Fix: Tables now render as proper visual tables instead of plain text
+5. Fix: Images in replies display correctly with improved loading
+6. Fix: Smoother pull-to-refresh animation with system List integration
+7. Fix: Better scrolling behavior with improved bottom bounce handling
+8. Improvement: RichView styles optimized to match Android app appearance
+9. Improvement: Enhanced overall content rendering quality
+
 ## v1.1.19 (Build XX)
 1. Infrastructure: Migrate certificate management to shared ios-certificates repository
 2. Improvement: Update Fastlane Match to use git@github.com:graycreate/ios-certificates.git
