@@ -102,9 +102,9 @@ struct FeedPage: BaseHomePageView {
         .refreshable {
             if AccountState.hasSignIn() {
                 // Fetch online stats in parallel with feed data
-                async let onlineStatsTask: () = run(action: FeedActions.FetchOnlineStats.Start())
-                async let feedTask: () = run(action: FeedActions.FetchData.Start())
-                _ = await (onlineStatsTask, feedTask)
+                async let onlineStatsTask = run(action: FeedActions.FetchOnlineStats.Start())
+                async let feedTask = run(action: FeedActions.FetchData.Start())
+                await (onlineStatsTask, feedTask)
                 showOnlineStatsTemporarily()
             }
         }
