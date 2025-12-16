@@ -11,6 +11,7 @@ import SwiftUI
 struct SearchPage: StateView {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @EnvironmentObject private var store: Store
+    @State private var isLoadingMore = false
     var bindingState: Binding<SearchState> {
         return $store.appState.searchState
     }
@@ -18,23 +19,57 @@ struct SearchPage: StateView {
 
     var body: some View {
         NavigationView {
-            LazyVStack (alignment: .leading ,spacing: 0) {
+            List {
                 ForEach(state.model?.hits ?? []) { item in
                     NavigationLink(destination: FeedDetailPage(id: item.id)) {
                         SearchResultItemView(hint: item)
                     }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.bgColor)
+                }
+
+                // Load More Indicator
+                if state.updatable.hasMoreData && !(state.model?.hits ?? []).isEmpty {
+                    HStack {
+                        Spacer()
+                        if isLoadingMore {
+                            ProgressView()
+                        }
+                        Spacer()
+                    }
+                    .frame(height: 50)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.bgColor)
+                    .onAppear {
+                        guard !isLoadingMore else { return }
+                        isLoadingMore = true
+                        Task {
+                            await run(action: SearchActions.LoadMoreStart())
+                            await MainActor.run {
+                                isLoadingMore = false
+                            }
+                        }
+                    }
                 }
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .environment(\.defaultMinListRowHeight, 1)
             .navigationBarHidden(true)
-            .loadMore(state.updatable) {
-                await run(action: SearchActions.LoadMoreStart())
-            }
             .onChange(of: state.sortWay) { sort in
                 dispatch(SearchActions.Start())
             }
             .safeAreaInset(edge: .top, spacing: 0) { searchView }
             .ignoresSafeArea(.container)
             .background(Color.bgColor)
+            .overlay {
+                if state.updatable.showLoadingView {
+                    ProgressView()
+                        .scaleEffect(1.5)
+                }
+            }
         }
         .ignoresSafeArea(.container)
         .navigationBarHidden(true)

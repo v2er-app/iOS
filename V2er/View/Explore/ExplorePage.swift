@@ -32,64 +32,87 @@ struct ExplorePage: BaseHomePageView {
     }
     
     var body: some View {
-        let todayHotList = VStack(alignment: .leading, spacing: 0) {
-            SectionTitleView("今日热议")
-                .padding(.horizontal, 10)
-                .background(Color.itemBg)
-            ForEach(state.exploreInfo.dailyHotInfo) { item in
-                HStack(spacing: 12) {
-                    AvatarView(url: item.avatar, size: 30)
-//                        .to { UserDetailPage(userId: item.member) }
-                    Text(item.title)
-                        .foregroundColor(Color.primaryText)
-                        .lineLimit(2)
-                        .greedyWidth(.leading)
-                }
-                .padding(.vertical, 12)
-                .padding(.horizontal, 10)
-                .background(Color.itemBg)
-                .divider()
-                .to { FeedDetailPage(initData: FeedInfo.Item(id: item.id)) }
-            }
-        }
-        
-        let hotNodesItem = VStack(alignment: .leading, spacing: 0) {
-            SectionTitleView("最热节点")
-            FlowStack(data: state.exploreInfo.hottestNodeInfo) { node in
-                NodeView(id: node.id, name: node.name)
-            }
-        }
-        
-        let newlyAddedItem = VStack(alignment: .leading, spacing: 0) {
-            SectionTitleView("新增节点")
-            FlowStack(data: state.exploreInfo.recentNodeInfo) { node in
-                NodeView(id: node.id, name: node.name)
-            }
-        }
-        
-        let navNodesItem =
-        VStack(spacing: 0) {
-            SectionTitleView("节点导航")
-            ForEach(state.exploreInfo.nodeNavInfo) {
-                NodeNavItemView(data: $0)
-            }
-        }
+        List {
+            // Today Hot Section
+            Section {
+                ForEach(state.exploreInfo.dailyHotInfo) { item in
+                    ZStack {
+                        NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
+                            EmptyView()
+                        }
+                        .opacity(0)
 
-        VStack(spacing: 0) {
-            todayHotList
-            Group {
-                hotNodesItem
-                newlyAddedItem
-                navNodesItem
+                        HStack(spacing: 12) {
+                            AvatarView(url: item.avatar, size: 30)
+                            Text(item.title)
+                                .foregroundColor(Color.primaryText)
+                                .lineLimit(2)
+                                .greedyWidth(.leading)
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .listRowInsets(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
+                    .listRowBackground(Color.itemBg)
+                }
+            } header: {
+                SectionTitleView("今日热议")
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.itemBg)
             }
-            .padding(.horizontal, 10)
-            .background(Color.itemBg)
+            .listRowSeparator(.hidden)
+
+            // Hot Nodes Section
+            Section {
+                FlowStack(data: state.exploreInfo.hottestNodeInfo) { node in
+                    NodeView(id: node.id, name: node.name)
+                }
+                .listRowInsets(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
+                .listRowBackground(Color.itemBg)
+            } header: {
+                SectionTitleView("最热节点")
+                    .listRowBackground(Color.itemBg)
+            }
+            .listRowSeparator(.hidden)
+
+            // New Nodes Section
+            Section {
+                FlowStack(data: state.exploreInfo.recentNodeInfo) { node in
+                    NodeView(id: node.id, name: node.name)
+                }
+                .listRowInsets(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
+                .listRowBackground(Color.itemBg)
+            } header: {
+                SectionTitleView("新增节点")
+                    .listRowBackground(Color.itemBg)
+            }
+            .listRowSeparator(.hidden)
+
+            // Node Navigation Section
+            Section {
+                ForEach(state.exploreInfo.nodeNavInfo) { navItem in
+                    NodeNavItemView(data: navItem)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
+                        .listRowBackground(Color.itemBg)
+                }
+            } header: {
+                SectionTitleView("节点导航")
+                    .listRowBackground(Color.itemBg)
+            }
+            .listRowSeparator(.hidden)
         }
-        .hide(state.refreshing)
-        .updatable(autoRefresh: state.showProgressView, scrollTop(tab: .explore)) {
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color.itemBg)
+        .environment(\.defaultMinListRowHeight, 1)
+        .refreshable {
             await run(action: ExploreActions.FetchData.Start())
         }
-        .background(Color.bgColor)
+        .overlay {
+            if state.showProgressView {
+                ProgressView()
+                    .scaleEffect(1.5)
+            }
+        }
         .onAppear {
             if !state.hasLoadedOnce {
                 dispatch(ExploreActions.FetchData.Start(autoLoad: true))

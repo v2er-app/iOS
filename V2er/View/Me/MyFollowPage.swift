@@ -10,6 +10,7 @@ import SwiftUI
 
 struct MyFollowPage: StateView {
     @EnvironmentObject private var store: Store
+    @State private var isLoadingMore = false
 
     var bindingState: Binding<MyFollowState> {
         return $store.appState.myFollowState
@@ -17,11 +18,6 @@ struct MyFollowPage: StateView {
 
     var body: some View {
         contentView
-            .updatable(state.updatableState) {
-                await run(action: MyFollowActions.FetchStart(autoLoad: false))
-            } loadMore: {
-                await run(action: MyFollowActions.LoadMoreStart())
-            }
             .onAppear {
                 dispatch(MyFollowActions.FetchStart(autoLoad: !state.updatableState.hasLoadedOnce))
             }
@@ -30,13 +26,57 @@ struct MyFollowPage: StateView {
 
     @ViewBuilder
     private var contentView: some View {
-        LazyVStack(spacing: 0) {
+        List {
             ForEach(state.model?.items ?? []) { item in
-                NavigationLink {
-                    FeedDetailPage(id: item.id)
-                } label: {
+                ZStack {
+                    NavigationLink(destination: FeedDetailPage(id: item.id)) {
+                        EmptyView()
+                    }
+                    .opacity(0)
+
                     FeedItemView(data: item)
                 }
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.itemBg)
+            }
+
+            // Load More Indicator
+            if state.updatableState.hasMoreData && !(state.model?.items ?? []).isEmpty {
+                HStack {
+                    Spacer()
+                    if isLoadingMore {
+                        ProgressView()
+                    }
+                    Spacer()
+                }
+                .frame(height: 50)
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.bgColor)
+                .onAppear {
+                    guard !isLoadingMore else { return }
+                    isLoadingMore = true
+                    Task {
+                        await run(action: MyFollowActions.LoadMoreStart())
+                        await MainActor.run {
+                            isLoadingMore = false
+                        }
+                    }
+                }
+            }
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color.bgColor)
+        .environment(\.defaultMinListRowHeight, 1)
+        .refreshable {
+            await run(action: MyFollowActions.FetchStart(autoLoad: false))
+        }
+        .overlay {
+            if state.updatableState.showLoadingView {
+                ProgressView()
+                    .scaleEffect(1.5)
             }
         }
     }

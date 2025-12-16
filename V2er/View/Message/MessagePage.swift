@@ -25,6 +25,8 @@ struct MessagePage: BaseHomePageView {
         return selected
     }
     
+    @State private var isLoadingMore = false
+
     var body: some View {
         contentView
             .background(Color.bgColor)
@@ -37,15 +39,50 @@ struct MessagePage: BaseHomePageView {
 
     @ViewBuilder
     private var contentView: some View {
-        LazyVStack(spacing: 0) {
+        List {
             ForEach(state.model.items) { item in
                 MessageItemView(item: item)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBg)
+            }
+
+            // Load More Indicator
+            if state.updatableState.hasMoreData && !state.model.items.isEmpty {
+                HStack {
+                    Spacer()
+                    if isLoadingMore {
+                        ProgressView()
+                    }
+                    Spacer()
+                }
+                .frame(height: 50)
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.bgColor)
+                .onAppear {
+                    guard !isLoadingMore else { return }
+                    isLoadingMore = true
+                    Task {
+                        await run(action: MessageActions.LoadMoreStart())
+                        await MainActor.run {
+                            isLoadingMore = false
+                        }
+                    }
+                }
             }
         }
-        .updatable(state.updatableState) {
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .environment(\.defaultMinListRowHeight, 1)
+        .refreshable {
             await run(action: MessageActions.FetchStart())
-        } loadMore: {
-            await run(action: MessageActions.LoadMoreStart())
+        }
+        .overlay {
+            if state.updatableState.showLoadingView {
+                ProgressView()
+                    .scaleEffect(1.5)
+            }
         }
     }
 }
