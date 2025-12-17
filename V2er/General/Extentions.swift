@@ -339,7 +339,12 @@ struct MobileWebView: UIViewControllerRepresentable {
 
 class MobileWebViewController: UIViewController, WKNavigationDelegate {
     var url: URL?
-    var colorScheme: ColorScheme = .light
+    var colorScheme: ColorScheme = .light {
+        didSet {
+            applyColorScheme()
+        }
+    }
+
     private var webView: WKWebView!
     private var progressView: UIProgressView!
     private var observation: NSKeyValueObservation?
@@ -353,12 +358,22 @@ class MobileWebViewController: UIViewController, WKNavigationDelegate {
         setupWebView()
         setupProgressView()
         setupNavigationBar()
+        applyColorScheme()
 
         if let url = url {
             var request = URLRequest(url: url)
             request.setValue(Self.mobileUserAgent, forHTTPHeaderField: "User-Agent")
             webView.load(request)
         }
+    }
+
+    private func applyColorScheme() {
+        let isDark = colorScheme == .dark
+        overrideUserInterfaceStyle = isDark ? .dark : .light
+        view.backgroundColor = isDark ? .black : .white
+        webView?.backgroundColor = isDark ? .black : .white
+        webView?.scrollView.backgroundColor = isDark ? .black : .white
+        webView?.isOpaque = false
     }
 
     private func setupWebView() {
@@ -369,6 +384,7 @@ class MobileWebViewController: UIViewController, WKNavigationDelegate {
         webView.navigationDelegate = self
         webView.allowsBackForwardNavigationGestures = true
         webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.isOpaque = false
 
         view.addSubview(webView)
         NSLayoutConstraint.activate([
@@ -384,6 +400,23 @@ class MobileWebViewController: UIViewController, WKNavigationDelegate {
             self?.progressView.progress = Float(progress)
             self?.progressView.isHidden = progress >= 1.0
         }
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        injectThemeCSS()
+    }
+
+    private func injectThemeCSS() {
+        let isDark = colorScheme == .dark
+        // V2EX uses prefers-color-scheme, so we inject CSS to force the theme
+        let css = isDark ? """
+            :root { color-scheme: dark; }
+            body { background-color: #1a1a1a !important; color: #e0e0e0 !important; }
+            """ : """
+            :root { color-scheme: light; }
+            """
+        let js = "var style = document.createElement('style'); style.innerHTML = `\(css)`; document.head.appendChild(style);"
+        webView.evaluateJavaScript(js, completionHandler: nil)
     }
 
     private func setupProgressView() {
