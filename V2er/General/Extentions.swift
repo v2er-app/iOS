@@ -317,3 +317,140 @@ struct SafariView: UIViewControllerRepresentable {
         }
     }
 }
+
+// MARK: - Mobile Web View (with mobile User-Agent)
+import WebKit
+
+struct MobileWebView: UIViewControllerRepresentable {
+    let url: URL
+    @Environment(\.colorScheme) var colorScheme
+
+    func makeUIViewController(context: Context) -> MobileWebViewController {
+        let controller = MobileWebViewController()
+        controller.url = url
+        controller.colorScheme = colorScheme
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: MobileWebViewController, context: Context) {
+        uiViewController.colorScheme = colorScheme
+    }
+}
+
+class MobileWebViewController: UIViewController, WKNavigationDelegate {
+    var url: URL?
+    var colorScheme: ColorScheme = .light {
+        didSet {
+            applyColorScheme()
+        }
+    }
+
+    private var webView: WKWebView!
+    private var progressView: UIProgressView!
+    private var observation: NSKeyValueObservation?
+
+    // iPhone Safari mobile User-Agent
+    private static let mobileUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setupWebView()
+        setupProgressView()
+        setupNavigationBar()
+        applyColorScheme()
+
+        if let url = url {
+            var request = URLRequest(url: url)
+            request.setValue(Self.mobileUserAgent, forHTTPHeaderField: "User-Agent")
+            webView.load(request)
+        }
+    }
+
+    private func applyColorScheme() {
+        let isDark = colorScheme == .dark
+        overrideUserInterfaceStyle = isDark ? .dark : .light
+        view.backgroundColor = isDark ? .black : .white
+        webView?.backgroundColor = isDark ? .black : .white
+        webView?.scrollView.backgroundColor = isDark ? .black : .white
+        webView?.isOpaque = false
+    }
+
+    private func setupWebView() {
+        let config = WKWebViewConfiguration()
+
+        webView = WKWebView(frame: .zero, configuration: config)
+        webView.customUserAgent = Self.mobileUserAgent
+        webView.navigationDelegate = self
+        webView.allowsBackForwardNavigationGestures = true
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.isOpaque = false
+
+        view.addSubview(webView)
+        NSLayoutConstraint.activate([
+            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        // Observe loading progress
+        observation = webView.observe(\.estimatedProgress, options: .new) { [weak self] _, change in
+            guard let progress = change.newValue else { return }
+            self?.progressView.progress = Float(progress)
+            self?.progressView.isHidden = progress >= 1.0
+        }
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        injectThemeCSS()
+    }
+
+    private func injectThemeCSS() {
+        let isDark = colorScheme == .dark
+        // V2EX uses prefers-color-scheme, so we inject CSS to force the theme
+        let css = isDark ? """
+            :root { color-scheme: dark; }
+            body { background-color: #1a1a1a !important; color: #e0e0e0 !important; }
+            """ : """
+            :root { color-scheme: light; }
+            """
+        let js = "var style = document.createElement('style'); style.innerHTML = `\(css)`; document.head.appendChild(style);"
+        webView.evaluateJavaScript(js, completionHandler: nil)
+    }
+
+    private func setupProgressView() {
+        progressView = UIProgressView(progressViewStyle: .bar)
+        progressView.translatesAutoresizingMaskIntoConstraints = false
+        progressView.tintColor = .systemBlue
+
+        view.addSubview(progressView)
+        NSLayoutConstraint.activate([
+            progressView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            progressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            progressView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            progressView.heightAnchor.constraint(equalToConstant: 2)
+        ])
+    }
+
+    private func setupNavigationBar() {
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareAction)),
+            UIBarButtonItem(barButtonSystemItem: .refresh, target: self, action: #selector(refreshAction))
+        ]
+    }
+
+    @objc private func refreshAction() {
+        webView.reload()
+    }
+
+    @objc private func shareAction() {
+        guard let url = webView.url else { return }
+        let activityVC = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+        present(activityVC, animated: true)
+    }
+
+    deinit {
+        observation?.invalidate()
+    }
+}

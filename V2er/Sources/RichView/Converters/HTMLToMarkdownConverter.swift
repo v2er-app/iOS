@@ -74,7 +74,10 @@ public class HTMLToMarkdownConverter {
                 // Basic text formatting
                 case "p":
                     let content = try convertElement(childElement)
-                    result += "\n\n\(content)\n\n"
+                    // Only add paragraph if it has actual content (skip empty <p> tags)
+                    if !content.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        result += "\n\n\(content)\n\n"
+                    }
 
                 case "br":
                     result += "  \n"
@@ -485,6 +488,12 @@ public class HTMLToMarkdownConverter {
     private func cleanupMarkdown(_ markdown: String) -> String {
         var cleaned = markdown
 
+        // Remove leading markdown line breaks (  \n pattern at start)
+        // This handles HTML that starts with multiple <br> tags
+        while cleaned.hasPrefix("  \n") {
+            cleaned = String(cleaned.dropFirst(3))
+        }
+
         // Remove excessive newlines (more than 2 consecutive)
         cleaned = cleaned.replacingOccurrences(
             of: #"\n{3,}"#,
@@ -492,7 +501,14 @@ public class HTMLToMarkdownConverter {
             options: .regularExpression
         )
 
-        // Trim whitespace
+        // Remove excessive spaces followed by newlines (softens br handling)
+        cleaned = cleaned.replacingOccurrences(
+            of: #"(  \n){2,}"#,
+            with: "  \n",
+            options: .regularExpression
+        )
+
+        // Trim whitespace and newlines from start and end
         cleaned = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
 
         return cleaned
