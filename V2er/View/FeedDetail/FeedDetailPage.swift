@@ -23,6 +23,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @State var rendered: Bool = false
     @State private var showingSafari = false
     @State private var safariURL: URL?
+    @State private var showingMobileWeb = false
+    @State private var mobileWebURL: URL?
 
     var bindingState: Binding<FeedDetailState> {
         if store.appState.feedDetailStates[instanceId] == nil {
@@ -70,6 +72,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             .sheet(isPresented: $showingSafari) {
                 if let url = safariURL {
                     SafariView(url: url)
+                }
+            }
+            .sheet(isPresented: $showingMobileWeb) {
+                if let url = mobileWebURL {
+                    MobileWebView(url: url)
                 }
             }
     }
@@ -309,9 +316,10 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     Divider()
 
                     Button {
+                        // Use MobileWebView with mobile User-Agent for better mobile experience
                         if let url = URL(string: APIService.baseUrlString + "/t/\(id)") {
-                            safariURL = url
-                            showingSafari = true
+                            mobileWebURL = url
+                            showingMobileWeb = true
                         }
                     } label: {
                         Label("使用浏览器打开", systemImage: "safari")

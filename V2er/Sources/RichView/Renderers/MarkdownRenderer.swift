@@ -345,31 +345,71 @@ public class MarkdownRenderer {
             if let linkMatch = currentText.firstMatch(of: /\[(.+?)\]\((.+?)\)/) {
                 // Add text before link
                 let beforeRange = currentText.startIndex..<linkMatch.range.lowerBound
-                if !beforeRange.isEmpty {
-                    result.append(renderPlainText(String(currentText[beforeRange])))
-                }
+                let beforeText = beforeRange.isEmpty ? "" : String(currentText[beforeRange])
 
-                // Add link text
                 let linkText = String(linkMatch.1)
                 let linkURL = String(linkMatch.2)
-                var linkAttributed = AttributedString(linkText)
-                linkAttributed.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.link.fontWeight)
-                linkAttributed.foregroundColor = stylesheet.link.color.uiColor
-                if stylesheet.link.underline {
-                    linkAttributed.underlineStyle = .single
-                    linkAttributed.underlineColor = stylesheet.link.color.uiColor
+
+                // Check if this is a @mention link (V2EX renders mentions as @<a>username</a>)
+                // Pattern 1: Link text starts with @ (e.g., [@username](url))
+                // Pattern 2: @ appears right before the link (e.g., @[username](url))
+                let isMentionLink = linkURL.contains("/member/")
+                let hasAtPrefix = linkText.starts(with: "@")
+                let hasAtBefore = beforeText.hasSuffix("@")
+
+                if isMentionLink && (hasAtPrefix || hasAtBefore) {
+                    // Render text before the @ (if @ is at the end of beforeText)
+                    if hasAtBefore {
+                        let textBeforeAt = String(beforeText.dropLast())
+                        if !textBeforeAt.isEmpty {
+                            result.append(renderPlainText(textBeforeAt))
+                        }
+                        // Render @username as mention with the @ included
+                        var mentionText = AttributedString("@\(linkText)")
+                        mentionText.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight)
+                        mentionText.foregroundColor = stylesheet.mention.textColor.uiColor
+                        if let url = URL(string: linkURL) {
+                            mentionText.link = url
+                        }
+                        result.append(mentionText)
+                    } else {
+                        // @ is inside the link text
+                        if !beforeText.isEmpty {
+                            result.append(renderPlainText(beforeText))
+                        }
+                        var mentionText = AttributedString(linkText)
+                        mentionText.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight)
+                        mentionText.foregroundColor = stylesheet.mention.textColor.uiColor
+                        if let url = URL(string: linkURL) {
+                            mentionText.link = url
+                        }
+                        result.append(mentionText)
+                    }
+                } else {
+                    // Regular link - render text before it first
+                    if !beforeText.isEmpty {
+                        result.append(renderPlainText(beforeText))
+                    }
+                    // Add regular link text
+                    var linkAttributed = AttributedString(linkText)
+                    linkAttributed.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.link.fontWeight)
+                    linkAttributed.foregroundColor = stylesheet.link.color.uiColor
+                    if stylesheet.link.underline {
+                        linkAttributed.underlineStyle = .single
+                        linkAttributed.underlineColor = stylesheet.link.color.uiColor
+                    }
+                    if let url = URL(string: linkURL) {
+                        linkAttributed.link = url
+                    }
+                    result.append(linkAttributed)
                 }
-                if let url = URL(string: linkURL) {
-                    linkAttributed.link = url
-                }
-                result.append(linkAttributed)
 
                 // Continue with remaining text
                 currentText = String(currentText[linkMatch.range.upperBound...])
                 continue
             }
 
-            // Check for @mention
+            // Check for @mention (standalone, not wrapped in a link)
             if let mentionMatch = currentText.firstMatch(of: /@([a-zA-Z0-9_]+)/) {
                 // Add text before mention
                 let beforeRange = currentText.startIndex..<mentionMatch.range.lowerBound
@@ -377,12 +417,11 @@ public class MarkdownRenderer {
                     result.append(renderPlainText(String(currentText[beforeRange])))
                 }
 
-                // Add mention
+                // Add mention with color only (no background)
                 let username = String(mentionMatch.1)
                 var mentionText = AttributedString("@\(username)")
                 mentionText.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight)
                 mentionText.foregroundColor = stylesheet.mention.textColor.uiColor
-                mentionText.backgroundColor = stylesheet.mention.backgroundColor.uiColor
                 result.append(mentionText)
 
                 // Continue with remaining text
