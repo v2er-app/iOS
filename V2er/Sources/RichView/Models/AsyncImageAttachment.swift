@@ -26,11 +26,17 @@ public struct AsyncImageAttachment: View {
     /// Image quality
     let quality: RenderConfiguration.ImageQuality
 
+    /// Threshold below which images are considered "small" (e.g., emojis) and should not be expanded
+    private let smallImageThreshold: CGFloat = 100
+
     /// Loading state
     @State private var isLoading = true
 
     /// Error state
     @State private var hasError = false
+
+    /// Loaded image size (nil until loaded)
+    @State private var loadedImageSize: CGSize?
 
     // MARK: - Initialization
 
@@ -56,9 +62,10 @@ public struct AsyncImageAttachment: View {
                         placeholderView
                     }
                     .retry(maxCount: 3, interval: .seconds(2))
-                    .onSuccess { _ in
+                    .onSuccess { result in
                         isLoading = false
                         hasError = false
+                        loadedImageSize = result.image.size
                     }
                     .onFailure { _ in
                         isLoading = false
@@ -66,13 +73,39 @@ public struct AsyncImageAttachment: View {
                     }
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: style.maxWidth, maxHeight: style.maxHeight)
-                    .cornerRadius(style.cornerRadius)
+                    .frame(maxWidth: computedMaxWidth, maxHeight: computedMaxHeight)
+                    .cornerRadius(isSmallImage ? 0 : style.cornerRadius)
                     .accessibilityLabel(altText.isEmpty ? "Image" : altText)
             } else {
                 errorView
             }
         }
+    }
+
+    // MARK: - Computed Properties
+
+    /// Whether this is a small image (like an emoji) that should not be expanded
+    private var isSmallImage: Bool {
+        guard let size = loadedImageSize else { return false }
+        return size.width <= smallImageThreshold && size.height <= smallImageThreshold
+    }
+
+    /// Computed max width - use natural size for small images, otherwise use style.maxWidth
+    private var computedMaxWidth: CGFloat {
+        guard let size = loadedImageSize else { return style.maxWidth }
+        if isSmallImage {
+            return size.width
+        }
+        return style.maxWidth
+    }
+
+    /// Computed max height - use natural size for small images, otherwise use style.maxHeight
+    private var computedMaxHeight: CGFloat {
+        guard let size = loadedImageSize else { return style.maxHeight }
+        if isSmallImage {
+            return size.height
+        }
+        return style.maxHeight
     }
 
     // MARK: - Subviews
