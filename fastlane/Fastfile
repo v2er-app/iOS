@@ -88,10 +88,10 @@ platform :ios do
         submit_beta_review: true,  # Automatically submit for Beta review
         wait_for_uploaded_build: true,
         beta_app_description: "V2er is an elegant third-party client for V2EX forum",
-        beta_app_feedback_email: "support@v2er.app",
+        beta_app_feedback_email: "hi@v2er.app",
         demo_account_required: false,
         beta_app_review_info: {
-          contact_email: "support@v2er.app",
+          contact_email: "hi@v2er.app",
           contact_first_name: "V2er",
           contact_last_name: "Support",
           contact_phone: "+86 13800138000",
