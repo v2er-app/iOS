@@ -23,6 +23,40 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
         NotificationCenter.default.post(name: NSNotification.Name("AppearanceDidChange"), object: action.appearance)
 
         followingAction = nil
+
+    case let action as SettingActions.ToggleAutoCheckinAction:
+        state.autoCheckin = action.enabled
+        UserDefaults.standard.set(action.enabled, forKey: "autoCheckin")
+        followingAction = nil
+
+    case _ as SettingActions.StartAutoCheckinAction:
+        state.isCheckingIn = true
+        state.checkinError = nil
+        // followingAction remains as action to execute async
+
+    case let action as SettingActions.CheckinSuccessAction:
+        state.isCheckingIn = false
+        state.checkinDays = action.days
+        state.lastCheckinDate = Date()
+        state.checkinError = nil
+        // Save last checkin date
+        UserDefaults.standard.set(Date(), forKey: "lastCheckinDate")
+
+        // Show toast notification
+        if action.alreadyCheckedIn {
+            Toast.show("今日已签到，连续 \(action.days) 天")
+        } else {
+            Toast.show("签到成功！连续 \(action.days) 天")
+        }
+        followingAction = nil
+
+    case let action as SettingActions.CheckinFailedAction:
+        state.isCheckingIn = false
+        state.checkinError = action.error
+        log("Checkin failed: \(action.error)")
+        Toast.show("签到失败，请稍后再试")
+        followingAction = nil
+
     default:
         break
     }

@@ -51,6 +51,13 @@ struct SplashView: View {
             // Hide splash after animation completes
             runInMain(delay: 1200) {
                 store.dispatch(LaunchFinishedAction(), animation: .easeOut(duration: 0.3))
+
+                // Trigger auto-checkin if enabled and not checked in today
+                if store.appState.settingState.shouldAutoCheckinToday {
+                    runInMain(delay: 500) {
+                        dispatch(SettingActions.StartAutoCheckinAction())
+                    }
+                }
             }
         }
     }
