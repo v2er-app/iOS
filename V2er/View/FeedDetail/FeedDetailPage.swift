@@ -69,8 +69,12 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
     private func shareTopicContent() {
         let title = state.model.headerInfo?.title ?? "V2EX 话题"
-        let url = APIService.baseUrlString + "/t/\(id)"
-        let activityItems: [Any] = [title, URL(string: url)!]
+        let urlString = APIService.baseUrlString + "/t/\(id)"
+        guard let shareURL = URL(string: urlString) else {
+            Toast.show("分享链接生成失败")
+            return
+        }
+        let activityItems: [Any] = [title, shareURL]
 
         let activityVC = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
 
@@ -81,6 +85,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             activityVC.popoverPresentationController?.sourceView = rootVC.view
             activityVC.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
             rootVC.present(activityVC, animated: true)
+        } else {
+            Toast.show("无法打开分享")
         }
     }
 
@@ -347,10 +353,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         } label: {
                             Label("下沉 1 天", systemImage: "arrow.down.to.line")
                         }
-                    }
-
-                    if state.model.stickyStr?.notEmpty() == true || state.model.fadeStr?.notEmpty() == true {
-                        Divider()
                     }
 
                     // Share button
