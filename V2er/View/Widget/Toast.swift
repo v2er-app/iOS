@@ -50,34 +50,83 @@ struct DefaultToastView: View {
     }
 }
 
+private struct ToastContainerView<Content: View>: View {
+    @Binding var isPresented: Bool
+    let paddingTop: CGFloat
+    let content: Content
+
+    @State private var dismissTask: Task<Void, Never>?
+    @State private var toastId = UUID()
+
+    var body: some View {
+        content
+            .background(Color.secondaryBackground.opacity(0.98))
+            .cornerRadius(99)
+            .shadow(color: Color.primaryText.opacity(0.3), radius: 3)
+            .padding(.top, paddingTop)
+            .transition(.asymmetric(
+                insertion: .move(edge: .top).combined(with: .opacity),
+                removal: .move(edge: .top).combined(with: .opacity)
+            ))
+            .zIndex(1)
+            .onTapGesture {
+                dismissToast()
+            }
+            .onAppear {
+                scheduleDismiss()
+            }
+            .onDisappear {
+                cancelDismissTask()
+            }
+            .onChange(of: isPresented) { newValue in
+                if newValue {
+                    toastId = UUID()
+                    scheduleDismiss()
+                }
+            }
+    }
+
+    private func scheduleDismiss() {
+        cancelDismissTask()
+
+        let currentId = toastId
+        dismissTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
+
+            guard !Task.isCancelled, toastId == currentId else { return }
+
+            dismissToast()
+        }
+    }
+
+    private func cancelDismissTask() {
+        dismissTask?.cancel()
+        dismissTask = nil
+    }
+
+    private func dismissToast() {
+        cancelDismissTask()
+        withAnimation(.easeInOut(duration: 0.25)) {
+            isPresented = false
+        }
+    }
+}
+
 extension View {
     func toast<Content: View>(isPresented: Binding<Bool>,
                               paddingTop: CGFloat = 0,
                               @ViewBuilder content: () -> Content?) -> some View {
         ZStack(alignment: .top) {
             self
-            if isPresented.wrappedValue {
-                content()
-                    .background(Color.secondaryBackground.opacity(0.98))
-                    .cornerRadius(99)
-                    .shadow(color: Color.primaryText.opacity(0.3), radius: 3)
-                    .padding(.top, paddingTop)
-                    .transition(AnyTransition.move(edge: .top))
-                    .zIndex(1)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            withAnimation {
-                                isPresented.wrappedValue = false
-                            }
-                        }
-                    }
-                    .onTapGesture {
-                        withAnimation {
-                            isPresented.wrappedValue = false
-                        }
-                    }
+            if isPresented.wrappedValue, let toastContent = content() {
+                ToastContainerView(
+                    isPresented: isPresented,
+                    paddingTop: paddingTop,
+                    content: toastContent
+                )
             }
         }
+        .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)
     }
 }
 
