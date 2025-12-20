@@ -273,9 +273,10 @@ struct FeedDetailActions {
             let result: APIResult<FeedDetailInfo> = await APIService.shared
                 .htmlGet(endpoint: .general(url: stickyLink),
                          requestHeaders: Headers.topicReferer(id))
+            // Success if HTTP request succeeded (regardless of response content)
             var success = false
-            if case let .success(result) = result {
-                success = result?.isValid() ?? false
+            if case .success = result {
+                success = true
             }
             dispatch(StickyTopicDone(id: id, success: success))
         }
@@ -319,9 +320,10 @@ struct FeedDetailActions {
             let result: APIResult<FeedDetailInfo> = await APIService.shared
                 .htmlGet(endpoint: .general(url: fadeLink),
                          requestHeaders: Headers.topicReferer(id))
+            // Success if HTTP request succeeded (regardless of response content)
             var success = false
-            if case let .success(result) = result {
-                success = result?.isValid() ?? false
+            if case .success = result {
+                success = true
             }
             dispatch(FadeTopicDone(id: id, success: success))
         }
