@@ -27,7 +27,6 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
     case let action as SettingActions.ToggleAutoCheckinAction:
         state.autoCheckin = action.enabled
         UserDefaults.standard.set(action.enabled, forKey: "autoCheckin")
-        UserDefaults.standard.synchronize()
         followingAction = nil
 
     case _ as SettingActions.StartAutoCheckinAction:
@@ -42,7 +41,6 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
         state.checkinError = nil
         // Save last checkin date
         UserDefaults.standard.set(Date(), forKey: "lastCheckinDate")
-        UserDefaults.standard.synchronize()
 
         // Show toast notification
         if action.alreadyCheckedIn {
@@ -56,6 +54,7 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
         state.isCheckingIn = false
         state.checkinError = action.error
         log("Checkin failed: \(action.error)")
+        Toast.show("签到失败，请稍后再试")
         followingAction = nil
 
     default:
