@@ -88,6 +88,16 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
         case let action as FeedDetailActions.ReportTopicDone:
             state.model.hasReported = action.reported
             Toast.show(action.reported ? "举报成功" : "举报失败")
+        case let action as FeedDetailActions.StickyTopicDone:
+            if action.success {
+                state.model.stickyStr = nil // Disable sticky button after success
+            }
+            Toast.show(action.success ? "置顶 10 分钟成功" : "置顶失败")
+        case let action as FeedDetailActions.FadeTopicDone:
+            if action.success {
+                state.model.fadeStr = nil // Disable fade button after success
+            }
+            Toast.show(action.success ? "下沉成功" : "下沉失败")
         default:
             break;
     }
