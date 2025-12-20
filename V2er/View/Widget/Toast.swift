@@ -8,6 +8,15 @@
 
 import SwiftUI
 
+// MARK: - Toast Configuration
+
+private enum ToastConfig {
+    static let dismissDelay: UInt64 = 1_500_000_000 // 1.5 seconds in nanoseconds
+    static let animationDuration: Double = 0.25
+}
+
+// MARK: - Toast
+
 final class Toast {
     var isPresented: Bool = false
     var title: String = ""
@@ -50,6 +59,15 @@ struct DefaultToastView: View {
     }
 }
 
+// MARK: - ToastContainerView
+
+/// Container responsible for presenting and auto-dismissing a toast.
+///
+/// Uses UUID-based tracking to prevent race conditions between multiple presentations:
+/// - Each toast gets a unique `toastId`. Dismiss timers only act if their captured ID
+///   matches the current one, preventing stale timers from dismissing newer toasts.
+/// - The dismiss `Task` is cancelled on view disappear, tap dismiss, or before scheduling
+///   a new timer, ensuring at most one active timer exists per toast.
 private struct ToastContainerView<Content: View>: View {
     @Binding var isPresented: Bool
     let paddingTop: CGFloat
@@ -57,6 +75,7 @@ private struct ToastContainerView<Content: View>: View {
 
     @State private var dismissTask: Task<Void, Never>?
     @State private var toastId = UUID()
+    @State private var hasScheduledDismiss = false
 
     var body: some View {
         content
@@ -64,10 +83,7 @@ private struct ToastContainerView<Content: View>: View {
             .cornerRadius(99)
             .shadow(color: Color.primaryText.opacity(0.3), radius: 3)
             .padding(.top, paddingTop)
-            .transition(.asymmetric(
-                insertion: .move(edge: .top).combined(with: .opacity),
-                removal: .move(edge: .top).combined(with: .opacity)
-            ))
+            .transition(.move(edge: .top).combined(with: .opacity))
             .zIndex(1)
             .onTapGesture {
                 dismissToast()
@@ -79,7 +95,8 @@ private struct ToastContainerView<Content: View>: View {
                 cancelDismissTask()
             }
             .onChange(of: isPresented) { newValue in
-                if newValue {
+                if newValue && hasScheduledDismiss {
+                    // Re-presentation: reset timer for new toast
                     toastId = UUID()
                     scheduleDismiss()
                 }
@@ -88,10 +105,11 @@ private struct ToastContainerView<Content: View>: View {
 
     private func scheduleDismiss() {
         cancelDismissTask()
+        hasScheduledDismiss = true
 
         let currentId = toastId
         dismissTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 seconds
+            try? await Task.sleep(nanoseconds: ToastConfig.dismissDelay)
 
             guard !Task.isCancelled, toastId == currentId else { return }
 
@@ -106,11 +124,11 @@ private struct ToastContainerView<Content: View>: View {
 
     private func dismissToast() {
         cancelDismissTask()
-        withAnimation(.easeInOut(duration: 0.25)) {
-            isPresented = false
-        }
+        isPresented = false
     }
 }
+
+// MARK: - View Extension
 
 extension View {
     func toast<Content: View>(isPresented: Binding<Bool>,
@@ -126,9 +144,11 @@ extension View {
                 )
             }
         }
-        .animation(.easeInOut(duration: 0.25), value: isPresented.wrappedValue)
+        .animation(.easeInOut(duration: ToastConfig.animationDuration), value: isPresented.wrappedValue)
     }
 }
+
+// MARK: - Preview
 
 struct ToastView_Previews: PreviewProvider {
     @State static var showToast: Bool = true
