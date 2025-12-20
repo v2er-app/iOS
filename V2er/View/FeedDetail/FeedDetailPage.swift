@@ -67,6 +67,23 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         || (!isContentEmpty && !self.rendered)
     }
 
+    private func shareTopicContent() {
+        let title = state.model.headerInfo?.title ?? "V2EX 话题"
+        let url = APIService.baseUrlString + "/t/\(id)"
+        let activityItems: [Any] = [title, URL(string: url)!]
+
+        let activityVC = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+
+        // For iPad, we need to provide a source view
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let rootVC = window.rootViewController {
+            activityVC.popoverPresentationController?.sourceView = rootVC.view
+            activityVC.popoverPresentationController?.sourceRect = CGRect(x: UIScreen.main.bounds.width / 2, y: UIScreen.main.bounds.height / 2, width: 0, height: 0)
+            rootVC.present(activityVC, animated: true)
+        }
+    }
+
     var body: some View {
         contentView
             .sheet(isPresented: $showingSafari) {
@@ -314,6 +331,34 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     .disabled(reported)
 
                     Divider()
+
+                    // Owner-only actions
+                    if let stickyStr = state.model.stickyStr, stickyStr.notEmpty() {
+                        Button {
+                            dispatch(FeedDetailActions.StickyTopic(id: id))
+                        } label: {
+                            Label("置顶 10 分钟 (200 铜币)", systemImage: "pin")
+                        }
+                    }
+
+                    if let fadeStr = state.model.fadeStr, fadeStr.notEmpty() {
+                        Button {
+                            dispatch(FeedDetailActions.FadeTopic(id: id))
+                        } label: {
+                            Label("下沉 1 天", systemImage: "arrow.down.to.line")
+                        }
+                    }
+
+                    if state.model.stickyStr?.notEmpty() == true || state.model.fadeStr?.notEmpty() == true {
+                        Divider()
+                    }
+
+                    // Share button
+                    Button {
+                        shareTopicContent()
+                    } label: {
+                        Label("分享", systemImage: "square.and.arrow.up")
+                    }
 
                     Button {
                         // Use MobileWebView with mobile User-Agent for better mobile experience

@@ -461,10 +461,7 @@ extension RenderStylesheet {
                 fontWeight: .regular,
                 lineSpacing: 2,
                 paragraphSpacing: 2,
-                color: Color.adaptive(
-                    light: Color(hex: "#555555"),
-                    dark: Color.white.opacity(0.9)
-                )
+                color: .primary
             ),
             heading: HeadingStyle(
                 h1Size: 22,

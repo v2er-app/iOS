@@ -241,4 +241,96 @@ struct FeedDetailActions {
         let result: APIResult<FeedDetailInfo>
     }
 
+    struct StickyTopic: AwaitAction {
+        var target: Reducer = R
+        var id: String
+
+        func execute(in store: Store) async {
+            // Check if user is logged in
+            guard AccountState.hasSignIn() else {
+                Toast.show("请先登录")
+                dispatch(LoginActions.ShowLoginPageAction(reason: "需要登录才能置顶主题"))
+                return
+            }
+
+            Toast.show("置顶中")
+            guard let state = store.appState.feedDetailStates[id],
+                  let stickyStr = state.model.stickyStr,
+                  stickyStr.notEmpty() else {
+                Toast.show("操作失败，请刷新页面")
+                return
+            }
+
+            // Parse the onclick string to get the URL
+            // Format: "if (confirm('...')) { location.href = '/sticky/topic/123456?once=xxx'; }"
+            guard let sIndex = stickyStr.index(of: "/sticky/topic/"),
+                  let eIndex = stickyStr.lastIndex(of: "'") else {
+                Toast.show("操作失败，无法解析链接")
+                return
+            }
+            let stickyLink = String(stickyStr[sIndex..<eIndex])
+
+            let result: APIResult<FeedDetailInfo> = await APIService.shared
+                .htmlGet(endpoint: .general(url: stickyLink),
+                         requestHeaders: Headers.topicReferer(id))
+            var success = false
+            if case let .success(result) = result {
+                success = result?.isValid() ?? false
+            }
+            dispatch(StickyTopicDone(id: id, success: success))
+        }
+    }
+
+    struct StickyTopicDone: Action {
+        var target: Reducer = R
+        var id: String
+        let success: Bool
+    }
+
+    struct FadeTopic: AwaitAction {
+        var target: Reducer = R
+        var id: String
+
+        func execute(in store: Store) async {
+            // Check if user is logged in
+            guard AccountState.hasSignIn() else {
+                Toast.show("请先登录")
+                dispatch(LoginActions.ShowLoginPageAction(reason: "需要登录才能下沉主题"))
+                return
+            }
+
+            Toast.show("下沉中")
+            guard let state = store.appState.feedDetailStates[id],
+                  let fadeStr = state.model.fadeStr,
+                  fadeStr.notEmpty() else {
+                Toast.show("操作失败，请刷新页面")
+                return
+            }
+
+            // Parse the onclick string to get the URL
+            // Format: "if (confirm('...')) { location.href = '/fade/topic/123456?once=xxx'; }"
+            guard let sIndex = fadeStr.index(of: "/fade/topic/"),
+                  let eIndex = fadeStr.lastIndex(of: "'") else {
+                Toast.show("操作失败，无法解析链接")
+                return
+            }
+            let fadeLink = String(fadeStr[sIndex..<eIndex])
+
+            let result: APIResult<FeedDetailInfo> = await APIService.shared
+                .htmlGet(endpoint: .general(url: fadeLink),
+                         requestHeaders: Headers.topicReferer(id))
+            var success = false
+            if case let .success(result) = result {
+                success = result?.isValid() ?? false
+            }
+            dispatch(FadeTopicDone(id: id, success: success))
+        }
+    }
+
+    struct FadeTopicDone: Action {
+        var target: Reducer = R
+        var id: String
+        let success: Bool
+    }
+
 }
