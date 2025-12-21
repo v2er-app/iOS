@@ -18,7 +18,15 @@ struct MePage: BaseHomePageView {
         let selected = selecedTab == .me
         return selected
     }
-    
+
+    private var isCheckingIn: Bool {
+        store.appState.settingState.isCheckingIn
+    }
+
+    private var checkinDays: Int {
+        store.appState.settingState.checkinDays
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
@@ -60,32 +68,54 @@ struct MePage: BaseHomePageView {
     private var topBannerView: some View {
         HStack(spacing: 10) {
             AvatarView(url: AccountState.avatarUrl, size: 60)
-            HStack {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(AccountState.userName)
-                        .font(.headline)
-                    if let balance = AccountState.balance, balance.isValid() {
-                        BalanceView(balance: balance, size: 12)
-                    }
+                .to {
+                    UserDetailPage(userId: AccountState.userName)
                 }
-                Spacer()
+            VStack(alignment: .leading, spacing: 6) {
+                Text(AccountState.userName)
+                    .font(.headline)
+                    .to {
+                        UserDetailPage(userId: AccountState.userName)
+                    }
+                if let balance = AccountState.balance, balance.isValid() {
+                    BalanceView(balance: balance, size: 12)
+                }
+                if checkinDays > 0 {
+                    Text("已连续签到 \(checkinDays) 天")
+                        .font(.caption)
+                        .foregroundColor(.secondaryText)
+                }
             }
-            HStack {
-                Text("个人主页")
-                    .font(.subheadline)
-                    .foregroundColor(Color.bodyText)
-                Image(systemName: "chevron.right")
-                    .font(.body.weight(.regular))
-                    .foregroundColor(Color.secondaryText)
+            Spacer()
+            // Checkin Button
+            Button {
+                if !isCheckingIn {
+                    dispatch(SettingActions.StartAutoCheckinAction())
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    if isCheckingIn {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    } else {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 16))
+                    }
+                    Text("签到")
+                        .font(.subheadline)
+                }
+                .foregroundColor(.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(Color.tintColor)
+                .cornerRadius(16)
             }
+            .disabled(isCheckingIn)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 16)
         .background(Color.itemBackground)
         .padding(.bottom, 8)
-        .to {
-            UserDetailPage(userId: AccountState.userName)
-        }
     }
     
     @ViewBuilder
