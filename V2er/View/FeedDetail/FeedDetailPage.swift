@@ -166,7 +166,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
             // Reply Section
             ForEach(state.model.replyInfo.items) { item in
-                ReplyItemView(info: item)
+                ReplyItemView(info: item, topicId: id)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.itemBg)

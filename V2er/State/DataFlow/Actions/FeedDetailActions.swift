@@ -335,4 +335,52 @@ struct FeedDetailActions {
         let success: Bool
     }
 
+    struct ThankReply: AwaitAction {
+        var target: Reducer = R
+        var id: String
+        var replyId: String
+        var replyUserName: String
+
+        func execute(in store: Store) async {
+            // Check if user is logged in
+            guard AccountState.hasSignIn() else {
+                Toast.show("请先登录")
+                dispatch(LoginActions.ShowLoginPageAction(reason: "需要登录才能感谢回复"))
+                return
+            }
+
+            // Check if user is trying to thank their own reply
+            if AccountState.isSelf(userName: replyUserName) {
+                Toast.show("不能感谢自己的回复")
+                return
+            }
+
+            Toast.show("发送中")
+            let state = store.appState.feedDetailStates[id]
+            guard let once = state?.model.once else {
+                Toast.show("操作失败，请刷新页面")
+                return
+            }
+
+            // Extract reply ID from "r_123456" format
+            let actualReplyId = replyId.hasPrefix("r_") ? String(replyId.dropFirst(2)) : replyId
+
+            let result: APIResult<SimpleModel> = await APIService.shared
+                .post(endpoint: .thanksReply(id: actualReplyId), ["once": once])
+
+            var success = false
+            if case let .success(model) = result {
+                success = model?.isValid() ?? false
+            }
+            dispatch(ThankReplyDone(id: id, replyId: replyId, success: success))
+        }
+    }
+
+    struct ThankReplyDone: Action {
+        var target: Reducer = R
+        var id: String
+        var replyId: String
+        let success: Bool
+    }
+
 }

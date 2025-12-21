@@ -45,7 +45,9 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             if case let .success(result) = action.result {
                 state.willLoadPage += 1
                 state.hasMoreData = state.willLoadPage <= result?.headerInfo?.totalPage ?? 1
+                // Use uniqued() to prevent duplicate replies when LoadMore is triggered multiple times
                 state.model.replyInfo.append(result?.replyInfo)
+                state.model.replyInfo.items = state.model.replyInfo.items.uniqued()
             } else {
                 state.hasMoreData = true
             }
@@ -98,6 +100,23 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
                 state.model.fadeStr = nil // Disable fade button after success
             }
             Toast.show(action.success ? "下沉成功" : "下沉失败")
+        case let action as FeedDetailActions.ThankReplyDone:
+            if action.success {
+                // Find and update the reply item
+                if let index = state.model.replyInfo.items.firstIndex(where: { $0.replyId == action.replyId }) {
+                    state.model.replyInfo.items[index].hadThanked = true
+                    // Increment love count (handle empty string case)
+                    let currentLove = state.model.replyInfo.items[index].love
+                    if currentLove.isEmpty {
+                        state.model.replyInfo.items[index].love = "1"
+                    } else {
+                        state.model.replyInfo.items[index].love = "\(currentLove.int + 1)"
+                    }
+                }
+                Toast.show("感谢已发送")
+            } else {
+                Toast.show("感谢发送失败")
+            }
         default:
             break;
     }
