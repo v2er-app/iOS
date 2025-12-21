@@ -98,6 +98,19 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
                 state.model.fadeStr = nil // Disable fade button after success
             }
             Toast.show(action.success ? "下沉成功" : "下沉失败")
+        case let action as FeedDetailActions.ThankReplyDone:
+            if action.success {
+                // Find and update the reply item
+                if let index = state.model.replyInfo.items.firstIndex(where: { $0.replyId == action.replyId }) {
+                    state.model.replyInfo.items[index].hadThanked = true
+                    // Increment love count
+                    let currentLove = state.model.replyInfo.items[index].love.int
+                    state.model.replyInfo.items[index].love = "\(currentLove + 1)"
+                }
+                Toast.show("感谢已发送")
+            } else {
+                Toast.show("感谢发送失败")
+            }
         default:
             break;
     }

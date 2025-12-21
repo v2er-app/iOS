@@ -12,6 +12,7 @@ import Atributika
 
 struct ReplyItemView: View {
     var info: FeedDetailInfo.ReplyInfo.Item
+    var topicId: String
     @EnvironmentObject var store: Store
     @Environment(\.colorScheme) var colorScheme
     @State private var showingSafari = false
@@ -46,9 +47,20 @@ struct ReplyItemView: View {
                             .font(.caption)
                             .foregroundColor(.secondaryText)
                     }
-                    Image(systemName: info.hadThanked ? "heart.fill" : "heart")
-                        .font(.system(size: 14))
-                        .foregroundColor(info.hadThanked ? .red : .secondaryText)
+                    Button {
+                        if !info.hadThanked {
+                            dispatch(FeedDetailActions.ThankReply(
+                                id: topicId,
+                                replyId: info.replyId,
+                                replyUserName: info.userName
+                            ))
+                        }
+                    } label: {
+                        Image(systemName: info.hadThanked ? "heart.fill" : "heart")
+                            .font(.system(size: 14))
+                            .foregroundColor(info.hadThanked ? .red : .secondaryText)
+                    }
+                    .disabled(info.hadThanked)
                 }
 
                 RichContentView(htmlContent: info.content)
