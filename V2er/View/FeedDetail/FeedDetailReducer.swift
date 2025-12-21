@@ -45,7 +45,9 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             if case let .success(result) = action.result {
                 state.willLoadPage += 1
                 state.hasMoreData = state.willLoadPage <= result?.headerInfo?.totalPage ?? 1
+                // Use uniqued() to prevent duplicate replies when LoadMore is triggered multiple times
                 state.model.replyInfo.append(result?.replyInfo)
+                state.model.replyInfo.items = state.model.replyInfo.items.uniqued()
             } else {
                 state.hasMoreData = true
             }
