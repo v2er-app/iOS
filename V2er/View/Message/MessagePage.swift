@@ -96,7 +96,7 @@ struct MessageItemView: View {
         HStack(alignment: .top, spacing: 10) {
             AvatarView(url: item.avatar, size: 40)
                 .to { UserDetailPage(userId: item.username)}
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
                     .foregroundColor(Color.primaryText)
                     .greedyWidth(.leading)
@@ -117,6 +117,11 @@ struct MessageItemView: View {
                     .clipCorner(1.5, corners: [.topLeft, .bottomLeft])
                 }
                 .visibility(item.content.isEmpty ? .gone : .visible)
+                if !item.time.isEmpty {
+                    Text(item.time)
+                        .font(.caption)
+                        .foregroundColor(Color.secondaryText)
+                }
             }
         }
         .padding(12)

@@ -83,7 +83,7 @@ struct SearchPage: StateView {
                 HStack {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.secondaryText)
-                    TextField("sov2ex", text: bindingState.keyword)
+                    TextField("Powered by sov2ex.com", text: bindingState.keyword)
                         .disableAutocorrection(true)
                         .autocapitalization(.none)
                         .focused($focused)
