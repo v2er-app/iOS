@@ -98,19 +98,18 @@ struct MePage: BaseHomePageView {
                     if isCheckingIn {
                         ProgressView()
                             .scaleEffect(0.8)
-                            .tint(Color.white)
+                            .tint(Color.tintColor)
                     } else {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 16))
-                            .foregroundColor(Color.white)
                     }
                     Text("签到")
                         .font(.subheadline)
-                        .foregroundColor(Color.white)
                 }
+                .foregroundColor(.tintColor)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(Color.tintColor)
+                .background(Color.tintColor.opacity(0.12))
                 .clipShape(Capsule())
             }
             .disabled(isCheckingIn)
