@@ -370,9 +370,7 @@ struct FeedDetailActions {
 
             var success = false
             if case let .success(model) = result {
-                if model != nil {
-                    success = true
-                }
+                success = model?.isValid() ?? false
             }
             dispatch(ThankReplyDone(id: id, replyId: replyId, success: success))
         }

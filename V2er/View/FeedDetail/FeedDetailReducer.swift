@@ -103,9 +103,13 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
                 // Find and update the reply item
                 if let index = state.model.replyInfo.items.firstIndex(where: { $0.replyId == action.replyId }) {
                     state.model.replyInfo.items[index].hadThanked = true
-                    // Increment love count
-                    let currentLove = state.model.replyInfo.items[index].love.int
-                    state.model.replyInfo.items[index].love = "\(currentLove + 1)"
+                    // Increment love count (handle empty string case)
+                    let currentLove = state.model.replyInfo.items[index].love
+                    if currentLove.isEmpty {
+                        state.model.replyInfo.items[index].love = "1"
+                    } else {
+                        state.model.replyInfo.items[index].love = "\(currentLove.int + 1)"
+                    }
                 }
                 Toast.show("感谢已发送")
             } else {
