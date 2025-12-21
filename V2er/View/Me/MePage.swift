@@ -97,6 +97,7 @@ struct MePage: BaseHomePageView {
                     if isCheckingIn {
                         ProgressView()
                             .scaleEffect(0.8)
+                            .tint(.white)
                     } else {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 16))
@@ -104,11 +105,11 @@ struct MePage: BaseHomePageView {
                     Text("签到")
                         .font(.subheadline)
                 }
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(Color.tintColor)
-                .cornerRadius(16)
+                .clipShape(Capsule())
             }
             .disabled(isCheckingIn)
         }
