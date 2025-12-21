@@ -10,15 +10,13 @@ import SwiftUI
 
 struct NewsContentView: View {
     var contentInfo: FeedDetailInfo.ContentInfo?
-    @Binding var rendered: Bool
     @EnvironmentObject var store: Store
     @Environment(\.colorScheme) var colorScheme
     @State private var showingSafari = false
     @State private var safariURL: URL?
 
-    init(_ contentInfo: FeedDetailInfo.ContentInfo?, rendered: Binding<Bool>) {
+    init(_ contentInfo: FeedDetailInfo.ContentInfo?) {
         self.contentInfo = contentInfo
-        self._rendered = rendered
     }
 
     var body: some View {
@@ -33,16 +31,6 @@ struct NewsContentView: View {
                 .onImageTapped { url in
                     // Open image in SafariView for now
                     openInSafari(url)
-                }
-                .onRenderCompleted { metadata in
-                    // Mark as rendered after content is ready
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.rendered = true
-                    }
-                }
-                .onRenderFailed { error in
-                    print("Render error: \(error)")
-                    self.rendered = true
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
