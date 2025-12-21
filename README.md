@@ -4,11 +4,9 @@ A beautiful V2EX client built with SwiftUI for iOS.
 
 ## Download
 
-[![App Store](https://img.shields.io/badge/App%20Store-Download-blue?style=flat-square&logo=apple)](https://apps.apple.com/app/id1596137027)
-[![TestFlight](https://img.shields.io/badge/TestFlight-Beta-orange?style=flat-square&logo=apple)](https://testflight.apple.com/join/s1NOGG2F)
+[![App Store](https://img.shields.io/badge/App%20Store-Download-blue?style=flat-square&logo=apple)](https://apps.apple.com/app/id1596137027) - Stable release
 
-- [App Store](https://apps.apple.com/app/id1596137027) - Stable release
-- [TestFlight](https://testflight.apple.com/join/s1NOGG2F) - Beta version with latest features
+[![TestFlight](https://img.shields.io/badge/TestFlight-Beta-orange?style=flat-square&logo=apple)](https://testflight.apple.com/join/s1NOGG2F) - Beta version with latest features
 
 ## Preview
 
@@ -23,4 +21,4 @@ Contributions are welcome! You can contribute by:
 
 ## License
 
-This project is licensed under GPL. See [LICENSE](./LICENSE) for details.
+This project is licensed under the GNU General Public License v3. See [LICENSE](./LICENSE) for details.
