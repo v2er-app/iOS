@@ -31,6 +31,8 @@ struct SettingState: FluxState {
         if let lastCheckin = UserDefaults.standard.object(forKey: "lastCheckinDate") as? Date {
             self.lastCheckinDate = lastCheckin
         }
+        // Load checkin days
+        self.checkinDays = UserDefaults.standard.integer(forKey: "checkinDays")
     }
 
     /// Check if we should attempt auto-checkin today

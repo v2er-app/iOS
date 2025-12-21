@@ -39,8 +39,9 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
         state.checkinDays = action.days
         state.lastCheckinDate = Date()
         state.checkinError = nil
-        // Save last checkin date
+        // Save checkin data
         UserDefaults.standard.set(Date(), forKey: "lastCheckinDate")
+        UserDefaults.standard.set(action.days, forKey: "checkinDays")
 
         // Show toast notification
         if action.alreadyCheckedIn {
