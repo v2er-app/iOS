@@ -27,6 +27,13 @@ struct MePage: BaseHomePageView {
         store.appState.settingState.checkinDays
     }
 
+    private var hasCheckedInToday: Bool {
+        guard let lastDate = store.appState.settingState.lastCheckinDate else {
+            return false
+        }
+        return Calendar.current.isDateInToday(lastDate)
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
@@ -90,7 +97,7 @@ struct MePage: BaseHomePageView {
             Spacer()
             // Checkin Button
             Button {
-                if !isCheckingIn {
+                if !isCheckingIn && !hasCheckedInToday {
                     dispatch(SettingActions.StartAutoCheckinAction())
                 }
             } label: {
@@ -98,21 +105,21 @@ struct MePage: BaseHomePageView {
                     if isCheckingIn {
                         ProgressView()
                             .scaleEffect(0.8)
-                            .tint(Color.tintColor)
+                            .tint(hasCheckedInToday ? Color.secondaryText : Color.tintColor)
                     } else {
-                        Image(systemName: "checkmark.circle.fill")
+                        Image(systemName: hasCheckedInToday ? "checkmark.circle.fill" : "checkmark.circle")
                             .font(.system(size: 16))
                     }
-                    Text("签到")
+                    Text(hasCheckedInToday ? "已签到" : "签到")
                         .font(.subheadline)
                 }
-                .foregroundColor(.tintColor)
+                .foregroundColor(hasCheckedInToday ? .secondaryText : .tintColor)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(Color.tintColor.opacity(0.12))
+                .background(hasCheckedInToday ? Color.secondaryText.opacity(0.12) : Color.tintColor.opacity(0.12))
                 .clipShape(Capsule())
             }
-            .disabled(isCheckingIn)
+            .disabled(isCheckingIn || hasCheckedInToday)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 16)
