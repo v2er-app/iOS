@@ -2,6 +2,17 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.2.0 (Build XX)
+1. Feature: Add daily check-in button with automatic and manual check-in support
+2. Feature: Display consecutive check-in days on Me tab
+3. Feature: Add share, sticky (10 min), and fade (1 day) options to topic detail menu
+4. Fix: Remove duplicate loading indicator on topic detail page
+5. Fix: Prevent small images and emojis from expanding beyond their natural size
+6. Fix: Toast notifications now animate smoothly and dismiss reliably
+7. Fix: Tapping one item no longer opens all items in user profile
+8. Improvement: Enhanced mobile web viewing experience for topics
+9. Improvement: Updated TestFlight support email
+
 ## v1.1.20 (Build XX)
 1. Feature: Add splash screen with centered logo on app launch
 2. Feature: Improved markdown rendering with support for task list checkboxes
