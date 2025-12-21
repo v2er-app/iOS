@@ -72,6 +72,9 @@ struct SettingsPage: View {
           SectionItemView("源码开放")
         }
 
+        SectionItemView("致谢")
+          .to { CreditsPage() }
+
         Button {
           if let url = URL(string: "https://v2er.app") {
             safariURL = IdentifiableURL(url: url)

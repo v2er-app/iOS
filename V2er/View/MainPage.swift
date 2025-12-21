@@ -81,13 +81,9 @@ struct MainPage: StateView {
 
                         // Message Tab
                         MessagePage(selecedTab: state.selectedTab)
+                            .badge(unReadNums > 0 ? unReadNums : 0)
                             .tabItem {
-                                if unReadNums > 0 {
-                                    Label("通知", systemImage: "bell")
-                                        .badge(unReadNums)
-                                } else {
-                                    Label("通知", systemImage: "bell")
-                                }
+                                Label("通知", systemImage: "bell")
                             }
                             .tag(TabId.message)
 
