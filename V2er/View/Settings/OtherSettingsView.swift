@@ -17,6 +17,14 @@ struct OtherSettingsView: View {
         store.appState.settingState.autoCheckin
     }
 
+    private var isCheckingIn: Bool {
+        store.appState.settingState.isCheckingIn
+    }
+
+    private var isLoggedIn: Bool {
+        AccountState.hasSignIn()
+    }
+
     var body: some View {
         formView
             .navBar("通用设置")
@@ -37,6 +45,30 @@ struct OtherSettingsView: View {
     private var formView: some View {
         ScrollView {
             VStack(spacing: 0) {
+                // Manual Checkin Button
+                Button {
+                    if isLoggedIn && !isCheckingIn {
+                        dispatch(SettingActions.StartAutoCheckinAction())
+                    } else if !isLoggedIn {
+                        Toast.show("请先登录")
+                    }
+                } label: {
+                    SectionView("手动签到", showDivider: true) {
+                        HStack {
+                            if isCheckingIn {
+                                ProgressView()
+                                    .padding(.trailing, 16)
+                            } else {
+                                Image(systemName: "checkmark.circle")
+                                    .font(.body.weight(.regular))
+                                    .foregroundColor(isLoggedIn ? Color.tintColor : .secondaryText)
+                                    .padding(.trailing, 16)
+                            }
+                        }
+                    }
+                }
+                .disabled(isCheckingIn)
+
                 // Auto Checkin Toggle
                 SectionView("自动签到", showDivider: true) {
                     Toggle("", isOn: Binding(
