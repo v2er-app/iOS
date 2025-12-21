@@ -20,7 +20,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Environment(\.isPresented) private var isPresented
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var store: Store
-    @State var rendered: Bool = false
     @State private var showingSafari = false
     @State private var safariURL: URL?
     @State private var showingMobileWeb = false
@@ -60,11 +59,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     private var isContentEmpty: Bool {
         let contentInfo = state.model.contentInfo
         return contentInfo == nil || contentInfo!.html.isEmpty
-    }
-
-    private var showProgressView: Bool {
-        return state.showProgressView
-        || (!isContentEmpty && !self.rendered)
     }
 
     private func shareTopicContent() {
@@ -155,7 +149,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
             // Content Section
             if !isContentEmpty {
-                NewsContentView(state.model.contentInfo, rendered: $rendered)
+                NewsContentView(state.model.contentInfo)
                     .padding(.horizontal, 10)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
@@ -209,12 +203,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
-        }
-        .overlay {
-            if showProgressView {
-                ProgressView()
-                    .scaleEffect(1.5)
-            }
         }
         .onTapGesture {
             replyIsFocused = false
