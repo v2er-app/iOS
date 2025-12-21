@@ -97,9 +97,7 @@ struct MePage: BaseHomePageView {
             Spacer()
             // Checkin Button
             Button {
-                if !isCheckingIn {
-                    dispatch(SettingActions.StartAutoCheckinAction())
-                }
+                dispatch(SettingActions.StartAutoCheckinAction())
             } label: {
                 HStack(spacing: 4) {
                     if isCheckingIn {
