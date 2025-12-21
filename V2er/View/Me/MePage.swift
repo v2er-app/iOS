@@ -18,7 +18,22 @@ struct MePage: BaseHomePageView {
         let selected = selecedTab == .me
         return selected
     }
-    
+
+    private var isCheckingIn: Bool {
+        store.appState.settingState.isCheckingIn
+    }
+
+    private var checkinDays: Int {
+        store.appState.settingState.checkinDays
+    }
+
+    private var hasCheckedInToday: Bool {
+        guard let lastDate = store.appState.settingState.lastCheckinDate else {
+            return false
+        }
+        return Calendar.current.isDateInToday(lastDate)
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
@@ -60,32 +75,54 @@ struct MePage: BaseHomePageView {
     private var topBannerView: some View {
         HStack(spacing: 10) {
             AvatarView(url: AccountState.avatarUrl, size: 60)
-            HStack {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(AccountState.userName)
-                        .font(.headline)
-                    if let balance = AccountState.balance, balance.isValid() {
-                        BalanceView(balance: balance, size: 12)
-                    }
+                .to {
+                    UserDetailPage(userId: AccountState.userName)
                 }
-                Spacer()
+            VStack(alignment: .leading, spacing: 6) {
+                Text(AccountState.userName)
+                    .font(.headline)
+                    .foregroundColor(.primaryText)
+                    .to {
+                        UserDetailPage(userId: AccountState.userName)
+                    }
+                if let balance = AccountState.balance, balance.isValid() {
+                    BalanceView(balance: balance, size: 12)
+                }
+                if checkinDays > 0 {
+                    Text("已连续签到 \(checkinDays) 天")
+                        .font(.caption)
+                        .foregroundColor(.secondaryText)
+                }
             }
-            HStack {
-                Text("个人主页")
-                    .font(.subheadline)
-                    .foregroundColor(Color.bodyText)
-                Image(systemName: "chevron.right")
-                    .font(.body.weight(.regular))
-                    .foregroundColor(Color.secondaryText)
+            Spacer()
+            // Checkin Button
+            Button {
+                dispatch(SettingActions.StartAutoCheckinAction())
+            } label: {
+                HStack(spacing: 4) {
+                    if isCheckingIn {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .tint(hasCheckedInToday ? Color.secondaryText : Color.tintColor)
+                    } else {
+                        Image(systemName: hasCheckedInToday ? "checkmark.circle.fill" : "checkmark.circle")
+                            .font(.system(size: 16))
+                    }
+                    Text(hasCheckedInToday ? "已签到" : "签到")
+                        .font(.subheadline)
+                }
+                .foregroundColor(hasCheckedInToday ? .secondaryText : .tintColor)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(hasCheckedInToday ? Color.secondaryText.opacity(0.12) : Color.tintColor.opacity(0.12))
+                .clipShape(Capsule())
             }
+            .disabled(isCheckingIn)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 16)
         .background(Color.itemBackground)
         .padding(.bottom, 8)
-        .to {
-            UserDetailPage(userId: AccountState.userName)
-        }
     }
     
     @ViewBuilder
