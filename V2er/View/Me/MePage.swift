@@ -74,6 +74,7 @@ struct MePage: BaseHomePageView {
             VStack(alignment: .leading, spacing: 6) {
                 Text(AccountState.userName)
                     .font(.headline)
+                    .foregroundColor(.primaryText)
                     .to {
                         UserDetailPage(userId: AccountState.userName)
                     }
