@@ -97,7 +97,7 @@ struct MePage: BaseHomePageView {
             Spacer()
             // Checkin Button
             Button {
-                if !isCheckingIn && !hasCheckedInToday {
+                if !isCheckingIn {
                     dispatch(SettingActions.StartAutoCheckinAction())
                 }
             } label: {
@@ -119,7 +119,7 @@ struct MePage: BaseHomePageView {
                 .background(hasCheckedInToday ? Color.secondaryText.opacity(0.12) : Color.tintColor.opacity(0.12))
                 .clipShape(Capsule())
             }
-            .disabled(isCheckingIn || hasCheckedInToday)
+            .disabled(isCheckingIn)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 16)
