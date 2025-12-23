@@ -38,6 +38,10 @@ struct MyUploadsPage: View {
                     ForEach(uploads) { upload in
                         UploadThumbnailView(upload: upload)
                             .onTapGesture {
+                                UIPasteboard.general.string = upload.imageUrl
+                                Toast.show("链接已复制")
+                            }
+                            .onLongPressGesture {
                                 selectedUpload = upload
                                 showingDetail = true
                             }
