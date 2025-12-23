@@ -15,9 +15,13 @@ struct ImgurService {
     // Imgur anonymous upload endpoint
     private let uploadURL = URL(string: "https://api.imgur.com/3/image")!
 
-    // Imgur Client ID for anonymous uploads
-    // Users can register their own at https://api.imgur.com/oauth2/addclient
-    private let clientId = "546c25a59c58ad7"
+    // Default Imgur Client ID for anonymous uploads (fallback)
+    private let defaultClientId = "546c25a59c58ad7"
+
+    // Get the active client ID (user's or default)
+    private var clientId: String {
+        SettingState.getImgurClientId() ?? defaultClientId
+    }
 
     private init() {}
 
