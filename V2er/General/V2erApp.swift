@@ -16,6 +16,7 @@ struct V2erApp: App {
     public static var statusBarState: UIStatusBarStyle = .darkContent
     public static var window: UIWindow?
     @StateObject private var store = Store.shared
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         setupApperance()
@@ -37,7 +38,20 @@ struct V2erApp: App {
                 updateAppearance(store.appState.settingState.appearance)
             }            .onChange(of: store.appState.settingState.appearance) { newValue in
                 updateAppearance(newValue)
+            }            .onChange(of: scenePhase) { newPhase in
+                if newPhase == .active {
+                    checkAutoCheckin()
+                }
             }        }
+    }
+
+    /// Check and trigger auto-checkin when app becomes active
+    private func checkAutoCheckin() {
+        guard store.appState.settingState.shouldAutoCheckinToday else { return }
+        // Small delay to avoid interfering with app state restoration
+        runInMain(delay: 500) {
+            dispatch(SettingActions.StartAutoCheckinAction())
+        }
     }
 
     private func updateAppearance(_ appearance: AppearanceMode) {
