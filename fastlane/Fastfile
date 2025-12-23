@@ -163,26 +163,56 @@ platform :ios do
     # Build the app
     build_ipa
 
-    # Upload to TestFlight
-    # NOTE: We skip waiting for build processing to avoid timeout issues.
-    # Apple's build processing can take 5-30 minutes, which often exceeds reasonable timeout limits.
-    # Distribution to testers can be done after processing completes using: fastlane distribute_beta
-    upload_to_testflight(
-      api_key: api_key,
-      skip_submission: false,
-      skip_waiting_for_build_processing: true,  # Don't wait - avoid timeout issues
-      distribute_external: false,  # Can't distribute until Apple finishes processing
-      uses_non_exempt_encryption: false
-      # NOTE: changelog parameter intentionally omitted
-      # Even with skip_waiting_for_build_processing: true, providing a changelog
-      # causes fastlane to wait for the build to appear in App Store Connect,
-      # which defeats the purpose of skipping. Changelog can be added manually
-      # in App Store Connect or when distributing with: fastlane distribute_beta
-    )
+    # Check if we should distribute to public beta
+    distribute_to_public_beta = ENV["DISTRIBUTE_TO_PUBLIC_BETA"] == "true"
 
-    UI.success("✅ Build uploaded successfully to TestFlight!")
-    UI.important("📦 Build will be available for testing once Apple finishes processing (usually 5-30 minutes)")
-    UI.important("🔔 You can distribute to testers using: fastlane distribute_beta")
+    if distribute_to_public_beta
+      # Upload to TestFlight and wait for processing to distribute to public beta
+      UI.message("📦 Will distribute to public beta group after upload...")
+      upload_to_testflight(
+        api_key: api_key,
+        skip_submission: false,
+        skip_waiting_for_build_processing: false,  # Wait for processing to distribute
+        distribute_external: true,  # Distribute to external testers (public beta)
+        groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
+        notify_external_testers: true,  # Send email notifications
+        uses_non_exempt_encryption: false,
+        submit_beta_review: true,  # Automatically submit for Beta review
+        changelog: ChangelogHelper.get_current_changelog || "Bug fixes and improvements",
+        beta_app_description: "V2er is an elegant third-party client for V2EX forum",
+        beta_app_feedback_email: "hi@v2er.app",
+        demo_account_required: false,
+        beta_app_review_info: {
+          contact_email: "hi@v2er.app",
+          contact_first_name: "V2er",
+          contact_last_name: "Support",
+          contact_phone: "+86 13800138000",
+          notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
+        }
+      )
+      UI.success("✅ Build uploaded and distributed to public beta testers!")
+      UI.success("📧 External testers will be notified via email")
+    else
+      # Upload to TestFlight without waiting (original behavior)
+      # NOTE: We skip waiting for build processing to avoid timeout issues.
+      # Apple's build processing can take 5-30 minutes, which often exceeds reasonable timeout limits.
+      # Distribution to testers can be done after processing completes using: fastlane distribute_beta
+      upload_to_testflight(
+        api_key: api_key,
+        skip_submission: false,
+        skip_waiting_for_build_processing: true,  # Don't wait - avoid timeout issues
+        distribute_external: false,  # Can't distribute until Apple finishes processing
+        uses_non_exempt_encryption: false
+        # NOTE: changelog parameter intentionally omitted
+        # Even with skip_waiting_for_build_processing: true, providing a changelog
+        # causes fastlane to wait for the build to appear in App Store Connect,
+        # which defeats the purpose of skipping. Changelog can be added manually
+        # in App Store Connect or when distributing with: fastlane distribute_beta
+      )
+      UI.success("✅ Build uploaded successfully to TestFlight!")
+      UI.important("📦 Build will be available for testing once Apple finishes processing (usually 5-30 minutes)")
+      UI.important("🔔 You can distribute to testers using: fastlane distribute_beta")
+    end
 
     # Notify success
     notification(

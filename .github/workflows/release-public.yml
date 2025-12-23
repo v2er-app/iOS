@@ -13,6 +13,11 @@ on:
         required: false
         default: false
         type: boolean
+      distribute_to_public_beta:
+        description: 'Auto distribute to public beta group after upload'
+        required: false
+        default: false
+        type: boolean
 
 env:
   DEVELOPER_DIR: /Applications/Xcode.app/Contents/Developer
@@ -285,6 +290,7 @@ jobs:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
         TEAM_ID: ${{ secrets.TEAM_ID }}
+        DISTRIBUTE_TO_PUBLIC_BETA: ${{ github.event.inputs.distribute_to_public_beta || 'false' }}
       run: |
         # Enable verbose output for debugging
         export FASTLANE_VERBOSE=true
