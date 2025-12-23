@@ -121,15 +121,22 @@ struct UploadDetailSheet: View {
             VStack(spacing: 0) {
                 // Image preview
                 KFImage(URL(string: upload.imageUrl))
+                    .cacheOriginalImage()
+                    .loadDiskFileSynchronously()
                     .placeholder {
                         Color.lightGray
+                            .frame(height: 200)
                             .overlay {
                                 ProgressView()
                             }
                     }
+                    .onFailure { error in
+                        log("KFImage load failed: \(error.localizedDescription)")
+                    }
+                    .fade(duration: 0.25)
                     .resizable()
                     .scaledToFit()
-                    .frame(maxHeight: 400)
+                    .frame(maxWidth: .infinity, minHeight: 200, maxHeight: 400)
                     .padding()
 
                 Divider()
