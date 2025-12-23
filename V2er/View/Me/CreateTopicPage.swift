@@ -208,10 +208,10 @@ struct CreateTopicPage: StateView {
                     // Save to upload history
                     let record = MyUploadsState.UploadRecord(imageUrl: imageUrl)
                     MyUploadsState.saveUpload(record)
-                    // Insert image URL into content
+                    // Insert image URL on its own line
                     let currentContent = state.content
-                    let imageMarkdown = currentContent.isEmpty ? imageUrl : "\n\(imageUrl)"
-                    store.appState.createTopicState.content += imageMarkdown
+                    let prefix = currentContent.isEmpty || currentContent.hasSuffix("\n") ? "" : "\n"
+                    store.appState.createTopicState.content += "\(prefix)\(imageUrl)\n"
                     Toast.show("图片上传成功")
                 } else {
                     Toast.show(result.error ?? "图片上传失败")

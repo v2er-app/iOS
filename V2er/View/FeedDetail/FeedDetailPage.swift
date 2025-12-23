@@ -279,10 +279,10 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     // Save to upload history
                     let record = MyUploadsState.UploadRecord(imageUrl: imageUrl)
                     MyUploadsState.saveUpload(record)
-                    // Insert image URL into reply content
+                    // Insert image URL on its own line
                     let currentContent = state.replyContent
-                    let imageMarkdown = currentContent.isEmpty ? imageUrl : "\n\(imageUrl)"
-                    store.appState.feedDetailStates[instanceId]?.replyContent += imageMarkdown
+                    let prefix = currentContent.isEmpty || currentContent.hasSuffix("\n") ? "" : "\n"
+                    store.appState.feedDetailStates[instanceId]?.replyContent += "\(prefix)\(imageUrl)\n"
                     Toast.show("图片上传成功")
                 } else {
                     Toast.show(result.error ?? "图片上传失败")
