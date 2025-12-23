@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct FeedDetailState: FluxState {
     var refCounts = 0
@@ -20,6 +21,10 @@ struct FeedDetailState: FluxState {
     var model: FeedDetailInfo = FeedDetailInfo()
     var ignored: Bool = false
     var replyContent: String = .empty
+
+    // Image upload state
+    var isUploadingImage = false
+    var selectedImage: UIImage? = nil
 }
 
 typealias FeedDetailStates=[String : FeedDetailState]

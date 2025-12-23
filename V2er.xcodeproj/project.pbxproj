@@ -157,8 +157,10 @@
 		5DF80E3626A2D045002ADC79 /* MultilineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF80E3526A2D045002ADC79 /* MultilineTextField.swift */; };
 		62367D67C6E8AE3EC837D0F4 /* MentionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44998D879D9842BBB61D639E /* MentionParser.swift */; };
 		6CA744F9E46B4A388C7D15F1 /* PostscriptItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43141D64D5C4A65B1700BF8 /* PostscriptItemView.swift */; };
+		7602FF3B03DA5F81B25B2723 /* ImgurService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 158BA3B55B5231603E31496C /* ImgurService.swift */; };
 		9495B5E175158F3646169AA5 /* RichContentView+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C4B81E79369CDE4880B773 /* RichContentView+Preview.swift */; };
 		97B4326BB45897F25FAEBBD1 /* RenderStylesheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8366DEEFEB9819312F65353D /* RenderStylesheet.swift */; };
+		B3545E39F83E4387F94802C6 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E349FC53BB87F2F0492D651 /* ImagePickerView.swift */; };
 		DAC723E23F071F71DD23FC0D /* RichViewCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40A9E0C514C4D7E9DD4CBEE7 /* RichViewCache.swift */; };
 		E212778C30ED41F39D51D70B /* MarkdownRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64AB393F14CD383FE0EA98A9 /* MarkdownRenderer.swift */; };
 		E6BD52539035CEA6C56D3BDF /* HTMLToMarkdownConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C732E2652C92E5D553656A9 /* HTMLToMarkdownConverter.swift */; };
@@ -186,6 +188,7 @@
 /* Begin PBXFileReference section */
 		0B1A2B3C4D5E6F7081920A04 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		0B1A2B3C4D5E6F7081920A08 /* TypewriterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterView.swift; sourceTree = "<group>"; };
+		158BA3B55B5231603E31496C /* ImgurService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImgurService.swift; sourceTree = "<group>"; };
 		1F753A88F21800A83587E0CD /* TopicDetailRenderingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TopicDetailRenderingTests.swift; sourceTree = "<group>"; };
 		28B24CA82EA3460D00F82B2A /* BalanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BalanceView.swift; sourceTree = "<group>"; };
 		28B24CAA2EA3561400F82B2A /* OnlineStatsInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineStatsInfo.swift; sourceTree = "<group>"; };
@@ -335,6 +338,7 @@
 		5DF80E3526A2D045002ADC79 /* MultilineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTextField.swift; sourceTree = "<group>"; };
 		63DD9090A3AEC64AF144E2CA /* CreditsPage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CreditsPage.swift; sourceTree = "<group>"; };
 		64AB393F14CD383FE0EA98A9 /* MarkdownRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MarkdownRenderer.swift; path = V2er/Sources/RichView/Renderers/MarkdownRenderer.swift; sourceTree = "<group>"; };
+		6E349FC53BB87F2F0492D651 /* ImagePickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
 		72107B2148D16415A7512930 /* RichView+Preview.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "RichView+Preview.swift"; path = "V2er/Sources/RichView/Views/RichView+Preview.swift"; sourceTree = "<group>"; };
 		8366DEEFEB9819312F65353D /* RenderStylesheet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RenderStylesheet.swift; path = V2er/Sources/RichView/Models/RenderStylesheet.swift; sourceTree = "<group>"; };
 		8E707C08835B71223A7A3359 /* AsyncImageAttachment.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AsyncImageAttachment.swift; path = V2er/Sources/RichView/Models/AsyncImageAttachment.swift; sourceTree = "<group>"; };
@@ -440,6 +444,7 @@
 				5DF417712712CD8D00E6D135 /* NodeView.swift */,
 				5D68717B271853DB00329E73 /* SectionItemView.swift */,
 				5DC05A54273D5A2B003561A9 /* Toast.swift */,
+				6E349FC53BB87F2F0492D651 /* ImagePickerView.swift */,
 			);
 			path = Widget;
 			sourceTree = "<group>";
@@ -703,6 +708,7 @@
 				5D45FC2A26CD3FCF0055C336 /* SwiftSoupExtention.swift */,
 				5D6B67B626D54BA1003A246B /* UA.swift */,
 				5D5EA3052741614700974E0F /* Headers.swift */,
+				158BA3B55B5231603E31496C /* ImgurService.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -1111,6 +1117,8 @@
 				1AEBC3AC5DAA63523F5448F5 /* RichContentView.swift in Sources */,
 				9495B5E175158F3646169AA5 /* RichContentView+Preview.swift in Sources */,
 				3AFEDD0981C882741CB19FCD /* CreditsPage.swift in Sources */,
+				7602FF3B03DA5F81B25B2723 /* ImgurService.swift in Sources */,
+				B3545E39F83E4387F94802C6 /* ImagePickerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
