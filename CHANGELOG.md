@@ -2,6 +2,12 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.2.1 (Build XX)
+1. Feature: Add Imgur image upload support for easier image sharing
+2. Feature: Auto check-in when app returns to foreground
+3. Feature: Add thank reply functionality to reply list
+4. Improvement: Enhanced release pipeline with optional public beta distribution
+
 ## v1.2.0 (Build XX)
 1. Feature: Add daily check-in button with automatic and manual check-in support
 2. Feature: Display consecutive check-in days on Me tab
