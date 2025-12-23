@@ -48,6 +48,8 @@ struct V2erApp: App {
     /// Check and trigger auto-checkin when app becomes active
     private func checkAutoCheckin() {
         guard store.appState.settingState.shouldAutoCheckinToday else { return }
+        // Prevent concurrent check-in attempts
+        guard !store.appState.settingState.isCheckingIn else { return }
         // Small delay to avoid interfering with app state restoration
         runInMain(delay: 500) {
             dispatch(SettingActions.StartAutoCheckinAction())
