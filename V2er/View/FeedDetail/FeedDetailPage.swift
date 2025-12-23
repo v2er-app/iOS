@@ -262,7 +262,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             .padding(.horizontal, 10)
             .background(Color.itemBg)
         }
-        .onChange(of: selectedImage) { newImage in
+        .onChange(of: selectedImage) { _, newImage in
             guard let image = newImage else { return }
             uploadImage(image)
         }

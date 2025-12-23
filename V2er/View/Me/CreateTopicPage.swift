@@ -119,7 +119,7 @@ struct CreateTopicPage: StateView {
                     .padding(.horizontal, paddingH)
                     .padding(.vertical, 10)
                 }
-                .onChange(of: selectedImage) { newImage in
+                .onChange(of: selectedImage) { _, newImage in
                     guard let image = newImage else { return }
                     uploadImage(image)
                 }

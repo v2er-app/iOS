@@ -10,6 +10,8 @@ import Foundation
 
 struct MyUploadsState: FluxState {
     static let UPLOADS_KEY = "app.v2er.uploads"
+    static let maxUploadsHistory = 100
+
     var loading = false
     var uploads: [UploadRecord]?
 
@@ -29,7 +31,9 @@ struct MyUploadsState: FluxState {
         static func makeThumbnailUrl(from url: String) -> String {
             // Imgur thumbnail: insert 't' before file extension for small thumbnail
             // 's' = small square, 't' = small thumbnail, 'm' = medium, 'l' = large
-            guard let dotIndex = url.lastIndex(of: ".") else { return url }
+            // Only apply to Imgur URLs
+            guard url.contains("imgur.com"),
+                  let dotIndex = url.lastIndex(of: ".") else { return url }
             var result = url
             result.insert("t", at: dotIndex)
             return result
@@ -58,9 +62,9 @@ struct MyUploadsState: FluxState {
         uploads.removeAll { $0.imageUrl == record.imageUrl }
         // Add to beginning
         uploads.insert(record, at: 0)
-        // Keep only last 100 uploads
-        if uploads.count > 100 {
-            uploads = Array(uploads.prefix(100))
+        // Keep only last N uploads
+        if uploads.count > maxUploadsHistory {
+            uploads = Array(uploads.prefix(maxUploadsHistory))
         }
         saveUploads(uploads)
     }

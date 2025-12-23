@@ -18,6 +18,9 @@ struct ImgurService {
     // Default Imgur Client ID for anonymous uploads (fallback)
     private let defaultClientId = "546c25a59c58ad7"
 
+    // Maximum image size in bytes (10 MB - Imgur's limit)
+    private let maxImageSizeBytes = 10 * 1024 * 1024
+
     // Get the active client ID (user's or default)
     private var clientId: String {
         SettingState.getImgurClientId() ?? defaultClientId
@@ -45,6 +48,12 @@ struct ImgurService {
     func upload(image: UIImage, quality: CGFloat = 0.8) async -> UploadResult {
         guard let imageData = image.jpegData(compressionQuality: quality) else {
             return UploadResult(success: false, imageUrl: nil, error: "无法处理图片")
+        }
+
+        // Check image size limit
+        if imageData.count > maxImageSizeBytes {
+            let sizeMB = Double(imageData.count) / 1024 / 1024
+            return UploadResult(success: false, imageUrl: nil, error: String(format: "图片过大 (%.1fMB)，最大支持 10MB", sizeMB))
         }
 
         let base64String = imageData.base64EncodedString()
