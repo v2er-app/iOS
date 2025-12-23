@@ -10,8 +10,11 @@ import Foundation
 import SwiftUI
 
 struct SettingState: FluxState {
+    static let imgurClientIdKey = "imgurClientId"
+
     var appearance: AppearanceMode = .system
     var autoCheckin: Bool = false
+    var imgurClientId: String = ""
 
     // Checkin state
     var isCheckingIn: Bool = false
@@ -33,6 +36,17 @@ struct SettingState: FluxState {
         }
         // Load checkin days
         self.checkinDays = UserDefaults.standard.integer(forKey: "checkinDays")
+        // Load Imgur client ID
+        self.imgurClientId = UserDefaults.standard.string(forKey: Self.imgurClientIdKey) ?? ""
+    }
+
+    static func saveImgurClientId(_ clientId: String) {
+        UserDefaults.standard.set(clientId, forKey: imgurClientIdKey)
+    }
+
+    static func getImgurClientId() -> String? {
+        let clientId = UserDefaults.standard.string(forKey: imgurClientIdKey)
+        return (clientId?.isEmpty == false) ? clientId : nil
     }
 
     /// Check if we should attempt auto-checkin today

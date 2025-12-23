@@ -7,13 +7,15 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct CreateTopicPage: StateView {
     @Environment(\.dismiss) var dismiss
     @State var showNodeChooseView = false
     @FocusState private var focused: Bool
     @State var isPreviewing = false
-//    @State var openTheCreatedTopic = false
+    @State private var selectedImage: UIImage? = nil
+    @State private var isUploadingImage = false
 
     @EnvironmentObject private var store: Store
     var bindingState: Binding<CreateTopicState> {
@@ -117,6 +119,32 @@ struct CreateTopicPage: StateView {
                     .padding(.horizontal, paddingH)
                     .padding(.vertical, 10)
                 }
+                .onChange(of: selectedImage) { _, newImage in
+                    guard let image = newImage else { return }
+                    uploadImage(image)
+                }
+
+            // Image upload toolbar
+            HStack(spacing: 8) {
+                if isUploadingImage {
+                    ProgressView()
+                        .frame(width: 24, height: 24)
+                    Text("上传中...")
+                        .font(.caption)
+                        .foregroundColor(.secondaryText)
+                } else {
+                    UnifiedImagePickerButton(selectedImage: $selectedImage)
+                    Text("上传图片")
+                        .font(.caption)
+                        .foregroundColor(.secondaryText)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, paddingH)
+            .padding(.vertical, 8)
+            .background(Color.itemBg)
+            .divider()
+
             Button {
                 showNodeChooseView = true
             } label: {
@@ -167,6 +195,29 @@ struct CreateTopicPage: StateView {
         .padding()
         .forceClickable()
         .divider()
+    }
+
+    private func uploadImage(_ image: UIImage) {
+        isUploadingImage = true
+        Task {
+            let result = await ImgurService.shared.upload(image: image)
+            await MainActor.run {
+                isUploadingImage = false
+                selectedImage = nil
+                if result.success, let imageUrl = result.imageUrl {
+                    // Save to upload history
+                    let record = MyUploadsState.UploadRecord(imageUrl: imageUrl)
+                    MyUploadsState.saveUpload(record)
+                    // Insert image URL on its own line
+                    let currentContent = state.content
+                    let prefix = currentContent.isEmpty || currentContent.hasSuffix("\n") ? "" : "\n"
+                    store.appState.createTopicState.content += "\(prefix)\(imageUrl)\n"
+                    Toast.show("图片上传成功")
+                } else {
+                    Toast.show(result.error ?? "图片上传失败")
+                }
+            }
+        }
     }
 }
 

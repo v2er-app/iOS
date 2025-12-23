@@ -12,6 +12,8 @@ import Kingfisher
 struct OtherSettingsView: View {
     @EnvironmentObject private var store: Store
     @State var sizeM: CGFloat = 0
+    @State private var imgurClientId: String = ""
+    @State private var showingImgurHelp = false
 
     private var autoCheckin: Bool {
         store.appState.settingState.autoCheckin
@@ -28,6 +30,9 @@ struct OtherSettingsView: View {
     var body: some View {
         formView
             .navBar("通用设置")
+            .onAppear {
+                imgurClientId = SettingState.getImgurClientId() ?? ""
+            }
             .task {
                 ImageCache.default.calculateDiskStorageSize { result in
                     switch result {
@@ -38,6 +43,11 @@ struct OtherSettingsView: View {
                             print(error)
                     }
                 }
+            }
+            .alert("Imgur Client ID", isPresented: $showingImgurHelp) {
+                Button("确定", role: .cancel) { }
+            } message: {
+                Text("Imgur Client ID 用于上传图片。你可以在 https://api.imgur.com/oauth2/addclient 注册获取自己的 Client ID。如不填写，将使用内置的公共 ID。")
             }
     }
 
@@ -109,6 +119,46 @@ struct OtherSettingsView: View {
                         }
                     }
                 }
+
+                // Imgur Client ID
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        Text("Imgur Client ID")
+                            .foregroundColor(.primaryText)
+                        Button {
+                            showingImgurHelp = true
+                        } label: {
+                            Image(systemName: "questionmark.circle")
+                                .foregroundColor(.secondaryText)
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                    .padding(.bottom, 8)
+
+                    HStack {
+                        TextField("使用内置 Client ID", text: $imgurClientId)
+                            .textFieldStyle(.roundedBorder)
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .onChange(of: imgurClientId) { _, newValue in
+                                SettingState.saveImgurClientId(newValue)
+                            }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 12)
+                }
+                .background(Color.itemBg)
+                .padding(.top, 8)
+
+                Text("用于图片上传，留空则使用内置公共 ID")
+                    .font(.caption)
+                    .foregroundColor(.secondaryText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 4)
+                    .padding(.bottom, 12)
             }
         }
     }

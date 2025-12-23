@@ -8,6 +8,7 @@
 
 import SwiftUI
 import SafariServices
+import PhotosUI
 
 private struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
@@ -24,6 +25,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @State private var safariURL: URL?
     @State private var showingMobileWeb = false
     @State private var mobileWebURL: URL?
+    @State private var selectedImage: UIImage? = nil
+    @State private var isUploadingImage = false
 
     var bindingState: Binding<FeedDetailState> {
         if store.appState.feedDetailStates[instanceId] == nil {
@@ -219,7 +222,19 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         VStack(spacing: 0) {
             Divider()
             VStack(spacing: 0) {
-                HStack(alignment: .bottom, spacing: 0) {
+                HStack(alignment: .bottom, spacing: 8) {
+                    // Image picker button
+                    if isUploadingImage {
+                        ProgressView()
+                            .frame(width: 28, height: 28)
+                            .padding(.leading, 6)
+                            .padding(.vertical, 3)
+                    } else {
+                        UnifiedImagePickerButton(selectedImage: $selectedImage)
+                            .padding(.leading, 6)
+                            .padding(.vertical, 3)
+                    }
+
                     MultilineTextField("发表回复", text: bindingState.replyContent)
                         .debug()
                         .onReceive(keyboardPublisher) { isKeyboardVisiable in
@@ -246,6 +261,33 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             .padding(.top, 10)
             .padding(.horizontal, 10)
             .background(Color.itemBg)
+        }
+        .onChange(of: selectedImage) { _, newImage in
+            guard let image = newImage else { return }
+            uploadImage(image)
+        }
+    }
+
+    private func uploadImage(_ image: UIImage) {
+        isUploadingImage = true
+        Task {
+            let result = await ImgurService.shared.upload(image: image)
+            await MainActor.run {
+                isUploadingImage = false
+                selectedImage = nil
+                if result.success, let imageUrl = result.imageUrl {
+                    // Save to upload history
+                    let record = MyUploadsState.UploadRecord(imageUrl: imageUrl)
+                    MyUploadsState.saveUpload(record)
+                    // Insert image URL on its own line
+                    let currentContent = state.replyContent
+                    let prefix = currentContent.isEmpty || currentContent.hasSuffix("\n") ? "" : "\n"
+                    store.appState.feedDetailStates[instanceId]?.replyContent += "\(prefix)\(imageUrl)\n"
+                    Toast.show("图片上传成功")
+                } else {
+                    Toast.show(result.error ?? "图片上传失败")
+                }
+            }
         }
     }
 
