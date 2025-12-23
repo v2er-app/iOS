@@ -167,31 +167,37 @@ platform :ios do
     distribute_to_public_beta = ENV["DISTRIBUTE_TO_PUBLIC_BETA"] == "true"
 
     if distribute_to_public_beta
-      # Upload to TestFlight and wait for processing to distribute to public beta
-      UI.message("📦 Will distribute to public beta group after upload...")
-      upload_to_testflight(
-        api_key: api_key,
-        skip_submission: false,
-        skip_waiting_for_build_processing: false,  # Wait for processing to distribute
-        distribute_external: true,  # Distribute to external testers (public beta)
-        groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
-        notify_external_testers: true,  # Send email notifications
-        uses_non_exempt_encryption: false,
-        submit_beta_review: true,  # Automatically submit for Beta review
-        changelog: ChangelogHelper.get_current_changelog || "Bug fixes and improvements",
-        beta_app_description: "V2er is an elegant third-party client for V2EX forum",
-        beta_app_feedback_email: "hi@v2er.app",
-        demo_account_required: false,
-        beta_app_review_info: {
-          contact_email: "hi@v2er.app",
-          contact_first_name: "V2er",
-          contact_last_name: "Support",
-          contact_phone: "+86 13800138000",
-          notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
-        }
-      )
-      UI.success("✅ Build uploaded and distributed to public beta testers!")
-      UI.success("📧 External testers will be notified via email")
+      begin
+        # Upload to TestFlight and wait for processing to distribute to public beta
+        UI.message("📦 Will distribute to public beta group after upload...")
+        upload_to_testflight(
+          api_key: api_key,
+          skip_submission: false,
+          skip_waiting_for_build_processing: false,  # Wait for processing to distribute
+          distribute_external: true,  # Distribute to external testers (public beta)
+          groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
+          notify_external_testers: true,  # Send email notifications
+          uses_non_exempt_encryption: false,
+          submit_beta_review: true,  # Automatically submit for Beta review
+          changelog: ChangelogHelper.get_current_changelog || "Bug fixes and improvements",
+          beta_app_description: "V2er is an elegant third-party client for V2EX forum",
+          beta_app_feedback_email: "hi@v2er.app",
+          demo_account_required: false,
+          beta_app_review_info: {
+            contact_email: "hi@v2er.app",
+            contact_first_name: "V2er",
+            contact_last_name: "Support",
+            contact_phone: "+86 13800138000",
+            notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
+          }
+        )
+        UI.success("✅ Build uploaded and distributed to public beta testers!")
+        UI.success("📧 External testers will be notified via email")
+      rescue => e
+        UI.error("Failed to distribute to public beta: #{e.message}")
+        UI.message("Build may have been uploaded but distribution failed")
+        UI.message("You can manually distribute using: fastlane distribute_beta")
+      end
     else
       # Upload to TestFlight without waiting (original behavior)
       # NOTE: We skip waiting for build processing to avoid timeout issues.
