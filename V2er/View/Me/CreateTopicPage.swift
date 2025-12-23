@@ -125,7 +125,7 @@ struct CreateTopicPage: StateView {
                 }
 
             // Image upload toolbar
-            HStack {
+            HStack(spacing: 8) {
                 if isUploadingImage {
                     ProgressView()
                         .frame(width: 24, height: 24)

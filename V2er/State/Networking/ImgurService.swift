@@ -50,7 +50,11 @@ struct ImgurService {
         request.addValue("Client-ID \(clientId)", forHTTPHeaderField: "Authorization")
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
 
-        let bodyString = "image=\(base64String.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? "")"
+        // Use urlQueryAllowed but remove characters that need encoding in form data
+        var allowedCharacters = CharacterSet.alphanumerics
+        allowedCharacters.insert(charactersIn: "-._~")
+        let encodedBase64 = base64String.addingPercentEncoding(withAllowedCharacters: allowedCharacters) ?? ""
+        let bodyString = "image=\(encodedBase64)"
         request.httpBody = bodyString.data(using: .utf8)
 
         do {
