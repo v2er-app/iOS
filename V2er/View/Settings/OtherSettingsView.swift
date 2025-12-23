@@ -142,7 +142,7 @@ struct OtherSettingsView: View {
                             .textFieldStyle(.roundedBorder)
                             .autocapitalization(.none)
                             .disableAutocorrection(true)
-                            .onChange(of: imgurClientId) { newValue in
+                            .onChange(of: imgurClientId) { _, newValue in
                                 SettingState.saveImgurClientId(newValue)
                             }
                     }
