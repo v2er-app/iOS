@@ -11,8 +11,6 @@ import Kingfisher
 
 struct MyUploadsPage: View {
     @State private var uploads: [MyUploadsState.UploadRecord] = []
-    @State private var selectedUpload: MyUploadsState.UploadRecord?
-    @State private var showingDetail = false
 
     private let columns = [
         GridItem(.flexible(), spacing: 2),
@@ -41,23 +39,11 @@ struct MyUploadsPage: View {
                                 UIPasteboard.general.string = upload.imageUrl
                                 Toast.show("链接已复制")
                             }
-                            .onLongPressGesture {
-                                selectedUpload = upload
-                                showingDetail = true
-                            }
                     }
                 }
                 .padding(2)
             }
             .background(Color.bgColor)
-            .sheet(isPresented: $showingDetail) {
-                if let upload = selectedUpload {
-                    UploadDetailSheet(upload: upload, onDelete: {
-                        deleteUpload(upload)
-                        showingDetail = false
-                    })
-                }
-            }
         }
     }
 
@@ -83,11 +69,6 @@ struct MyUploadsPage: View {
     private func loadUploads() {
         uploads = MyUploadsState.loadUploads()
     }
-
-    private func deleteUpload(_ upload: MyUploadsState.UploadRecord) {
-        MyUploadsState.deleteUpload(upload)
-        loadUploads()
-    }
 }
 
 struct UploadThumbnailView: View {
@@ -108,109 +89,6 @@ struct UploadThumbnailView: View {
                 .clipped()
         }
         .aspectRatio(1, contentMode: .fit)
-    }
-}
-
-struct UploadDetailSheet: View {
-    let upload: MyUploadsState.UploadRecord
-    let onDelete: () -> Void
-    @Environment(\.dismiss) var dismiss
-
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                // Image preview
-                KFImage(URL(string: upload.imageUrl))
-                    .cacheOriginalImage()
-                    .loadDiskFileSynchronously()
-                    .placeholder {
-                        Color.lightGray
-                            .frame(height: 200)
-                            .overlay {
-                                ProgressView()
-                            }
-                    }
-                    .onFailure { error in
-                        log("KFImage load failed: \(error.localizedDescription)")
-                    }
-                    .fade(duration: 0.25)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxWidth: .infinity, minHeight: 200, maxHeight: 400)
-                    .padding()
-
-                Divider()
-
-                // URL display and actions
-                VStack(spacing: 16) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("图片链接")
-                            .font(.caption)
-                            .foregroundColor(.secondaryText)
-                        Text(upload.imageUrl)
-                            .font(.system(.footnote, design: .monospaced))
-                            .foregroundColor(.primaryText)
-                            .lineLimit(2)
-                            .padding(12)
-                            .background(Color.lightGray)
-                            .cornerRadius(8)
-                    }
-                    .greedyWidth(.leading)
-
-                    HStack(spacing: 16) {
-                        Button {
-                            UIPasteboard.general.string = upload.imageUrl
-                            Toast.show("链接已复制")
-                        } label: {
-                            Label("复制链接", systemImage: "doc.on.doc")
-                                .font(.callout)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 12)
-                                .background(Color.tintColor)
-                                .cornerRadius(10)
-                        }
-
-                        Button {
-                            onDelete()
-                        } label: {
-                            Label("删除", systemImage: "trash")
-                                .font(.callout)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 12)
-                                .background(Color.red)
-                                .cornerRadius(10)
-                        }
-                    }
-
-                    // Upload time
-                    Text("上传于 \(formatDate(upload.timestamp))")
-                        .font(.caption)
-                        .foregroundColor(.secondaryText)
-                }
-                .padding()
-
-                Spacer()
-            }
-            .background(Color.bgColor)
-            .navigationTitle("图片详情")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("完成") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-
-    private func formatDate(_ timestamp: Int64) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(timestamp) / 1000)
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm"
-        return formatter.string(from: date)
     }
 }
 
