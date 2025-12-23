@@ -276,6 +276,9 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 isUploadingImage = false
                 selectedImage = nil
                 if result.success, let imageUrl = result.imageUrl {
+                    // Save to upload history
+                    let record = MyUploadsState.UploadRecord(imageUrl: imageUrl)
+                    MyUploadsState.saveUpload(record)
                     // Insert image URL into reply content
                     let currentContent = state.replyContent
                     let imageMarkdown = currentContent.isEmpty ? imageUrl : "\n\(imageUrl)"

@@ -140,8 +140,10 @@ struct MePage: BaseHomePageView {
                 .to { MyFavoritePage() }
             SectionItemView("关注", icon: "heart")
                 .to { MyFollowPage() }
-            SectionItemView("最近浏览", icon: "clock", showDivider: false)
+            SectionItemView("最近浏览", icon: "clock")
                 .to { MyRecentPage() }
+            SectionItemView("我的图片", icon: "photo.on.rectangle", showDivider: false)
+                .to { MyUploadsPage() }
             SectionItemView("设置", icon: "gearshape", showDivider: false)
                 .padding(.top, 8)
                 .to { SettingsPage() }

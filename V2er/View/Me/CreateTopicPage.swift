@@ -205,6 +205,9 @@ struct CreateTopicPage: StateView {
                 isUploadingImage = false
                 selectedImage = nil
                 if result.success, let imageUrl = result.imageUrl {
+                    // Save to upload history
+                    let record = MyUploadsState.UploadRecord(imageUrl: imageUrl)
+                    MyUploadsState.saveUpload(record)
                     // Insert image URL into content
                     let currentContent = state.content
                     let imageMarkdown = currentContent.isEmpty ? imageUrl : "\n\(imageUrl)"
