@@ -104,7 +104,10 @@ struct SettingActions {
 
         func execute(in store: Store) async {
             // Only checkin if user is logged in
-            guard AccountState.hasSignIn() else { return }
+            guard AccountState.hasSignIn() else {
+                dispatch(CheckinFailedAction(error: "未登录"))
+                return
+            }
 
             // Fetch daily mission info
             let dailyResult: APIResult<DailyInfo> = await APIService.shared.htmlGet(endpoint: .dailyMission)

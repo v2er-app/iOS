@@ -55,7 +55,10 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
         state.isCheckingIn = false
         state.checkinError = action.error
         log("Checkin failed: \(action.error)")
-        Toast.show("签到失败，请稍后再试")
+        // Don't show toast for not-logged-in errors (silent fail for auto-checkin)
+        if action.error != "未登录" {
+            Toast.show("签到失败，请稍后再试")
+        }
         followingAction = nil
 
     default:

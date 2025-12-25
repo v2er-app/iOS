@@ -42,6 +42,34 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
             name: NSNotification.Name("AppearanceDidChange"),
             object: nil
         )
+
+        // Listen for app becoming active to trigger auto-checkin
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleAppBecameActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+    }
+
+    @objc private func handleAppBecameActive() {
+        checkAutoCheckin()
+    }
+
+    private func checkAutoCheckin() {
+        let store = Store.shared
+        let settings = store.appState.settingState
+
+        // Only attempt checkin if user is logged in
+        guard AccountState.hasSignIn() else { return }
+        guard settings.shouldAutoCheckinToday else { return }
+        // Prevent concurrent check-in attempts
+        guard !settings.isCheckingIn else { return }
+
+        // Small delay to avoid interfering with app state restoration
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            dispatch(SettingActions.StartAutoCheckinAction())
+        }
     }
 
     @objc private func handleAppearanceChange(_ notification: Notification) {
