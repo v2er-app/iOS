@@ -83,11 +83,20 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                         }
                     )
 
-                // Node List Section
-                nodeListView
+                // Node List Section - Each item as separate List row to prevent multiple NavigationLinks triggering
+                ForEach(model.topics) { item in
+                    let data = FeedInfo.Item(
+                        id: item.id,
+                        title: item.title,
+                        avatar: item.avatar)
+                    NavigationLink(destination: FeedDetailPage(initData: data)) {
+                        TagFeedItemView(data: item)
+                    }
+                    .buttonStyle(.plain)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.itemBackground)
+                }
 
                 // Load More Indicator
                 if state.hasMoreData && !model.topics.isEmpty {
@@ -250,28 +259,6 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     }
     
     
-    @ViewBuilder
-    private var nodeListView: some View {
-        LazyVStack(spacing: 0) {
-            ForEach(model.topics) { item in
-                let data = FeedInfo.Item(
-                    id: item.id,
-                    title: item.title,
-                    avatar: item.avatar)
-                ZStack {
-                    NavigationLink(destination: FeedDetailPage(initData: data)) {
-                        EmptyView()
-                    }
-                    .opacity(0)
-
-                    TagFeedItemView(data: item)
-                }
-            }
-        }
-        .background(Color.itemBackground)
-        .clipCorner(12, corners: [.topLeft, .topRight])
-    }
-
     struct TagFeedItemView: View {
         var data: TagDetailInfo.Item
 
