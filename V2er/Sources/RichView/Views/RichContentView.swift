@@ -75,6 +75,8 @@ public struct RichContentView: View {
                 .font(.system(size: configuration.stylesheet.body.fontSize))
                 .lineSpacing(configuration.stylesheet.body.lineSpacing)
                 .textSelection(.enabled)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
         case .codeBlock(let code, let language):
             CodeBlockAttachment(
