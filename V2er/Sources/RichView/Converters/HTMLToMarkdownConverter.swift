@@ -477,7 +477,9 @@ public class HTMLToMarkdownConverter {
     /// Escape markdown characters in plain text (not in markdown syntax)
     private func escapeMarkdownCharacters(_ text: String) -> String {
         var escaped = text
-        let charactersToEscape = ["\\", "*", "_", "[", "]"]
+        // Only escape characters that actually cause markdown parsing issues
+        // Don't escape [ ] as they only form links when followed by (url)
+        let charactersToEscape = ["\\", "*", "_"]
         for char in charactersToEscape {
             escaped = escaped.replacingOccurrences(of: char, with: "\\\(char)")
         }
