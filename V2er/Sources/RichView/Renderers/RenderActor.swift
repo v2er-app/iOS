@@ -185,14 +185,66 @@ public actor RenderActor {
                 continue
             }
 
-            // Image
-            if let imageMatch = line.firstMatch(of: /!\[([^\]]*)\]\(([^)]+)\)/) {
+            // Image - only match if the ENTIRE line is just an image (no text before/after)
+            // Use ^ and $ anchors to ensure we match the whole line
+            if let imageMatch = line.firstMatch(of: /^!\[([^\]]*)\]\(([^)]+)\)$/) {
                 let altText = String(imageMatch.1)
                 let urlString = String(imageMatch.2)
                 let url = URL(string: urlString)
                 elements.append(ContentElement(
                     type: .image(ImageInfo(url: url, altText: altText))
                 ))
+                index += 1
+                continue
+            }
+
+            // Check for inline images mixed with text - split into separate elements
+            let imagePattern = /!\[([^\]]*)\]\(([^)]+)\)/
+            if line.contains(imagePattern) {
+                // Line has text + image(s), need to split them
+                var remaining = line
+                while !remaining.isEmpty {
+                    if let match = remaining.firstMatch(of: imagePattern) {
+                        // Add text before image
+                        let beforeRange = remaining.startIndex..<match.range.lowerBound
+                        if !beforeRange.isEmpty {
+                            let textPart = String(remaining[beforeRange])
+                            if !textPart.trimmingCharacters(in: .whitespaces).isEmpty {
+                                let renderer = MarkdownRenderer(
+                                    stylesheet: configuration.stylesheet,
+                                    enableCodeHighlighting: configuration.enableCodeHighlighting
+                                )
+                                let attributed = try renderer.render(textPart)
+                                if !attributed.characters.isEmpty {
+                                    elements.append(ContentElement(type: .text(attributed)))
+                                }
+                            }
+                        }
+
+                        // Add image element
+                        let altText = String(match.1)
+                        let urlString = String(match.2)
+                        let url = URL(string: urlString)
+                        elements.append(ContentElement(
+                            type: .image(ImageInfo(url: url, altText: altText))
+                        ))
+
+                        remaining = String(remaining[match.range.upperBound...])
+                    } else {
+                        // No more images, add remaining text
+                        if !remaining.trimmingCharacters(in: .whitespaces).isEmpty {
+                            let renderer = MarkdownRenderer(
+                                stylesheet: configuration.stylesheet,
+                                enableCodeHighlighting: configuration.enableCodeHighlighting
+                            )
+                            let attributed = try renderer.render(remaining)
+                            if !attributed.characters.isEmpty {
+                                elements.append(ContentElement(type: .text(attributed)))
+                            }
+                        }
+                        break
+                    }
+                }
                 index += 1
                 continue
             }
