@@ -89,6 +89,9 @@ enum AppearanceMode: String, CaseIterable {
 struct SettingActions {
     private static let R: Reducer = .setting
 
+    /// Error message constant for not-logged-in state
+    static let notLoggedInError = "未登录"
+
     struct ChangeAppearanceAction: Action {
         var target: Reducer = R
         let appearance: AppearanceMode
@@ -105,7 +108,7 @@ struct SettingActions {
         func execute(in store: Store) async {
             // Only checkin if user is logged in
             guard AccountState.hasSignIn() else {
-                dispatch(CheckinFailedAction(error: "未登录"))
+                dispatch(CheckinFailedAction(error: SettingActions.notLoggedInError))
                 return
             }
 
