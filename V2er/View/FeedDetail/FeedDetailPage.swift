@@ -59,6 +59,23 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         !state.replyContent.isEmpty
     }
 
+    /// 根据当前排序方式返回排序后的回复列表
+    private var sortedReplies: [FeedDetailInfo.ReplyInfo.Item] {
+        let items = state.model.replyInfo.items
+        switch state.replySortType {
+        case .byTime:
+            return items // 按时间排序（保持原始楼层顺序）
+        case .byPopularity:
+            // 按点赞数降序，相同点赞数按楼层升序
+            return items.sorted { (a, b) in
+                if a.loveCount != b.loveCount {
+                    return a.loveCount > b.loveCount
+                }
+                return a.floor < b.floor
+            }
+        }
+    }
+
     private var isContentEmpty: Bool {
         let contentInfo = state.model.contentInfo
         return contentInfo == nil || contentInfo!.html.isEmpty
@@ -167,8 +184,16 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     .listRowBackground(Color.itemBg)
             }
 
+            // Reply Section Header with Sort Toggle
+            if !state.model.replyInfo.items.isEmpty {
+                replySectionHeader
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBg)
+            }
+
             // Reply Section
-            ForEach(state.model.replyInfo.items) { item in
+            ForEach(sortedReplies) { item in
                 ReplyItemView(info: item, topicId: id)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
@@ -289,6 +314,57 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 }
             }
         }
+    }
+
+    /// 选中项的文字颜色（与 tintColor 背景形成对比）
+    private var segmentSelectedTextColor: Color {
+        Color.dynamicHex(light: 0xFFFFFF, dark: 0x1C1C1E)
+    }
+
+    @ViewBuilder
+    private var replySectionHeader: some View {
+        HStack {
+            Text("回复")
+                .font(.subheadline.weight(.medium))
+                .foregroundColor(.primaryText)
+
+            Spacer()
+
+            // Segmented sort picker
+            HStack(spacing: 0) {
+                ForEach(ReplySortType.allCases, id: \.self) { sortType in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            store.appState.feedDetailStates[instanceId]?.replySortType = sortType
+                        }
+                    } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: sortType.iconName)
+                                .font(.caption2)
+                            Text(sortType.displayName)
+                                .font(.caption)
+                        }
+                        .foregroundColor(state.replySortType == sortType ? segmentSelectedTextColor : .secondaryText)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(
+                            state.replySortType == sortType
+                                ? Color.tintColor
+                                : Color.clear
+                        )
+                    }
+                }
+            }
+            .background(Color.secondaryBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(Color.border, lineWidth: 0.5)
+            )
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color.lightGray.opacity(0.5))
     }
 
     @ViewBuilder

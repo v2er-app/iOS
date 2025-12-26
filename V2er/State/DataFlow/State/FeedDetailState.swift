@@ -8,6 +8,25 @@
 
 import Foundation
 
+enum ReplySortType: String, CaseIterable {
+    case byTime = "time"      // 按时间排序（默认，即楼层顺序）
+    case byPopularity = "popularity"  // 按热门排序（点赞数）
+
+    var displayName: String {
+        switch self {
+        case .byTime: return "时间"
+        case .byPopularity: return "热门"
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .byTime: return "clock"
+        case .byPopularity: return "flame"
+        }
+    }
+}
+
 struct FeedDetailState: FluxState {
     var refCounts = 0
     var reseted: Bool = false
@@ -20,6 +39,7 @@ struct FeedDetailState: FluxState {
     var model: FeedDetailInfo = FeedDetailInfo()
     var ignored: Bool = false
     var replyContent: String = .empty
+    var replySortType: ReplySortType = .byTime
 }
 
 typealias FeedDetailStates=[String : FeedDetailState]
