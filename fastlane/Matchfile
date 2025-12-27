@@ -24,6 +24,9 @@ git_branch("main")
 # Clone certificates repo to a temporary directory
 shallow_clone(true)
 
+# Clone the branch directly to avoid "branch already exists" error in CI
+clone_branch_directly(true)
+
 # Generate profiles if they don't exist
 generate_apple_certs(true)
 
