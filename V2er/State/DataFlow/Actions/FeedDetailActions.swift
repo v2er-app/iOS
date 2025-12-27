@@ -383,4 +383,10 @@ struct FeedDetailActions {
         let success: Bool
     }
 
+    struct ReplyToUser: Action {
+        var target: Reducer = R
+        var id: String
+        var userName: String
+    }
+
 }

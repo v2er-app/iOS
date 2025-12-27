@@ -134,6 +134,12 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 dismiss()
             }
         }
+        .onChange(of: state.shouldFocusReply) { shouldFocus in
+            if shouldFocus {
+                replyIsFocused = true
+                store.appState.feedDetailStates[instanceId]?.shouldFocusReply = false
+            }
+        }
         .onAppear {
             dispatch(FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id, autoLoad: !state.hasLoadedOnce))
         }

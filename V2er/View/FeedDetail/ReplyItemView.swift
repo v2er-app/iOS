@@ -83,6 +83,14 @@ struct ReplyItemView: View {
             }
         }
         .padding(.horizontal, 12)
+        .contentShape(Rectangle())
+        .contextMenu {
+            Button {
+                dispatch(FeedDetailActions.ReplyToUser(id: topicId, userName: info.userName))
+            } label: {
+                Label("回复", systemImage: "arrowshape.turn.up.left")
+            }
+        }
         .sheet(isPresented: $showingSafari) {
             if let url = safariURL {
                 SafariView(url: url)
