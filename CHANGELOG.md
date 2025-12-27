@@ -2,6 +2,15 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.2.2 (Build XX)
+1. Feature: Add reply sorting by popularity for better content discovery
+2. Feature: Redesigned feedback section with improved vertical layout
+3. Fix: Check-in timer now resets at 8 AM instead of midnight for better daily routine alignment
+4. Fix: Auto check-in now triggers correctly when returning to the app
+5. Fix: Tapping a single item no longer opens all items in tag detail page
+6. Fix: Improved text handling when replies contain inline images
+7. Fix: Better markdown rendering for special characters
+
 ## v1.2.1 (Build XX)
 1. Feature: Add Imgur image upload support for easier image sharing
 2. Feature: Auto check-in when app returns to foreground
