@@ -50,10 +50,36 @@ struct SettingState: FluxState {
     }
 
     /// Check if we should attempt auto-checkin today
+    /// Uses 8:00 AM as the reset time instead of midnight
     var shouldAutoCheckinToday: Bool {
         guard autoCheckin else { return false }
         guard let lastDate = lastCheckinDate else { return true }
-        return !Calendar.current.isDateInToday(lastDate)
+        return !Self.isSameCheckinDay(lastDate, Date())
+    }
+
+    /// Check if two dates are in the same "checkin day" (resets at 8:00 AM)
+    private static func isSameCheckinDay(_ date1: Date, _ date2: Date) -> Bool {
+        let calendar = Calendar.current
+        let resetHour = 8 // 8:00 AM
+
+        // Calculate the "checkin day" for each date
+        // If current hour < 8, it belongs to the previous calendar day's checkin period
+        func checkinDay(for date: Date) -> DateComponents {
+            let hour = calendar.component(.hour, from: date)
+            if hour < resetHour {
+                // Before 8 AM, belongs to previous day's checkin period
+                let previousDay = calendar.date(byAdding: .day, value: -1, to: date)!
+                return calendar.dateComponents([.year, .month, .day], from: previousDay)
+            } else {
+                // 8 AM or later, belongs to current day's checkin period
+                return calendar.dateComponents([.year, .month, .day], from: date)
+            }
+        }
+
+        let day1 = checkinDay(for: date1)
+        let day2 = checkinDay(for: date2)
+
+        return day1.year == day2.year && day1.month == day2.month && day1.day == day2.day
     }
 }
 
