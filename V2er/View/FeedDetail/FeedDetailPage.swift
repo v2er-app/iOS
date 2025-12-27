@@ -193,7 +193,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             }
 
             // Reply Section
-            ForEach(sortedReplies) { item in
+            ForEach(sortedReplies, id: \.floor) { item in
                 ReplyItemView(info: item, topicId: id)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
@@ -334,9 +334,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             HStack(spacing: 0) {
                 ForEach(ReplySortType.allCases, id: \.self) { sortType in
                     Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            store.appState.feedDetailStates[instanceId]?.replySortType = sortType
-                        }
+                        store.appState.feedDetailStates[instanceId]?.replySortType = sortType
                     } label: {
                         HStack(spacing: 3) {
                             Image(systemName: sortType.iconName)
