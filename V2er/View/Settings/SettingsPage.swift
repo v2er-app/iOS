@@ -45,17 +45,25 @@ struct SettingsPage: View {
             safariURL = IdentifiableURL(url: url)
           }
         } label: {
-          SectionView("问题反馈", showDivider: false) {
+          HStack {
+            Image(systemName: "")
+              .padding(.leading, 15)
             HStack {
-              Text("唯一反馈渠道")
-                .font(.footnote)
-                .foregroundColor(.secondaryText)
+              VStack(alignment: .leading, spacing: 4) {
+                Text("问题反馈")
+                Text("唯一渠道: https://v2er.app/help")
+                  .font(.footnote)
+                  .foregroundColor(.secondaryText)
+              }
+              Spacer()
               Image(systemName: "chevron.right")
                 .font(.body.weight(.regular))
                 .foregroundColor(.secondaryText)
-                .padding(.trailing, 16)
+                .padding(.trailing, 30)
             }
+            .padding(.vertical, 17)
           }
+          .background(Color.itemBackground)
           .padding(.top, 8)
         }
 
