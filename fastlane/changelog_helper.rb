@@ -21,7 +21,7 @@ module ChangelogHelper
 
     # Match the version section, handling both "vX.Y.Z" and "X.Y.Z" formats
     # Also capture optional build number like "v1.1.1 (Build 31)"
-    version_pattern = /^##\s+v?#{Regexp.escape(version)}(?:\s+\(Build\s+\d+\))?\s*$/
+    version_pattern = /^##\s+v?#{Regexp.escape(version)}(?:\s+\(Build\s+\w+\))?\s*$/
 
     lines = content.lines
     start_index = nil
@@ -163,7 +163,7 @@ module ChangelogHelper
     end
 
     content = File.read(changelog_path)
-    version_pattern = /^##\s+v?#{Regexp.escape(version)}(?:\s+\(Build\s+\d+\))?\s*$/
+    version_pattern = /^##\s+v?#{Regexp.escape(version)}(?:\s+\(Build\s+\w+\))?\s*$/
 
     lines = content.lines
     start_index = nil
