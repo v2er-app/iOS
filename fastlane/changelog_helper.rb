@@ -212,11 +212,11 @@ module ChangelogHelper
 
     # Build combined changelog
     combined_parts = []
-    feedback_link = "\n\n问题反馈: https://github.com/v2er-app/iOS/issues"
+    feedback_header = "唯一问题反馈渠道:https://v2er.app/help\n\n"
     truncation_notice = "\n\n(See full changelog at github.com/v2er-app/iOS)"
 
-    # Reserve space for feedback link
-    available_space = TESTFLIGHT_CHANGELOG_LIMIT - feedback_link.length
+    # Reserve space for feedback header
+    available_space = TESTFLIGHT_CHANGELOG_LIMIT - feedback_header.length
 
     versions_to_include.each_with_index do |version, index|
       raw_content = extract_raw_changelog(version)
@@ -249,10 +249,10 @@ module ChangelogHelper
     end
 
     if combined_parts.empty?
-      return "Bug fixes and improvements"
+      return feedback_header + "Bug fixes and improvements"
     end
 
-    result = combined_parts.join + feedback_link
+    result = feedback_header + combined_parts.join
 
     UI.success("Combined changelog for #{versions_to_include.length} version(s): #{versions_to_include.join(', ')}")
     UI.message("Total length: #{result.length} / #{TESTFLIGHT_CHANGELOG_LIMIT} characters")
