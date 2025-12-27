@@ -40,21 +40,30 @@ struct SettingsPage: View {
   private var formView: some View {
     ScrollView {
       VStack(spacing: 0) {
-        SectionItemView("外观设置", showDivider: false)
+        Button {
+          if let url = URL(string: "https://v2er.app/help") {
+            safariURL = IdentifiableURL(url: url)
+          }
+        } label: {
+          SectionView("问题反馈", showDivider: false) {
+            HStack {
+              Text("唯一反馈渠道")
+                .font(.footnote)
+                .foregroundColor(.secondaryText)
+              Image(systemName: "chevron.right")
+                .font(.body.weight(.regular))
+                .foregroundColor(.secondaryText)
+                .padding(.trailing, 16)
+            }
+          }
           .padding(.top, 8)
+        }
+
+        SectionItemView("外观设置")
           .to { AppearanceSettingView() }
 
         SectionItemView("通用设置")
           .to { OtherSettingsView() }
-
-        Button {
-          if let url = URL(string: "https://github.com/v2er-app/iOS/issues") {
-            safariURL = IdentifiableURL(url: url)
-          }
-        } label: {
-          SectionItemView("问题反馈")
-            .padding(.top, 8)
-        }
 
         Button {
           if let url = URL(string: "https://www.v2ex.com/help") {
@@ -62,6 +71,7 @@ struct SettingsPage: View {
           }
         } label: {
           SectionItemView("V2EX帮助")
+            .padding(.top, 8)
         }
 
         Button {
