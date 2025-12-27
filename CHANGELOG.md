@@ -2,6 +2,9 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.2.3 (Build XX)
+1. Fix: Resolved CI pipeline issue with certificate syncing
+
 ## v1.2.2 (Build XX)
 1. Feature: Add reply sorting by popularity for better content discovery
 2. Feature: Redesigned feedback section with improved vertical layout
