@@ -40,6 +40,7 @@ struct FeedDetailState: FluxState {
     var ignored: Bool = false
     var replyContent: String = .empty
     var replySortType: ReplySortType = .byTime
+    var shouldFocusReply: Bool = false
 }
 
 typealias FeedDetailStates=[String : FeedDetailState]

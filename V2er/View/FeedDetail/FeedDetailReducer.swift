@@ -117,6 +117,9 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             } else {
                 Toast.show("感谢发送失败")
             }
+        case let action as FeedDetailActions.ReplyToUser:
+            state.replyContent = "@\(action.userName) "
+            state.shouldFocusReply = true
         default:
             break;
     }
