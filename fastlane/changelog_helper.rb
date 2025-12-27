@@ -127,6 +127,139 @@ module ChangelogHelper
     end
   end
 
+  # TestFlight changelog character limit
+  TESTFLIGHT_CHANGELOG_LIMIT = 4000
+
+  # Get all versions from CHANGELOG.md in order (newest first)
+  # @return [Array<String>] List of version strings
+  def self.get_all_versions
+    changelog_path = File.expand_path("../CHANGELOG.md", __dir__)
+
+    unless File.exist?(changelog_path)
+      UI.error("CHANGELOG.md not found at #{changelog_path}")
+      return []
+    end
+
+    content = File.read(changelog_path)
+    versions = []
+
+    content.each_line do |line|
+      if match = line.match(/^##\s+v?(\d+\.\d+\.\d+)/)
+        versions << match[1]
+      end
+    end
+
+    versions
+  end
+
+  # Extract raw changelog content for a version (without formatting)
+  # @param version [String] The version to extract
+  # @return [String, nil] Raw changelog content or nil if not found
+  def self.extract_raw_changelog(version)
+    changelog_path = File.expand_path("../CHANGELOG.md", __dir__)
+
+    unless File.exist?(changelog_path)
+      return nil
+    end
+
+    content = File.read(changelog_path)
+    version_pattern = /^##\s+v?#{Regexp.escape(version)}(?:\s+\(Build\s+\d+\))?\s*$/
+
+    lines = content.lines
+    start_index = nil
+    end_index = nil
+
+    lines.each_with_index do |line, index|
+      if line.match?(version_pattern)
+        start_index = index
+        break
+      end
+    end
+
+    return nil if start_index.nil?
+
+    ((start_index + 1)...lines.length).each do |index|
+      line = lines[index]
+      if line.match?(/^##\s+/) || line.match?(/^---/)
+        end_index = index
+        break
+      end
+    end
+
+    end_index ||= lines.length
+
+    changelog_lines = lines[(start_index + 1)...end_index]
+    changelog_lines.join("").strip
+  end
+
+  # Get changelog for current version and up to 2 previous versions
+  # Combined length respects TestFlight's 4000 character limit
+  # @return [String] Combined changelog for TestFlight
+  def self.get_current_changelog
+    current_version = get_current_version
+    all_versions = get_all_versions
+
+    # Find current version index
+    current_index = all_versions.index(current_version)
+
+    if current_index.nil?
+      UI.important("Current version #{current_version} not found in CHANGELOG.md")
+      return "Bug fixes and improvements"
+    end
+
+    # Get up to 3 versions (current + 2 previous)
+    versions_to_include = all_versions[current_index, 3] || [current_version]
+
+    # Build combined changelog
+    combined_parts = []
+    feedback_header = "唯一问题反馈渠道:https://v2er.app/help\n\n"
+    truncation_notice = "\n\n(See full changelog at github.com/v2er-app/iOS)"
+
+    # Reserve space for feedback header
+    available_space = TESTFLIGHT_CHANGELOG_LIMIT - feedback_header.length
+
+    versions_to_include.each_with_index do |version, index|
+      raw_content = extract_raw_changelog(version)
+      next if raw_content.nil? || raw_content.empty?
+
+      # Format the content (convert numbered lists to bullets)
+      formatted_content = raw_content.gsub(/^\d+\.\s+/, "• ")
+
+      # Add version header for older versions
+      if index == 0
+        version_section = formatted_content
+      else
+        version_section = "\n\n--- v#{version} ---\n#{formatted_content}"
+      end
+
+      # Check if adding this section would exceed the limit
+      current_length = combined_parts.join.length
+      if current_length + version_section.length <= available_space
+        combined_parts << version_section
+      else
+        # Try to fit as much as possible with truncation notice
+        remaining_space = available_space - current_length - truncation_notice.length
+        if remaining_space > 50 && index > 0
+          # Only add partial content if there's meaningful space
+          combined_parts << version_section[0...remaining_space]
+          combined_parts << truncation_notice
+        end
+        break
+      end
+    end
+
+    if combined_parts.empty?
+      return feedback_header + "Bug fixes and improvements"
+    end
+
+    result = feedback_header + combined_parts.join
+
+    UI.success("Combined changelog for #{versions_to_include.length} version(s): #{versions_to_include.join(', ')}")
+    UI.message("Total length: #{result.length} / #{TESTFLIGHT_CHANGELOG_LIMIT} characters")
+
+    result
+  end
+
   # Validate that changelog exists for the current version
   # @return [Boolean] True if changelog exists, false otherwise
   def self.validate_changelog_exists
