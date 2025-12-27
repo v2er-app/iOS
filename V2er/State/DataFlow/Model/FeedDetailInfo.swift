@@ -217,6 +217,18 @@ struct FeedDetailInfo: BaseModel {
                 userName == owner && owner != .empty
             }
 
+            /// 获取点赞数的整数值，用于排序
+            var loveCount: Int {
+                // love 字段格式可能是 "♥ 3" 或 "3" 或空字符串
+                let trimmed = love.trimmingCharacters(in: .whitespaces)
+                if trimmed.isEmpty { return 0 }
+                // 提取第一个连续的数字片段，避免将多个数字段拼接在一起
+                let numberString = trimmed
+                    .components(separatedBy: CharacterSet.decimalDigits.inverted)
+                    .first(where: { !$0.isEmpty }) ?? ""
+                return Int(numberString) ?? 0
+            }
+
             static func == (lhs: Self, rhs: Self) -> Bool {
                 lhs.floor == rhs.floor
             }
