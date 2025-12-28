@@ -240,10 +240,29 @@ class WebViewHostController: UIViewController, WKNavigationDelegate, WKUIDelegat
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        // Load URL in viewDidAppear
+        // Load URL in viewDidAppear after syncing cookies
         if !hasLoadedURL {
             hasLoadedURL = true
-            webView.load(URLRequest(url: url))
+            syncCookiesAndLoad()
+        }
+    }
+
+    private func syncCookiesAndLoad() {
+        // Sync cookies from HTTPCookieStorage to WKWebView
+        let cookies = HTTPCookieStorage.shared.cookies ?? []
+        let cookieStore = webView.configuration.websiteDataStore.httpCookieStore
+
+        let group = DispatchGroup()
+        for cookie in cookies {
+            group.enter()
+            cookieStore.setCookie(cookie) {
+                group.leave()
+            }
+        }
+
+        group.notify(queue: .main) { [weak self] in
+            guard let self = self else { return }
+            self.webView.load(URLRequest(url: self.url))
         }
     }
 
