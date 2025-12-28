@@ -77,6 +77,10 @@ public struct RichContentView: View {
                 .textSelection(.enabled)
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .environment(\.openURL, OpenURLAction { url in
+                    onLinkTapped?(url)
+                    return .handled
+                })
 
         case .codeBlock(let code, let language):
             CodeBlockAttachment(

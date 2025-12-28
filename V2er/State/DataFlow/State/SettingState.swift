@@ -11,10 +11,12 @@ import SwiftUI
 
 struct SettingState: FluxState {
     static let imgurClientIdKey = "imgurClientId"
+    static let useBuiltinBrowserKey = "useBuiltinBrowser"
 
     var appearance: AppearanceMode = .system
     var autoCheckin: Bool = false
     var imgurClientId: String = ""
+    var useBuiltinBrowser: Bool = false
 
     // Checkin state
     var isCheckingIn: Bool = false
@@ -38,6 +40,8 @@ struct SettingState: FluxState {
         self.checkinDays = UserDefaults.standard.integer(forKey: "checkinDays")
         // Load Imgur client ID
         self.imgurClientId = UserDefaults.standard.string(forKey: Self.imgurClientIdKey) ?? ""
+        // Load builtin browser preference
+        self.useBuiltinBrowser = UserDefaults.standard.bool(forKey: Self.useBuiltinBrowserKey)
     }
 
     static func saveImgurClientId(_ clientId: String) {
@@ -124,6 +128,11 @@ struct SettingActions {
     }
 
     struct ToggleAutoCheckinAction: Action {
+        var target: Reducer = R
+        let enabled: Bool
+    }
+
+    struct ToggleBuiltinBrowserAction: Action {
         var target: Reducer = R
         let enabled: Bool
     }

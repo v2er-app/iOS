@@ -27,6 +27,10 @@ struct OtherSettingsView: View {
         AccountState.hasSignIn()
     }
 
+    private var useBuiltinBrowser: Bool {
+        store.appState.settingState.useBuiltinBrowser
+    }
+
     var body: some View {
         formView
             .navBar("通用设置")
@@ -92,6 +96,26 @@ struct OtherSettingsView: View {
                 }
 
                 Text("开启后每次打开App时会自动尝试签到")
+                    .font(.caption)
+                    .foregroundColor(.secondaryText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 4)
+                    .padding(.bottom, 12)
+
+                // Builtin Browser Toggle
+                SectionView("内置浏览器", showDivider: true) {
+                    Toggle("", isOn: Binding(
+                        get: { useBuiltinBrowser },
+                        set: { newValue in
+                            dispatch(SettingActions.ToggleBuiltinBrowserAction(enabled: newValue))
+                        }
+                    ))
+                    .labelsHidden()
+                    .padding(.trailing, 16)
+                }
+
+                Text("开启后站外链接将在内置浏览器中打开")
                     .font(.caption)
                     .foregroundColor(.secondaryText)
                     .frame(maxWidth: .infinity, alignment: .leading)

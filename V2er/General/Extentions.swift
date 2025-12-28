@@ -278,9 +278,15 @@ extension URL {
 struct SafariView: UIViewControllerRepresentable {
     let url: URL
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.dismiss) var dismiss
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
 
     func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
         let safariVC = SFSafariViewController(url: url)
+        safariVC.delegate = context.coordinator
         updateAppearance(safariVC)
         return safariVC
     }
@@ -314,6 +320,18 @@ struct SafariView: UIViewControllerRepresentable {
             // Light mode colors
             safariVC.preferredControlTintColor = UIColor.systemBlue
             safariVC.preferredBarTintColor = UIColor.systemBackground
+        }
+    }
+
+    class Coordinator: NSObject, SFSafariViewControllerDelegate {
+        let parent: SafariView
+
+        init(_ parent: SafariView) {
+            self.parent = parent
+        }
+
+        func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+            parent.dismiss()
         }
     }
 }
