@@ -15,6 +15,7 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
                 AvatarView(url: data.avatar)
+                    .to { UserDetailPage(userId: data.userName.safe) }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(data.userName.safe)
                         .font(.footnote)
