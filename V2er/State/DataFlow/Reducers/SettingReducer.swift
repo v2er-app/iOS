@@ -29,6 +29,11 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
         UserDefaults.standard.set(action.enabled, forKey: "autoCheckin")
         followingAction = nil
 
+    case let action as SettingActions.ToggleBuiltinBrowserAction:
+        state.useBuiltinBrowser = action.enabled
+        UserDefaults.standard.set(action.enabled, forKey: SettingState.useBuiltinBrowserKey)
+        followingAction = nil
+
     case _ as SettingActions.StartAutoCheckinAction:
         state.isCheckingIn = true
         state.checkinError = nil

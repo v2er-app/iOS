@@ -19,13 +19,23 @@ class URLRouter {
     private static let v2exAltHost = "v2ex.com"
 
     /// Result of URL interception
-    enum InterceptResult {
+    enum InterceptResult: Equatable {
         case topic(id: String)           // /t/123456
         case node(name: String)          // /go/swift
         case member(username: String)    // /member/username
         case external(url: URL)          // External URL
         case webview(url: URL)           // Internal URL to open in webview
         case invalid                     // Invalid URL
+
+        /// Whether this result should use native navigation
+        var isNativeNavigation: Bool {
+            switch self {
+            case .topic, .node, .member:
+                return true
+            default:
+                return false
+            }
+        }
     }
 
     // MARK: - URL Parsing
@@ -149,32 +159,44 @@ enum NavigationDestination: Hashable {
     case tagDetail(name: String)
 }
 
-// MARK: - UIApplication Extension
+// MARK: - Link Action
 
-extension UIApplication {
-    /// Open URL with smart routing
+/// Represents the action to take when a link is tapped
+enum LinkAction {
+    case navigateToTopic(id: String)
+    case navigateToUser(username: String)
+    case navigateToNode(name: String)
+    case openInAppBrowser(url: URL)
+    case openInSafariViewController(url: URL)
+}
+
+/// Determines the appropriate action for a URL based on settings
+class LinkHandler {
+    /// Determine what action to take for a given URL
     /// - Parameters:
-    ///   - url: URL to open
-    ///   - completion: Optional completion handler
-    @MainActor
-    func openURL(_ url: URL, completion: ((Bool) -> Void)? = nil) {
-        let urlString = url.absoluteString
-        let result = URLRouter.parse(urlString)
+    ///   - url: The URL to handle
+    ///   - useBuiltinBrowser: Whether to use the builtin browser for external links
+    /// - Returns: The action to take
+    static func action(for url: URL, useBuiltinBrowser: Bool) -> LinkAction {
+        let result = URLRouter.parse(url.absoluteString)
 
         switch result {
-        case .external(let externalUrl):
-            // Open external URLs in Safari
-            open(externalUrl, options: [:], completionHandler: completion)
-
-        case .webview(let webviewUrl):
-            // For now, open in Safari
-            // TODO: Implement in-app webview
-            open(webviewUrl, options: [:], completionHandler: completion)
-
-        default:
-            // For topic, node, member URLs - should be handled by navigation
-            // Fall back to Safari if not handled
-            open(url, options: [:], completionHandler: completion)
+        case .topic(let id):
+            return .navigateToTopic(id: id)
+        case .member(let username):
+            return .navigateToUser(username: username)
+        case .node(let name):
+            return .navigateToNode(name: name)
+        case .external(let externalUrl), .webview(let externalUrl):
+            // When builtin browser is enabled, use InAppBrowser
+            // When disabled, use SafariViewController to stay in app
+            if useBuiltinBrowser {
+                return .openInAppBrowser(url: externalUrl)
+            } else {
+                return .openInSafariViewController(url: externalUrl)
+            }
+        case .invalid:
+            return .openInSafariViewController(url: url)
         }
     }
 }
