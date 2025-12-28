@@ -37,25 +37,28 @@ struct InAppBrowserView: View {
         .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                VStack(spacing: 2) {
-                    Text(webViewState.title ?? "")
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
-                        .lineLimit(1)
-                    Text(webViewState.currentURL?.host ?? url.host ?? "")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                }
-            }
-
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
                     dismiss()
                 } label: {
                     Image(systemName: "chevron.left")
                         .font(.body.weight(.medium))
+                }
+            }
+
+            ToolbarItem(placement: .principal) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(webViewState.title ?? "")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .lineLimit(1)
+                        Text(webViewState.currentURL?.host ?? url.host ?? "")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                    Spacer()
                 }
             }
 
