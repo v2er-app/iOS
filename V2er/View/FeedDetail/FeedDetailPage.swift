@@ -44,6 +44,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @State var isKeyboardVisiable = false
     @State private var isLoadingMore = false
     @State private var contentReady = false
+    @State private var repliesReady = false
     @FocusState private var replyIsFocused: Bool
     var initData: FeedInfo.Item? = nil
     var id: String
@@ -206,8 +207,12 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             // Content Section
             if !isContentEmpty {
                 NewsContentView(state.model.contentInfo) {
-                    withAnimation {
-                        contentReady = true
+                    contentReady = true
+                    // Show replies after a short delay for smoother transition
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            repliesReady = true
+                        }
                     }
                 }
                 .padding(.horizontal, 10)
@@ -216,31 +221,31 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 .listRowBackground(Color.itemBg)
             }
 
-            // Show postscripts and replies only after content is ready
-            if contentReady || isContentEmpty {
-                // Postscripts Section (附言)
-                ForEach(state.model.postscripts) { postscript in
-                    PostscriptItemView(postscript: postscript)
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.itemBg)
-                }
+            // Postscripts Section (附言) - always in layout, fade in when ready
+            ForEach(state.model.postscripts) { postscript in
+                PostscriptItemView(postscript: postscript)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBg)
+                    .opacity(contentReady || isContentEmpty ? 1 : 0)
+            }
 
-                // Reply Section Header with Sort Toggle
-                if !state.model.replyInfo.items.isEmpty {
-                    replySectionHeader
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.itemBg)
-                }
+            // Reply Section Header with Sort Toggle
+            if !state.model.replyInfo.items.isEmpty {
+                replySectionHeader
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBg)
+                    .opacity(repliesReady || isContentEmpty ? 1 : 0)
+            }
 
-                // Reply Section
-                ForEach(sortedReplies, id: \.floor) { item in
-                    ReplyItemView(info: item, topicId: id)
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.itemBg)
-                }
+            // Reply Section - always in layout, fade in when ready
+            ForEach(sortedReplies, id: \.floor) { item in
+                ReplyItemView(info: item, topicId: id)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBg)
+                    .opacity(repliesReady || isContentEmpty ? 1 : 0)
             }
 
             // Load More Indicator
@@ -272,6 +277,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .scrollContentBackground(.hidden)
         .background(Color.itemBg)
         .environment(\.defaultMinListRowHeight, 1)
+        .animation(.easeIn(duration: 0.15), value: contentReady)
+        .animation(.easeIn(duration: 0.15), value: repliesReady)
         .refreshable {
             await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
         }
