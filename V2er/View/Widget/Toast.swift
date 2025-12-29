@@ -21,6 +21,7 @@ final class Toast {
     var isPresented: Bool = false
     var title: String = ""
     var icon: String = ""
+    var version: Int = 0 // Incremented on each new toast to trigger timer reset
 
     static func show(_ title: String, icon: String = .empty, target: Reducer = .global) {
         guard title.notEmpty() || icon.notEmpty() else { return }
@@ -71,6 +72,7 @@ struct DefaultToastView: View {
 private struct ToastContainerView<Content: View>: View {
     @Binding var isPresented: Bool
     let paddingTop: CGFloat
+    let version: Int
     let content: Content
 
     @State private var dismissTask: Task<Void, Never>?
@@ -81,7 +83,7 @@ private struct ToastContainerView<Content: View>: View {
         content
             .background(Color.secondaryBackground.opacity(0.98))
             .cornerRadius(99)
-            .shadow(color: Color.primaryText.opacity(0.3), radius: 3)
+            .shadow(color: Color.primaryText.opacity(0.12), radius: 4, y: 2)
             .padding(.top, paddingTop)
             .transition(.move(edge: .top).combined(with: .opacity))
             .zIndex(1)
@@ -100,6 +102,11 @@ private struct ToastContainerView<Content: View>: View {
                     toastId = UUID()
                     scheduleDismiss()
                 }
+            }
+            .onChange(of: version) { _ in
+                // New toast content: reset timer
+                toastId = UUID()
+                scheduleDismiss()
             }
     }
 
@@ -133,6 +140,7 @@ private struct ToastContainerView<Content: View>: View {
 extension View {
     func toast<Content: View>(isPresented: Binding<Bool>,
                               paddingTop: CGFloat = 0,
+                              version: Int = 0,
                               @ViewBuilder content: () -> Content?) -> some View {
         ZStack(alignment: .top) {
             self
@@ -140,6 +148,7 @@ extension View {
                 ToastContainerView(
                     isPresented: isPresented,
                     paddingTop: paddingTop,
+                    version: version,
                     content: toastContent
                 )
             }

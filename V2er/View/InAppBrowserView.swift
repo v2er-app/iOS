@@ -310,6 +310,136 @@ class WebViewHostController: UIViewController, WKNavigationDelegate, WKUIDelegat
         DispatchQueue.main.async {
             self.state.isLoading = false
         }
+        // Inject dark mode CSS for V2EX pages if app is in dark mode
+        injectDarkModeIfNeeded(for: webView)
+    }
+
+    private func injectDarkModeIfNeeded(for webView: WKWebView) {
+        guard let host = webView.url?.host,
+              host.contains("v2ex.com") else {
+            return
+        }
+
+        // Check if app is in dark mode
+        let isDarkMode: Bool
+        if let rootStyle = V2erApp.rootViewController?.overrideUserInterfaceStyle {
+            switch rootStyle {
+            case .dark:
+                isDarkMode = true
+            case .light:
+                isDarkMode = false
+            case .unspecified:
+                // Follow system
+                isDarkMode = traitCollection.userInterfaceStyle == .dark
+            @unknown default:
+                isDarkMode = traitCollection.userInterfaceStyle == .dark
+            }
+        } else {
+            isDarkMode = traitCollection.userInterfaceStyle == .dark
+        }
+
+        guard isDarkMode else { return }
+
+        // Inject V2EX night mode CSS
+        let darkModeCSS = """
+            :root { color-scheme: dark; }
+            body, html {
+                background-color: #1a1a1a !important;
+                color: #e0e0e0 !important;
+            }
+            #Wrapper, #Main, #Rightbar {
+                background-color: #1a1a1a !important;
+            }
+            .box, .cell, .cell_ops {
+                background-color: #262626 !important;
+                border-color: #3a3a3a !important;
+            }
+            .header, .inner {
+                background-color: #262626 !important;
+            }
+            /* Tags */
+            .node, a.node, .tag, a.tag {
+                background-color: #3a3a3a !important;
+                color: #ccc !important;
+            }
+            .topic_info, .votes {
+                background-color: transparent !important;
+            }
+            /* Topic content */
+            .topic-link, .item_title a, h1 {
+                color: #e0e0e0 !important;
+            }
+            .topic_content, .reply_content, .markdown_body {
+                color: #e0e0e0 !important;
+            }
+            /* Links */
+            a {
+                color: #4a9eff !important;
+            }
+            a.node:hover, a.tag:hover {
+                background-color: #4a4a4a !important;
+            }
+            /* Meta text */
+            .gray, .fade, .small, .ago, .no {
+                color: #888 !important;
+            }
+            .snow {
+                background-color: #333 !important;
+            }
+            /* Code blocks */
+            pre, code {
+                background-color: #333 !important;
+                color: #e0e0e0 !important;
+            }
+            /* Forms */
+            input, textarea, select {
+                background-color: #333 !important;
+                color: #e0e0e0 !important;
+                border-color: #555 !important;
+            }
+            /* Tabs */
+            .tab, .tab_current {
+                background-color: #333 !important;
+                color: #ccc !important;
+            }
+            .tab:hover {
+                background-color: #444 !important;
+            }
+            /* Buttons */
+            .super.button, .normal.button, input[type=submit] {
+                background-color: #444 !important;
+                color: #e0e0e0 !important;
+                border-color: #555 !important;
+            }
+            /* Subtle backgrounds */
+            .subtle {
+                background-color: #2a2a2a !important;
+            }
+            /* Thank area */
+            .thank_area {
+                background-color: transparent !important;
+            }
+            /* Member info */
+            .member-info, .balance_area {
+                background-color: #262626 !important;
+            }
+            /* Separator */
+            hr, .sep {
+                border-color: #3a3a3a !important;
+                background-color: #3a3a3a !important;
+            }
+            /* Page title */
+            #page-title {
+                background-color: #1a1a1a !important;
+            }
+            /* Embedded */
+            .embedded {
+                background-color: #2a2a2a !important;
+                border-color: #3a3a3a !important;
+            }
+            """
+        let js = "var style = document.createElement('style'); style.innerHTML = `\(darkModeCSS)`; document.head.appendChild(style);"
+        webView.evaluateJavaScript(js, completionHandler: nil)
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
