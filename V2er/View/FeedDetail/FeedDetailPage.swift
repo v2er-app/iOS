@@ -21,12 +21,14 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Environment(\.isPresented) private var isPresented
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var store: Store
-    @State private var showingSafari = false
-    @State private var safariURL: URL?
-    @State private var showingMobileWeb = false
-    @State private var mobileWebURL: URL?
     @State private var selectedImage: UIImage? = nil
     @State private var isUploadingImage = false
+    @State private var navigateToBrowserURL: URL? = nil
+    @State private var navigateToSafariURL: URL? = nil
+
+    private var useBuiltinBrowser: Bool {
+        store.appState.settingState.useBuiltinBrowser
+    }
 
     var bindingState: Binding<FeedDetailState> {
         if store.appState.feedDetailStates[instanceId] == nil {
@@ -106,16 +108,43 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
     var body: some View {
         contentView
-            .sheet(isPresented: $showingSafari) {
-                if let url = safariURL {
-                    SafariView(url: url)
+            .background(
+                Group {
+                    // Use NavigationLink for InAppBrowser (iOS 26 bug workaround)
+                    NavigationLink(
+                        destination: Group {
+                            if let url = navigateToBrowserURL {
+                                InAppBrowserView(url: url)
+                            }
+                        },
+                        isActive: Binding(
+                            get: { navigateToBrowserURL != nil },
+                            set: { if !$0 { navigateToBrowserURL = nil } }
+                        )
+                    ) {
+                        EmptyView()
+                    }
+                    .hidden()
+
+                    // Use NavigationLink for SafariView (iOS 26 bug workaround)
+                    NavigationLink(
+                        destination: Group {
+                            if let url = navigateToSafariURL {
+                                SafariView(url: url)
+                                    .ignoresSafeArea()
+                                    .navigationBarHidden(true)
+                            }
+                        },
+                        isActive: Binding(
+                            get: { navigateToSafariURL != nil },
+                            set: { if !$0 { navigateToSafariURL = nil } }
+                        )
+                    ) {
+                        EmptyView()
+                    }
+                    .hidden()
                 }
-            }
-            .sheet(isPresented: $showingMobileWeb) {
-                if let url = mobileWebURL {
-                    MobileWebView(url: url)
-                }
-            }
+            )
     }
 
     @ViewBuilder
@@ -473,10 +502,12 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     }
 
                     Button {
-                        // Use MobileWebView with mobile User-Agent for better mobile experience
                         if let url = URL(string: APIService.baseUrlString + "/t/\(id)") {
-                            mobileWebURL = url
-                            showingMobileWeb = true
+                            if useBuiltinBrowser {
+                                navigateToBrowserURL = url
+                            } else {
+                                navigateToSafariURL = url
+                            }
                         }
                     } label: {
                         Label("使用浏览器打开", systemImage: "safari")
