@@ -150,7 +150,7 @@ struct RootHostView: View {
         ZStack {
             MainPage()
                 .buttonStyle(.plain)
-                .toast(isPresented: toast.isPresented) {
+                .toast(isPresented: toast.isPresented, version: toast.version.raw) {
                     DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
                 }
                 .sheet(isPresented: loginState.showLoginView) {

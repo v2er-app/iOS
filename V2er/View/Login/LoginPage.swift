@@ -32,7 +32,7 @@ struct LoginPage: StateView {
                     dismiss()
                 }
             }
-            .toast(isPresented: toast.isPresented, paddingTop: 40) {
+            .toast(isPresented: toast.isPresented, paddingTop: 40, version: toast.version.raw) {
                 DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
             }
             .alert(isPresented: bindingState.showAlert) {

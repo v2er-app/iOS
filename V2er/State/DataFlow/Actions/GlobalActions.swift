@@ -52,6 +52,7 @@ func globalStateReducer(_ state: GlobalState, _ action: Action?) -> (GlobalState
         case let action as ShowToastAction:
             state.toast.title = action.title
             state.toast.icon = action.icon
+            state.toast.version += 1
             state.toast.isPresented = true
             break
         case _ as LaunchFinishedAction:
