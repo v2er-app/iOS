@@ -10,6 +10,7 @@ import SwiftUI
 
 struct NewsContentView: View {
     var contentInfo: FeedDetailInfo.ContentInfo?
+    var onContentReady: (() -> Void)?
     @EnvironmentObject var store: Store
     @Environment(\.colorScheme) var colorScheme
     @State private var navigateToTopic: String? = nil
@@ -22,8 +23,9 @@ struct NewsContentView: View {
         store.appState.settingState.useBuiltinBrowser
     }
 
-    init(_ contentInfo: FeedDetailInfo.ContentInfo?) {
+    init(_ contentInfo: FeedDetailInfo.ContentInfo?, onContentReady: (() -> Void)? = nil) {
         self.contentInfo = contentInfo
+        self.onContentReady = onContentReady
     }
 
     var body: some View {
@@ -38,6 +40,9 @@ struct NewsContentView: View {
                 .onImageTapped { url in
                     // Open image in SafariView for now
                     openInSafari(url)
+                }
+                .onRenderCompleted { _ in
+                    onContentReady?()
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)

@@ -43,6 +43,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @State var hideTitleViews = true
     @State var isKeyboardVisiable = false
     @State private var isLoadingMore = false
+    @State private var contentReady = false
     @FocusState private var replyIsFocused: Bool
     var initData: FeedInfo.Item? = nil
     var id: String
@@ -204,35 +205,42 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
             // Content Section
             if !isContentEmpty {
-                NewsContentView(state.model.contentInfo)
-                    .padding(.horizontal, 10)
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.itemBg)
+                NewsContentView(state.model.contentInfo) {
+                    withAnimation {
+                        contentReady = true
+                    }
+                }
+                .padding(.horizontal, 10)
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.itemBg)
             }
 
-            // Postscripts Section (附言)
-            ForEach(state.model.postscripts) { postscript in
-                PostscriptItemView(postscript: postscript)
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.itemBg)
-            }
+            // Show postscripts and replies only after content is ready
+            if contentReady || isContentEmpty {
+                // Postscripts Section (附言)
+                ForEach(state.model.postscripts) { postscript in
+                    PostscriptItemView(postscript: postscript)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.itemBg)
+                }
 
-            // Reply Section Header with Sort Toggle
-            if !state.model.replyInfo.items.isEmpty {
-                replySectionHeader
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.itemBg)
-            }
+                // Reply Section Header with Sort Toggle
+                if !state.model.replyInfo.items.isEmpty {
+                    replySectionHeader
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.itemBg)
+                }
 
-            // Reply Section
-            ForEach(sortedReplies, id: \.floor) { item in
-                ReplyItemView(info: item, topicId: id)
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.itemBg)
+                // Reply Section
+                ForEach(sortedReplies, id: \.floor) { item in
+                    ReplyItemView(info: item, topicId: id)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.itemBg)
+                }
             }
 
             // Load More Indicator
