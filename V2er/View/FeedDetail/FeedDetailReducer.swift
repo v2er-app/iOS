@@ -29,6 +29,8 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             if case let .success(result) = action.result {
                 state.model = result!
                 state.model.injectId(id)
+                // Ensure no duplicate replies after initial load
+                state.model.replyInfo.items = state.model.replyInfo.items.uniqued()
                 state.willLoadPage = 2
                 state.hasMoreData = state.willLoadPage <= result?.headerInfo?.totalPage ?? 1
             }

@@ -263,6 +263,8 @@ struct FeedDetailInfo: BaseModel {
                 let item = Item(from: e, owner: owner)
                 items.append(item)
             }
+            // Remove any duplicate replies (by floor number) that may exist in the HTML
+            items = items.uniqued()
         }
 
         mutating func append(_ replyInfo: ReplyInfo?, afterReply: Bool = false) {
