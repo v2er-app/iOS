@@ -34,13 +34,16 @@ platform :ios do
   end
 
   # Helper method for building the app
-  private_lane :build_ipa do
+  private_lane :build_ipa do |options|
+    # Get profile name from match context or use default
+    profile_name = options[:profile_name] || lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]["v2er.app"] || "match AppStore v2er.app"
+
     build_app(
       scheme: "V2er",
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "v2er.app" => "match AppStore v2er.app"
+          "v2er.app" => profile_name
         },
         teamID: ENV["TEAM_ID"]
       },
@@ -140,12 +143,15 @@ platform :ios do
       UI.message("Updated build number to #{new_build_number}")
     end
 
+    # Get profile name from match context
+    profile_name = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]["v2er.app"] || "match AppStore v2er.app"
+
     # Ensure proper code signing
     update_code_signing_settings(
       use_automatic_signing: false,
       path: "V2er.xcodeproj",
       team_id: ENV["TEAM_ID"],
-      profile_name: "match AppStore v2er.app",
+      profile_name: profile_name,
       code_sign_identity: "iPhone Distribution",
       targets: ["V2er"]
     )
