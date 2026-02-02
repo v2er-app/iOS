@@ -2,6 +2,9 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.2.4 (Build XX)
+1. Fix: Resolved duplicate reply content display issue where replies appeared twice in topic detail page (#137)
+
 ## v1.2.3 (Build XX)
 1. Fix: Resolved CI pipeline issue with certificate syncing
 
