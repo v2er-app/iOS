@@ -11,85 +11,61 @@ import SwiftUI
 struct AppearanceSettingView: View {
     @EnvironmentObject private var store: Store
 
-    var body: some View {
-        formView
-            .navBar("外观设置")
+    private var currentAppearance: AppearanceMode {
+        store.appState.settingState.appearance
     }
 
-
-    @ViewBuilder
-    private var formView: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Dark Mode Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("主题")
-                        .font(.caption)
-                        .foregroundColor(.secondaryText)
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                    
-                    VStack(spacing: 0) {
-                        ForEach(AppearanceMode.allCases, id: \.self) { mode in
-                            Button(action: {
-                                dispatch(SettingActions.ChangeAppearanceAction(appearance: mode))
-                            }) {
-                                HStack {
-                                    Text(mode.displayName)
-                                        .foregroundColor(.primaryText)
-                                    Spacer()
-                                    if store.appState.settingState.appearance == mode {
-                                        Image(systemName: "checkmark")
-                                            .foregroundColor(.tintColor)
-                                            .font(.system(size: 14, weight: .semibold))
-                                    }
-                                }
-                                .padding(.horizontal)
-                                .padding(.vertical, 12)
-                                .background(Color.itemBackground)
-                            }
-                            
-                            if mode != AppearanceMode.allCases.last {
-                                Divider()
-                                    .padding(.leading)
+    var body: some View {
+        List {
+            // MARK: - Theme Section
+            Section {
+                ForEach(AppearanceMode.allCases, id: \.self) { mode in
+                    Button {
+                        dispatch(SettingActions.ChangeAppearanceAction(appearance: mode))
+                    } label: {
+                        HStack {
+                            Text(mode.displayName)
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            if currentAppearance == mode {
+                                Image(systemName: "checkmark")
+                                    .foregroundStyle(.tint)
+                                    .fontWeight(.semibold)
                             }
                         }
                     }
-                    .background(Color.itemBackground)
-                    .cornerRadius(10)
-                    .padding(.horizontal)
+                    .buttonStyle(.plain)
                 }
-                .padding(.top)
-                
-                // Font Size Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("字体")
-                        .font(.caption)
-                        .foregroundColor(.secondaryText)
-                        .padding(.horizontal)
-                        .padding(.top, 24)
-                    
-                    SectionItemView("字体大小")
-                        .background(Color.itemBackground)
-                        .cornerRadius(10)
-                        .padding(.horizontal)
+            } header: {
+                Text("主题")
+            } footer: {
+                Text("选择应用的显示外观")
+            }
+
+            // MARK: - Font Section (Placeholder for future implementation)
+            Section {
+                HStack {
+                    Text("字体大小")
+                    Spacer()
+                    Text("默认")
+                        .foregroundStyle(.secondary)
                 }
+            } header: {
+                Text("字体")
+            } footer: {
+                Text("调整内容显示的字体大小")
             }
         }
-        .background(Color.background.ignoresSafeArea())
+        .navigationTitle("外观设置")
+        .navigationBarTitleDisplayMode(.large)
     }
 }
 
 struct AppearanceSettingView_Previews: PreviewProvider {
     static var previews: some View {
-        Group {
+        NavigationStack {
             AppearanceSettingView()
                 .environmentObject(Store.shared)
-                .environment(\.colorScheme, .light)
-            
-            AppearanceSettingView()
-                .environmentObject(Store.shared)
-                .environment(\.colorScheme, .dark)
         }
     }
 }
