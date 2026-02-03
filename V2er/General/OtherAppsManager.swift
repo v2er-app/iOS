@@ -122,14 +122,14 @@ extension OtherAppsManager {
             id: "shione",
             name: "诗一",
             description: "每天一首诗，品味古典之美",
-            appStoreId: "6740667083",
+            appStoreId: "6758235112",
             iconName: "shione_icon"
         ),
         OtherApp(
             id: "flarekit",
             name: "FlareKit",
             description: "Cloudflare 数据统计分析",
-            appStoreId: "6741072540",
+            appStoreId: "6757950534",
             iconName: "flarekit_icon"
         )
     ]
