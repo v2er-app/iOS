@@ -20,6 +20,7 @@ struct SettingsPage: View {
   @State private var showingAlert = false
   @State var logingOut: Bool = false
   @State private var safariURL: IdentifiableURL?
+  @ObservedObject private var otherAppsManager = OtherAppsManager.shared
 
   // Get version and build number from Bundle
   private var appVersion: String {
@@ -93,6 +94,10 @@ struct SettingsPage: View {
         SectionItemView("致谢")
           .to { CreditsPage() }
 
+        // Other Apps Section with badge
+        OtherAppsSectionView(showBadge: otherAppsManager.showOtherAppsBadge)
+          .to { OtherAppsView() }
+
         Button {
           if let url = URL(string: "https://v2er.app") {
             safariURL = IdentifiableURL(url: url)
@@ -160,6 +165,38 @@ struct SettingsPage: View {
   }
 }
 
+
+// MARK: - Other Apps Section View
+
+private struct OtherAppsSectionView: View {
+    let showBadge: Bool
+
+    var body: some View {
+        HStack {
+            Image(systemName: "square.grid.2x2")
+                .font(.body.weight(.semibold))
+                .padding(.leading, 15)
+                .padding(.trailing, 5)
+                .foregroundColor(.tintColor)
+            HStack {
+                Text("更多应用")
+                if showBadge {
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 8, height: 8)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.body.weight(.regular))
+                    .foregroundColor(.secondaryText)
+                    .padding(.trailing, 15)
+            }
+            .padding(.vertical, 17)
+            .divider(0.8)
+        }
+        .background(Color.itemBackground)
+    }
+}
 
 struct SettingsPage_Previews: PreviewProvider {
   static var previews: some View {

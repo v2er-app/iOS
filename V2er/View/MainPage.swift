@@ -12,6 +12,7 @@ import Combine
 struct MainPage: StateView {
     @EnvironmentObject private var store: Store
     @State private var tabReselectionPublisher = PassthroughSubject<TabId, Never>()
+    @ObservedObject private var otherAppsManager = OtherAppsManager.shared
 
     var bindingState: Binding<GlobalState> {
         $store.appState.globalState
@@ -89,6 +90,7 @@ struct MainPage: StateView {
 
                         // Me Tab
                         MePage(selecedTab: state.selectedTab)
+                            .badge(otherAppsManager.showOtherAppsBadge ? 1 : 0)
                             .tabItem {
                                 Label("我", systemImage: "person")
                             }

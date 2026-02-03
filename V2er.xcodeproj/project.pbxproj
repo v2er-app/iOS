@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		388F4C6B2178477D94FDBC3D /* OtherAppsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E302E9E724D04067809B5C8B /* OtherAppsManager.swift */; };
+		DBEAA85986254B42B4898DF8 /* OtherAppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B44FFF43F248DA911DBAFA /* OtherAppsView.swift */; };
 		0B1A2B3C4D5E6F7081920A03 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1A2B3C4D5E6F7081920A04 /* SplashView.swift */; };
 		0B1A2B3C4D5E6F7081920A07 /* TypewriterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B1A2B3C4D5E6F7081920A08 /* TypewriterView.swift */; };
 		1AEBC3AC5DAA63523F5448F5 /* RichContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E205F350A3537A3E41B1AFC3 /* RichContentView.swift */; };
@@ -191,6 +193,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E302E9E724D04067809B5C8B /* OtherAppsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherAppsManager.swift; sourceTree = "<group>"; };
+		39B44FFF43F248DA911DBAFA /* OtherAppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherAppsView.swift; sourceTree = "<group>"; };
 		0B1A2B3C4D5E6F7081920A04 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		0B1A2B3C4D5E6F7081920A08 /* TypewriterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterView.swift; sourceTree = "<group>"; };
 		1308DEB878FE140235ACDF79 /* MyUploadsPage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MyUploadsPage.swift; sourceTree = "<group>"; };
@@ -594,6 +598,7 @@
 				5D68717D27186A6200329E73 /* AppearanceSettingView.swift */,
 				5D68717F27186E0300329E73 /* BrowseSettingView.swift */,
 				5D6871812718717B00329E73 /* OtherSettingsView.swift */,
+				39B44FFF43F248DA911DBAFA /* OtherAppsView.swift */,
 				5D6871852718761800329E73 /* FeedbackHelperView.swift */,
 				5D6871872718764E00329E73 /* AboutView.swift */,
 				63DD9090A3AEC64AF144E2CA /* CreditsPage.swift */,
@@ -781,6 +786,7 @@
 				5DF1B36C2698A39E0046DB20 /* Device.swift */,
 				5DE62A2826CEB20E0082161A /* Extentions.swift */,
 				5D2B2B3B26FF754F00446F93 /* Persist.swift */,
+				E302E9E724D04067809B5C8B /* OtherAppsManager.swift */,
 				5D2B2B3D26FF797600446F93 /* AccountState.swift */,
 				5D8FAA37272D26200067766E /* RootView.swift */,
 			);
@@ -1072,6 +1078,8 @@
 				5D843E9526A4537C00C47D95 /* SearchPage.swift in Sources */,
 				5D612FA326C7C61C0009B8F9 /* Endpoint.swift in Sources */,
 				5D2B2B3C26FF754F00446F93 /* Persist.swift in Sources */,
+				388F4C6B2178477D94FDBC3D /* OtherAppsManager.swift in Sources */,
+				DBEAA85986254B42B4898DF8 /* OtherAppsView.swift in Sources */,
 				5D1D8C0A26EDEC96009DF65A /* GlobalState.swift in Sources */,
 				5D1D7B8426FC8323008E0C08 /* LoginState.swift in Sources */,
 				5DF1B36D2698A39E0046DB20 /* Device.swift in Sources */,
