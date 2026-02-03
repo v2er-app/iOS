@@ -35,6 +35,9 @@ struct V2erApp: App {
                     .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
             }            .onAppear {
                 updateAppearance(store.appState.settingState.appearance)
+                // Record launch and refresh other apps badge
+                OtherAppsManager.shared.recordLaunch()
+                OtherAppsManager.shared.refreshBadge()
             }            .onChange(of: store.appState.settingState.appearance) { newValue in
                 updateAppearance(newValue)
             }        }
