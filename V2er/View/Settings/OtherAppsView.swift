@@ -15,27 +15,20 @@ struct OtherAppsView: View {
     private let apps = OtherAppsManager.otherApps
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                ForEach(0..<apps.count, id: \.self) { index in
-                    AppItemView(
-                        app: apps[index],
-                        showDivider: index < apps.count - 1
-                    )
+        List {
+            Section {
+                ForEach(apps, id: \.id) { app in
+                    AppItemView(app: app)
                 }
+            } footer: {
+                Text("感谢你的支持")
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 8)
             }
-            .background(Color.itemBackground)
-            .cornerRadius(12)
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
-
-            Text("感谢你的支持")
-                .font(.footnote)
-                .foregroundColor(.secondaryText)
-                .padding(.top, 24)
         }
-        .background(Color.bgColor)
-        .navBar("更多应用")
+        .listStyle(.insetGrouped)
+        .navigationTitle("更多应用")
+        .navigationBarTitleDisplayMode(.large)
         .onAppear {
             // Dismiss badge when user views this page
             manager.dismissBadge()
@@ -47,7 +40,6 @@ struct OtherAppsView: View {
 
 private struct AppItemView: View {
     let app: OtherApp
-    let showDivider: Bool
 
     var body: some View {
         Button {
@@ -71,10 +63,10 @@ private struct AppItemView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(app.name)
                         .font(.headline)
-                        .foregroundColor(.primaryText)
+                        .foregroundStyle(.primary)
                     Text(app.description)
                         .font(.subheadline)
-                        .foregroundColor(.secondaryText)
+                        .foregroundStyle(.secondary)
                         .lineLimit(2)
                 }
 
@@ -83,23 +75,15 @@ private struct AppItemView: View {
                 // Download Button
                 Text("获取")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundColor(.tintColor)
+                    .foregroundStyle(.tint)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(Color.tintColor.opacity(0.12))
                     .clipShape(Capsule())
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .background(Color.itemBackground)
+            .padding(.vertical, 6)
         }
         .buttonStyle(.plain)
-        .overlay(alignment: .bottom) {
-            if showDivider {
-                Divider()
-                    .padding(.leading, 84)
-            }
-        }
     }
 }
 
@@ -107,6 +91,8 @@ private struct AppItemView: View {
 
 struct OtherAppsView_Previews: PreviewProvider {
     static var previews: some View {
-        OtherAppsView()
+        NavigationStack {
+            OtherAppsView()
+        }
     }
 }
