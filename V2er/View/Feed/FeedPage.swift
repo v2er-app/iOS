@@ -22,7 +22,7 @@ struct FeedPage: BaseHomePageView {
     }
 
     private var navigationTitle: String {
-        state.selectedTab == .all ? "V2EX" : state.selectedTab.displayName()
+        state.selectedTab.displayName()
     }
 
     var body: some View {
@@ -30,7 +30,18 @@ struct FeedPage: BaseHomePageView {
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: .principal) {
+                    Button {
+                        withAnimation {
+                            store.appState.feedState.scrollToTop = Int.random(in: 1...Int.max)
+                        }
+                    } label: {
+                        Text("V2EX")
+                            .font(.system(size: 22, weight: .black))
+                            .foregroundColor(.primary)
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
                     filterMenu
                 }
             }
@@ -96,52 +107,61 @@ struct FeedPage: BaseHomePageView {
 
     @ViewBuilder
     private var contentView: some View {
-        List {
-            // Feed Items
-            ForEach(state.feedInfo.items) { item in
-                ZStack {
-                    // Hidden NavigationLink to avoid disclosure indicator
-                    NavigationLink(destination: FeedDetailPage(initData: item)) {
-                        EmptyView()
-                    }
-                    .opacity(0)
+        ScrollViewReader { proxy in
+            List {
+                // Feed Items
+                ForEach(state.feedInfo.items) { item in
+                    ZStack {
+                        // Hidden NavigationLink to avoid disclosure indicator
+                        NavigationLink(destination: FeedDetailPage(initData: item)) {
+                            EmptyView()
+                        }
+                        .opacity(0)
 
-                    FeedItemView(data: item)
-                }
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.itemBg)
-            }
-
-            // Load More Indicator
-            if state.hasMoreData && !state.feedInfo.items.isEmpty && state.selectedTab.supportsLoadMore() {
-                HStack {
-                    Spacer()
-                    if isLoadingMore {
-                        ProgressView()
+                        FeedItemView(data: item)
                     }
-                    Spacer()
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.itemBg)
                 }
-                .frame(height: 50)
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.bgColor)
-                .onAppear {
-                    guard !isLoadingMore && AccountState.hasSignIn() else { return }
-                    isLoadingMore = true
-                    Task {
-                        await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
-                        await MainActor.run {
-                            isLoadingMore = false
+
+                // Load More Indicator
+                if state.hasMoreData && !state.feedInfo.items.isEmpty && state.selectedTab.supportsLoadMore() {
+                    HStack {
+                        Spacer()
+                        if isLoadingMore {
+                            ProgressView()
+                        }
+                        Spacer()
+                    }
+                    .frame(height: 50)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.bgColor)
+                    .onAppear {
+                        guard !isLoadingMore && AccountState.hasSignIn() else { return }
+                        isLoadingMore = true
+                        Task {
+                            await run(action: FeedActions.LoadMore.Start(state.willLoadPage))
+                            await MainActor.run {
+                                isLoadingMore = false
+                            }
                         }
                     }
                 }
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Color.bgColor)
+            .environment(\.defaultMinListRowHeight, 1)
+            .onChange(of: state.scrollToTop) { _ in
+                if let firstItem = state.feedInfo.items.first {
+                    withAnimation {
+                        proxy.scrollTo(firstItem.id, anchor: .top)
+                    }
+                }
+            }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .background(Color.bgColor)
-        .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             if AccountState.hasSignIn() {
                 // Fetch online stats in parallel with feed data
