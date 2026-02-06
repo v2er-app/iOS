@@ -10,10 +10,24 @@ import SwiftUI
 
 struct ExplorePage: BaseHomePageView {
     @EnvironmentObject private var store: Store
+    @State private var isLoadingMore = false
     var bindingState: Binding<ExploreState> {
         $store.appState.exploreState
     }
     var selecedTab: TabId
+
+    private var searchState: SearchState {
+        store.appState.searchState
+    }
+    private var searchKeyword: Binding<String> {
+        $store.appState.searchState.keyword
+    }
+    private var searchSortWay: Binding<String> {
+        $store.appState.searchState.sortWay
+    }
+    private var isSearching: Bool {
+        !searchState.keyword.isEmpty
+    }
 
     var isSelected: Bool {
         let selected = selecedTab == .explore
@@ -30,8 +44,34 @@ struct ExplorePage: BaseHomePageView {
         }
         return false
     }
-    
+
     var body: some View {
+        browseContent
+            .overlay {
+                if isSearching {
+                    searchResultsView
+                }
+            }
+            .searchable(text: searchKeyword, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索主题")
+            .onSubmit(of: .search) {
+                dispatch(SearchActions.Start())
+            }
+            .onChange(of: searchState.sortWay) { _ in
+                dispatch(SearchActions.Start())
+            }
+            .onAppear {
+                if !state.hasLoadedOnce {
+                    dispatch(ExploreActions.FetchData.Start(autoLoad: true))
+                }
+            }
+            .navigationTitle("搜索")
+            .navigationBarTitleDisplayMode(.large)
+    }
+
+    // MARK: - Browse Content (idle state)
+
+    @ViewBuilder
+    private var browseContent: some View {
         List {
             // Today Hot Section
             if !state.exploreInfo.dailyHotInfo.isEmpty {
@@ -121,13 +161,106 @@ struct ExplorePage: BaseHomePageView {
                     .scaleEffect(1.5)
             }
         }
-        .onAppear {
-            if !state.hasLoadedOnce {
-                dispatch(ExploreActions.FetchData.Start(autoLoad: true))
+    }
+
+    // MARK: - Search Results (searching state)
+
+    @ViewBuilder
+    private var searchResultsView: some View {
+        List {
+            sortPickerView
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.bgColor)
+
+            ForEach(searchState.model?.hits ?? []) { item in
+                NavigationLink(destination: FeedDetailPage(id: item.id)) {
+                    SearchResultItemView(hint: item)
+                }
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.bgColor)
+            }
+
+            // Load More Indicator
+            if searchState.updatable.hasMoreData && !(searchState.model?.hits ?? []).isEmpty {
+                HStack {
+                    Spacer()
+                    if isLoadingMore {
+                        ProgressView()
+                    }
+                    Spacer()
+                }
+                .frame(height: 50)
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.bgColor)
+                .onAppear {
+                    guard !isLoadingMore else { return }
+                    isLoadingMore = true
+                    Task {
+                        await run(action: SearchActions.LoadMoreStart())
+                        await MainActor.run {
+                            isLoadingMore = false
+                        }
+                    }
+                }
             }
         }
-        .navigationTitle("发现")
-        .navigationBarTitleDisplayMode(.large)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .environment(\.defaultMinListRowHeight, 1)
+        .background(Color.bgColor)
+        .overlay {
+            if searchState.updatable.showLoadingView {
+                ProgressView()
+                    .scaleEffect(1.5)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var sortPickerView: some View {
+        Picker("Sort", selection: searchSortWay) {
+            Text("相关")
+                .tag("sumup")
+            Text("最新")
+                .tag("created")
+        }
+        .font(.headline)
+        .pickerStyle(.segmented)
+    }
+}
+
+
+// MARK: - Search Result Item
+
+private struct SearchResultItemView: View {
+    let hint: SearchState.Model.Hit
+    var data: SearchState.Model.Hit.Source {
+        hint.source
+    }
+
+    var body: some View {
+        let padding: CGFloat = 16
+        VStack(alignment: .leading) {
+            Text(data.title)
+                .fontWeight(.semibold)
+                .foregroundColor(.primaryText)
+                .greedyWidth(.leading)
+                .lineLimit(2)
+            Text(data.content)
+                .foregroundColor(.secondaryText)
+                .lineLimit(5)
+                .padding(.vertical, 5)
+            Text("\(data.creator) 于 \(data.created) 发表, \(data.replyNum) 回复")
+                .font(.footnote)
+                .foregroundColor(Color.tintColor.opacity(0.8))
+        }
+        .greedyWidth()
+        .padding(padding)
+        .background(Color.itemBg)
+        .padding(.bottom, 8)
     }
 }
 
@@ -146,8 +279,6 @@ struct NodeNavItemView: View {
     }
 
 }
-
-//fileprivate struct
 
 struct ExplorePage_Previews: PreviewProvider {
     static var selected = TabId.explore

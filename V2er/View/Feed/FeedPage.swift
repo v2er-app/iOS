@@ -27,19 +27,11 @@ struct FeedPage: BaseHomePageView {
 
     var body: some View {
         contentView
-            .navigationTitle(navigationTitle)
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     filterMenu
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    NavigationLink {
-                        SearchPage()
-                    } label: {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.primary)
-                    }
                 }
             }
             .onAppear {

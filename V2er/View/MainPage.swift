@@ -74,7 +74,7 @@ struct MainPage: StateView {
                 ExplorePage(selecedTab: state.selectedTab)
             }
             .tabItem {
-                Label("发现", systemImage: "safari")
+                Label("搜索", systemImage: "magnifyingglass")
             }
             .tag(TabId.explore)
 
