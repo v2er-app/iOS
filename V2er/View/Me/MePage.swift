@@ -1,15 +1,17 @@
 //
 //
 //  Created by Seth on 2020/5/25.
-//  Copyright © 2020 lessmore.io. All rights reser
+//  Copyright © 2020 lessmore.io. All rights reserved.
 //  MePage.swift
-//  V2erved.
+//  V2er
 //
 
 import SwiftUI
 
 struct MePage: BaseHomePageView {
     @EnvironmentObject private var store: Store
+    @ObservedObject private var otherAppsManager = OtherAppsManager.shared
+
     var bindingState: Binding<MeState> {
         $store.appState.meState
     }
@@ -34,45 +36,108 @@ struct MePage: BaseHomePageView {
         return Calendar.current.isDateInToday(lastDate)
     }
 
+    @State private var otherApps: [OtherApp] = []
+
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                topBannerView
-                sectionViews
+        List {
+            // MARK: - User Banner Section
+            Section {
+                userBannerView
+            }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+
+            // MARK: - Content Section
+            Section {
+                NavigationLink {
+                    CreateTopicPage()
+                } label: {
+                    Label("发帖", systemImage: "pencil")
+                }
+            }
+
+            // MARK: - My Content Section
+            Section("我的") {
+                NavigationLink {
+                    UserFeedPage(userId: AccountState.userName)
+                } label: {
+                    Label("主题", systemImage: "paperplane")
+                }
+
+                NavigationLink {
+                    MyFavoritePage()
+                } label: {
+                    Label("收藏", systemImage: "bookmark")
+                }
+
+                NavigationLink {
+                    MyFollowPage()
+                } label: {
+                    Label("关注", systemImage: "heart")
+                }
+
+                NavigationLink {
+                    MyRecentPage()
+                } label: {
+                    Label("最近浏览", systemImage: "clock")
+                }
+
+                NavigationLink {
+                    MyUploadsPage()
+                } label: {
+                    Label("我的图片", systemImage: "photo.on.rectangle")
+                }
+            }
+
+            // MARK: - Other Apps Section
+            Section {
+                ForEach(otherApps, id: \.id) { app in
+                    OtherAppItemView(app: app)
+                }
+            } footer: {
+                Text("感谢你的支持")
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 8)
             }
         }
-        .background(Color.bgColor)
+        .listStyle(.insetGrouped)
         .overlay {
             if !AccountState.hasSignIn() {
-                VStack {
-                    Text("登录查看更多")
-                        .foregroundColor(.primaryText)
-                        .font(.title2)
-                    Button {
-                        dispatch(LoginActions.ShowLoginPageAction())
-                    } label: {
-                        Text("登录")
-                            .font(.headline)
-                            .foregroundColor(Color.itemBackground)
-                            .padding()
-                            .padding(.horizontal, 50)
-                            .background(Color.tintColor)
-                            .cornerRadius(15)
-                    }
-                }
-                .greedyFrame()
-                .background(Color.dim)
+                loginOverlayView
             }
         }
         .onAppear {
             if AccountState.hasSignIn() {
                 dispatch(MeActions.FetchBalance.Start())
             }
+            otherAppsManager.dismissBadge()
+            // Initialize with shuffled apps on first appear
+            if otherApps.isEmpty {
+                otherApps = OtherAppsManager.otherApps.shuffled()
+            }
+        }
+        .onChange(of: isSelected) { _, newValue in
+            // Shuffle apps when tab becomes selected
+            if newValue {
+                otherApps = OtherAppsManager.otherApps.shuffled()
+            }
+        }
+        .navigationTitle("我")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    SettingsPage()
+                } label: {
+                    Image(systemName: "gearshape")
+                }
+            }
         }
     }
-    
+
+    // MARK: - User Banner View
     @ViewBuilder
-    private var topBannerView: some View {
+    private var userBannerView: some View {
         HStack(spacing: 10) {
             AvatarView(url: AccountState.avatarUrl, size: 60)
                 .to {
@@ -81,7 +146,7 @@ struct MePage: BaseHomePageView {
             VStack(alignment: .leading, spacing: 6) {
                 Text(AccountState.userName)
                     .font(.headline)
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                     .to {
                         UserDetailPage(userId: AccountState.userName)
                     }
@@ -91,7 +156,7 @@ struct MePage: BaseHomePageView {
                 if checkinDays > 0 {
                     Text("已连续签到 \(checkinDays) 天")
                         .font(.caption)
-                        .foregroundColor(.secondaryText)
+                        .foregroundColor(.secondary)
                 }
             }
             Spacer()
@@ -103,7 +168,7 @@ struct MePage: BaseHomePageView {
                     if isCheckingIn {
                         ProgressView()
                             .scaleEffect(0.8)
-                            .tint(hasCheckedInToday ? Color.secondaryText : Color.tintColor)
+                            .tint(hasCheckedInToday ? Color.secondary : Color.tintColor)
                     } else {
                         Image(systemName: hasCheckedInToday ? "checkmark.circle.fill" : "checkmark.circle")
                             .font(.system(size: 16))
@@ -111,45 +176,90 @@ struct MePage: BaseHomePageView {
                     Text(hasCheckedInToday ? "已签到" : "签到")
                         .font(.subheadline)
                 }
-                .foregroundColor(hasCheckedInToday ? .secondaryText : .tintColor)
+                .foregroundColor(hasCheckedInToday ? .secondary : .tintColor)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .background(hasCheckedInToday ? Color.secondaryText.opacity(0.12) : Color.tintColor.opacity(0.12))
+                .background(hasCheckedInToday ? Color.secondary.opacity(0.12) : Color.tintColor.opacity(0.12))
                 .clipShape(Capsule())
             }
             .disabled(isCheckingIn)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 16)
-        .background(Color.itemBackground)
-        .padding(.bottom, 8)
+        .padding(.vertical, 8)
     }
-    
+
+    // MARK: - Login Overlay View
     @ViewBuilder
-    private var sectionViews: some View {
-        VStack(spacing: 0) {
-            SectionItemView("发贴", icon: "pencil", showDivider: false)
-                .padding(.bottom, 8)
-                .to {
-                    CreateTopicPage()
-                        .transition(.move(edge: .bottom))
-                }
-            SectionItemView("主题", icon: "paperplane")
-                .to { UserFeedPage(userId: AccountState.userName) }
-            SectionItemView("收藏", icon: "bookmark")
-                .to { MyFavoritePage() }
-            SectionItemView("关注", icon: "heart")
-                .to { MyFollowPage() }
-            SectionItemView("最近浏览", icon: "clock")
-                .to { MyRecentPage() }
-            SectionItemView("我的图片", icon: "photo.on.rectangle", showDivider: false)
-                .to { MyUploadsPage() }
-            SectionItemView("设置", icon: "gearshape", showDivider: false)
-                .padding(.top, 8)
-                .to { SettingsPage() }
+    private var loginOverlayView: some View {
+        VStack(spacing: 16) {
+            Text("登录查看更多")
+                .foregroundColor(.primary)
+                .font(.title2)
+            Button {
+                dispatch(LoginActions.ShowLoginPageAction())
+            } label: {
+                Text("登录")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .padding(.horizontal, 50)
+                    .background(Color.tintColor)
+                    .cornerRadius(15)
+            }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.ultraThinMaterial)
     }
-    
+}
+
+// MARK: - Other App Item View
+
+private struct OtherAppItemView: View {
+    let app: OtherApp
+
+    var body: some View {
+        Button {
+            if let url = app.appStoreUrl {
+                UIApplication.shared.open(url)
+            }
+        } label: {
+            HStack(spacing: 12) {
+                // App Icon
+                Image(app.iconName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 56, height: 56)
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.gray.opacity(0.2), lineWidth: 0.5)
+                    )
+
+                // App Info
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(app.name)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    Text(app.description)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+
+                Spacer()
+
+                // Download Button
+                Text("获取")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.tint)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.tintColor.opacity(0.12))
+                    .clipShape(Capsule())
+            }
+            .padding(.vertical, 6)
+        }
+        .buttonStyle(.plain)
+    }
 }
 
 struct AccountPage_Previews: PreviewProvider {

@@ -63,8 +63,6 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     @ViewBuilder
     private var contentView: some View {
         ZStack(alignment: .top) {
-            navBar
-                .zIndex(1)
             List {
                 // Banner Section
                 topBannerView
@@ -150,8 +148,17 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             }
         }
         .statusBarStyle(shouldHideNavbar ? .lightContent : .darkContent, original: .darkContent)
-        .ignoresSafeArea(.container)
-        .navigationBarHidden(true)
+        .navigationTitle(model.tagName.isEmpty ? "节点" : model.tagName)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    dispatch(TagDetailActions.StarNode(id: tagId!))
+                } label: {
+                    Image(systemName: state.model.hasStared ? "bookmark.fill" : "bookmark")
+                }
+            }
+        }
         .onAppear {
             dispatch(TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, autoLoad: !state.hasLoadedOnce))
         }
@@ -163,65 +170,6 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         }
     }
 
-    @ViewBuilder
-    private var navBar: some View  {
-        NavbarHostView(paddingH: 0, hideDivider: shouldHideNavbar) {
-            HStack(alignment: .center, spacing: 4) {
-                Button {
-                    self.presentationMode.wrappedValue.dismiss()
-                } label: {
-                    Image(systemName: "chevron.backward")
-                        .font(.title2.weight(.regular))
-                        .padding(.leading, 8)
-                        .padding(.vertical, 10)
-                }
-                .forceClickable()
-                
-                Group {
-                    AvatarView(url: model.tagImage, size: 36)
-                    VStack(alignment: .leading) {
-                        Text(model.tagName)
-                            .font(.headline)
-                        Text(model.tagDesc)
-                            .font(.subheadline)
-                    }
-                    .lineLimit(1)
-                }
-                .opacity(shouldHideNavbar ? 0.0 : 1.0)
-                
-                Spacer()
-                
-                Button {
-                    // Star the node
-                } label: {
-                    Image(systemName: "bookmark")
-                        .padding(8)
-                        .font(.title3.weight(.regular))
-                }
-                .opacity(shouldHideNavbar ? 0.0 : 1.0)
-                .forceClickable()
-                
-                Button {
-                    // Show more actions
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .padding(8)
-                        .font(.title3.weight(.regular))
-                }
-                .forceClickable()
-            }
-            .padding(.vertical, 5)
-        }
-        .foregroundColor(foreGroundColor)
-        .visualBlur(alpha: shouldHideNavbar ? 0.0 : 1.0)
-        .onDisappear {
-            if !isPresented {
-                log("onPageClosed----->")
-            }
-        }
-    }
-    
-    
     @ViewBuilder
     private var topBannerView: some View {
         VStack (spacing: 14) {

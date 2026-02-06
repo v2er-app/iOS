@@ -16,190 +16,143 @@ struct IdentifiableURL: Identifiable {
 }
 
 struct SettingsPage: View {
-  @Environment(\.dismiss) var dismiss
-  @State private var showingAlert = false
-  @State var logingOut: Bool = false
-  @State private var safariURL: IdentifiableURL?
-  @ObservedObject private var otherAppsManager = OtherAppsManager.shared
+    @Environment(\.dismiss) var dismiss
+    @State private var showingDeleteAccountAlert = false
+    @State private var showingLogoutConfirmation = false
+    @State private var safariURL: IdentifiableURL?
 
-  // Get version and build number from Bundle
-  private var appVersion: String {
-    let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
-    let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
-    return "版本v\(version)(\(build))"
-  }
-
-  var body: some View {
-    formView
-      .navBar("设置")
-      .sheet(item: $safariURL) { item in
-        SafariView(url: item.url)
-      }
-  }
-
-  @ViewBuilder
-  private var formView: some View {
-    ScrollView {
-      VStack(spacing: 0) {
-        Button {
-          if let url = URL(string: "https://v2er.app/help") {
-            safariURL = IdentifiableURL(url: url)
-          }
-        } label: {
-          HStack {
-            Image(systemName: "")
-              .padding(.leading, 15)
-            HStack {
-              VStack(alignment: .leading, spacing: 4) {
-                Text("问题反馈")
-                Text("唯一渠道: https://v2er.app/help")
-                  .font(.footnote)
-                  .foregroundColor(.secondaryText)
-              }
-              Spacer()
-              Image(systemName: "chevron.right")
-                .font(.body.weight(.regular))
-                .foregroundColor(.secondaryText)
-                .padding(.trailing, 30)
-            }
-            .padding(.vertical, 17)
-          }
-          .background(Color.itemBackground)
-          .padding(.top, 8)
-        }
-
-        SectionItemView("外观设置")
-          .to { AppearanceSettingView() }
-
-        SectionItemView("通用设置")
-          .to { OtherSettingsView() }
-
-        Button {
-          if let url = URL(string: "https://www.v2ex.com/help") {
-            safariURL = IdentifiableURL(url: url)
-          }
-        } label: {
-          SectionItemView("V2EX帮助")
-            .padding(.top, 8)
-        }
-
-        Button {
-          if let url = URL(string: "https://github.com/v2er-app") {
-            safariURL = IdentifiableURL(url: url)
-          }
-        } label: {
-          SectionItemView("源码开放")
-        }
-
-        SectionItemView("致谢")
-          .to { CreditsPage() }
-
-        // Other Apps Section with badge
-        OtherAppsSectionView(showBadge: otherAppsManager.showOtherAppsBadge)
-          .to { OtherAppsView() }
-
-        Button {
-          if let url = URL(string: "https://v2er.app") {
-            safariURL = IdentifiableURL(url: url)
-          }
-        } label: {
-          SectionView("关于") {
-            HStack {
-              Text(appVersion)
-                .font(.footnote)
-                .foregroundColor(Color.tintColor)
-              Image(systemName: "chevron.right")
-                .font(.body.weight(.regular))
-                .foregroundColor(.secondaryText)
-                .padding(.trailing, 16)
-            }
-          }
-        }
-        
-        Button {
-          //                  "https://github.com/v2er-app".openURL()
-          showingAlert = true
-        } label: {
-          SectionItemView("账号注销")
-            .padding(.top, 8)
-        }
-        
-        //                Button {
-        //                    // go to app store
-        //                } label: {
-        //                    SectionItemView("给V2er评分", showDivider: false)
-        //                }
-        //                .hide()
-        
-        Button {
-          // go to app store
-          withAnimation {
-            logingOut = true
-          }
-        } label: {
-          SectionItemView("退出登录", showDivider: false)
-            .foregroundColor(.red)
-        }
-        .confirmationDialog(
-          "登出吗?",
-          isPresented: $logingOut,
-          titleVisibility: .visible
-        ) {
-          Button("确定", role: .destructive) {
-            withAnimation {
-              logingOut = false
-            }
-            AccountState.deleteAccount()
-            Toast.show("已登出")
-            dismiss()
-          }
-        }
-        
-      }
-      .alert(String("账号注销"), isPresented: $showingAlert) {
-        Button("确定", role: .cancel) { }
-      } message: {
-        Text("V2er作为V2EX的第三方客户端无法提供账号注销功能，若你想注销账号可访问V2EX官方网站: https://www.v2ex.com/help, 或联系V2EX团队: support@v2ex.com")
-      }
+    // Get version and build number from Bundle
+    private var appVersion: String {
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        return "v\(version) (\(build))"
     }
-  }
-}
-
-
-// MARK: - Other Apps Section View
-
-private struct OtherAppsSectionView: View {
-    let showBadge: Bool
 
     var body: some View {
-        HStack {
-            Image(systemName: "square.grid.2x2")
-                .font(.body.weight(.semibold))
-                .padding(.leading, 15)
-                .padding(.trailing, 5)
-                .foregroundColor(.tintColor)
-            HStack {
-                Text("更多应用")
-                if showBadge {
-                    Circle()
-                        .fill(Color.red)
-                        .frame(width: 8, height: 8)
+        List {
+            // MARK: - Feedback Section
+            Section {
+                Button {
+                    openURL("https://v2er.app/help")
+                } label: {
+                    Label {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("问题反馈")
+                            Text("https://v2er.app/help")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    } icon: {
+                        Image(systemName: "questionmark.circle")
+                    }
                 }
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.body.weight(.regular))
-                    .foregroundColor(.secondaryText)
-                    .padding(.trailing, 15)
+                .foregroundStyle(.primary)
             }
-            .padding(.vertical, 17)
-            .divider(0.8)
+
+            // MARK: - Settings Section
+            Section("设置") {
+                NavigationLink {
+                    AppearanceSettingView()
+                } label: {
+                    Label("外观设置", systemImage: "paintbrush")
+                }
+
+                NavigationLink {
+                    OtherSettingsView()
+                } label: {
+                    Label("通用设置", systemImage: "gearshape")
+                }
+            }
+
+            // MARK: - Help Section
+            Section("帮助") {
+                Button {
+                    openURL("https://www.v2ex.com/help")
+                } label: {
+                    Label("V2EX 帮助", systemImage: "book")
+                }
+                .foregroundStyle(.primary)
+
+                Button {
+                    openURL("https://github.com/v2er-app")
+                } label: {
+                    Label("源码开放", systemImage: "chevron.left.forwardslash.chevron.right")
+                }
+                .foregroundStyle(.primary)
+            }
+
+            // MARK: - About Section
+            Section("关于") {
+                NavigationLink {
+                    CreditsPage()
+                } label: {
+                    Label("致谢", systemImage: "heart")
+                }
+
+                Button {
+                    openURL("https://v2er.app")
+                } label: {
+                    HStack {
+                        Label("关于 V2er", systemImage: "info.circle")
+                        Spacer()
+                        Text(appVersion)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .foregroundStyle(.primary)
+            }
+
+            // MARK: - Account Section
+            Section {
+                Button {
+                    showingDeleteAccountAlert = true
+                } label: {
+                    Label("账号注销", systemImage: "person.crop.circle.badge.minus")
+                }
+                .foregroundStyle(.primary)
+
+                Button(role: .destructive) {
+                    showingLogoutConfirmation = true
+                } label: {
+                    Label("退出登录", systemImage: "rectangle.portrait.and.arrow.right")
+                }
+            }
         }
-        .background(Color.itemBackground)
+        .navigationTitle("设置")
+        .navigationBarTitleDisplayMode(.large)
+        .sheet(item: $safariURL) { item in
+            SafariView(url: item.url)
+        }
+        .alert("账号注销", isPresented: $showingDeleteAccountAlert) {
+            Button("确定", role: .cancel) { }
+        } message: {
+            Text("V2er 作为 V2EX 的第三方客户端无法提供账号注销功能，若你想注销账号可访问 V2EX 官方网站: https://www.v2ex.com/help, 或联系 V2EX 团队: support@v2ex.com")
+        }
+        .confirmationDialog(
+            "登出吗?",
+            isPresented: $showingLogoutConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("确定", role: .destructive) {
+                AccountState.deleteAccount()
+                Toast.show("已登出")
+                dismiss()
+            }
+        }
+    }
+
+    private func openURL(_ urlString: String) {
+        if let url = URL(string: urlString) {
+            safariURL = IdentifiableURL(url: url)
+        }
     }
 }
 
 struct SettingsPage_Previews: PreviewProvider {
-  static var previews: some View {
-    SettingsPage()
-  }
+    static var previews: some View {
+        NavigationStack {
+            SettingsPage()
+        }
+    }
 }

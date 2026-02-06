@@ -53,7 +53,6 @@ struct LoginPage: StateView {
 
     @ViewBuilder
     private var contentView: some View {
-      NavigationView {
         VStack(alignment: .center) {
           Image("logo")
             .cornerBorder(radius: 25)
@@ -187,8 +186,8 @@ struct LoginPage: StateView {
         }
         .greedyHeight()
         .background(Color.bgColor)
-        .navigationBarHidden(true)
-      }
+        .navigationTitle("登录")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
 }

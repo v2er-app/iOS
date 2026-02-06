@@ -23,64 +23,43 @@ struct CreateTopicPage: StateView {
     }
 
     var body: some View {
-        NavigationView {
-            contentView
-                .safeAreaInset(edge: .top, spacing: 0) { navBar }
-                .ignoresSafeArea(.container)
-                .navigationBarHidden(true)
-//                .to(if: $openTheCreatedTopic) {
-//                    FeedDetailPage(initData: FeedInfo.Item(id: state.createResultInfo!.id))
-//                }
-                .onChange(of: state.createResultInfo?.id) { newId in
-                    guard let newId = newId else { return }
-                    if newId.notEmpty() {
-//                        openTheCreatedTopic = true
-                        dismiss()
-                        dispatch(CreateTopicActions.Reset())
+        contentView
+            .navigationTitle("创作主题")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        if isPreviewing {
+                            // continue edit
+                            isPreviewing = false
+                            focused = true
+                        } else {
+                            isPreviewing = true
+                            focused = false
+                        }
+                    } label: {
+                        Text(isPreviewing ? "编辑" : "预览")
+                            .font(.callout)
+                            .foregroundColor(Color.background)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.tintColor)
+                            .cornerRadius(8)
                     }
+                    .disabled(state.title.isEmpty)
                 }
-                .onAppear {
-                    dispatch(CreateTopicActions.LoadDataStart())
-                    dispatch(CreateTopicActions.LoadAllNodesStart())
-                }
-        }
-        .ignoresSafeArea(.container)
-        .navigationBarHidden(true)
-    }
-
-    @ViewBuilder
-    private var navBar: some View {
-        NavbarView {
-            Text("创作主题")
-                .font(.headline)
-        } contentView: {
-            HStack {
-                Spacer()
-                Button {
-                    if isPreviewing {
-                        // continue edit
-                        isPreviewing = false
-                        focused = true
-                    } else {
-                        isPreviewing = true
-                        focused = false
-                    }
-                } label: {
-                    Text(isPreviewing ? "编辑" : "预览")
-                        .font(.callout)
-                        .foregroundColor(Color.background)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.tintColor)
-                        .cornerRadius(10)
-                }
-                .disabled(state.title.isEmpty)
             }
-            .padding(.horizontal, 10)
-            .padding(.bottom, 8)
-        } onBackPressed: {
-            dismiss()
-        }
+            .onChange(of: state.createResultInfo?.id) { newId in
+                guard let newId = newId else { return }
+                if newId.notEmpty() {
+                    dismiss()
+                    dispatch(CreateTopicActions.Reset())
+                }
+            }
+            .onAppear {
+                dispatch(CreateTopicActions.LoadDataStart())
+                dispatch(CreateTopicActions.LoadAllNodesStart())
+            }
     }
 
     @ViewBuilder

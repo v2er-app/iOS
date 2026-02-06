@@ -35,7 +35,8 @@ struct MyRecentPage: StateView {
                 }
             }
         }
-        .navBar("最近浏览")
+        .navigationTitle("最近浏览")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

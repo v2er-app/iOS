@@ -12,7 +12,8 @@ struct AboutView: View {
 
     var body: some View {
         formView
-            .navBar("关于")
+            .navigationTitle("关于")
+            .navigationBarTitleDisplayMode(.inline)
     }
 
     @ViewBuilder

@@ -31,23 +31,20 @@ struct MyFavoritePage: StateView {
         }
         .tabViewStyle(.page)
         .debug()
-        .safeAreaInset(edge: .top, spacing: 0) { navBar }
-        .ignoresSafeArea(.container)
-        .navigationBarHidden(true)
-    }
-
-    @ViewBuilder
-    private var navBar: some View {
-        NavbarTitleView {
-            Picker("收藏", selection: $selectedTab) {
-                Text("主题")
-                    .tag(0)
-                Text("节点")
-                    .tag(1)
+        .navigationTitle("收藏")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Picker("收藏", selection: $selectedTab) {
+                    Text("主题")
+                        .tag(0)
+                    Text("节点")
+                        .tag(1)
+                }
+                .font(.headline)
+                .pickerStyle(.segmented)
+                .frame(maxWidth: 200)
             }
-            .font(.headline)
-            .pickerStyle(.segmented)
-            .frame(maxWidth: 200)
         }
     }
 
