@@ -13,7 +13,8 @@ struct BrowseSettingView: View {
 
     var body: some View {
         formView
-            .navBar("浏览设置")
+            .navigationTitle("浏览设置")
+            .navigationBarTitleDisplayMode(.inline)
     }
 
     @ViewBuilder

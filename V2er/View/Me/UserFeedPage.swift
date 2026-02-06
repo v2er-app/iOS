@@ -28,7 +28,8 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
             .onAppear {
                 dispatch(UserFeedActions.FetchStart(id: instanceId, userId: userId, autoLoad: !state.hasLoadedOnce))
             }
-            .navBar("\(userId)的全部主题")
+            .navigationTitle("\(userId)的全部主题")
+            .navigationBarTitleDisplayMode(.inline)
     }
 
     @ViewBuilder

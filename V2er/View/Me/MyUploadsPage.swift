@@ -20,7 +20,8 @@ struct MyUploadsPage: View {
 
     var body: some View {
         contentView
-            .navBar("我的图片")
+            .navigationTitle("我的图片")
+            .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 loadUploads()
             }

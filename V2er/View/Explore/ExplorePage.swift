@@ -126,6 +126,8 @@ struct ExplorePage: BaseHomePageView {
                 dispatch(ExploreActions.FetchData.Start(autoLoad: true))
             }
         }
+        .navigationTitle("发现")
+        .navigationBarTitleDisplayMode(.large)
     }
 }
 

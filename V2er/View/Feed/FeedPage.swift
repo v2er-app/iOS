@@ -21,8 +21,27 @@ struct FeedPage: BaseHomePageView {
         selecedTab == .feed
     }
 
+    private var navigationTitle: String {
+        state.selectedTab == .all ? "V2EX" : state.selectedTab.displayName()
+    }
+
     var body: some View {
         contentView
+            .navigationTitle(navigationTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    filterMenu
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        SearchPage()
+                    } label: {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.primary)
+                    }
+                }
+            }
             .onAppear {
                 log("FeedPage.onAppear")
                 if !state.hasLoadedOnce {
@@ -35,6 +54,38 @@ struct FeedPage: BaseHomePageView {
                     }
                 }
             }
+    }
+
+    @ViewBuilder
+    private var filterMenu: some View {
+        Menu {
+            ForEach(Tab.allTabs, id: \.self) { tab in
+                let tabNeedsLogin = tab.needsLogin() && !AccountState.hasSignIn()
+                Button {
+                    if tabNeedsLogin {
+                        Toast.show("登录后才能查看「\(tab.displayName())」下的内容")
+                    } else {
+                        dispatch(FeedActions.SelectTab(tab: tab))
+                    }
+                } label: {
+                    if state.selectedTab == tab {
+                        Label(tab.displayName(), systemImage: "checkmark")
+                    } else {
+                        Text(tab.displayName())
+                    }
+                }
+                .disabled(tabNeedsLogin)
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Text(navigationTitle)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 12, weight: .semibold))
+            }
+            .foregroundColor(.primary)
+        }
     }
 
     private func showOnlineStatsTemporarily() {

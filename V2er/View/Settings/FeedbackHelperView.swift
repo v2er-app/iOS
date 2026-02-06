@@ -11,7 +11,8 @@ import SwiftUI
 struct FeedbackHelperView: View {
     var body: some View {
         formView
-            .navBar("帮助与反馈")
+            .navigationTitle("帮助与反馈")
+            .navigationBarTitleDisplayMode(.inline)
     }
 
     @ViewBuilder

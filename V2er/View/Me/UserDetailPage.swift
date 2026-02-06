@@ -60,8 +60,6 @@ struct UserDetailPage: StateView {
     @ViewBuilder
     private var contentView: some View {
         ZStack(alignment: .top) {
-            navBar
-                .zIndex(1)
             List {
                 // Banner Section
                 topBannerView
@@ -165,8 +163,27 @@ struct UserDetailPage: StateView {
                 }
             }
         }
-        .ignoresSafeArea(.container)
-        .navigationBarHidden(true)
+        .navigationTitle(model.userName.isEmpty ? "用户" : model.userName)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                HStack(spacing: 8) {
+                    if !isSelf() {
+                        Button {
+                            dispatch(UserDetailActions.Follow(id: userId))
+                        } label: {
+                            Image(systemName: state.model.hasFollowed ? "heart.fill" : "heart")
+                        }
+
+                        Button {
+                            dispatch(UserDetailActions.BlockUser(id: userId))
+                        } label: {
+                            Image(systemName: state.model.hasBlocked ? "eye.slash.fill" : "eye.slash")
+                        }
+                    }
+                }
+            }
+        }
         .onAppear {
             log("onAppear----")
             dispatch(UserDetailActions.FetchData.Start(id: userId, autoLoad: true))
@@ -180,68 +197,6 @@ struct UserDetailPage: StateView {
         }
     }
     
-    @ViewBuilder
-    private var navBar: some View  {
-        NavbarHostView(paddingH: 0, hideDivider: shouldHideNavbar) {
-            HStack(alignment: .center, spacing: 4) {
-                Button {
-                    self.presentationMode.wrappedValue.dismiss()
-                } label: {
-                    Image(systemName: "chevron.backward")
-                        .font(.title2.weight(.regular))
-                        .padding(.leading, 8)
-                        .padding(.vertical, 10)
-                }
-                .forceClickable()
-                
-                Group {
-                    AvatarView(url: model.avatar, size: 36)
-                        .overlay {
-                            Circle()
-                                .fill(.green)
-                                .frame(width: 8, height: 8)
-                                .offset(x: 9, y: 36/2 - 2)
-                        }
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text(model.userName)
-                            .font(.headline)
-                        Text(model.desc)
-                            .font(.subheadline)
-                        //                        Circle().fill(.green).frame(width: 8, height: 8)
-                    }
-                    .lineLimit(1)
-                }
-                .opacity(shouldHideNavbar ? 0.0 : 1.0)
-                
-                Spacer()
-                
-                Button {
-                    dispatch(UserDetailActions.Follow(id: userId))
-                } label: {
-                    Image(systemName: state.model.hasFollowed ? "heart.fill" : "heart")
-                        .padding(8)
-                        .font(.title3.weight(.regular))
-                        .hide(isSelf())
-                }
-                .opacity(shouldHideNavbar ? 0.0 : 1.0)
-                .forceClickable()
-                
-                Button {
-                    dispatch(UserDetailActions.BlockUser(id: userId))
-                } label: {
-                    Image(systemName: state.model.hasBlocked ? "eye.slash.fill" : "eye.slash")
-                        .padding(8)
-                        .font(.body.weight(.regular))
-                        .hide(isSelf())
-                }
-                .forceClickable()
-            }
-            .padding(.vertical, 5)
-        }
-        .foregroundColor(foreGroundColor)
-        .visualBlur(alpha: shouldHideNavbar ? 0.0 : 1.0)
-    }
-
     private func isSelf() -> Bool {
         AccountState.isSelf(userName: userId)
     }

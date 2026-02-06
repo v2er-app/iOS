@@ -30,6 +30,8 @@ struct MessagePage: BaseHomePageView {
     var body: some View {
         contentView
             .background(Color.bgColor)
+            .navigationTitle("通知")
+            .navigationBarTitleDisplayMode(.large)
             .onAppear {
                 if !state.hasLoadedOnce {
                     dispatch(MessageActions.FetchStart(autoLoad: true))

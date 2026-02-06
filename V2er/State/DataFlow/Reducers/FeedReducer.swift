@@ -51,13 +51,10 @@ func feedStateReducer(_ state: FeedState, _ action: Action) -> (FeedState, Actio
         case let action as FeedActions.SelectTab:
             state.selectedTab = action.tab
             Tab.saveSelectedTab(action.tab)
-            state.showFilterMenu = false
             state.showProgressView = true
             let supportsLoadMore = action.tab.supportsLoadMore()
             state.hasMoreData = supportsLoadMore
             followingAction = FeedActions.FetchData.Start(isFromFilterChange: true)
-        case let action as FeedActions.ToggleFilterMenu:
-            state.showFilterMenu.toggle()
         case let action as FeedActions.FetchOnlineStats.Done:
             if case .success(let onlineStats) = action.result {
                 state.onlineStats = onlineStats
@@ -139,10 +136,6 @@ struct FeedActions {
     struct SelectTab: Action {
         var target: Reducer = reducer
         let tab: Tab
-    }
-
-    struct ToggleFilterMenu: Action {
-        var target: Reducer = reducer
     }
 
     struct FetchOnlineStats {

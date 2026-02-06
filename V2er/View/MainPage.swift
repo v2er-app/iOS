@@ -59,67 +59,49 @@ struct MainPage: StateView {
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                VStack(spacing: 0) {
-                    // TopBar outside TabView to ensure it updates immediately
-                    TopBar(selectedTab: state.selectedTab, feedFilterTab: store.appState.feedState.selectedTab)
-
-                    TabView(selection: tabSelection) {
-                        // Feed Tab
-                        FeedPage(selecedTab: state.selectedTab)
-                            .tabItem {
-                                Label("最新", systemImage: "newspaper")
-                            }
-                            .tag(TabId.feed)
-
-                        // Explore Tab
-                        ExplorePage(selecedTab: state.selectedTab)
-                            .tabItem {
-                                Label("发现", systemImage: "safari")
-                            }
-                            .tag(TabId.explore)
-
-                        // Message Tab
-                        MessagePage(selecedTab: state.selectedTab)
-                            .badge(unReadNums > 0 ? unReadNums : 0)
-                            .tabItem {
-                                Label("通知", systemImage: "bell")
-                            }
-                            .tag(TabId.message)
-
-                        // Me Tab
-                        MePage(selecedTab: state.selectedTab)
-                            .badge(otherAppsManager.showOtherAppsBadge ? 1 : 0)
-                            .tabItem {
-                                Label("我", systemImage: "person")
-                            }
-                            .tag(TabId.me)
-                    }
-                    .accentColor(Color.primary)  // This controls the selected icon color in TabView
-                }
-                .ignoresSafeArea(.container, edges: .top)
-
-                // Filter menu overlay - only render when needed
-                if state.selectedTab == .feed && store.appState.feedState.showFilterMenu {
-                    FilterMenuView(
-                        selectedTab: store.appState.feedState.selectedTab,
-                        isShowing: true,
-                        onTabSelected: { tab in
-                            dispatch(FeedActions.SelectTab(tab: tab))
-                        },
-                        onDismiss: {
-                            dispatch(FeedActions.ToggleFilterMenu())
-                        }
-                    )
-                    .zIndex(1000)
-                }
+        TabView(selection: tabSelection) {
+            // Feed Tab - with its own NavigationStack
+            NavigationStack {
+                FeedPage(selecedTab: state.selectedTab)
             }
-            .onReceive(tabReselectionPublisher) { tappedTab in
-                // Dispatch action for all tab taps (including same-tab taps)
-                dispatch(TabbarClickAction(selectedTab: tappedTab))
+            .tabItem {
+                Label("最新", systemImage: "newspaper")
             }
-            .navigationBarHidden(true)
+            .tag(TabId.feed)
+
+            // Explore Tab - with its own NavigationStack
+            NavigationStack {
+                ExplorePage(selecedTab: state.selectedTab)
+            }
+            .tabItem {
+                Label("发现", systemImage: "safari")
+            }
+            .tag(TabId.explore)
+
+            // Message Tab - with its own NavigationStack
+            NavigationStack {
+                MessagePage(selecedTab: state.selectedTab)
+            }
+            .badge(unReadNums > 0 ? unReadNums : 0)
+            .tabItem {
+                Label("通知", systemImage: "bell")
+            }
+            .tag(TabId.message)
+
+            // Me Tab - with its own NavigationStack
+            NavigationStack {
+                MePage(selecedTab: state.selectedTab)
+            }
+            .badge(otherAppsManager.showOtherAppsBadge ? 1 : 0)
+            .tabItem {
+                Label("我", systemImage: "person")
+            }
+            .tag(TabId.me)
+        }
+        .accentColor(Color.primary)  // This controls the selected icon color in TabView
+        .onReceive(tabReselectionPublisher) { tappedTab in
+            // Dispatch action for all tab taps (including same-tab taps)
+            dispatch(TabbarClickAction(selectedTab: tappedTab))
         }
     }
 

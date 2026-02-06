@@ -10,13 +10,6 @@ import SwiftUI
 import SafariServices
 import PhotosUI
 
-private struct ScrollOffsetPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
-
 struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Environment(\.isPresented) private var isPresented
     @Environment(\.dismiss) var dismiss
@@ -40,7 +33,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     var instanceId: String {
         self.id
     }
-    @State var hideTitleViews = true
     @State var isKeyboardVisiable = false
     @State private var isLoadingMore = false
     @State private var contentReady = false
@@ -154,11 +146,13 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             listContentView
             replyBar
         }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            navBar
+        .navigationTitle("话题")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                moreMenu
+            }
         }
-        .ignoresSafeArea(.container)
-        .navigationBarHidden(true)
         .onChange(of: state.ignored) { ignored in
             if ignored {
                 dismiss()
@@ -187,6 +181,80 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     }
 
     @ViewBuilder
+    private var moreMenu: some View {
+        Menu {
+            let hadStared = state.model.headerInfo?.hadStared ?? false
+            Button {
+                dispatch(FeedDetailActions.StarTopic(id: id))
+            } label: {
+                Label(hadStared ? "取消收藏" : "收藏", systemImage: hadStared ? "bookmark.fill" : "bookmark")
+            }
+            let hadThanked = state.model.headerInfo?.hadThanked ?? false
+            Button {
+                dispatch(FeedDetailActions.ThanksAuthor(id: id))
+            } label: {
+                Label(hadThanked ? "已感谢" : "感谢", systemImage: hadThanked ? "heart.fill" : "heart")
+            }
+            .disabled(hadThanked)
+
+            Button {
+                dispatch(FeedDetailActions.IgnoreTopic(id: id))
+            } label: {
+                Label("忽略", systemImage: "exclamationmark.octagon")
+            }
+            let reported = state.model.hasReported ?? false
+            Button {
+                replyIsFocused = false
+                dispatch(FeedDetailActions.ReportTopic(id: id))
+            } label: {
+                Label(reported ? "已举报" : "举报", systemImage: "person.crop.circle.badge.exclamationmark")
+            }
+            .disabled(reported)
+
+            Divider()
+
+            // Owner-only actions
+            if let stickyStr = state.model.stickyStr, stickyStr.notEmpty() {
+                Button {
+                    dispatch(FeedDetailActions.StickyTopic(id: id))
+                } label: {
+                    Label("置顶 10 分钟 (200 铜币)", systemImage: "pin")
+                }
+            }
+
+            if let fadeStr = state.model.fadeStr, fadeStr.notEmpty() {
+                Button {
+                    dispatch(FeedDetailActions.FadeTopic(id: id))
+                } label: {
+                    Label("下沉 1 天", systemImage: "arrow.down.to.line")
+                }
+            }
+
+            // Share button
+            Button {
+                shareTopicContent()
+            } label: {
+                Label("分享", systemImage: "square.and.arrow.up")
+            }
+
+            Button {
+                if let url = URL(string: APIService.baseUrlString + "/t/\(id)") {
+                    if useBuiltinBrowser {
+                        navigateToBrowserURL = url
+                    } else {
+                        navigateToSafariURL = url
+                    }
+                }
+            } label: {
+                Label("使用浏览器打开", systemImage: "safari")
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle")
+                .font(.body)
+        }
+    }
+
+    @ViewBuilder
     private var listContentView: some View {
         List {
             // Header Section
@@ -194,14 +262,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color.itemBg)
-                .background(
-                    GeometryReader { geometry in
-                        Color.clear.preference(
-                            key: ScrollOffsetPreferenceKey.self,
-                            value: geometry.frame(in: .named("listScroll")).minY
-                        )
-                    }
-                )
 
             // Content Section
             if !isContentEmpty {
@@ -277,12 +337,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .onTapGesture {
             replyIsFocused = false
-        }
-        .coordinateSpace(name: "listScroll")
-        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { offset in
-            withAnimation {
-                hideTitleViews = offset > -100
-            }
         }
     }
 
@@ -429,116 +483,4 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .padding(.horizontal, 16)
     }
 
-    @ViewBuilder
-    private var navBar: some View  {
-        NavbarHostView(paddingH: 0) {
-            HStack(alignment: .center, spacing: 4) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.backward")
-                        .font(.title2.weight(.regular))
-                        .padding(.leading, 8)
-                        .padding(.vertical, 10)
-                        .foregroundColor(.tintColor)
-                }
-                Group {
-                    AvatarView(url: state.model.headerInfo?.avatar ?? .empty, size: 32)
-                    VStack(alignment: .leading) {
-                        Text("话题")
-                            .font(.headline)
-                        Text(state.model.headerInfo?.title ?? .empty)
-                            .font(.subheadline)
-                            .greedyWidth(.leading)
-                    }
-                    .lineLimit(1)
-                }
-                .opacity(hideTitleViews ? 0.0 : 1.0)
-                Menu {
-                    let hadStared = state.model.headerInfo?.hadStared ?? false
-                    Button {
-                        dispatch(FeedDetailActions.StarTopic(id: id))
-                    } label: {
-                        Label(hadStared ? "取消收藏" : "收藏", systemImage: hadStared ? "bookmark.fill" : "bookmark")
-                    }
-                    let hadThanked = state.model.headerInfo?.hadThanked ?? false
-                    Button {
-                        dispatch(FeedDetailActions.ThanksAuthor(id: id))
-                    } label: {
-                        Label(hadThanked ? "已感谢" : "感谢", systemImage: hadThanked ? "heart.fill" : "heart")
-                    }
-                    .disabled(hadThanked)
-
-                    Button {
-                        dispatch(FeedDetailActions.IgnoreTopic(id: id))
-                    } label: {
-                        Label("忽略", systemImage: "exclamationmark.octagon")
-                    }
-                    let reported = state.model.hasReported ?? false
-                    Button {
-                        replyIsFocused = false
-                        dispatch(FeedDetailActions.ReportTopic(id: id))
-                    } label: {
-                        Label(reported ? "已举报" : "举报", systemImage: "person.crop.circle.badge.exclamationmark")
-                    }
-                    .disabled(reported)
-
-                    Divider()
-
-                    // Owner-only actions
-                    if let stickyStr = state.model.stickyStr, stickyStr.notEmpty() {
-                        Button {
-                            dispatch(FeedDetailActions.StickyTopic(id: id))
-                        } label: {
-                            Label("置顶 10 分钟 (200 铜币)", systemImage: "pin")
-                        }
-                    }
-
-                    if let fadeStr = state.model.fadeStr, fadeStr.notEmpty() {
-                        Button {
-                            dispatch(FeedDetailActions.FadeTopic(id: id))
-                        } label: {
-                            Label("下沉 1 天", systemImage: "arrow.down.to.line")
-                        }
-                    }
-
-                    // Share button
-                    Button {
-                        shareTopicContent()
-                    } label: {
-                        Label("分享", systemImage: "square.and.arrow.up")
-                    }
-
-                    Button {
-                        if let url = URL(string: APIService.baseUrlString + "/t/\(id)") {
-                            if useBuiltinBrowser {
-                                navigateToBrowserURL = url
-                            } else {
-                                navigateToSafariURL = url
-                            }
-                        }
-                    } label: {
-                        Label("使用浏览器打开", systemImage: "safari")
-                    }
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .padding(8)
-                        .font(.title3.weight(.regular))
-                        .foregroundColor(.tintColor)
-                }
-                .forceClickable()
-                .debug(true)
-                .hapticOnTap()
-            }
-            .padding(.vertical, 5)
-            .padding(.trailing, 5)
-            .overlay {
-                Text("话题")
-                    .font(.headline)
-                    .opacity(hideTitleViews ? 1.0 : 0.0)
-            }
-            .greedyWidth()
-        }
-        .visualBlur()
-    }
 }

@@ -21,7 +21,8 @@ struct MyFollowPage: StateView {
             .onAppear {
                 dispatch(MyFollowActions.FetchStart(autoLoad: !state.updatableState.hasLoadedOnce))
             }
-            .navBar("我的关注")
+            .navigationTitle("我的关注")
+            .navigationBarTitleDisplayMode(.inline)
     }
 
     @ViewBuilder

@@ -9,116 +9,74 @@
 import SwiftUI
 
 struct SearchPage: StateView {
-    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var store: Store
     @State private var isLoadingMore = false
     var bindingState: Binding<SearchState> {
         return $store.appState.searchState
     }
-    @FocusState private var focused: Bool
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(state.model?.hits ?? []) { item in
-                    NavigationLink(destination: FeedDetailPage(id: item.id)) {
-                        SearchResultItemView(hint: item)
-                    }
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.bgColor)
-                }
-
-                // Load More Indicator
-                if state.updatable.hasMoreData && !(state.model?.hits ?? []).isEmpty {
-                    HStack {
-                        Spacer()
-                        if isLoadingMore {
-                            ProgressView()
-                        }
-                        Spacer()
-                    }
-                    .frame(height: 50)
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.bgColor)
-                    .onAppear {
-                        guard !isLoadingMore else { return }
-                        isLoadingMore = true
-                        Task {
-                            await run(action: SearchActions.LoadMoreStart())
-                            await MainActor.run {
-                                isLoadingMore = false
-                            }
-                        }
-                    }
-                }
-            }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .environment(\.defaultMinListRowHeight, 1)
-            .navigationBarHidden(true)
-            .onChange(of: state.sortWay) { sort in
-                dispatch(SearchActions.Start())
-            }
-            .safeAreaInset(edge: .top, spacing: 0) { searchView }
-            .ignoresSafeArea(.container)
-            .background(Color.bgColor)
-            .overlay {
-                if state.updatable.showLoadingView {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                }
-            }
-        }
-        .ignoresSafeArea(.container)
-        .navigationBarHidden(true)
-    }
-
-
-    @ViewBuilder
-    private var searchView: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 0) {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.secondaryText)
-                    TextField("Powered by sov2ex.com", text: bindingState.keyword)
-                        .disableAutocorrection(true)
-                        .autocapitalization(.none)
-                        .focused($focused)
-                        .submitLabel(.search)
-                        .onSubmit { dispatch(SearchActions.Start()) }
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
-                                self.focused = true
-                            }
-                        }
-                }
-                .padding(7)
-                .padding(.horizontal, 8)
-                .background(Color.itemBg.opacity(0.6))
-                .cornerRadius(8)
-                .padding(.horizontal, 16)
-                .padding(.top, 5)
-                Button("取消") {
-                    // Cancel Search
-                    if focused {
-                        focused = false
-                    } else {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }
-                }
-                .foregroundColor(.tintColor)
-            }
-            .padding(.top, topSafeAreaInset().top)
-            .padding(.trailing, 10)
+        List {
+            // Sort picker at top
             sortPickerView
-                .padding(10)
-            Divider()
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.bgColor)
+
+            ForEach(state.model?.hits ?? []) { item in
+                NavigationLink(destination: FeedDetailPage(id: item.id)) {
+                    SearchResultItemView(hint: item)
+                }
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.bgColor)
+            }
+
+            // Load More Indicator
+            if state.updatable.hasMoreData && !(state.model?.hits ?? []).isEmpty {
+                HStack {
+                    Spacer()
+                    if isLoadingMore {
+                        ProgressView()
+                    }
+                    Spacer()
+                }
+                .frame(height: 50)
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.bgColor)
+                .onAppear {
+                    guard !isLoadingMore else { return }
+                    isLoadingMore = true
+                    Task {
+                        await run(action: SearchActions.LoadMoreStart())
+                        await MainActor.run {
+                            isLoadingMore = false
+                        }
+                    }
+                }
+            }
         }
-        .visualBlur()
-        .background(Color.secondaryText.opacity(0.35))
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .environment(\.defaultMinListRowHeight, 1)
+        .background(Color.bgColor)
+        .navigationTitle("搜索")
+        .navigationBarTitleDisplayMode(.inline)
+        .searchable(text: bindingState.keyword, placement: .navigationBarDrawer(displayMode: .always), prompt: "Powered by sov2ex.com")
+        .onSubmit(of: .search) {
+            dispatch(SearchActions.Start())
+        }
+        .onChange(of: state.sortWay) { sort in
+            dispatch(SearchActions.Start())
+        }
+        .overlay {
+            if state.updatable.showLoadingView {
+                ProgressView()
+                    .scaleEffect(1.5)
+            }
+        }
     }
 
     @ViewBuilder
@@ -131,7 +89,6 @@ struct SearchPage: StateView {
         }
         .font(.headline)
         .pickerStyle(.segmented)
-        .padding(.horizontal)
     }
 }
 

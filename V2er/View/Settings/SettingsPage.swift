@@ -20,7 +20,6 @@ struct SettingsPage: View {
     @State private var showingDeleteAccountAlert = false
     @State private var showingLogoutConfirmation = false
     @State private var safariURL: IdentifiableURL?
-    @ObservedObject private var otherAppsManager = OtherAppsManager.shared
 
     // Get version and build number from Bundle
     private var appVersion: String {
@@ -84,19 +83,6 @@ struct SettingsPage: View {
 
             // MARK: - About Section
             Section("关于") {
-                NavigationLink {
-                    OtherAppsView()
-                } label: {
-                    HStack {
-                        Label("更多应用", systemImage: "square.grid.2x2")
-                        if otherAppsManager.showOtherAppsBadge {
-                            Circle()
-                                .fill(Color.red)
-                                .frame(width: 8, height: 8)
-                        }
-                    }
-                }
-
                 NavigationLink {
                     CreditsPage()
                 } label: {
