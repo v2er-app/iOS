@@ -10,12 +10,6 @@ import SwiftUI
 import Kingfisher
 import Atributika
 
-private struct UserDetailScrollOffsetKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value = nextValue()
-    }
-}
 
 struct UserDetailPage: StateView {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
@@ -41,15 +35,12 @@ struct UserDetailPage: StateView {
     }
 
     private var shouldHideNavbar: Bool {
-        scrollY > -heightOfNodeImage * 1.0
+        guard bannerViewHeight > 0 else { return true }
+        return scrollY < bannerViewHeight - heightOfNodeImage
     }
 
     private var statusBarStyle: UIStatusBarStyle {
         shouldHideNavbar ? .lightContent : .darkContent
-    }
-
-    var foreGroundColor: SwiftUI.Color {
-        return shouldHideNavbar ? Color.primaryText.opacity(0.9) : .accentColor
     }
 
     var body: some View {
@@ -60,6 +51,30 @@ struct UserDetailPage: StateView {
     @ViewBuilder
     private var contentView: some View {
         ZStack(alignment: .top) {
+            // Blurred background — edge-to-edge behind status bar
+            VStack(spacing: 0) {
+                let height = bannerViewHeight * 1.2 + max(-scrollY, 0)
+                KFImage
+                    .url(URL(string: model.avatar))
+                    .fade(duration: 0.25)
+                    .resizable()
+                    .blur(radius: 60, opaque: true)
+                    .overlay(
+                        LinearGradient(
+                            stops: [
+                                .init(color: Color.black.opacity(0.5), location: 0),
+                                .init(color: Color.black.opacity(0.35), location: 0.65),
+                                .init(color: Color(.systemBackground), location: 1.0)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: height)
+                Spacer().background(.clear)
+            }
+            .ignoresSafeArea(edges: .top)
+
             List {
                 // Banner Section
                 topBannerView
@@ -69,14 +84,6 @@ struct UserDetailPage: StateView {
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
-                    .background(
-                        GeometryReader { geometry in
-                            Color.clear.preference(
-                                key: UserDetailScrollOffsetKey.self,
-                                value: geometry.frame(in: .named("userDetailScroll")).minY
-                            )
-                        }
-                    )
 
                 // Tabs Section
                 tabsTitleView
@@ -92,9 +99,9 @@ struct UserDetailPage: StateView {
                                 NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                                     .opacity(0)
                             }
-                            .listRowInsets(EdgeInsets())
+                            .listRowInsets(EdgeInsets(top: Spacing.xxs, leading: Spacing.md, bottom: Spacing.xxs, trailing: Spacing.md))
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.secondarySystemGroupedBackground))
+                            .listRowBackground(Color(.systemBackground))
                     }
 
                     // More topics link
@@ -102,22 +109,24 @@ struct UserDetailPage: StateView {
                         NavigationLink(value: AppRoute.userFeed(userId: userId)) {
                             Text("\(userId)创建的更多主题")
                                 .font(.subheadline)
-                                .padding()
-                                .padding(.bottom, 12)
+                                .foregroundColor(.accentColor)
+                                .padding(Spacing.lg)
+                                .padding(.bottom, Spacing.md)
                         }
-                            .listRowInsets(EdgeInsets())
+                            .listRowInsets(EdgeInsets(top: Spacing.xxs, leading: Spacing.md, bottom: Spacing.xxs, trailing: Spacing.md))
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.secondarySystemGroupedBackground))
+                            .listRowBackground(Color(.systemBackground))
                     } else {
                         Text("根据 \(userId) 的设置，主题列表被隐藏")
                             .greedyFrame()
                             .font(.subheadline)
-                            .padding()
+                            .foregroundColor(.secondaryText)
+                            .padding(Spacing.lg)
                             .padding(.bottom, 180)
                             .hide(state.refreshing)
                             .listRowInsets(EdgeInsets())
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.secondarySystemGroupedBackground))
+                            .listRowBackground(Color(.systemBackground))
                     }
                 }
 
@@ -129,9 +138,9 @@ struct UserDetailPage: StateView {
                                 NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                                     .opacity(0)
                             }
-                            .listRowInsets(EdgeInsets())
+                            .listRowInsets(EdgeInsets(top: Spacing.xxs, leading: Spacing.md, bottom: Spacing.xxs, trailing: Spacing.md))
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.secondarySystemGroupedBackground))
+                            .listRowBackground(Color(.systemBackground))
                     }
                 }
             }
@@ -141,22 +150,10 @@ struct UserDetailPage: StateView {
             .refreshable {
                 await run(action: UserDetailActions.FetchData.Start(id: self.userId))
             }
-            .coordinateSpace(name: "userDetailScroll")
-            .onPreferenceChange(UserDetailScrollOffsetKey.self) { offset in
-                self.scrollY = offset
-            }
-            .background {
-                VStack(spacing: 0) {
-                    let height = bannerViewHeight * 1.2 + max(scrollY, 0)
-                    KFImage
-                        .url(URL(string: model.avatar))
-                        .fade(duration: 0.25)
-                        .resizable()
-                        .blur(radius: 80, opaque: true)
-                        .overlay(Color.dynamic(light: .black, dark: .white).opacity(withAnimation {shouldHideNavbar ? 0.3 : 0.1}))
-                        .frame(maxWidth: .infinity, maxHeight: height)
-                    Spacer().background(.clear)
-                }
+            .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                geometry.contentOffset.y
+            } action: { _, newValue in
+                self.scrollY = newValue
             }
             .overlay {
                 if state.showProgressView {
@@ -164,28 +161,11 @@ struct UserDetailPage: StateView {
                         .scaleEffect(1.5)
                 }
             }
-        }
-        .navigationTitle(model.userName.isEmpty ? "用户" : model.userName)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                HStack(spacing: 8) {
-                    if !isSelf() {
-                        Button {
-                            dispatch(UserDetailActions.Follow(id: userId))
-                        } label: {
-                            Image(systemName: state.model.hasFollowed ? "heart.fill" : "heart")
-                        }
 
-                        Button {
-                            dispatch(UserDetailActions.BlockUser(id: userId))
-                        } label: {
-                            Image(systemName: state.model.hasBlocked ? "eye.slash.fill" : "eye.slash")
-                        }
-                    }
-                }
-            }
+            // Custom floating nav bar
+            customNavBar
         }
+        .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             log("onAppear----")
             dispatch(UserDetailActions.FetchData.Start(id: userId, autoLoad: true))
@@ -204,34 +184,82 @@ struct UserDetailPage: StateView {
     }
     
     @ViewBuilder
+    private var customNavBar: some View {
+        HStack(spacing: Spacing.sm) {
+            Button {
+                presentationMode.wrappedValue.dismiss()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.body.weight(.semibold))
+                    .frame(width: 34, height: 34)
+            }
+
+            Spacer()
+
+            if !isSelf() {
+                Button {
+                    dispatch(UserDetailActions.Follow(id: userId))
+                } label: {
+                    Image(systemName: state.model.hasFollowed ? "heart.fill" : "heart")
+                        .font(.body.weight(.semibold))
+                        .frame(width: 34, height: 34)
+                }
+
+                Button {
+                    dispatch(UserDetailActions.BlockUser(id: userId))
+                } label: {
+                    Image(systemName: state.model.hasBlocked ? "eye.slash.fill" : "eye.slash")
+                        .font(.body.weight(.semibold))
+                        .frame(width: 34, height: 34)
+                }
+            }
+        }
+        .foregroundColor(shouldHideNavbar ? .white : .primary)
+        .padding(.horizontal, Spacing.lg)
+        .padding(.top, Spacing.xs)
+        .padding(.bottom, Spacing.xs)
+        .frame(maxWidth: .infinity)
+        .background {
+            if !shouldHideNavbar {
+                Rectangle()
+                    .fill(.bar)
+                    .ignoresSafeArea(edges: .top)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: shouldHideNavbar)
+    }
+
+    @ViewBuilder
     private var topBannerView: some View {
-        VStack (spacing: 14) {
-            Color.clear.frame(height: topSafeAreaInset().top)
+        VStack (spacing: Spacing.md) {
+            Color.clear.frame(height: 34)
             AvatarView(url: model.avatar, size: heightOfNodeImage)
-            HStack(alignment: .center,spacing: 4) {
+            HStack(alignment: .center, spacing: Spacing.xs) {
                 Circle()
                     .fill(state.model.isOnline ? .green : Color.secondaryText)
                     .frame(width: 8, height: 8)
                 Text(model.userName)
-                    .font(.headline.weight(.semibold))
+                    .font(.title3.weight(.bold))
             }
             Button {
                 dispatch(UserDetailActions.Follow(id: userId))
             } label: {
                 Text(state.model.hasFollowed ? "已关注" : "关注")
-                    .font(.callout)
-                    .padding(.horizontal, Spacing.lg)
-                    .padding(.vertical, Spacing.xxs)
-                    .background(Capsule().stroke(foreGroundColor, lineWidth: 1))
+                    .font(.subheadline.weight(.medium))
+                    .padding(.horizontal, Spacing.xl)
+                    .padding(.vertical, Spacing.xs + 2)
+                    .background(Capsule().stroke(.white.opacity(0.8), lineWidth: 1))
             }
             .hide(isSelf())
             Text(model.desc)
-                .font(.callout)
+                .font(.subheadline)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, Spacing.lg)
+                .foregroundColor(.white.opacity(0.8))
         }
-        .foregroundColor(foreGroundColor)
-        .padding(.vertical, 8)
+        .foregroundColor(.white)
     }
-    
+
     private var tabsTitleView: some View {
         HStack(spacing: 0) {
             TabButton(title: "主题", id: .topic, selectedID: $currentTab, animation: self.animation)
@@ -254,9 +282,10 @@ struct UserDetailPage: StateView {
         var body: some View {
             VStack(spacing: 0) {
                 Text(data.title)
-                    .font(.footnote)
+                    .font(.subheadline.weight(.medium))
                     .foregroundColor(.primaryText)
                     .greedyWidth(.leading)
+                    .lineLimit(2)
                 RichText {
                     data.content
                         .rich(baseStyle: quoteFont)
@@ -265,20 +294,21 @@ struct UserDetailPage: StateView {
                 .padding(Spacing.md)
                 .background {
                     HStack(spacing: 0) {
-                        Color.accentColor.opacity(0.8)
+                        Color.accentColor
                             .frame(width: 3)
-                        Color(.systemGray6)
+                        Color(.tertiarySystemFill)
                     }
                     .clipCorner(1.5, corners: [.topLeft, .bottomLeft])
                 }
                 .padding(.vertical, Spacing.xs + 2)
                 Text(data.time)
-                    .font(.footnote)
-                    .foregroundColor(.secondaryText)
+                    .font(AppFont.timestamp)
+                    .foregroundColor(.tertiaryText)
                     .greedyWidth(.trailing)
             }
-            .padding(12)
-            .divider()
+            .padding(Spacing.lg)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
     }
 
@@ -288,26 +318,31 @@ struct UserDetailPage: StateView {
 
         var body: some View {
             VStack(spacing: 0) {
-                VStack {
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(data.userName)
-                                .lineLimit(1)
-                            Text(data.time)
-                                .lineLimit(1)
-                                .font(.footnote)
-                        }
-                        Spacer()
-                        Text(data.tag)
-                            .nodeBadgeStyle()
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: Spacing.xxs) {
+                        Text(data.userName)
+                            .font(AppFont.username)
+                            .foregroundColor(.primaryText)
+                            .lineLimit(1)
+                        Text(data.time)
+                            .font(AppFont.timestamp)
+                            .foregroundColor(.secondaryText)
+                            .lineLimit(1)
                     }
-                    Text(data.title )
-                        .greedyWidth(.leading)
-                        .lineLimit(2)
+                    Spacer()
+                    Text(data.tag)
+                        .nodeBadgeStyle()
                 }
-                .padding(12)
-                Divider()
+                Text(data.title)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundColor(.primaryText)
+                    .greedyWidth(.leading)
+                    .lineLimit(2)
+                    .padding(.top, Spacing.sm - 2)
             }
+            .padding(Spacing.lg)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
             .contentShape(Rectangle())
         }
     }
@@ -322,7 +357,6 @@ struct UserDetailPage: StateView {
         @Binding var selectedID: ID
         var animation: Namespace.ID
 
-
         var isSelected: Bool {
             return id == selectedID
         }
@@ -334,15 +368,15 @@ struct UserDetailPage: StateView {
                 }
             } label: {
                 Text(title)
-                    .fontWeight(.bold)
-                    .foregroundColor(isSelected ? Color(.secondarySystemGroupedBackground).opacity(0.9) : .accentColor)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundColor(isSelected ? .white : .secondaryText)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, Spacing.sm)
                     .background {
                         VStack {
                             if isSelected {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color.primaryText)
+                                RoundedRectangle(cornerRadius: CornerRadius.medium)
+                                    .fill(Color.accentColor)
                                     .matchedGeometryEffect(id: "TAB", in: animation)
                             }
                         }
@@ -350,7 +384,6 @@ struct UserDetailPage: StateView {
                     .contentShape(Rectangle())
             }
         }
-
     }
 
 }

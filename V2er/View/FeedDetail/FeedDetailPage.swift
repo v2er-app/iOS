@@ -257,6 +257,15 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
 
+                // Spacer between content and replies
+                if !state.model.replyInfo.items.isEmpty {
+                    Color(.systemBackground)
+                        .frame(height: Spacing.sm)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color(.systemBackground))
+                }
+
                 // Reply Section Header with Sort Toggle
                 if !state.model.replyInfo.items.isEmpty {
                     replySectionHeader
@@ -430,7 +439,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.md)
-        .background(Color(.systemGray6).opacity(0.5))
+        .background(Color(.secondarySystemGroupedBackground))
     }
 
     @ViewBuilder

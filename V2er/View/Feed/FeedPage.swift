@@ -116,9 +116,9 @@ struct FeedPage: BaseHomePageView {
                             NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                                 .opacity(0)
                         }
-                        .listRowInsets(EdgeInsets())
+                        .listRowInsets(EdgeInsets(top: Spacing.xxs, leading: Spacing.md, bottom: Spacing.xxs, trailing: Spacing.md))
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        .listRowBackground(Color(.systemBackground))
                 }
 
                 // Load More Indicator

@@ -51,10 +51,10 @@ struct AuthorInfoView: View {
                 Button {
                     navigateToRoute = .userDetail(userId: userName)
                 } label: {
-                    AvatarView(url: avatar, size: 38)
+                    AvatarView(url: avatar, size: 42)
                 }
                 .buttonStyle(.plain)
-                VStack(alignment: .leading, spacing: Spacing.xs) {
+                VStack(alignment: .leading, spacing: Spacing.xs + 2) {
                     Text(userName)
                         .lineLimit(1)
                     Text(replyNum + timeAndClickedNum)
@@ -72,10 +72,10 @@ struct AuthorInfoView: View {
                 .buttonStyle(.plain)
             }
             Text(title)
-                .font(.headline)
+                .font(.title3.weight(.semibold))
                 .foregroundColor(.primaryText)
                 .greedyWidth(.leading)
-                .padding(.top, Spacing.md)
+                .padding(.top, Spacing.lg)
         }
         .padding(Spacing.md)
         .background(Color(.secondarySystemGroupedBackground))

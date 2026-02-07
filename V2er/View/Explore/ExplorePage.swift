@@ -76,8 +76,12 @@ struct ExplorePage: BaseHomePageView {
             // Today Hot Section
             if !state.exploreInfo.dailyHotInfo.isEmpty {
                 Section {
-                    ForEach(state.exploreInfo.dailyHotInfo) { item in
+                    ForEach(Array(state.exploreInfo.dailyHotInfo.enumerated()), id: \.element.id) { index, item in
                         HStack(spacing: Spacing.md) {
+                            Text("\(index + 1)")
+                                .font(.subheadline.weight(.bold))
+                                .foregroundColor(index < 3 ? .accentColor : .tertiaryText)
+                                .frame(width: 20)
                             AvatarView(url: item.avatar, size: 30)
                             Text(item.title)
                                 .foregroundColor(Color.primaryText)
@@ -241,7 +245,7 @@ private struct SearchResultItemView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: Spacing.xs) {
             Text(data.title)
                 .fontWeight(.semibold)
                 .foregroundColor(.primaryText)
@@ -249,15 +253,18 @@ private struct SearchResultItemView: View {
                 .lineLimit(2)
             Text(data.content)
                 .foregroundColor(.secondaryText)
-                .lineLimit(5)
-                .padding(.vertical, Spacing.xs)
+                .lineLimit(3)
+                .padding(.vertical, Spacing.xxs)
             Text("\(data.creator) 于 \(data.created) 发表, \(data.replyNum) 回复")
                 .font(AppFont.metadata)
-                .foregroundColor(Color.accentColor.opacity(0.8))
+                .foregroundColor(.tertiaryText)
         }
         .greedyWidth()
         .padding(Spacing.lg)
+        .padding(.horizontal, Spacing.xs)
         .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .padding(.horizontal, Spacing.md)
         .padding(.bottom, Spacing.sm)
     }
 }
