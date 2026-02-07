@@ -24,11 +24,12 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
                 VStack(alignment: .leading, spacing: Spacing.xxs) {
                     Text(data.userName.safe)
                         .font(AppFont.username)
+                        .foregroundColor(.primaryText)
                     Text(data.replyUpdate.safe)
                         .font(AppFont.timestamp)
+                        .foregroundColor(.secondaryText)
                 }
                 .lineLimit(1)
-                .foregroundColor(.accentColor)
                 Spacer()
                 Button {
                     navigateToRoute = .tagDetail(tagId: data.nodeId.safe)
@@ -39,19 +40,24 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
                 .buttonStyle(.plain)
             }
             Text(data.title.safe)
+                .font(.subheadline.weight(.medium))
                 .foregroundColor(.primaryText)
                 .greedyWidth(.leading)
                 .lineLimit(2)
                 .padding(.top, Spacing.sm - 2)
                 .padding(.vertical, Spacing.xs)
-            Text("评论\(data.replyNum.safe)")
-                .font(AppFont.metadata)
-                .foregroundColor(.secondaryText)
-                .greedyWidth(.trailing)
+            HStack(spacing: Spacing.xxs) {
+                Spacer()
+                Image(systemName: "bubble.right")
+                    .font(AppFont.metadata)
+                Text(data.replyNum.safe)
+                    .font(AppFont.metadata)
+            }
+            .foregroundColor(.secondaryText)
         }
         .padding(Spacing.md)
         .background(Color(.secondarySystemGroupedBackground))
-        .divider()
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(data.userName.safe), \(data.title.safe), \(data.nodeName.safe), \(data.replyNum.safe)条评论")
         .navigationDestination(item: $navigateToRoute) { route in

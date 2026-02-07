@@ -33,9 +33,11 @@ struct ReplyItemView: View {
                 .buttonStyle(.plain)
                 Text("楼主")
                     .font(AppFont.ownerBadge)
+                    .foregroundColor(.accentColor)
                     .padding(.horizontal, Spacing.xs)
                     .padding(.vertical, Spacing.xxs)
-                    .cornerBorder(radius: CornerRadius.small - 3, borderWidth: 0.8, color: .primaryText)
+                    .background(Color.accentColor.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small - 3))
                     .padding(.top, Spacing.xxs)
                     .hide(!info.isOwner)
             }
@@ -85,9 +87,10 @@ struct ReplyItemView: View {
 
                 Text("\(info.floor)楼")
                     .font(AppFont.metadata)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.tertiaryText)
                 Divider()
-                    .padding(.vertical, Spacing.sm - 2)
+                    .padding(.top, Spacing.sm)
+                    .padding(.bottom, Spacing.xs)
             }
         }
         .padding(.horizontal, Spacing.md)

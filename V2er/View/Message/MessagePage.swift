@@ -29,7 +29,7 @@ struct MessagePage: BaseHomePageView {
 
     var body: some View {
         contentView
-            .background(Color(.systemBackground))
+            .background(Color(.systemGroupedBackground))
             .navigationTitle("通知")
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
@@ -46,7 +46,7 @@ struct MessagePage: BaseHomePageView {
                 MessageItemView(item: item)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.secondarySystemGroupedBackground))
+                    .listRowBackground(Color(.systemGroupedBackground))
             }
 
             // Load More Indicator
@@ -61,7 +61,7 @@ struct MessagePage: BaseHomePageView {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color(.systemBackground))
+                .listRowBackground(Color(.systemGroupedBackground))
                 .onAppear {
                     guard !isLoadingMore else { return }
                     isLoadingMore = true
@@ -76,6 +76,7 @@ struct MessagePage: BaseHomePageView {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
+        .background(Color(.systemGroupedBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: MessageActions.FetchStart())
