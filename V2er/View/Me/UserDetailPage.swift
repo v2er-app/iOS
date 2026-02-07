@@ -194,6 +194,13 @@ struct UserDetailPage: StateView {
                     .frame(width: 34, height: 34)
             }
 
+            if !shouldHideNavbar {
+                AvatarView(url: model.avatar, size: 26)
+                Text(model.userName)
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+            }
+
             Spacer()
 
             if !isSelf() {
