@@ -60,15 +60,17 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     stops: [
                         .init(color: dominantColor, location: 0),
                         .init(color: dominantColor, location: 0.7),
-                        .init(color: Color(.systemGroupedBackground), location: 1.0)
+                        .init(color: .clear, location: 1.0)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .frame(height: bannerViewHeight * 1.5 + max(-scrollY, 0))
+                .clipCorner(CornerRadius.large, corners: [.bottomLeft, .bottomRight])
                 Spacer()
             }
             .ignoresSafeArea(edges: .top)
+            .background(Color(.systemGroupedBackground))
 
             List {
                 // Banner Section
@@ -223,18 +225,9 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             }
             .font(.subheadline)
             .foregroundColor(.white.opacity(0.7))
-            .padding(.bottom, Spacing.lg + CornerRadius.large * 2)
+            .padding(.bottom, Spacing.lg)
         }
         .foregroundColor(.white)
-        .overlay(alignment: .bottom) {
-            LinearGradient(
-                colors: [.clear, Color(.systemGroupedBackground)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: CornerRadius.large * 2)
-            .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
-        }
     }
 
 
