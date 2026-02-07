@@ -166,7 +166,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.body.weight(.semibold))
-                    .frame(width: 34, height: 34)
+                    .minTapTarget()
             }
 
             if !shouldHideNavbar {
@@ -184,7 +184,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             } label: {
                 Image(systemName: state.model.hasStared ? "bookmark.fill" : "bookmark")
                     .font(.body.weight(.semibold))
-                    .frame(width: 34, height: 34)
+                    .minTapTarget()
             }
             .disabled(tagId == nil)
         }

@@ -194,7 +194,7 @@ struct UserDetailPage: StateView {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.body.weight(.semibold))
-                    .frame(width: 34, height: 34)
+                    .minTapTarget()
             }
 
             if !shouldHideNavbar {
@@ -212,7 +212,7 @@ struct UserDetailPage: StateView {
                 } label: {
                     Image(systemName: state.model.hasFollowed ? "heart.fill" : "heart")
                         .font(.body.weight(.semibold))
-                        .frame(width: 34, height: 34)
+                        .minTapTarget()
                 }
 
                 Button {
@@ -220,7 +220,7 @@ struct UserDetailPage: StateView {
                 } label: {
                     Image(systemName: state.model.hasBlocked ? "eye.slash.fill" : "eye.slash")
                         .font(.body.weight(.semibold))
-                        .frame(width: 34, height: 34)
+                        .minTapTarget()
                 }
             }
         }
