@@ -70,24 +70,22 @@ struct UserDetailPage: StateView {
             .ignoresSafeArea(edges: .top)
 
             List {
-                // Banner Section
+                // Banner Section (includes rounded corner cap at bottom)
                 topBannerView
                     .readSize {
                         bannerViewHeight = $0.height
                     }
+                    .padding(.bottom, state.showProgressView ? 0 : 20)
+                    .background(alignment: .bottom) {
+                        if !state.showProgressView {
+                            Color(.systemGroupedBackground)
+                                .frame(height: 20)
+                                .clipCorner(40, corners: [.topLeft, .topRight])
+                        }
+                    }
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
-
-                // Content sheet header — rounded top edge overlapping the banner gradient
-                if !state.showProgressView {
-                    Color(.systemGroupedBackground)
-                        .frame(height: CornerRadius.large)
-                        .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                }
 
                 // Tabs Section
                 tabsTitleView

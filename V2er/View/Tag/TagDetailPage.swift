@@ -73,24 +73,22 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             .ignoresSafeArea(edges: .top)
 
             List {
-                // Banner Section
+                // Banner Section (includes rounded corner cap at bottom)
                 topBannerView
                     .readSize {
                         bannerViewHeight = $0.height
                     }
+                    .padding(.bottom, model.topics.isEmpty ? 0 : 20)
+                    .background(alignment: .bottom) {
+                        if !model.topics.isEmpty {
+                            Color(.systemGroupedBackground)
+                                .frame(height: 20)
+                                .clipCorner(40, corners: [.topLeft, .topRight])
+                        }
+                    }
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
-
-                // Content sheet header — rounded top edge overlapping the banner gradient
-                if !model.topics.isEmpty {
-                    Color(.systemGroupedBackground)
-                        .frame(height: CornerRadius.large)
-                        .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                }
 
                 // Node List Section - Each item as separate List row to prevent multiple NavigationLinks triggering
                 ForEach(model.topics) { item in
