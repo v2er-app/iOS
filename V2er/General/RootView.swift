@@ -154,7 +154,10 @@ struct RootHostView: View {
                     DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
                 }
                 .sheet(isPresented: loginState.showLoginView) {
-                    LoginPage()
+                    NavigationStack {
+                        LoginPage()
+                            .navigationDestination(for: AppRoute.self) { $0.destination() }
+                    }
                 }
                 .overlay {
                     if loginState.raw.showTwoStepDialog {

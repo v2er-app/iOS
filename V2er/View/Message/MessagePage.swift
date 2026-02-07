@@ -29,7 +29,7 @@ struct MessagePage: BaseHomePageView {
 
     var body: some View {
         contentView
-            .background(Color.bgColor)
+            .background(Color(.systemBackground))
             .navigationTitle("通知")
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
@@ -46,7 +46,7 @@ struct MessagePage: BaseHomePageView {
                 MessageItemView(item: item)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color.itemBg)
+                    .listRowBackground(Color(.secondarySystemGroupedBackground))
             }
 
             // Load More Indicator
@@ -61,7 +61,7 @@ struct MessagePage: BaseHomePageView {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color(.systemBackground))
                 .onAppear {
                     guard !isLoadingMore else { return }
                     isLoadingMore = true
@@ -93,28 +93,34 @@ struct MessageItemView: View {
     let item: MessageInfo.Item
     let quoteFont = Style.font(UIFont.prfered(.subheadline))
         .foregroundColor(Color.secondaryText.uiColor)
+    @State private var navigateToRoute: AppRoute?
 
     var body: some View {
-        HStack(alignment: .top, spacing: 10) {
-            AvatarView(url: item.avatar, size: 40)
-                .to { UserDetailPage(userId: item.username)}
-            VStack(alignment: .leading, spacing: 4) {
-                Text(item.title)
-                    .foregroundColor(Color.primaryText)
-                    .greedyWidth(.leading)
-                    .background(Color.itemBg)
-                    .to { FeedDetailPage(id: item.feedId) }
+        HStack(alignment: .top, spacing: Spacing.md) {
+            Button {
+                navigateToRoute = .userDetail(userId: item.username)
+            } label: {
+                AvatarView(url: item.avatar, size: 40)
+            }
+            .buttonStyle(.plain)
+            VStack(alignment: .leading, spacing: Spacing.xs) {
+                Button {
+                    navigateToRoute = .feedDetail(id: item.feedId)
+                } label: {
+                    Text(item.title)
+                        .foregroundColor(Color(.label))
+                        .greedyWidth(.leading)
+                }
                 RichText {
                     item.content
                         .rich(baseStyle: quoteFont)
                 }
-                .debug()
-                .padding(10)
+                .padding(Spacing.md)
                 .background {
                     HStack(spacing: 0) {
-                        Color.tintColor.opacity(0.8)
+                        Color.accentColor.opacity(0.8)
                             .frame(width: 3)
-                        Color.lightGray
+                        Color(.systemGray6)
                     }
                     .clipCorner(1.5, corners: [.topLeft, .bottomLeft])
                 }
@@ -122,13 +128,17 @@ struct MessageItemView: View {
                 if !item.time.isEmpty {
                     Text(item.time)
                         .font(.caption)
-                        .foregroundColor(Color.secondaryText)
+                        .foregroundColor(Color(.secondaryLabel))
                 }
             }
         }
-        .padding(12)
-        .background(Color.itemBg)
+        .padding(Spacing.md)
+        .background(Color(.secondarySystemGroupedBackground))
         .divider()
+        .accessibilityElement(children: .combine)
+        .navigationDestination(item: $navigateToRoute) { route in
+            route.destination()
+        }
     }
 
 }

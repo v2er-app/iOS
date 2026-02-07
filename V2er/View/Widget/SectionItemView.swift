@@ -8,8 +8,6 @@
 
 import SwiftUI
 
-fileprivate let paddingH: CGFloat = 15
-
 struct SectionItemView: View {
     let title: String
     let icon: String
@@ -28,7 +26,7 @@ struct SectionItemView: View {
             Image(systemName: "chevron.right")
                 .font(.body.weight(.regular))
                 .foregroundColor(.secondaryText)
-                .padding(.trailing, paddingH)
+                .padding(.trailing, Spacing.lg)
         }
     }
 }
@@ -53,18 +51,18 @@ struct SectionView<Content: View>: View {
         HStack {
             Image(systemName: icon)
                 .font(.body.weight(.semibold))
-                .padding(.leading, paddingH)
-                .padding(.trailing, icon.isEmpty ? 0 : 5)
-                .foregroundColor(.tintColor)
+                .padding(.leading, Spacing.lg)
+                .padding(.trailing, icon.isEmpty ? 0 : Spacing.xs)
+                .foregroundColor(.accentColor)
             HStack {
                 Text(title)
                 Spacer()
                 content
-                    .padding(.trailing, paddingH)
+                    .padding(.trailing, Spacing.lg)
             }
-            .padding(.vertical, 17)
+            .padding(.vertical, Spacing.xl)
             .divider(showDivider ? 0.8 : 0.0)
         }
-        .background(Color.itemBackground)
+        .background(Color(.secondarySystemGroupedBackground))
     }
 }

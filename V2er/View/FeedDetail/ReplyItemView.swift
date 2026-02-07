@@ -15,10 +15,7 @@ struct ReplyItemView: View {
     var topicId: String
     @EnvironmentObject var store: Store
     @Environment(\.colorScheme) var colorScheme
-    @State private var navigateToUser: String? = nil
-    @State private var navigateToTopic: String? = nil
-    @State private var navigateToNode: String? = nil
-    @State private var navigateToBrowserURL: URL? = nil
+    @State private var navigateToRoute: AppRoute? = nil
     @State private var navigateToSafariURL: URL? = nil
 
     private var useBuiltinBrowser: Bool {
@@ -28,23 +25,27 @@ struct ReplyItemView: View {
     var body: some View {
         HStack(alignment: .top) {
             VStack(spacing: 0) {
-                AvatarView(url: info.avatar, size: 36)
-                    .to { UserDetailPage(userId: info.userName) }
+                Button {
+                    navigateToRoute = .userDetail(userId: info.userName)
+                } label: {
+                    AvatarView(url: info.avatar, size: 36)
+                }
+                .buttonStyle(.plain)
                 Text("楼主")
-                    .font(.system(size: 8))
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 2)
-                    .cornerBorder(radius: 3, borderWidth: 0.8, color: .primaryText)
-                    .padding(.top, 2)
+                    .font(AppFont.ownerBadge)
+                    .padding(.horizontal, Spacing.xs)
+                    .padding(.vertical, Spacing.xxs)
+                    .cornerBorder(radius: CornerRadius.small - 3, borderWidth: 0.8, color: .primaryText)
+                    .padding(.top, Spacing.xxs)
                     .hide(!info.isOwner)
             }
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
                 HStack {
-                    VStack (alignment: .leading, spacing: 4) {
+                    VStack (alignment: .leading, spacing: Spacing.xs) {
                         Text(info.userName)
                             .foregroundColor(.primaryText)
                         Text(info.time)
-                            .font(.caption2)
+                            .font(AppFont.timestamp)
                             .foregroundColor(.secondaryText)
                     }
                     Spacer()
@@ -63,10 +64,11 @@ struct ReplyItemView: View {
                         }
                     } label: {
                         Image(systemName: info.hadThanked ? "heart.fill" : "heart")
-                            .font(.system(size: 14))
+                            .font(AppFont.actionIcon)
                             .foregroundColor(info.hadThanked ? .red : .secondaryText)
                     }
                     .disabled(info.hadThanked)
+                    .minTapTarget()
                 }
 
                 RichContentView(htmlContent: info.content)
@@ -78,18 +80,27 @@ struct ReplyItemView: View {
                         openInSafari(url)
                     }
                     .onMentionTapped { username in
-                        navigateToUser = username
+                        navigateToRoute = .userDetail(userId: username)
                     }
 
                 Text("\(info.floor)楼")
-                    .font(.footnote)
-                    .foregroundColor(Color.tintColor)
+                    .font(AppFont.metadata)
+                    .foregroundColor(.accentColor)
                 Divider()
-                    .padding(.vertical, 6)
+                    .padding(.vertical, Spacing.sm - 2)
             }
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, Spacing.md)
         .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityAction(named: "回复") {
+            dispatch(FeedDetailActions.ReplyToUser(id: topicId, userName: info.userName))
+        }
+        .accessibilityAction(named: "感谢") {
+            if !info.hadThanked {
+                dispatch(FeedDetailActions.ThankReply(id: topicId, replyId: info.replyId, replyUserName: info.userName))
+            }
+        }
         .contextMenu {
             Button {
                 dispatch(FeedDetailActions.ReplyToUser(id: topicId, userName: info.userName))
@@ -97,76 +108,14 @@ struct ReplyItemView: View {
                 Label("回复", systemImage: "arrowshape.turn.up.left")
             }
         }
-        .background(
-            Group {
-                NavigationLink(
-                    destination: UserDetailPage(userId: navigateToUser ?? ""),
-                    isActive: Binding(
-                        get: { navigateToUser != nil },
-                        set: { if !$0 { navigateToUser = nil } }
-                    )
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-
-                NavigationLink(
-                    destination: FeedDetailPage(id: navigateToTopic ?? ""),
-                    isActive: Binding(
-                        get: { navigateToTopic != nil },
-                        set: { if !$0 { navigateToTopic = nil } }
-                    )
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-
-                NavigationLink(
-                    destination: TagDetailPage(tagId: navigateToNode ?? ""),
-                    isActive: Binding(
-                        get: { navigateToNode != nil },
-                        set: { if !$0 { navigateToNode = nil } }
-                    )
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-
-                // Use NavigationLink instead of fullScreenCover for InAppBrowser (iOS 26 bug workaround)
-                NavigationLink(
-                    destination: Group {
-                        if let url = navigateToBrowserURL {
-                            InAppBrowserView(url: url)
-                        }
-                    },
-                    isActive: Binding(
-                        get: { navigateToBrowserURL != nil },
-                        set: { if !$0 { navigateToBrowserURL = nil } }
-                    )
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-
-                // Use NavigationLink for SafariView (iOS 26 bug workaround)
-                NavigationLink(
-                    destination: Group {
-                        if let url = navigateToSafariURL {
-                            SafariView(url: url)
-                                .ignoresSafeArea()
-                                .navigationBarHidden(true)
-                        }
-                    },
-                    isActive: Binding(
-                        get: { navigateToSafariURL != nil },
-                        set: { if !$0 { navigateToSafariURL = nil } }
-                    )
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-            }
-        )
+        .navigationDestination(item: $navigateToRoute) { route in
+            route.destination()
+        }
+        .navigationDestination(item: $navigateToSafariURL) { url in
+            SafariView(url: url)
+                .ignoresSafeArea()
+                .navigationBarHidden(true)
+        }
     }
 
     private func handleLinkTap(_ url: URL) {
@@ -174,13 +123,13 @@ struct ReplyItemView: View {
 
         switch action {
         case .navigateToTopic(let id):
-            navigateToTopic = id
+            navigateToRoute = .feedDetail(id: id)
         case .navigateToUser(let username):
-            navigateToUser = username
+            navigateToRoute = .userDetail(userId: username)
         case .navigateToNode(let name):
-            navigateToNode = name
+            navigateToRoute = .tagDetail(tagId: name)
         case .openInAppBrowser(let browserUrl):
-            navigateToBrowserURL = browserUrl
+            navigateToRoute = .inAppBrowser(url: browserUrl)
         case .openInSafariViewController(let webviewUrl):
             openInSafari(webviewUrl)
         }

@@ -33,7 +33,6 @@ struct RichText: View {
             AttributedText(richString, detection: action, maxWidth: geo.size.width, height: $height)
         }
         .frame(height: height)
-        .debug()
     }
 
     struct Styles {
@@ -42,7 +41,7 @@ struct RichText: View {
         public static let link = Style("a")
             .font(.boldSystemFont(ofSize: 16))
             .foregroundColor(Color.url.uiColor, .normal)
-            .backgroundColor(Color.lightGray.uiColor, .highlighted)
+            .backgroundColor(UIColor.systemGray6, .highlighted)
     }
 }
 

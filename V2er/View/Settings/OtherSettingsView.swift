@@ -50,7 +50,7 @@ struct OtherSettingsView: View {
                             ProgressView()
                         } else {
                             Image(systemName: "checkmark.circle")
-                                .foregroundStyle(isLoggedIn ? Color.tintColor : Color.secondary)
+                                .foregroundStyle(isLoggedIn ? Color.accentColor : Color.secondary)
                         }
                     }
                 }

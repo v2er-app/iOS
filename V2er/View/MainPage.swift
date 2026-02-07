@@ -60,27 +60,30 @@ struct MainPage: StateView {
 
     var body: some View {
         TabView(selection: tabSelection) {
-            // Feed Tab - with its own NavigationStack
+            // Feed Tab
             NavigationStack {
                 FeedPage(selecedTab: state.selectedTab)
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
             .tabItem {
                 Label("最新", systemImage: "newspaper")
             }
             .tag(TabId.feed)
 
-            // Explore Tab - with its own NavigationStack
+            // Explore Tab
             NavigationStack {
                 ExplorePage(selecedTab: state.selectedTab)
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
             .tabItem {
                 Label("搜索", systemImage: "magnifyingglass")
             }
             .tag(TabId.explore)
 
-            // Message Tab - with its own NavigationStack
+            // Message Tab
             NavigationStack {
                 MessagePage(selecedTab: state.selectedTab)
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
             .badge(unReadNums > 0 ? unReadNums : 0)
             .tabItem {
@@ -88,9 +91,10 @@ struct MainPage: StateView {
             }
             .tag(TabId.message)
 
-            // Me Tab - with its own NavigationStack
+            // Me Tab
             NavigationStack {
                 MePage(selecedTab: state.selectedTab)
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
             .badge(otherAppsManager.showOtherAppsBadge ? 1 : 0)
             .tabItem {
@@ -98,7 +102,7 @@ struct MainPage: StateView {
             }
             .tag(TabId.me)
         }
-        .accentColor(Color.primary)  // This controls the selected icon color in TabView
+        .tint(Color.accentColor)  // This controls the selected icon color in TabView
         .onReceive(tabReselectionPublisher) { tappedTab in
             // Dispatch action for all tab taps (including same-tab taps)
             dispatch(TabbarClickAction(selectedTab: tappedTab))

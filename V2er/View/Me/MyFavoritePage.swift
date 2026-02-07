@@ -12,6 +12,7 @@ struct MyFavoritePage: StateView {
     @EnvironmentObject private var store: Store
     @State private var selectedTab: Int = 0
     @State private var isFeedLoadingMore = false
+    @State private var navigateToNode: AppRoute?
 
     var bindingState: Binding<MyFavoriteState> {
         return $store.appState.myFavoriteState
@@ -30,7 +31,6 @@ struct MyFavoritePage: StateView {
                 .tag(1)
         }
         .tabViewStyle(.page)
-        .debug()
         .navigationTitle("收藏")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -52,17 +52,14 @@ struct MyFavoritePage: StateView {
     private var feedView: some View {
         List {
             ForEach(state.feedState.model?.items ?? []) { item in
-                ZStack {
-                    NavigationLink(destination: FeedDetailPage(id: item.id)) {
-                        EmptyView()
+                FeedItemView(data: item)
+                    .background {
+                        NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                            .opacity(0)
                     }
-                    .opacity(0)
-
-                    FeedItemView(data: item)
-                }
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.itemBg)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color(.secondarySystemGroupedBackground))
             }
 
             // Load More Indicator
@@ -77,7 +74,7 @@ struct MyFavoritePage: StateView {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color(.systemBackground))
                 .onAppear {
                     guard !isFeedLoadingMore else { return }
                     isFeedLoadingMore = true
@@ -92,7 +89,7 @@ struct MyFavoritePage: StateView {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color.bgColor)
+        .background(Color(.systemBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: MyFavoriteActions.FetchFeedStart())
@@ -114,12 +111,9 @@ struct MyFavoritePage: StateView {
         List {
             LazyVGrid(columns: columns) {
                 ForEach(state.nodeState.model?.items ?? []) { item in
-                    ZStack {
-                        NavigationLink(destination: TagDetailPage(tagId: item.id)) {
-                            EmptyView()
-                        }
-                        .opacity(0)
-
+                    Button {
+                        navigateToNode = .tagDetail(tagId: item.id)
+                    } label: {
                         VStack {
                             AvatarView(url: item.img)
                             Text(item.name)
@@ -128,15 +122,16 @@ struct MyFavoritePage: StateView {
                         }
                         .lineLimit(1)
                     }
+                    .buttonStyle(.plain)
                 }
             }
-            .listRowInsets(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+            .listRowInsets(EdgeInsets(top: Spacing.md, leading: Spacing.md, bottom: Spacing.md, trailing: Spacing.md))
             .listRowSeparator(.hidden)
-            .listRowBackground(Color.itemBg)
+            .listRowBackground(Color(.secondarySystemGroupedBackground))
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color.bgColor)
+        .background(Color(.systemBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: MyFavoriteActions.FetchNodeStart())
@@ -149,6 +144,9 @@ struct MyFavoritePage: StateView {
         }
         .onAppear {
             dispatch(MyFavoriteActions.FetchNodeStart(autoLoad: !state.nodeState.updatable.hasLoadedOnce))
+        }
+        .navigationDestination(item: $navigateToNode) { route in
+            route.destination()
         }
     }
 

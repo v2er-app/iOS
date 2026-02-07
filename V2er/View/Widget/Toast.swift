@@ -55,8 +55,8 @@ struct DefaultToastView: View {
     var body: some View {
         Label(title, systemImage: icon)
             .foregroundColor(.primaryText)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
+            .padding(.horizontal, Spacing.xl)
+            .padding(.vertical, Spacing.md)
     }
 }
 
@@ -81,8 +81,8 @@ private struct ToastContainerView<Content: View>: View {
 
     var body: some View {
         content
-            .background(Color.secondaryBackground.opacity(0.98))
-            .cornerRadius(99)
+            .background(.ultraThinMaterial)
+            .clipShape(Capsule())
             .shadow(color: Color.primaryText.opacity(0.12), radius: 4, y: 2)
             .padding(.top, paddingTop)
             .transition(.move(edge: .top).combined(with: .opacity))
@@ -153,7 +153,7 @@ extension View {
                 )
             }
         }
-        .animation(.easeInOut(duration: ToastConfig.animationDuration), value: isPresented.wrappedValue)
+        .animation(.spring(duration: 0.3, bounce: 0.15), value: isPresented.wrappedValue)
     }
 }
 

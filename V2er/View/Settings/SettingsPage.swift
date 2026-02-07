@@ -51,15 +51,11 @@ struct SettingsPage: View {
 
             // MARK: - Settings Section
             Section("设置") {
-                NavigationLink {
-                    AppearanceSettingView()
-                } label: {
+                NavigationLink(value: AppRoute.appearanceSettings) {
                     Label("外观设置", systemImage: "paintbrush")
                 }
 
-                NavigationLink {
-                    OtherSettingsView()
-                } label: {
+                NavigationLink(value: AppRoute.otherSettings) {
                     Label("通用设置", systemImage: "gearshape")
                 }
             }
@@ -83,9 +79,7 @@ struct SettingsPage: View {
 
             // MARK: - About Section
             Section("关于") {
-                NavigationLink {
-                    CreditsPage()
-                } label: {
+                NavigationLink(value: AppRoute.credits) {
                     Label("致谢", systemImage: "heart")
                 }
 

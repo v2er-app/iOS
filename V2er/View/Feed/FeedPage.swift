@@ -37,7 +37,7 @@ struct FeedPage: BaseHomePageView {
                         }
                     } label: {
                         Text("V2EX")
-                            .font(.system(size: 22, weight: .black))
+                            .font(AppFont.brandTitle)
                             .foregroundColor(.primary)
                     }
                 }
@@ -80,26 +80,26 @@ struct FeedPage: BaseHomePageView {
                 .disabled(tabNeedsLogin)
             }
         } label: {
-            HStack(spacing: 4) {
+            HStack(spacing: Spacing.xs) {
                 Text(navigationTitle)
-                    .font(.headline)
-                    .fontWeight(.bold)
+                    .font(AppFont.filterLabel)
                 Image(systemName: "chevron.down")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(AppFont.filterChevron)
             }
             .foregroundColor(.primary)
+            .accessibilityLabel("筛选: \(navigationTitle)")
         }
     }
 
     private func showOnlineStatsTemporarily() {
         guard state.onlineStats?.isValid() == true else { return }
         // Show online stats with animation
-        withAnimation(.easeInOut(duration: 0.3)) {
+        withAnimation(.spring(duration: 0.3, bounce: 0.15)) {
             showOnlineStats = true
         }
         // Auto dismiss after 2 seconds
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            withAnimation(.easeInOut(duration: 0.3)) {
+            withAnimation(.spring(duration: 0.3, bounce: 0.15)) {
                 showOnlineStats = false
             }
         }
@@ -111,18 +111,14 @@ struct FeedPage: BaseHomePageView {
             List {
                 // Feed Items
                 ForEach(state.feedInfo.items) { item in
-                    ZStack {
-                        // Hidden NavigationLink to avoid disclosure indicator
-                        NavigationLink(destination: FeedDetailPage(initData: item)) {
-                            EmptyView()
+                    FeedItemView(data: item)
+                        .background {
+                            NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                                .opacity(0)
                         }
-                        .opacity(0)
-
-                        FeedItemView(data: item)
-                    }
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.itemBg)
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
 
                 // Load More Indicator
@@ -137,7 +133,7 @@ struct FeedPage: BaseHomePageView {
                     .frame(height: 50)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color.bgColor)
+                    .listRowBackground(Color(.systemBackground))
                     .onAppear {
                         guard !isLoadingMore && AccountState.hasSignIn() else { return }
                         isLoadingMore = true
@@ -152,7 +148,7 @@ struct FeedPage: BaseHomePageView {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background(Color.bgColor)
+            .background(Color(.systemBackground))
             .environment(\.defaultMinListRowHeight, 1)
             .onChange(of: state.scrollToTop) { _ in
                 if let firstItem = state.feedInfo.items.first {
@@ -195,7 +191,7 @@ private struct OnlineStatsHeaderView: View {
     var body: some View {
         HStack(spacing: 4) {
             Circle()
-                .fill(Color.hex(0x52bf1c))
+                .fill(Color.green)
                 .frame(width: 6, height: 6)
 
             if #available(iOS 16.0, *) {
@@ -209,19 +205,19 @@ private struct OnlineStatsHeaderView: View {
                     .foregroundColor(.secondaryText)
             }
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(Color.itemBg.opacity(0.95))
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.xs + 2)
+        .background(.ultraThinMaterial)
         .clipShape(Capsule())
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-        .padding(.top, 8)
+        .padding(.top, Spacing.sm)
         .onAppear {
             if animatedOnlineCount == 0 && stats.onlineCount > 0 {
                 animatedOnlineCount = stats.onlineCount
             }
         }
         .onChange(of: stats.onlineCount) { newValue in
-            withAnimation(.easeInOut(duration: 0.3)) {
+            withAnimation(.spring(duration: 0.3, bounce: 0.15)) {
                 animatedOnlineCount = newValue
             }
         }

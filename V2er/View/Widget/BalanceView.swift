@@ -13,7 +13,7 @@ struct BalanceView: View {
     var size: CGFloat = 10
 
     var body: some View {
-        HStack(spacing: 2) {
+        HStack(spacing: Spacing.xxs) {
             if balance.gold > 0 {
                 BalanceBadge(count: balance.gold, icon: "🟡", color: .yellow, size: size)
             }
@@ -24,6 +24,16 @@ struct BalanceView: View {
                 BalanceBadge(count: balance.bronze, icon: "🟤", color: .orange, size: size)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityDescription)
+    }
+
+    private var accessibilityDescription: String {
+        var parts: [String] = []
+        if balance.gold > 0 { parts.append("\(balance.gold) gold") }
+        if balance.silver > 0 { parts.append("\(balance.silver) silver") }
+        if balance.bronze > 0 { parts.append("\(balance.bronze) bronze") }
+        return "Balance: " + parts.joined(separator: ", ")
     }
 }
 
@@ -41,7 +51,7 @@ struct BalanceBadge: View {
                 .font(.system(size: size, weight: .medium))
                 .foregroundColor(.primaryText)
         }
-        .padding(.horizontal, 2)
+        .padding(.horizontal, Spacing.xxs)
     }
 }
 

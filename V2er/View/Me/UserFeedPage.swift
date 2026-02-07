@@ -36,17 +36,14 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
     private var contentView: some View {
         List {
             ForEach(state.model.items) { item in
-                ZStack {
-                    NavigationLink(destination: FeedDetailPage(id: item.id)) {
-                        EmptyView()
+                ItemView(data: item)
+                    .background {
+                        NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                            .opacity(0)
                     }
-                    .opacity(0)
-
-                    ItemView(data: item)
-                }
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.itemBg)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color(.secondarySystemGroupedBackground))
             }
 
             // Load More Indicator
@@ -61,7 +58,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color(.systemBackground))
                 .onAppear {
                     guard !isLoadingMore else { return }
                     isLoadingMore = true
@@ -76,7 +73,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color.bgColor)
+        .background(Color(.systemBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: UserFeedActions.FetchStart(id: instanceId, userId: userId, autoLoad: false))
@@ -91,6 +88,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
 
     struct ItemView: View {
         var data: UserFeedInfo.Item
+        @State private var navigateToRoute: AppRoute?
 
         var body: some View {
             VStack(spacing: 4) {
@@ -103,18 +101,16 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                             .lineLimit(1)
                             .font(.footnote)
                             .greedyWidth(.leading)
-                            .foregroundColor(Color.tintColor)
+                            .foregroundColor(Color.accentColor)
                     }
                     Spacer()
-                    Text(data.tag)
-                        .font(.footnote)
-                        .foregroundColor(Color.dynamic(light: .hex(0x666666), dark: .hex(0xCCCCCC)))
-                        .lineLimit(1)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(Color.dynamic(light: Color.hex(0xF5F5F5), dark: Color.hex(0x2C2C2E)))
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                        .to { TagDetailPage(tagId: data.tagId) }
+                    Button {
+                        navigateToRoute = .tagDetail(tagId: data.tagId)
+                    } label: {
+                        Text(data.tag)
+                            .nodeBadgeStyle()
+                    }
+                    .buttonStyle(.plain)
                 }
                 Text(data.title)
                     .foregroundColor(.primaryText)
@@ -126,9 +122,12 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                     .foregroundColor(.secondaryText)
                     .greedyWidth(.trailing)
             }
-            .padding(12)
+            .padding(Spacing.md)
             .divider()
-            .background(Color.itemBg)
+            .background(Color(.secondarySystemGroupedBackground))
+            .navigationDestination(item: $navigateToRoute) { route in
+                route.destination()
+            }
         }
     }
 

@@ -11,6 +11,7 @@ import SwiftUI
 struct AuthorInfoView: View {
     var initData: FeedInfo.Item? = nil
     var data: FeedDetailInfo.HeaderInfo? = nil
+    @State private var navigateToRoute: AppRoute?
 
     private var title: String {
         data?.title ?? initData?.title ?? .default
@@ -44,56 +45,43 @@ struct AuthorInfoView: View {
         return result
     }
 
-    @State private var navigateToTag = false
-    @State private var navigateToUser = false
-
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
-                AvatarView(url: avatar, size: 38)
-                    .onTapGesture {
-                        navigateToUser = true
-                    }
-                VStack(alignment: .leading, spacing: 5) {
+                Button {
+                    navigateToRoute = .userDetail(userId: userName)
+                } label: {
+                    AvatarView(url: avatar, size: 38)
+                }
+                .buttonStyle(.plain)
+                VStack(alignment: .leading, spacing: Spacing.xs) {
                     Text(userName)
                         .lineLimit(1)
                     Text(replyNum + timeAndClickedNum)
                         .lineLimit(1)
-                        .font(.caption2)
+                        .font(AppFont.timestamp)
+                        .foregroundColor(.secondaryText)
                 }
                 Spacer()
-                Text(tag)
-                    .font(.footnote)
-                    .foregroundColor(.primaryText)
-                    .lineLimit(1)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 8)
-                    .background(Color.lightGray)
-                    .onTapGesture {
-                        navigateToTag = true
-                    }
+                Button {
+                    navigateToRoute = .tagDetailWithName(tag: tag, tagId: tagId)
+                } label: {
+                    Text(tag)
+                        .nodeBadgeStyle()
+                }
+                .buttonStyle(.plain)
             }
             Text(title)
                 .font(.headline)
                 .foregroundColor(.primaryText)
                 .greedyWidth(.leading)
-                .padding(.top, 10)
-                .debug()
+                .padding(.top, Spacing.md)
         }
-        .padding(10)
-        .background(Color.itemBg)
-        .background(
-            Group {
-                NavigationLink(destination: TagDetailPage(tag: tag, tagId: tagId), isActive: $navigateToTag) { EmptyView() }
-                NavigationLink(destination: UserDetailPage(userId: userName), isActive: $navigateToUser) { EmptyView() }
-            }
-            .hidden()
-        )
+        .padding(Spacing.md)
+        .background(Color(.secondarySystemGroupedBackground))
+        .accessibilityElement(children: .combine)
+        .navigationDestination(item: $navigateToRoute) { route in
+            route.destination()
+        }
     }
 }
-
-//struct AuthorInfoView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        AuthorInfoView()
-//    }
-//}
