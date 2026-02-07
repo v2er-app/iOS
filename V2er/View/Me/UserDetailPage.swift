@@ -266,13 +266,17 @@ struct UserDetailPage: StateView {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, Spacing.lg)
                 .foregroundColor(.white.opacity(0.8))
-                .padding(.bottom, CornerRadius.large)
+                .padding(.bottom, CornerRadius.large * 2)
         }
         .foregroundColor(.white)
         .overlay(alignment: .bottom) {
-            Color(.systemGroupedBackground)
-                .frame(height: CornerRadius.large)
-                .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
+            LinearGradient(
+                colors: [.clear, Color(.systemGroupedBackground)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: CornerRadius.large * 2)
+            .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
         }
     }
 

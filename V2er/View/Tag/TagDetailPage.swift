@@ -223,13 +223,17 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             }
             .font(.subheadline)
             .foregroundColor(.white.opacity(0.7))
-            .padding(.bottom, Spacing.lg + CornerRadius.large)
+            .padding(.bottom, Spacing.lg + CornerRadius.large * 2)
         }
         .foregroundColor(.white)
         .overlay(alignment: .bottom) {
-            Color(.systemGroupedBackground)
-                .frame(height: CornerRadius.large)
-                .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
+            LinearGradient(
+                colors: [.clear, Color(.systemGroupedBackground)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: CornerRadius.large * 2)
+            .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
         }
     }
 
