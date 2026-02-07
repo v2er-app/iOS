@@ -56,26 +56,26 @@ struct LoginPage: StateView {
         VStack(alignment: .center) {
           Image("logo")
             .cornerBorder(radius: 25)
-            .padding(.top, 20)
+            .padding(.top, Spacing.xl)
           Text("Login to V2EX")
             .font(.title2)
             .foregroundColor(.primary)
             .fontWeight(.heavy)
-            .padding(.vertical, 20)
-          VStack(spacing: 10) {
-            let radius: CGFloat = 12
-            let padding: CGFloat = 16
+            .padding(.vertical, Spacing.xl)
+          VStack(spacing: Spacing.md) {
+            let radius: CGFloat = CornerRadius.medium
+            let padding: CGFloat = Spacing.lg
             let height: CGFloat = 46
             TextField("Username", text: bindingState.username)
               .padding(.horizontal, padding)
               .frame(height: height)
-              .background(Color.lightGray)
+              .background(Color(.systemGray6))
               .cornerRadius(radius)
               .submitLabel(.next)
               .autocapitalization(.none)
               .disableAutocorrection(true)
               .keyboardType(.asciiCapable)
-              .debug()
+              .accessibilityLabel("用户名")
             HStack(spacing: 0) {
               Group {
                 if !showPassword {
@@ -101,12 +101,12 @@ struct LoginPage: StateView {
                 }
               } label: {
                 Image(systemName: showPassword ? "eye.slash" : "eye")
-                  .foregroundColor(.tintColor)
+                  .foregroundColor(.accentColor)
                   .font(.footnote.weight(.light))
-                  .padding(.horizontal, 10)
+                  .padding(.horizontal, Spacing.md)
               }
             }
-            .background(Color.lightGray)
+            .background(Color(.systemGray6))
             .cornerRadius(radius)
             HStack(spacing: 0) {
               TextField("Captcha", text: bindingState.captcha)
@@ -115,13 +115,14 @@ struct LoginPage: StateView {
                 .submitLabel(.go)
                 .keyboardType(.asciiCapable)
                 .disableAutocorrection(true)
+                .accessibilityLabel("验证码")
               Color.separator
                 .opacity(0.5)
                 .padding(.vertical, 14)
                 .frame(width: 1.5, height: height)
                 .padding(.horizontal, 2)
               KFImage.url(URL(string: state.captchaUrl))
-                .placeholder { ProgressView().debug() }
+                .placeholder { ProgressView() }
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .frame(width: 100, height: height)
@@ -129,63 +130,56 @@ struct LoginPage: StateView {
                   dispatch(LoginActions.FetchCaptchaStart())
                 }
             }
-            .background(Color.lightGray)
+            .background(Color(.systemGray6))
             .cornerRadius(radius)
           }
-          .padding(.horizontal, 20)
-          .padding(.bottom, 10)
+          .padding(.horizontal, Spacing.xl)
+          .padding(.bottom, Spacing.md)
           HStack {
-            Text("Register")
-              .font(.headline)
-              .foregroundColor(Color.tintColor)
-              .padding()
-              .greedyWidth()
-              .cornerBorder(radius: 15, borderWidth: 2, color: Color.tintColor)
-              .to {
-                let refUrl = APIService.baseUrlString + "/signup?r=ghui"
-                WebBrowserView(url: refUrl)
-              }
+            NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/signup?r=ghui")) {
+              Text("Register")
+                .font(.headline)
+                .foregroundColor(Color.accentColor)
+                .padding()
+                .greedyWidth()
+                .cornerBorder(radius: CornerRadius.large, borderWidth: 2, color: Color.accentColor)
+            }
+            .buttonStyle(.plain)
             
             Button {
               dispatch(LoginActions.StartLogin())
             } label: {
               Text("Login")
                 .font(.headline)
-                .foregroundColor(Color.itemBackground)
+                .foregroundColor(Color(.secondarySystemGroupedBackground))
                 .padding()
                 .greedyWidth()
-                .background(Color.tintColor)
-                .cornerRadius(15)
+                .background(Color.accentColor)
+                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.large))
             }
             .disabled(!notEmpty(state.username,
                                 state.password,
                                 state.captcha))
           }
-          .padding(.horizontal, 20)
+          .padding(.horizontal, Spacing.xl)
           Spacer()
           HStack {
-            Text("FAQ")
-              .to {
-                let url = APIService.baseUrlString + "/faq"
-                WebBrowserView(url: url)
-              }
-            Text("About")
-              .to {
-                let url = APIService.baseUrlString + "/about"
-                WebBrowserView(url: url)
-              }
-            Text("Password")
-              .to {
-                let url = APIService.baseUrlString + "/forgot"
-                WebBrowserView(url: url)
-              }
+            NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/faq")) {
+              Text("FAQ")
+            }
+            NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/about")) {
+              Text("About")
+            }
+            NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/forgot")) {
+              Text("Password")
+            }
           }
           .font(.callout.bold())
           .opacity(0.6)
           .buttonStyle(.plain)
         }
         .greedyHeight()
-        .background(Color.bgColor)
+        .background(Color(.systemBackground))
         .navigationTitle("登录")
         .navigationBarTitleDisplayMode(.inline)
     }

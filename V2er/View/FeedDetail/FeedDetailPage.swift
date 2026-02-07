@@ -101,43 +101,14 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
     var body: some View {
         contentView
-            .background(
-                Group {
-                    // Use NavigationLink for InAppBrowser (iOS 26 bug workaround)
-                    NavigationLink(
-                        destination: Group {
-                            if let url = navigateToBrowserURL {
-                                InAppBrowserView(url: url)
-                            }
-                        },
-                        isActive: Binding(
-                            get: { navigateToBrowserURL != nil },
-                            set: { if !$0 { navigateToBrowserURL = nil } }
-                        )
-                    ) {
-                        EmptyView()
-                    }
-                    .hidden()
-
-                    // Use NavigationLink for SafariView (iOS 26 bug workaround)
-                    NavigationLink(
-                        destination: Group {
-                            if let url = navigateToSafariURL {
-                                SafariView(url: url)
-                                    .ignoresSafeArea()
-                                    .navigationBarHidden(true)
-                            }
-                        },
-                        isActive: Binding(
-                            get: { navigateToSafariURL != nil },
-                            set: { if !$0 { navigateToSafariURL = nil } }
-                        )
-                    ) {
-                        EmptyView()
-                    }
-                    .hidden()
-                }
-            )
+            .navigationDestination(item: $navigateToBrowserURL) { url in
+                InAppBrowserView(url: url)
+            }
+            .navigationDestination(item: $navigateToSafariURL) { url in
+                SafariView(url: url)
+                    .ignoresSafeArea()
+                    .navigationBarHidden(true)
+            }
     }
 
     @ViewBuilder
@@ -261,7 +232,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             AuthorInfoView(initData: initData, data: state.model.headerInfo)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color.itemBg)
+                .listRowBackground(Color(.secondarySystemGroupedBackground))
 
             // Content Section
             if !isContentEmpty {
@@ -270,10 +241,10 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         contentReady = true
                     }
                 }
-                .padding(.horizontal, 10)
+                .padding(.horizontal, Spacing.md)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color.itemBg)
+                .listRowBackground(Color(.secondarySystemGroupedBackground))
             }
 
             // Show postscripts and replies only after content is ready
@@ -283,7 +254,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     PostscriptItemView(postscript: postscript)
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color.itemBg)
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
 
                 // Reply Section Header with Sort Toggle
@@ -291,7 +262,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     replySectionHeader
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color.itemBg)
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
 
                 // Reply Section
@@ -299,7 +270,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     ReplyItemView(info: item, topicId: id)
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color.itemBg)
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
             }
 
@@ -315,7 +286,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color.itemBg)
+                .listRowBackground(Color(.secondarySystemGroupedBackground))
                 .onAppear {
                     guard !isLoadingMore else { return }
                     isLoadingMore = true
@@ -330,7 +301,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color.itemBg)
+        .background(Color(.secondarySystemGroupedBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
@@ -344,21 +315,20 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         VStack(spacing: 0) {
             Divider()
             VStack(spacing: 0) {
-                HStack(alignment: .bottom, spacing: 8) {
+                HStack(alignment: .bottom, spacing: Spacing.sm) {
                     // Image picker button
                     if isUploadingImage {
                         ProgressView()
                             .frame(width: 28, height: 28)
-                            .padding(.leading, 6)
+                            .padding(.leading, Spacing.xs + 2)
                             .padding(.vertical, 3)
                     } else {
                         UnifiedImagePickerButton(selectedImage: $selectedImage)
-                            .padding(.leading, 6)
+                            .padding(.leading, Spacing.xs + 2)
                             .padding(.vertical, 3)
                     }
 
                     MultilineTextField("发表回复", text: bindingState.replyContent)
-                        .debug()
                         .onReceive(keyboardPublisher) { isKeyboardVisiable in
                             self.isKeyboardVisiable = isKeyboardVisiable
                         }
@@ -370,19 +340,20 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     } label: {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.title.weight(.regular))
-                            .foregroundColor(Color.tintColor.opacity(hasReplyContent ? 1.0 : 0.6))
-                            .padding(.trailing, 6)
+                            .foregroundColor(Color.accentColor.opacity(hasReplyContent ? 1.0 : 0.6))
+                            .padding(.trailing, Spacing.xs + 2)
                             .padding(.vertical, 3)
                     }
                     .disabled(!hasReplyContent)
+                    .accessibilityLabel("发送回复")
                 }
-                .background(Color.lightGray)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
             }
             .padding(.bottom, isKeyboardVisiable ? 0 : topSafeAreaInset().bottom * 0.9)
-            .padding(.top, 10)
-            .padding(.horizontal, 10)
-            .background(Color.itemBg)
+            .padding(.top, Spacing.md)
+            .padding(.horizontal, Spacing.md)
+            .background(Color(.secondarySystemGroupedBackground))
         }
         .onChange(of: selectedImage) { _, newImage in
             guard let image = newImage else { return }
@@ -440,31 +411,31 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                                 .font(.caption)
                         }
                         .foregroundColor(state.replySortType == sortType ? segmentSelectedTextColor : .secondaryText)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
+                        .padding(.horizontal, Spacing.md)
+                        .padding(.vertical, Spacing.xs + 1)
                         .background(
                             state.replySortType == sortType
-                                ? Color.tintColor
+                                ? Color.accentColor
                                 : Color.clear
                         )
                     }
                 }
             }
-            .background(Color.secondaryBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
             .overlay(
-                RoundedRectangle(cornerRadius: 6)
-                    .stroke(Color.border, lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: CornerRadius.small)
+                    .stroke(Color(.separator), lineWidth: 0.5)
             )
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(Color.lightGray.opacity(0.5))
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.md)
+        .background(Color(.systemGray6).opacity(0.5))
     }
 
     @ViewBuilder
     private var actionBar: some View {
-        HStack (spacing: 10) {
+        HStack (spacing: Spacing.md) {
             Image(systemName: "photo.on.rectangle")
                 .font(.title2.weight(.regular))
                 .hapticOnTap()
@@ -479,8 +450,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             }
         }
         .greedyWidth()
-        .padding(.vertical, 10)
-        .padding(.horizontal, 16)
+        .padding(.vertical, Spacing.md)
+        .padding(.horizontal, Spacing.lg)
     }
 
 }

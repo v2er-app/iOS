@@ -37,7 +37,7 @@ struct SplashView: View {
             // Slogan with typewriter effect (fixed position below logo)
             if showSlogan {
                 TypewriterView(text: slogan, typingDelay: .milliseconds(35))
-                    .font(.system(size: 17, weight: .semibold, design: .default))
+                    .font(AppFont.bodySemibold)
                     .foregroundColor(logoColor.opacity(0.85))
                     .offset(y: 74)
             }

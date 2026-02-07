@@ -27,11 +27,11 @@ struct MyRecentPage: StateView {
         ScrollView {
             LazyVStack(spacing: 0) {
                 ForEach(state.records ?? []) { item in
-                    RecentItemView(data: item)
-                        .background(Color.itemBg)
-                        .to {
-                            FeedDetailPage(id: item.id)
-                        }
+                    NavigationLink(value: AppRoute.feedDetail(id: item.id)) {
+                        RecentItemView(data: item)
+                            .background(Color(.secondarySystemGroupedBackground))
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -42,6 +42,7 @@ struct MyRecentPage: StateView {
 
 struct RecentItemView<Data: FeedItemProtocol>: View {
     let data: Data
+    @State private var navigateToRoute: AppRoute?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -53,17 +54,14 @@ struct RecentItemView<Data: FeedItemProtocol>: View {
                     Text(data.replyNum.safe)
                         .lineLimit(1)
                         .font(.footnote)
-                        .foregroundColor(Color.tintColor)
+                        .foregroundColor(Color.accentColor)
                 }
                 Spacer()
-                NavigationLink(destination: TagDetailPage(tagId: data.nodeId.safe)) {
+                Button {
+                    navigateToRoute = .tagDetail(tagId: data.nodeId.safe)
+                } label: {
                     Text(data.nodeName.safe)
-                        .font(.footnote)
-                        .foregroundColor(Color.dynamic(light: .hex(0x666666), dark: .hex(0xCCCCCC)))
-                        .lineLimit(1)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(Color.dynamic(light: Color.hex(0xF5F5F5), dark: Color.hex(0x2C2C2E)))
+                        .nodeBadgeStyle()
                 }
                 .buttonStyle(.plain)
             }
@@ -72,9 +70,12 @@ struct RecentItemView<Data: FeedItemProtocol>: View {
                 .lineLimit(2)
                 .padding(.vertical, 3)
         }
-        .padding(12)
-        .background(Color.almostClear)
+        .padding(Spacing.md)
+        .contentShape(Rectangle())
         .divider()
+        .navigationDestination(item: $navigateToRoute) { route in
+            route.destination()
+        }
     }
 }
 

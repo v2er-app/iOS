@@ -40,11 +40,11 @@ struct CreateTopicPage: StateView {
                     } label: {
                         Text(isPreviewing ? "编辑" : "预览")
                             .font(.callout)
-                            .foregroundColor(Color.background)
+                            .foregroundColor(Color(.systemBackground))
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(Color.tintColor)
-                            .cornerRadius(8)
+                            .background(Color.accentColor)
+                            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
                     }
                     .disabled(state.title.isEmpty)
                 }
@@ -69,7 +69,7 @@ struct CreateTopicPage: StateView {
             TextField("标题", text: bindingState.title)
                 .padding(.vertical)
                 .padding(.horizontal, paddingH)
-                .background(Color.itemBg)
+                .background(Color(.secondarySystemGroupedBackground))
                 .lineLimit(3)
                 .divider()
                 .greedyWidth()
@@ -77,7 +77,7 @@ struct CreateTopicPage: StateView {
             TextEditor(text: bindingState.content)
                 .padding(.horizontal, 10)
                 .opacity(isPreviewing ? 0 : 1.0)
-                .background(Color.itemBg)
+                .background(Color(.secondarySystemGroupedBackground))
                 .frame(maxWidth: .infinity, minHeight: 250)
                 .divider()
                 .focused($focused)
@@ -88,7 +88,6 @@ struct CreateTopicPage: StateView {
                             Text("如果标题能够表达完整内容, 此处可为空")
                                 .greedyFrame(.topLeading)
                                 .foregroundColor(.secondaryText)
-                                .debug()
                         } else if isPreviewing {
                             Text(state.content.attributedString)
                                 .greedyFrame(.topLeading)
@@ -121,15 +120,15 @@ struct CreateTopicPage: StateView {
             }
             .padding(.horizontal, paddingH)
             .padding(.vertical, 8)
-            .background(Color.itemBg)
+            .background(Color(.secondarySystemGroupedBackground))
             .divider()
 
             Button {
                 showNodeChooseView = true
             } label: {
                 sectionItemView
-                    .foregroundColor(Color.tintColor)
-                    .background(Color.itemBg)
+                    .foregroundColor(Color.accentColor)
+                    .background(Color(.secondarySystemGroupedBackground))
             }
             .sheet(isPresented: $showNodeChooseView) {
                 NodeChooserPage(nodes: state.sectionNodes, selectedNode: bindingState.selectedNode)
@@ -142,11 +141,11 @@ struct CreateTopicPage: StateView {
                 } label: {
                     Text("发布主题")
                         .font(.callout)
-                        .foregroundColor(Color.background)
+                        .foregroundColor(Color(.systemBackground))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
-                        .background(Color.tintColor)
-                        .cornerRadius(10)
+                        .background(Color.accentColor)
+                        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
                 }
                 .disabled(state.title.isEmpty || state.selectedNode == nil)
                 .padding()
@@ -156,7 +155,7 @@ struct CreateTopicPage: StateView {
         .onTapGesture {
             focused = false
         }
-        .background(Color.bgColor)
+        .background(Color(.systemBackground))
     }
 
     @ViewBuilder
@@ -172,7 +171,7 @@ struct CreateTopicPage: StateView {
                 .padding(.trailing)
         }
         .padding()
-        .forceClickable()
+        .contentShape(Rectangle())
         .divider()
     }
 

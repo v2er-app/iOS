@@ -11,22 +11,16 @@ import Kingfisher
 
 struct AvatarView: View {
     var url: String? = ""
-    var size: CGFloat = 30.0
-    
+    var size: CGFloat = 32
+
     var body: some View {
         KFImage.url(URL(string: url ?? .default))
-//            .loadDiskFileSynchronously()
-            .placeholder { Color.lightGray.frame(width: size, height: size) }
+            .placeholder { Color(.systemGray6).frame(width: size, height: size) }
             .fade(duration: 0.25)
             .resizable()
             .aspectRatio(contentMode: .fill)
             .frame(width: size, height: size)
             .cornerBorder()
+            .accessibilityHidden(true)
     }
 }
-
-//struct AvatarView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        AvatarView(size: 48)
-//    }
-//}

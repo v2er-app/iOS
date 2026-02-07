@@ -47,14 +47,14 @@ struct NodeChooserPage: View {
                             } label: {
                                 Text(node.text)
                                     .greedyFrame(.leading)
-                                    .forceClickable()
+                                    .contentShape(Rectangle())
                             }
-                            .listRowBackground(selectedNode == node ? Color.bgColor : Color.itemBg)
+                            .listRowBackground(selectedNode == node ? Color(.systemBackground) : Color(.secondarySystemGroupedBackground))
                         }
                     }
                 }
             }
-            .background(Color.bgColor)
+            .background(Color(.systemBackground))
         }
     }
 

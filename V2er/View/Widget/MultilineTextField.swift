@@ -123,6 +123,7 @@ struct MultilineTextField: View {
 //            .debug()
             .background(placeholderView, alignment: .leading)
             .padding(.leading, 10)
+            .accessibilityLabel(placeholder)
 //            .padding(.trailing, 4)
 //            .background(Color.lightGray)
 //            .clipShape(RoundedRectangle(cornerRadius: 20))

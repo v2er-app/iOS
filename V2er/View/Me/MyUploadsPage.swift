@@ -44,7 +44,7 @@ struct MyUploadsPage: View {
                 }
                 .padding(2)
             }
-            .background(Color.bgColor)
+            .background(Color(.systemBackground))
         }
     }
 
@@ -64,7 +64,7 @@ struct MyUploadsPage: View {
                 .padding(.horizontal, 40)
         }
         .greedyFrame()
-        .background(Color.bgColor)
+        .background(Color(.systemBackground))
     }
 
     private func loadUploads() {
@@ -79,7 +79,7 @@ struct UploadThumbnailView: View {
         GeometryReader { geometry in
             KFImage(URL(string: upload.thumbnailUrl ?? upload.imageUrl))
                 .placeholder {
-                    Color.lightGray
+                    Color(.systemGray6)
                         .overlay {
                             ProgressView()
                         }

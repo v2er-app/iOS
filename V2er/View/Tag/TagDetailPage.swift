@@ -48,7 +48,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     }
 
     private var foreGroundColor: Color {
-        shouldHideNavbar ? Color.primaryText.opacity(0.9) : .tintColor
+        shouldHideNavbar ? Color.primaryText.opacity(0.9) : .accentColor
     }
 
     private var statusBarStyle: UIStatusBarStyle {
@@ -83,17 +83,14 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
 
                 // Node List Section - Each item as separate List row to prevent multiple NavigationLinks triggering
                 ForEach(model.topics) { item in
-                    let data = FeedInfo.Item(
-                        id: item.id,
-                        title: item.title,
-                        avatar: item.avatar)
-                    NavigationLink(destination: FeedDetailPage(initData: data)) {
-                        TagFeedItemView(data: item)
-                    }
-                    .buttonStyle(.plain)
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.itemBackground)
+                    TagFeedItemView(data: item)
+                        .background {
+                            NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                                .opacity(0)
+                        }
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
 
                 // Load More Indicator
@@ -108,7 +105,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     .frame(height: 50)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color.itemBackground)
+                    .listRowBackground(Color(.secondarySystemGroupedBackground))
                     .onAppear {
                         guard !isLoadingMore else { return }
                         isLoadingMore = true
@@ -190,32 +187,37 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 } label: {
                     Text(hadStared ? "已收藏" : "收藏")
                         .font(.callout)
-                        .padding(.horizontal, 15)
-                        .padding(.vertical, 2)
-                        .cornerBorder(radius: 99, borderWidth: 1, color: foreGroundColor)
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.vertical, Spacing.xxs)
+                        .background(Capsule().stroke(foreGroundColor, lineWidth: 1))
                 }
                 Spacer()
                 Text("\(model.countOfStaredPeople)个收藏")
                     .font(.callout)
             }
-            .padding(.horizontal, 12)
-            .padding(.bottom, 16)
+            .padding(.horizontal, Spacing.md)
+            .padding(.bottom, Spacing.lg)
         }
         .foregroundColor(foreGroundColor)
-        .foregroundColor(.bodyText)
+        .foregroundColor(Color(.label))
         .padding(.top, 8)
     }
     
     
     struct TagFeedItemView: View {
         var data: TagDetailInfo.Item
+        @State private var navigateToRoute: AppRoute?
 
         var body: some View {
             VStack(spacing: 0) {
                 VStack {
                     HStack(alignment: .top) {
-                        AvatarView(url: data.avatar)
-                            .to { UserDetailPage(userId: data.userName) }
+                        Button {
+                            navigateToRoute = .userDetail(userId: data.userName)
+                        } label: {
+                            AvatarView(url: data.avatar)
+                        }
+                        .buttonStyle(.plain)
                         VStack(alignment: .leading, spacing: 5) {
                             Text(data.userName)
                                 .lineLimit(1)
@@ -236,7 +238,10 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 .padding(12)
                 Divider()
             }
-            .background(Color.almostClear)
+            .contentShape(Rectangle())
+            .navigationDestination(item: $navigateToRoute) { route in
+                route.destination()
+            }
         }
     }
 }

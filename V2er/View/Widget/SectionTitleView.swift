@@ -15,32 +15,31 @@ struct SectionTitleView: View {
         case normal
         case small
     }
-    
+
     public init(_ title: String, style: Style = .normal) {
         self.title = title
         self.style = style
     }
-    
+
     var body: some View {
         Text(title)
-            .font(style == .normal ? .headline : .subheadline)
-            .fontWeight(.heavy)
+            .font(style == .normal ? AppFont.sectionTitle : AppFont.sectionTitleSmall)
             .foregroundColor(.primaryText)
-            .padding(.vertical, 8)
-            .padding(.horizontal, style == .normal ? 2 : 8)
+            .padding(.vertical, Spacing.sm)
+            .padding(.horizontal, style == .normal ? Spacing.xxs : Spacing.sm)
             .background {
                 if style == .small {
                     HStack (spacing: 0) {
-                        RoundedRectangle(cornerRadius: 99)
-                            .foregroundColor(.tintColor.opacity(0.9))
-                            .padding(.vertical, 8)
+                        RoundedRectangle(cornerRadius: CornerRadius.pill)
+                            .foregroundColor(Color.accentColor.opacity(0.9))
+                            .padding(.vertical, Spacing.sm)
                             .frame(width: 3)
                         Spacer()
                     }
                 }
             }
             .greedyWidth(.leading)
-            .debug()
+            .accessibilityAddTraits(.isHeader)
     }
 }
 

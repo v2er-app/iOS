@@ -55,22 +55,6 @@ struct DebugModifier: ViewModifier {
     }
 }
 
-extension View {
-    func navigatable() -> some View {
-        self.modifier(NavigationViewModifier())
-    }
-}
-
-struct NavigationViewModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        NavigationView {
-            content
-        }
-        .ignoresSafeArea(.container)
-        .navigationBarHidden(true)
-    }
-}
-
 struct RoundedEdgeModifier: ViewModifier {
     var width: CGFloat = 2
     var color: Color = .black
@@ -188,10 +172,6 @@ extension View {
         return self.background(VEBlur(bg: bg).opacity(alpha))
     }
     
-    func forceClickable() -> some View {
-        return self.background(Color.almostClear)
-    }
-
     public func cornerBorder(radius: CGFloat = -1,
                              borderWidth: CGFloat = 1,
                              color: Color = Color.border) -> some View {
@@ -282,39 +262,6 @@ extension View {
 extension LocalizedStringKey {
     static let empty: LocalizedStringKey = ""
 }
-
-extension View {
-    func to<Destination: View>(if: Binding<Bool>? = nil, @ViewBuilder destination: () -> Destination) -> some View {
-        self.modifier(NavigationLinkModifider(if: `if`, destination: destination()))
-    }
-}
-
-struct NavigationLinkModifider<Destination: View>: ViewModifier {
-    var `if`: Binding<Bool>?
-    let destination: Destination
-    @State private var isActive = false
-
-    func body(content: Content) -> some View {
-        if let binding = `if` {
-            content
-                .background(
-                    NavigationLink(destination: destination, isActive: binding) { EmptyView() }
-                        .hidden()
-                )
-        } else {
-            content
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    isActive = true
-                }
-                .background(
-                    NavigationLink(destination: destination, isActive: $isActive) { EmptyView() }
-                        .hidden()
-                )
-        }
-    }
-}
-
 
 extension View {
     func withHostingWindow(_ callback: @escaping (UIWindow?) -> Void) -> some View {

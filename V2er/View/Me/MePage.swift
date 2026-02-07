@@ -37,6 +37,7 @@ struct MePage: BaseHomePageView {
     }
 
     @State private var otherApps: [OtherApp] = []
+    @State private var navigateToUserDetail: AppRoute?
 
     var body: some View {
         List {
@@ -49,42 +50,30 @@ struct MePage: BaseHomePageView {
 
             // MARK: - Content Section
             Section {
-                NavigationLink {
-                    CreateTopicPage()
-                } label: {
+                NavigationLink(value: AppRoute.createTopic) {
                     Label("发帖", systemImage: "pencil")
                 }
             }
 
             // MARK: - My Content Section
             Section("我的") {
-                NavigationLink {
-                    UserFeedPage(userId: AccountState.userName)
-                } label: {
+                NavigationLink(value: AppRoute.userFeed(userId: AccountState.userName)) {
                     Label("主题", systemImage: "paperplane")
                 }
 
-                NavigationLink {
-                    MyFavoritePage()
-                } label: {
+                NavigationLink(value: AppRoute.myFavorites) {
                     Label("收藏", systemImage: "bookmark")
                 }
 
-                NavigationLink {
-                    MyFollowPage()
-                } label: {
+                NavigationLink(value: AppRoute.myFollow) {
                     Label("关注", systemImage: "heart")
                 }
 
-                NavigationLink {
-                    MyRecentPage()
-                } label: {
+                NavigationLink(value: AppRoute.myRecent) {
                     Label("最近浏览", systemImage: "clock")
                 }
 
-                NavigationLink {
-                    MyUploadsPage()
-                } label: {
+                NavigationLink(value: AppRoute.myUploads) {
                     Label("我的图片", systemImage: "photo.on.rectangle")
                 }
             }
@@ -126,9 +115,7 @@ struct MePage: BaseHomePageView {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink {
-                    SettingsPage()
-                } label: {
+                NavigationLink(value: AppRoute.settings) {
                     Image(systemName: "gearshape")
                 }
             }
@@ -138,18 +125,21 @@ struct MePage: BaseHomePageView {
     // MARK: - User Banner View
     @ViewBuilder
     private var userBannerView: some View {
-        HStack(spacing: 10) {
-            AvatarView(url: AccountState.avatarUrl, size: 60)
-                .to {
-                    UserDetailPage(userId: AccountState.userName)
+        HStack(spacing: Spacing.md) {
+            Button {
+                navigateToUserDetail = .userDetail(userId: AccountState.userName)
+            } label: {
+                AvatarView(url: AccountState.avatarUrl, size: 60)
+            }
+            .buttonStyle(.plain)
+            VStack(alignment: .leading, spacing: Spacing.xs + 2) {
+                Button {
+                    navigateToUserDetail = .userDetail(userId: AccountState.userName)
+                } label: {
+                    Text(AccountState.userName)
+                        .font(.headline)
+                        .foregroundColor(.primary)
                 }
-            VStack(alignment: .leading, spacing: 6) {
-                Text(AccountState.userName)
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                    .to {
-                        UserDetailPage(userId: AccountState.userName)
-                    }
                 if let balance = AccountState.balance, balance.isValid() {
                     BalanceView(balance: balance, size: 12)
                 }
@@ -164,33 +154,38 @@ struct MePage: BaseHomePageView {
             Button {
                 dispatch(SettingActions.StartAutoCheckinAction())
             } label: {
-                HStack(spacing: 4) {
+                HStack(spacing: Spacing.xs) {
                     if isCheckingIn {
                         ProgressView()
                             .scaleEffect(0.8)
-                            .tint(hasCheckedInToday ? Color.secondary : Color.tintColor)
+                            .tint(hasCheckedInToday ? Color.secondary : Color.accentColor)
                     } else {
                         Image(systemName: hasCheckedInToday ? "checkmark.circle.fill" : "checkmark.circle")
-                            .font(.system(size: 16))
+                            .font(.subheadline)
                     }
                     Text(hasCheckedInToday ? "已签到" : "签到")
                         .font(.subheadline)
                 }
-                .foregroundColor(hasCheckedInToday ? .secondary : .tintColor)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(hasCheckedInToday ? Color.secondary.opacity(0.12) : Color.tintColor.opacity(0.12))
+                .foregroundColor(hasCheckedInToday ? .secondary : .accentColor)
+                .padding(.horizontal, Spacing.md)
+                .padding(.vertical, Spacing.sm)
+                .background(hasCheckedInToday ? Color.secondary.opacity(0.12) : Color.accentColor.opacity(0.12))
                 .clipShape(Capsule())
             }
             .disabled(isCheckingIn)
+            .accessibilityLabel(hasCheckedInToday ? "已签到" : "签到")
+            .accessibilityHint(hasCheckedInToday ? "今日已完成签到" : "点击完成每日签到")
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, Spacing.sm)
+        .navigationDestination(item: $navigateToUserDetail) { route in
+            route.destination()
+        }
     }
 
     // MARK: - Login Overlay View
     @ViewBuilder
     private var loginOverlayView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: Spacing.lg) {
             Text("登录查看更多")
                 .foregroundColor(.primary)
                 .font(.title2)
@@ -202,8 +197,8 @@ struct MePage: BaseHomePageView {
                     .foregroundColor(.white)
                     .padding()
                     .padding(.horizontal, 50)
-                    .background(Color.tintColor)
-                    .cornerRadius(15)
+                    .background(Color.accentColor)
+                    .clipShape(RoundedRectangle(cornerRadius: CornerRadius.large))
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -222,7 +217,7 @@ private struct OtherAppItemView: View {
                 UIApplication.shared.open(url)
             }
         } label: {
-            HStack(spacing: 12) {
+            HStack(spacing: Spacing.md) {
                 // App Icon
                 Image(app.iconName)
                     .resizable()
@@ -252,8 +247,8 @@ private struct OtherAppItemView: View {
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.tint)
                     .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(Color.tintColor.opacity(0.12))
+                    .padding(.vertical, Spacing.sm)
+                    .background(Color.accentColor.opacity(0.12))
                     .clipShape(Capsule())
             }
             .padding(.vertical, 6)

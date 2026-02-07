@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-public struct FlowStack<T: Hashable, V: View>: View {
+struct FlowStack<T: Hashable, V: View>: View {
     let mode: Mode
     let data: [T]
     let horizontalSpace: CGFloat
@@ -16,9 +16,9 @@ public struct FlowStack<T: Hashable, V: View>: View {
     let viewMapping: (T) -> V
     @State private var totalHeight: CGFloat
     
-    public init(mode: Mode = .scrollable, data: [T],
-                horizontalSpace: CGFloat = 4,
-                verticalSpace: CGFloat = 4,
+    init(mode: Mode = .scrollable, data: [T],
+                horizontalSpace: CGFloat = Spacing.xs,
+                verticalSpace: CGFloat = Spacing.xs,
                 viewMapping: @escaping (T) -> V) {
         self.mode = mode
         self.horizontalSpace = horizontalSpace
@@ -28,7 +28,7 @@ public struct FlowStack<T: Hashable, V: View>: View {
         _totalHeight = State(initialValue: (mode == .scrollable) ? .zero : .infinity)
     }
     
-    public var body: some View {
+    var body: some View {
         let stack = VStack {
             GeometryReader { geometry in
                 self.content(in: geometry)
@@ -85,7 +85,7 @@ public struct FlowStack<T: Hashable, V: View>: View {
         }
     }
     
-    public enum Mode {
+    enum Mode {
         case scrollable, vstack
     }
 }
@@ -102,7 +102,7 @@ struct FlowStack_Previews: PreviewProvider {
                 .lineLimit(1)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(Color.lightGray)
+                .background(Color(.systemGray6))
                 .padding(.horizontal, 5)
         }
     }

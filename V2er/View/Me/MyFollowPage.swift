@@ -29,17 +29,14 @@ struct MyFollowPage: StateView {
     private var contentView: some View {
         List {
             ForEach(state.model?.items ?? []) { item in
-                ZStack {
-                    NavigationLink(destination: FeedDetailPage(id: item.id)) {
-                        EmptyView()
+                FeedItemView(data: item)
+                    .background {
+                        NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                            .opacity(0)
                     }
-                    .opacity(0)
-
-                    FeedItemView(data: item)
-                }
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.itemBg)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color(.secondarySystemGroupedBackground))
             }
 
             // Load More Indicator
@@ -54,7 +51,7 @@ struct MyFollowPage: StateView {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color(.systemBackground))
                 .onAppear {
                     guard !isLoadingMore else { return }
                     isLoadingMore = true
@@ -69,7 +66,7 @@ struct MyFollowPage: StateView {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color.bgColor)
+        .background(Color(.systemBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: MyFollowActions.FetchStart(autoLoad: false))

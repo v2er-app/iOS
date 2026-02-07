@@ -13,40 +13,41 @@ struct TwoStepLoginPage: View {
 
     var body: some View {
         ZStack {
-            Color.dim
+            Color(.quaternaryLabel)
                 .opacity(0.8)
                 .ignoresSafeArea()
-            VStack(spacing: 16) {
+            VStack(spacing: Spacing.lg) {
                 Text("两步验证")
                     .font(.subheadline)
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(Color(.label))
                 TextField("2FA码", text: $twoStepCode)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .keyboardType(.numberPad)
-                    .foregroundColor(.primaryText)
-                    .padding(.vertical, 6)
+                    .foregroundColor(Color(.label))
+                    .padding(.vertical, Spacing.xs + 2)
                     .padding(.horizontal)
-                HStack(spacing: 16) {
+                    .accessibilityLabel("两步验证码")
+                HStack(spacing: Spacing.lg) {
                     Spacer()
                     Button {
                         dispatch(LoginActions.TwoStepLoginCancel())
                     } label: { 
                         Text("取消")
-                            .foregroundColor(.secondaryText)
+                            .foregroundColor(Color(.secondaryLabel))
                     }
                     Button {
                         dispatch(LoginActions.TwoStepLogin(input: twoStepCode))
                     } label: { 
                         Text("确定")
-                            .foregroundColor(.tintColor)
+                            .foregroundColor(.accentColor)
                             .fontWeight(.medium)
                     }
                     .disabled(twoStepCode.isEmpty)
                 }
             }
-            .padding(20)
-            .background(Color.secondaryBackground)
-            .cornerRadius(20)
+            .padding(Spacing.xl)
+            .background(Color(.secondarySystemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.large))
             .padding(50)
         }
 

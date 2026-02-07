@@ -77,28 +77,25 @@ struct ExplorePage: BaseHomePageView {
             if !state.exploreInfo.dailyHotInfo.isEmpty {
                 Section {
                     ForEach(state.exploreInfo.dailyHotInfo) { item in
-                        ZStack {
-                            NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
-                                EmptyView()
-                            }
-                            .opacity(0)
-
-                            HStack(spacing: 12) {
-                                AvatarView(url: item.avatar, size: 30)
-                                Text(item.title)
-                                    .foregroundColor(Color.primaryText)
-                                    .lineLimit(2)
-                                    .greedyWidth(.leading)
-                            }
-                            .padding(.vertical, 4)
+                        HStack(spacing: Spacing.md) {
+                            AvatarView(url: item.avatar, size: 30)
+                            Text(item.title)
+                                .foregroundColor(Color.primaryText)
+                                .lineLimit(2)
+                                .greedyWidth(.leading)
                         }
-                        .listRowInsets(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
-                        .listRowBackground(Color.itemBg)
+                        .padding(.vertical, Spacing.xs)
+                        .background {
+                            NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                                .opacity(0)
+                        }
+                        .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                     }
                 } header: {
                     SectionTitleView("今日热议")
                         .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.itemBg)
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
                 .listRowSeparator(.hidden)
             }
@@ -109,11 +106,11 @@ struct ExplorePage: BaseHomePageView {
                     FlowStack(data: state.exploreInfo.hottestNodeInfo) { node in
                         NodeView(id: node.id, name: node.name)
                     }
-                    .listRowInsets(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
-                    .listRowBackground(Color.itemBg)
+                    .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
+                    .listRowBackground(Color(.secondarySystemGroupedBackground))
                 } header: {
                     SectionTitleView("最热节点")
-                        .listRowBackground(Color.itemBg)
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
                 .listRowSeparator(.hidden)
             }
@@ -124,11 +121,11 @@ struct ExplorePage: BaseHomePageView {
                     FlowStack(data: state.exploreInfo.recentNodeInfo) { node in
                         NodeView(id: node.id, name: node.name)
                     }
-                    .listRowInsets(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
-                    .listRowBackground(Color.itemBg)
+                    .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
+                    .listRowBackground(Color(.secondarySystemGroupedBackground))
                 } header: {
                     SectionTitleView("新增节点")
-                        .listRowBackground(Color.itemBg)
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
                 .listRowSeparator(.hidden)
             }
@@ -138,19 +135,19 @@ struct ExplorePage: BaseHomePageView {
                 Section {
                     ForEach(state.exploreInfo.nodeNavInfo) { navItem in
                         NodeNavItemView(data: navItem)
-                            .listRowInsets(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
-                            .listRowBackground(Color.itemBg)
+                            .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
+                            .listRowBackground(Color(.secondarySystemGroupedBackground))
                     }
                 } header: {
                     SectionTitleView("节点导航")
-                        .listRowBackground(Color.itemBg)
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
                 .listRowSeparator(.hidden)
             }
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color.itemBg)
+        .background(Color(.secondarySystemGroupedBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: ExploreActions.FetchData.Start())
@@ -171,15 +168,17 @@ struct ExplorePage: BaseHomePageView {
             sortPickerView
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color(.systemBackground))
 
             ForEach(searchState.model?.hits ?? []) { item in
-                NavigationLink(destination: FeedDetailPage(id: item.id)) {
-                    SearchResultItemView(hint: item)
-                }
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.bgColor)
+                SearchResultItemView(hint: item)
+                    .background {
+                        NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                            .opacity(0)
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color(.systemBackground))
             }
 
             // Load More Indicator
@@ -194,7 +193,7 @@ struct ExplorePage: BaseHomePageView {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color.bgColor)
+                .listRowBackground(Color(.systemBackground))
                 .onAppear {
                     guard !isLoadingMore else { return }
                     isLoadingMore = true
@@ -210,7 +209,7 @@ struct ExplorePage: BaseHomePageView {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .environment(\.defaultMinListRowHeight, 1)
-        .background(Color.bgColor)
+        .background(Color(.systemBackground))
         .overlay {
             if searchState.updatable.showLoadingView {
                 ProgressView()
@@ -242,7 +241,6 @@ private struct SearchResultItemView: View {
     }
 
     var body: some View {
-        let padding: CGFloat = 16
         VStack(alignment: .leading) {
             Text(data.title)
                 .fontWeight(.semibold)
@@ -252,15 +250,15 @@ private struct SearchResultItemView: View {
             Text(data.content)
                 .foregroundColor(.secondaryText)
                 .lineLimit(5)
-                .padding(.vertical, 5)
+                .padding(.vertical, Spacing.xs)
             Text("\(data.creator) 于 \(data.created) 发表, \(data.replyNum) 回复")
-                .font(.footnote)
-                .foregroundColor(Color.tintColor.opacity(0.8))
+                .font(AppFont.metadata)
+                .foregroundColor(Color.accentColor.opacity(0.8))
         }
         .greedyWidth()
-        .padding(padding)
-        .background(Color.itemBg)
-        .padding(.bottom, 8)
+        .padding(Spacing.lg)
+        .background(Color(.secondarySystemGroupedBackground))
+        .padding(.bottom, Spacing.sm)
     }
 }
 

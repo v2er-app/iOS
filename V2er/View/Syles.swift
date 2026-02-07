@@ -14,9 +14,9 @@ struct OvalTextFieldStyle: TextFieldStyle {
         configuration
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
-            .background(Color.lightGray)
+            .background(Color(.systemGray6))
             .cornerRadius(20)
-            .foregroundColor(.bodyText)
+            .foregroundColor(Color(.label))
     }
 }
 

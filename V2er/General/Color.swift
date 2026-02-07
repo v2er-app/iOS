@@ -13,47 +13,62 @@ extension Color {
     private init(_ hex: Int, a: CGFloat = 1.0) {
         self.init(UIColor(hex: hex, alpha: a))
     }
-    
+
     public static func hex(_ hex: Int, alpha: CGFloat = 1.0) -> Color {
         return Color(hex, a: alpha)
     }
-    
+
     public static func shape(_ hex: Int, alpha: CGFloat = 1.0) -> some View {
         return Self.hex(hex, alpha: alpha).frame(width: .infinity)
     }
-    
+
     public func shape() -> some View {
         self.frame(width: .infinity)
     }
-    
-    // MARK: - Adaptive Colors for Dark Mode
-    
+
+    // MARK: - Semantic Colors (UIKit-backed, auto-adapt to light/dark/accessibility)
+
     // Background Colors
-    public static let background = Color("AppBackground")
-    public static let secondaryBackground = Color("SecondaryBackground")
-    public static let tertiaryBackground = Color("TertiaryBackground")
-    public static let itemBackground = Color("ItemBackground")
-    
+    public static let background = Color(.systemBackground)
+    public static let secondaryBackground = Color(.secondarySystemBackground)
+    public static let tertiaryBackground = Color(.tertiarySystemBackground)
+    public static let itemBackground = Color(.secondarySystemGroupedBackground)
+
     // Text Colors
-    public static let primaryText = Color("PrimaryText")
-    public static let secondaryText = Color("SecondaryText")
-    public static let tertiaryText = Color("TertiaryText")
-    
+    public static let primaryText = Color(.label)
+    public static let secondaryText = Color(.secondaryLabel)
+    public static let tertiaryText = Color(.tertiaryLabel)
+
     // UI Element Colors
-    public static let separator = Color("Separator")
-    public static let tint = Color("TintColor")
-    public static let selection = Color("SelectionColor")
-    
-    // Legacy colors with dark mode support
-    public static let border = Color("BorderColor")
-    public static let lightGray = Color("LightGray")
-    public static let almostClear = hex(0xFFFFFF, alpha: 0.000001)
+    public static let separator = Color(.separator)
+    public static let tint = Color.accentColor
+    public static let selection = Color(.systemGray4)
+
+    // MARK: - Deprecated Aliases (use semantic names above)
+
+    @available(*, deprecated, renamed: "separator")
+    public static let border = Color(.separator)
+
+    @available(*, deprecated, message: "Use Color(.systemGray6) directly")
+    public static let lightGray = Color(.systemGray6)
+
     public static let debugColor = hex(0xFF0000, alpha: 0.1)
-    public static let bodyText = Color("BodyText")
-    public static let tintColor = Color("TintColor")
-    public static let bgColor = Color("BackgroundColor")
-    public static let itemBg = Color("ItemBackground")
-    public static let dim = Color("DimColor")
+
+    @available(*, deprecated, renamed: "primaryText")
+    public static let bodyText = Color(.label)
+
+    @available(*, deprecated, renamed: "tint")
+    public static let tintColor = Color.accentColor
+
+    @available(*, deprecated, renamed: "background")
+    public static let bgColor = Color(.systemBackground)
+
+    @available(*, deprecated, renamed: "itemBackground")
+    public static let itemBg = Color(.secondarySystemGroupedBackground)
+
+    @available(*, deprecated, message: "Use Color(.quaternaryLabel) directly")
+    public static let dim = Color(.quaternaryLabel)
+
     public static let url = Color("URLColor")
 
     public var uiColor: UIColor {
@@ -73,7 +88,7 @@ extension Color {
             }
         })
     }
-    
+
     static func dynamicHex(light: Int, dark: Int, alpha: CGFloat = 1.0) -> Color {
         return dynamic(
             light: Color.hex(light, alpha: alpha),
@@ -109,13 +124,13 @@ struct Color_Previews: PreviewProvider {
                 HStack {
                     Color.primaryText.frame(width: 80, height: 80)
                     Color.secondaryText.frame(width: 80, height: 80)
-                    Color.tintColor.frame(width: 80, height: 80)
+                    Color.tint.frame(width: 80, height: 80)
                 }
             }
             .padding()
             .background(Color.background)
             .environment(\.colorScheme, .light)
-            
+
             // Dark Mode Preview
             VStack(spacing: 20) {
                 Text("Dark Mode")
@@ -128,7 +143,7 @@ struct Color_Previews: PreviewProvider {
                 HStack {
                     Color.primaryText.frame(width: 80, height: 80)
                     Color.secondaryText.frame(width: 80, height: 80)
-                    Color.tintColor.frame(width: 80, height: 80)
+                    Color.tint.frame(width: 80, height: 80)
                 }
             }
             .padding()

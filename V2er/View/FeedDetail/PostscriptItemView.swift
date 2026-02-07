@@ -13,12 +13,12 @@ struct PostscriptItemView: View {
     let postscript: FeedDetailInfo.PostscriptInfo
 
     // Gold/amber color for the left border
-    private let borderColor = Color(red: 212/255, green: 160/255, blue: 23/255)
+    private let borderColor = Color.orange
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Divider()
-                .padding(.horizontal, 10)
+                .padding(.horizontal, Spacing.md)
 
             HStack(alignment: .top, spacing: 0) {
                 // Gold left border
@@ -30,7 +30,7 @@ struct PostscriptItemView: View {
                     // Header (e.g., "第 1 条附言  ·  2 天前")
                     if postscript.header.notEmpty() {
                         Text(postscript.header)
-                            .font(.footnote)
+                            .font(AppFont.metadata)
                             .foregroundColor(.secondary)
                     }
 
@@ -42,17 +42,17 @@ struct PostscriptItemView: View {
                         } else {
                             Text(postscript.contentHtml.htmlToPlainText())
                                 .font(.subheadline)
-                                .foregroundColor(.primaryText)
+                                .foregroundColor(Color(.label))
                         }
                     }
                 }
-                .padding(.leading, 12)
-                .padding(.trailing, 10)
-                .padding(.vertical, 12)
+                .padding(.leading, Spacing.md)
+                .padding(.trailing, Spacing.md)
+                .padding(.vertical, Spacing.md)
             }
-            .padding(.horizontal, 10)
+            .padding(.horizontal, Spacing.md)
         }
-        .background(Color.itemBg)
+        .background(Color(.secondarySystemGroupedBackground))
     }
 
     @available(iOS 18.0, *)

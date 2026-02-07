@@ -10,47 +10,53 @@ import SwiftUI
 
 struct FeedItemView<Data: FeedItemProtocol>: View {
     let data: Data
+    @State private var navigateToRoute: AppRoute?
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
-                AvatarView(url: data.avatar)
-                    .to { UserDetailPage(userId: data.userName.safe) }
-                VStack(alignment: .leading, spacing: 2) {
+                Button {
+                    navigateToRoute = .userDetail(userId: data.userName.safe)
+                } label: {
+                    AvatarView(url: data.avatar)
+                }
+                .buttonStyle(.plain)
+                VStack(alignment: .leading, spacing: Spacing.xxs) {
                     Text(data.userName.safe)
-                        .font(.footnote)
+                        .font(AppFont.username)
                     Text(data.replyUpdate.safe)
-                        .font(.caption2)
+                        .font(AppFont.timestamp)
                 }
                 .lineLimit(1)
-                .foregroundColor(Color.tintColor)
+                .foregroundColor(.accentColor)
                 Spacer()
-                Text(data.nodeName.safe)
-                    .font(.footnote)
-                    .foregroundColor(Color.dynamic(light: .hex(0x666666), dark: .hex(0xCCCCCC)))
-                    .lineLimit(1)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(Color.dynamic(light: Color.hex(0xF5F5F5), dark: Color.hex(0x2C2C2E)))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .to { TagDetailPage(tagId: data.nodeId.safe) }
+                Button {
+                    navigateToRoute = .tagDetail(tagId: data.nodeId.safe)
+                } label: {
+                    Text(data.nodeName.safe)
+                        .nodeBadgeStyle()
+                }
+                .buttonStyle(.plain)
             }
             Text(data.title.safe)
-//                .fontWeight(.medium)
                 .foregroundColor(.primaryText)
                 .greedyWidth(.leading)
                 .lineLimit(2)
-                .padding(.top, 6)
-                .padding(.vertical, 4)
+                .padding(.top, Spacing.sm - 2)
+                .padding(.vertical, Spacing.xs)
             Text("评论\(data.replyNum.safe)")
-                .font(.footnote)
+                .font(AppFont.metadata)
                 .foregroundColor(.secondaryText)
                 .greedyWidth(.trailing)
         }
-        .padding(12)
-        .background(Color.itemBg)
+        .padding(Spacing.md)
+        .background(Color(.secondarySystemGroupedBackground))
         .divider()
-
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(data.userName.safe), \(data.title.safe), \(data.nodeName.safe), \(data.replyNum.safe)条评论")
+        .navigationDestination(item: $navigateToRoute) { route in
+            route.destination()
+        }
     }
 }
 
@@ -64,17 +70,6 @@ protocol FeedItemProtocol: Identifiable {
     var nodeName: String? { get }
     var nodeId: String? { get }
     var replyNum: String? { get }
-    
+
     init(id: String, title: String?, avatar: String?)
-
-    
 }
-
-//struct NewsItemView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Text("Default Text")
-//            .greedyWidth(.leading)
-//            .lineLimit(2)
-//            .padding(.vertical, 3)
-//    }
-//}

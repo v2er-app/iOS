@@ -49,7 +49,7 @@ struct UserDetailPage: StateView {
     }
 
     var foreGroundColor: SwiftUI.Color {
-        return shouldHideNavbar ? Color.primaryText.opacity(0.9) : .tintColor
+        return shouldHideNavbar ? Color.primaryText.opacity(0.9) : .accentColor
     }
 
     var body: some View {
@@ -82,30 +82,32 @@ struct UserDetailPage: StateView {
                 tabsTitleView
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color.itemBackground)
+                    .listRowBackground(Color(.secondarySystemGroupedBackground))
 
                 // Bottom Detail Section - Topics
                 if currentTab == .topic {
                     ForEach(model.topicInfo.items) { item in
-                        NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
-                            TopicItemView(data: item)
-                        }
-                        .buttonStyle(.plain)
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.itemBg)
+                        TopicItemView(data: item)
+                            .background {
+                                NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                                    .opacity(0)
+                            }
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color(.secondarySystemGroupedBackground))
                     }
 
                     // More topics link
                     if model.topicInfo.items.count > 0 {
-                        Text("\(userId)创建的更多主题")
-                            .font(.subheadline)
-                            .padding()
-                            .padding(.bottom, 12)
-                            .to { UserFeedPage(userId: userId) }
+                        NavigationLink(value: AppRoute.userFeed(userId: userId)) {
+                            Text("\(userId)创建的更多主题")
+                                .font(.subheadline)
+                                .padding()
+                                .padding(.bottom, 12)
+                        }
                             .listRowInsets(EdgeInsets())
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color.itemBg)
+                            .listRowBackground(Color(.secondarySystemGroupedBackground))
                     } else {
                         Text("根据 \(userId) 的设置，主题列表被隐藏")
                             .greedyFrame()
@@ -115,20 +117,21 @@ struct UserDetailPage: StateView {
                             .hide(state.refreshing)
                             .listRowInsets(EdgeInsets())
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color.itemBg)
+                            .listRowBackground(Color(.secondarySystemGroupedBackground))
                     }
                 }
 
                 // Bottom Detail Section - Replies
                 if currentTab == .reply {
                     ForEach(model.replyInfo.items) { item in
-                        NavigationLink(destination: FeedDetailPage(initData: FeedInfo.Item(id: item.id))) {
-                            ReplyItemView(data: item)
-                        }
-                        .buttonStyle(.plain)
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.itemBg)
+                        ReplyItemView(data: item)
+                            .background {
+                                NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                                    .opacity(0)
+                            }
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color(.secondarySystemGroupedBackground))
                     }
                 }
             }
@@ -154,7 +157,6 @@ struct UserDetailPage: StateView {
                         .frame(maxWidth: .infinity, maxHeight: height)
                     Spacer().background(.clear)
                 }
-                .debug()
             }
             .overlay {
                 if state.showProgressView {
@@ -218,10 +220,9 @@ struct UserDetailPage: StateView {
             } label: {
                 Text(state.model.hasFollowed ? "已关注" : "关注")
                     .font(.callout)
-                    .padding(.horizontal, 15)
-                    .padding(.vertical, 2)
-                    .cornerBorder(radius: 99, borderWidth: 1,
-                                  color: foreGroundColor)
+                    .padding(.horizontal, Spacing.lg)
+                    .padding(.vertical, Spacing.xxs)
+                    .background(Capsule().stroke(foreGroundColor, lineWidth: 1))
             }
             .hide(isSelf())
             Text(model.desc)
@@ -236,11 +237,11 @@ struct UserDetailPage: StateView {
             TabButton(title: "主题", id: .topic, selectedID: $currentTab, animation: self.animation)
             TabButton(title: "回复", id: .reply, selectedID: $currentTab, animation: self.animation)
         }
-        .background(Color.lightGray, in: RoundedRectangle(cornerRadius: 10))
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(Color.itemBackground)
-        .clipCorner(12, corners: [.topLeft, .topRight])
+        .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.md)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipCorner(CornerRadius.medium, corners: [.topLeft, .topRight])
     }
     
 
@@ -261,16 +262,16 @@ struct UserDetailPage: StateView {
                         .rich(baseStyle: quoteFont)
                 }
                 .font(.footnote)
-                .padding(12)
+                .padding(Spacing.md)
                 .background {
                     HStack(spacing: 0) {
-                        Color.tintColor.opacity(0.8)
+                        Color.accentColor.opacity(0.8)
                             .frame(width: 3)
-                        Color.lightGray
+                        Color(.systemGray6)
                     }
                     .clipCorner(1.5, corners: [.topLeft, .bottomLeft])
                 }
-                .padding(.vertical, 6)
+                .padding(.vertical, Spacing.xs + 2)
                 Text(data.time)
                     .font(.footnote)
                     .foregroundColor(.secondaryText)
@@ -298,14 +299,7 @@ struct UserDetailPage: StateView {
                         }
                         Spacer()
                         Text(data.tag)
-                            .font(.footnote)
-                            .foregroundColor(Color.primaryText)
-                            .lineLimit(1)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(Color.lightGray)
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                            .to { TagDetailPage() }
+                            .nodeBadgeStyle()
                     }
                     Text(data.title )
                         .greedyWidth(.leading)
@@ -314,7 +308,7 @@ struct UserDetailPage: StateView {
                 .padding(12)
                 Divider()
             }
-            .background(Color.almostClear)
+            .contentShape(Rectangle())
         }
     }
 
@@ -341,7 +335,7 @@ struct UserDetailPage: StateView {
             } label: {
                 Text(title)
                     .fontWeight(.bold)
-                    .foregroundColor(isSelected ? Color.itemBackground.opacity(0.9) : .tintColor)
+                    .foregroundColor(isSelected ? Color(.secondarySystemGroupedBackground).opacity(0.9) : .accentColor)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
                     .background {
@@ -353,7 +347,7 @@ struct UserDetailPage: StateView {
                             }
                         }
                     }
-                    .forceClickable()
+                    .contentShape(Rectangle())
             }
         }
 
