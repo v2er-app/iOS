@@ -88,13 +88,12 @@ struct ReplyItemView: View {
                 Text("\(info.floor)楼")
                     .font(AppFont.metadata)
                     .foregroundColor(.tertiaryText)
-                Divider()
-                    .padding(.top, Spacing.sm)
-                    .padding(.bottom, Spacing.xs)
             }
         }
-        .padding(.horizontal, Spacing.md)
-        .contentShape(Rectangle())
+        .padding(Spacing.md)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         .accessibilityElement(children: .combine)
         .accessibilityAction(named: "回复") {
             dispatch(FeedDetailActions.ReplyToUser(id: topicId, userName: info.userName))

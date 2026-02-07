@@ -79,9 +79,9 @@ struct UserDetailPage: StateView {
 
                 // Tabs Section
                 tabsTitleView
-                    .listRowInsets(EdgeInsets())
+                    .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.secondarySystemGroupedBackground))
+                    .listRowBackground(Color(.systemGroupedBackground))
 
                 // Bottom Detail Section - Topics
                 if currentTab == .topic {
@@ -266,8 +266,14 @@ struct UserDetailPage: StateView {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, Spacing.lg)
                 .foregroundColor(.white.opacity(0.8))
+                .padding(.bottom, CornerRadius.large)
         }
         .foregroundColor(.white)
+        .overlay(alignment: .bottom) {
+            Color(.systemGroupedBackground)
+                .frame(height: CornerRadius.large)
+                .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
+        }
     }
 
     private var tabsTitleView: some View {
@@ -279,7 +285,7 @@ struct UserDetailPage: StateView {
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.md)
         .background(Color(.secondarySystemGroupedBackground))
-        .clipCorner(CornerRadius.medium, corners: [.topLeft, .topRight])
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
     }
     
 

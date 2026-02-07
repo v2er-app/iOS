@@ -37,13 +37,14 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
         List {
             ForEach(state.model.items) { item in
                 ItemView(data: item)
+                    .cardScrollTransition()
                     .background {
                         NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                             .opacity(0)
                     }
-                    .listRowInsets(EdgeInsets())
+                    .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.secondarySystemGroupedBackground))
+                    .listRowBackground(Color(.systemGroupedBackground))
             }
 
             // Load More Indicator
@@ -58,7 +59,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color(.systemBackground))
+                .listRowBackground(Color(.systemGroupedBackground))
                 .onAppear {
                     guard !isLoadingMore else { return }
                     isLoadingMore = true
@@ -73,7 +74,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color(.systemBackground))
+        .background(Color(.systemGroupedBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: UserFeedActions.FetchStart(id: instanceId, userId: userId, autoLoad: false))
@@ -123,8 +124,8 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                     .greedyWidth(.trailing)
             }
             .padding(Spacing.md)
-            .divider()
             .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
             .navigationDestination(item: $navigateToRoute) { route in
                 route.destination()
             }

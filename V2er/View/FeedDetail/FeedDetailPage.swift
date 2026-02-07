@@ -277,9 +277,10 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 // Reply Section
                 ForEach(sortedReplies, id: \.floor) { item in
                     ReplyItemView(info: item, topicId: id)
-                        .listRowInsets(EdgeInsets())
+                        .cardScrollTransition()
+                        .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        .listRowBackground(Color(.systemGroupedBackground))
                 }
             }
 

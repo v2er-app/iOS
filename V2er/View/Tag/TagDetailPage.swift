@@ -223,9 +223,14 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             }
             .font(.subheadline)
             .foregroundColor(.white.opacity(0.7))
-            .padding(.bottom, Spacing.lg)
+            .padding(.bottom, Spacing.lg + CornerRadius.large)
         }
         .foregroundColor(.white)
+        .overlay(alignment: .bottom) {
+            Color(.systemGroupedBackground)
+                .frame(height: CornerRadius.large)
+                .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
+        }
     }
 
 

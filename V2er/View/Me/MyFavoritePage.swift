@@ -53,13 +53,14 @@ struct MyFavoritePage: StateView {
         List {
             ForEach(state.feedState.model?.items ?? []) { item in
                 FeedItemView(data: item)
+                    .cardScrollTransition()
                     .background {
                         NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                             .opacity(0)
                     }
-                    .listRowInsets(EdgeInsets())
+                    .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.secondarySystemGroupedBackground))
+                    .listRowBackground(Color(.systemGroupedBackground))
             }
 
             // Load More Indicator
@@ -74,7 +75,7 @@ struct MyFavoritePage: StateView {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color(.systemBackground))
+                .listRowBackground(Color(.systemGroupedBackground))
                 .onAppear {
                     guard !isFeedLoadingMore else { return }
                     isFeedLoadingMore = true
@@ -89,7 +90,7 @@ struct MyFavoritePage: StateView {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color(.systemBackground))
+        .background(Color(.systemGroupedBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: MyFavoriteActions.FetchFeedStart())
