@@ -112,7 +112,7 @@ extension UIColor {
 extension UIImage {
     /// Returns the most vibrant (saturated + bright) color from the image,
     /// darkened for use as a banner background with white text.
-    /// Falls back to a darkened average if no vibrant pixel is found.
+    /// Falls back to a fixed dark gray banner color if no sufficiently vibrant pixel is found.
     var bannerColor: UIColor? {
         guard let cgImage = cgImage else { return nil }
 

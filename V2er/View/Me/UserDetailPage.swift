@@ -56,13 +56,13 @@ struct UserDetailPage: StateView {
                 LinearGradient(
                     stops: [
                         .init(color: dominantColor, location: 0),
-                        .init(color: dominantColor, location: 0.25),
-                        .init(color: Color(.systemBackground), location: 1.0)
+                        .init(color: dominantColor, location: 0.7),
+                        .init(color: Color(.systemGroupedBackground), location: 1.0)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                .frame(height: bannerViewHeight * 1.2 + max(-scrollY, 0))
+                .frame(height: bannerViewHeight * 1.5 + max(-scrollY, 0))
                 Spacer()
             }
             .ignoresSafeArea(edges: .top)

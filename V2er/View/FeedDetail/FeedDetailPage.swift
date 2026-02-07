@@ -259,11 +259,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
                 // Spacer between content and replies
                 if !state.model.replyInfo.items.isEmpty {
-                    Color(.systemBackground)
+                    Color.clear
                         .frame(height: Spacing.sm)
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.systemBackground))
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
 
                 // Reply Section Header with Sort Toggle

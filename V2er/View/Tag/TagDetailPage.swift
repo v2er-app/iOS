@@ -59,13 +59,13 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 LinearGradient(
                     stops: [
                         .init(color: dominantColor, location: 0),
-                        .init(color: dominantColor, location: 0.25),
-                        .init(color: Color(.systemBackground), location: 1.0)
+                        .init(color: dominantColor, location: 0.7),
+                        .init(color: Color(.systemGroupedBackground), location: 1.0)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                .frame(height: bannerViewHeight * 1.2 + max(-scrollY, 0))
+                .frame(height: bannerViewHeight * 1.5 + max(-scrollY, 0))
                 Spacer()
             }
             .ignoresSafeArea(edges: .top)
@@ -179,12 +179,14 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             Spacer()
 
             Button {
-                dispatch(TagDetailActions.StarNode(id: tagId!))
+                guard let tagId = tagId else { return }
+                dispatch(TagDetailActions.StarNode(id: tagId))
             } label: {
                 Image(systemName: state.model.hasStared ? "bookmark.fill" : "bookmark")
                     .font(.body.weight(.semibold))
                     .frame(width: 34, height: 34)
             }
+            .disabled(tagId == nil)
         }
         .foregroundColor(shouldHideNavbar ? .white : .primary)
         .padding(.horizontal, Spacing.lg)

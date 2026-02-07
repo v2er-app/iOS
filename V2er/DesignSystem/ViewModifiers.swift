@@ -67,7 +67,12 @@ extension View {
     func cardScrollTransition() -> some View {
         visualEffect { content, proxy in
             let frame = proxy.frame(in: .scrollView(axis: .vertical))
-            let viewportHeight = proxy.bounds(of: .scrollView(axis: .vertical))?.height ?? 800
+
+            guard let viewportHeight = proxy.bounds(of: .scrollView(axis: .vertical))?.height else {
+                return content
+                    .opacity(1)
+                    .scaleEffect(1)
+            }
 
             let zone: CGFloat = 100
             let fromBottom = min(1.0, max(0.0, (viewportHeight - frame.minY) / zone))
