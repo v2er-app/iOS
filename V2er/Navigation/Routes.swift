@@ -86,9 +86,15 @@ extension AppRoute {
 
 // MARK: - URL Identifiable conformance for .navigationDestination(item:)
 
+#if swift(>=5.10)
 extension URL: @retroactive Identifiable {
     public var id: String { absoluteString }
 }
+#else
+extension URL: Identifiable {
+    public var id: String { absoluteString }
+}
+#endif
 
 // MARK: - AppRoute Identifiable conformance for .navigationDestination(item:)
 
