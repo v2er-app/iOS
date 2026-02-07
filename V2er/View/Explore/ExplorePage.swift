@@ -89,7 +89,7 @@ struct ExplorePage: BaseHomePageView {
                                 .lineLimit(2)
                                 .greedyWidth(.leading)
                         }
-                        .padding(.vertical, Spacing.xs)
+                        .padding(.vertical, Spacing.md)
                         .background {
                             NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                                 .opacity(0)
@@ -99,7 +99,7 @@ struct ExplorePage: BaseHomePageView {
                     }
                 } header: {
                     SectionTitleView("今日热议")
-                        .listRowInsets(EdgeInsets())
+                        .listRowInsets(EdgeInsets(top: 0, leading: Spacing.lg, bottom: 0, trailing: Spacing.sm))
                         .listRowBackground(Color(.systemGroupedBackground))
                 }
                 .listRowSeparator(.hidden)
