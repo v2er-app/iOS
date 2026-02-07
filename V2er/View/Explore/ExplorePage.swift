@@ -53,6 +53,7 @@ struct ExplorePage: BaseHomePageView {
                 }
             }
             .searchable(text: searchKeyword, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索主题")
+            .background(Color(.systemGroupedBackground))
             .onSubmit(of: .search) {
                 dispatch(SearchActions.Start())
             }
@@ -94,12 +95,12 @@ struct ExplorePage: BaseHomePageView {
                                 .opacity(0)
                         }
                         .listRowInsets(EdgeInsets(top: 0, leading: Spacing.sm, bottom: 0, trailing: Spacing.sm))
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        .listRowBackground(Color(.systemGroupedBackground))
                     }
                 } header: {
                     SectionTitleView("今日热议")
                         .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        .listRowBackground(Color(.systemGroupedBackground))
                 }
                 .listRowSeparator(.hidden)
             }
@@ -111,10 +112,10 @@ struct ExplorePage: BaseHomePageView {
                         NodeView(id: node.id, name: node.name)
                     }
                     .listRowInsets(EdgeInsets(top: 0, leading: Spacing.sm, bottom: 0, trailing: Spacing.sm))
-                    .listRowBackground(Color(.secondarySystemGroupedBackground))
+                    .listRowBackground(Color(.systemGroupedBackground))
                 } header: {
                     SectionTitleView("最热节点")
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        .listRowBackground(Color(.systemGroupedBackground))
                 }
                 .listRowSeparator(.hidden)
             }
@@ -126,10 +127,10 @@ struct ExplorePage: BaseHomePageView {
                         NodeView(id: node.id, name: node.name)
                     }
                     .listRowInsets(EdgeInsets(top: 0, leading: Spacing.sm, bottom: 0, trailing: Spacing.sm))
-                    .listRowBackground(Color(.secondarySystemGroupedBackground))
+                    .listRowBackground(Color(.systemGroupedBackground))
                 } header: {
                     SectionTitleView("新增节点")
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        .listRowBackground(Color(.systemGroupedBackground))
                 }
                 .listRowSeparator(.hidden)
             }
@@ -140,18 +141,18 @@ struct ExplorePage: BaseHomePageView {
                     ForEach(state.exploreInfo.nodeNavInfo) { navItem in
                         NodeNavItemView(data: navItem)
                             .listRowInsets(EdgeInsets(top: 0, leading: Spacing.sm, bottom: 0, trailing: Spacing.sm))
-                            .listRowBackground(Color(.secondarySystemGroupedBackground))
+                            .listRowBackground(Color(.systemGroupedBackground))
                     }
                 } header: {
                     SectionTitleView("节点导航")
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        .listRowBackground(Color(.systemGroupedBackground))
                 }
                 .listRowSeparator(.hidden)
             }
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(.systemGroupedBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: ExploreActions.FetchData.Start())
