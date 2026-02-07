@@ -55,7 +55,7 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
             }
             .foregroundColor(.secondaryText)
         }
-        .padding(Spacing.lg)
+        .padding(Spacing.md)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         .accessibilityElement(children: .combine)

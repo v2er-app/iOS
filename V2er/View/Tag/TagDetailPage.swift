@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 
 
 struct TagDetailPage: StateView, InstanceIdentifiable {
@@ -33,6 +32,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
+    @State private var dominantColor: Color = .black
 
     var tag: String?
     var tagId: String?
@@ -54,25 +54,18 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     @ViewBuilder
     private var contentView: some View {
         ZStack(alignment: .top) {
-            // Blurred background — edge-to-edge behind status bar
+            // Dominant color gradient background — edge-to-edge behind status bar
             VStack(spacing: 0) {
-                KFImage
-                    .url(URL(string: model.tagImage))
-                    .fade(duration: 0.25)
-                    .resizable()
-                    .blur(radius: 60, opaque: true)
-                    .overlay(
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color.black.opacity(0.5), location: 0),
-                                .init(color: Color.black.opacity(0.35), location: 0.65),
-                                .init(color: Color(.systemBackground), location: 1.0)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(height: bannerViewHeight * 1.2 + max(-scrollY, 0))
+                LinearGradient(
+                    stops: [
+                        .init(color: dominantColor, location: 0),
+                        .init(color: dominantColor, location: 0.25),
+                        .init(color: Color(.systemBackground), location: 1.0)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: bannerViewHeight * 1.2 + max(-scrollY, 0))
                 Spacer()
             }
             .ignoresSafeArea(edges: .top)
@@ -90,13 +83,14 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 // Node List Section - Each item as separate List row to prevent multiple NavigationLinks triggering
                 ForEach(model.topics) { item in
                     TagFeedItemView(data: item)
+                        .cardScrollTransition()
                         .background {
                             NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                                 .opacity(0)
                         }
-                        .listRowInsets(EdgeInsets(top: Spacing.xxs, leading: Spacing.md, bottom: Spacing.xxs, trailing: Spacing.md))
+                        .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.systemBackground))
+                        .listRowBackground(Color(.systemGroupedBackground))
                 }
 
                 // Load More Indicator
@@ -111,7 +105,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     .frame(height: 50)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.systemBackground))
+                    .listRowBackground(Color(.systemGroupedBackground))
                     .onAppear {
                         guard !isLoadingMore else { return }
                         isLoadingMore = true
@@ -144,6 +138,15 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         }
         .statusBarStyle(shouldHideNavbar ? .lightContent : .darkContent, original: .darkContent)
         .toolbar(.hidden, for: .navigationBar)
+        .task(id: model.tagImage) {
+            guard !model.tagImage.isEmpty, let url = URL(string: model.tagImage) else { return }
+            guard let (data, _) = try? await URLSession.shared.data(from: url),
+                  let image = UIImage(data: data),
+                  let color = image.bannerColor else { return }
+            withAnimation(.easeInOut(duration: 0.5)) {
+                dominantColor = Color(color)
+            }
+        }
         .onAppear {
             dispatch(TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, autoLoad: !state.hasLoadedOnce))
         }
@@ -210,27 +213,14 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, Spacing.lg)
                 .foregroundColor(.white.opacity(0.8))
-            HStack {
+            HStack(spacing: Spacing.sm) {
                 Text("\(model.topicsCount)个主题")
-                    .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.7))
-                Spacer()
-                let hadStared = state.model.hasStared
-                Button {
-                    dispatch(TagDetailActions.StarNode(id: tagId!))
-                } label: {
-                    Text(hadStared ? "已收藏" : "收藏")
-                        .font(.subheadline.weight(.medium))
-                        .padding(.horizontal, Spacing.xl)
-                        .padding(.vertical, Spacing.xs + 2)
-                        .background(Capsule().stroke(.white.opacity(0.8), lineWidth: 1))
-                }
-                Spacer()
+                Circle()
+                    .frame(width: 3, height: 3)
                 Text("\(model.countOfStaredPeople)个收藏")
-                    .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.7))
             }
-            .padding(.horizontal, Spacing.lg)
+            .font(.subheadline)
+            .foregroundColor(.white.opacity(0.7))
             .padding(.bottom, Spacing.lg)
         }
         .foregroundColor(.white)
@@ -279,7 +269,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 }
                 .foregroundColor(.secondaryText)
             }
-            .padding(Spacing.lg)
+            .padding(Spacing.md)
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
             .contentShape(Rectangle())

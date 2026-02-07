@@ -93,7 +93,7 @@ struct ExplorePage: BaseHomePageView {
                             NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                                 .opacity(0)
                         }
-                        .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
+                        .listRowInsets(EdgeInsets(top: 0, leading: Spacing.sm, bottom: 0, trailing: Spacing.sm))
                         .listRowBackground(Color(.secondarySystemGroupedBackground))
                     }
                 } header: {
@@ -110,7 +110,7 @@ struct ExplorePage: BaseHomePageView {
                     FlowStack(data: state.exploreInfo.hottestNodeInfo) { node in
                         NodeView(id: node.id, name: node.name)
                     }
-                    .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
+                    .listRowInsets(EdgeInsets(top: 0, leading: Spacing.sm, bottom: 0, trailing: Spacing.sm))
                     .listRowBackground(Color(.secondarySystemGroupedBackground))
                 } header: {
                     SectionTitleView("最热节点")
@@ -125,7 +125,7 @@ struct ExplorePage: BaseHomePageView {
                     FlowStack(data: state.exploreInfo.recentNodeInfo) { node in
                         NodeView(id: node.id, name: node.name)
                     }
-                    .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
+                    .listRowInsets(EdgeInsets(top: 0, leading: Spacing.sm, bottom: 0, trailing: Spacing.sm))
                     .listRowBackground(Color(.secondarySystemGroupedBackground))
                 } header: {
                     SectionTitleView("新增节点")
@@ -139,7 +139,7 @@ struct ExplorePage: BaseHomePageView {
                 Section {
                     ForEach(state.exploreInfo.nodeNavInfo) { navItem in
                         NodeNavItemView(data: navItem)
-                            .listRowInsets(EdgeInsets(top: 0, leading: Spacing.md, bottom: 0, trailing: Spacing.md))
+                            .listRowInsets(EdgeInsets(top: 0, leading: Spacing.sm, bottom: 0, trailing: Spacing.sm))
                             .listRowBackground(Color(.secondarySystemGroupedBackground))
                     }
                 } header: {
@@ -172,17 +172,18 @@ struct ExplorePage: BaseHomePageView {
             sortPickerView
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color(.systemBackground))
+                .listRowBackground(Color(.systemGroupedBackground))
 
             ForEach(searchState.model?.hits ?? []) { item in
                 SearchResultItemView(hint: item)
+                    .cardScrollTransition()
                     .background {
                         NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                             .opacity(0)
                     }
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.systemBackground))
+                    .listRowBackground(Color(.systemGroupedBackground))
             }
 
             // Load More Indicator
@@ -197,7 +198,7 @@ struct ExplorePage: BaseHomePageView {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color(.systemBackground))
+                .listRowBackground(Color(.systemGroupedBackground))
                 .onAppear {
                     guard !isLoadingMore else { return }
                     isLoadingMore = true
@@ -213,7 +214,7 @@ struct ExplorePage: BaseHomePageView {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .environment(\.defaultMinListRowHeight, 1)
-        .background(Color(.systemBackground))
+        .background(Color(.systemGroupedBackground))
         .overlay {
             if searchState.updatable.showLoadingView {
                 ProgressView()
@@ -260,11 +261,10 @@ private struct SearchResultItemView: View {
                 .foregroundColor(.tertiaryText)
         }
         .greedyWidth()
-        .padding(Spacing.lg)
-        .padding(.horizontal, Spacing.xs)
+        .padding(Spacing.md)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
-        .padding(.horizontal, Spacing.md)
+        .padding(.horizontal, Spacing.sm)
         .padding(.bottom, Spacing.sm)
     }
 }

@@ -108,6 +108,52 @@ extension UIColor {
     }
 }
 
+// MARK: - Image Color Extraction
+extension UIImage {
+    /// Returns the most vibrant (saturated + bright) color from the image,
+    /// darkened for use as a banner background with white text.
+    /// Falls back to a darkened average if no vibrant pixel is found.
+    var bannerColor: UIColor? {
+        guard let cgImage = cgImage else { return nil }
+
+        let width = 16, height = 16
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let context = CGContext(
+            data: nil,
+            width: width, height: height,
+            bitsPerComponent: 8, bytesPerRow: width * 4,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else { return nil }
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+        guard let data = context.data else { return nil }
+
+        let ptr = data.bindMemory(to: UInt8.self, capacity: width * height * 4)
+        var bestColor: UIColor?
+        var bestScore: CGFloat = 0
+
+        for i in 0..<(width * height) {
+            let o = i * 4
+            let r = CGFloat(ptr[o]) / 255, g = CGFloat(ptr[o+1]) / 255, b = CGFloat(ptr[o+2]) / 255
+            let color = UIColor(red: r, green: g, blue: b, alpha: 1)
+            var h: CGFloat = 0, s: CGFloat = 0, br: CGFloat = 0
+            color.getHue(&h, saturation: &s, brightness: &br, alpha: nil)
+            guard br > 0.15 && br < 0.95 else { continue }
+            let score = s * br
+            if score > bestScore {
+                bestScore = score
+                bestColor = color
+            }
+        }
+
+        let base = bestScore > 0.15 ? bestColor! : UIColor(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
+        // Darken + boost saturation for readable white text on top
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        base.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        return UIColor(hue: h, saturation: min(s * 1.3, 1), brightness: min(b, 0.4), alpha: 1)
+    }
+}
+
 // MARK: - Preview
 struct Color_Previews: PreviewProvider {
     static var previews: some View {

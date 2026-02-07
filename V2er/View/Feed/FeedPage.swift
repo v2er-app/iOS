@@ -112,13 +112,14 @@ struct FeedPage: BaseHomePageView {
                 // Feed Items
                 ForEach(state.feedInfo.items) { item in
                     FeedItemView(data: item)
+                        .cardScrollTransition()
                         .background {
                             NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                                 .opacity(0)
                         }
-                        .listRowInsets(EdgeInsets(top: Spacing.xxs, leading: Spacing.md, bottom: Spacing.xxs, trailing: Spacing.md))
+                        .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.systemBackground))
+                        .listRowBackground(Color(.systemGroupedBackground))
                 }
 
                 // Load More Indicator
@@ -133,7 +134,7 @@ struct FeedPage: BaseHomePageView {
                     .frame(height: 50)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.systemBackground))
+                    .listRowBackground(Color(.systemGroupedBackground))
                     .onAppear {
                         guard !isLoadingMore && AccountState.hasSignIn() else { return }
                         isLoadingMore = true
@@ -148,7 +149,7 @@ struct FeedPage: BaseHomePageView {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background(Color(.systemBackground))
+            .background(Color(.systemGroupedBackground))
             .environment(\.defaultMinListRowHeight, 1)
             .onChange(of: state.scrollToTop) { _ in
                 if let firstItem = state.feedInfo.items.first {

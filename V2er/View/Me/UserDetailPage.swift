@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Kingfisher
 import Atributika
 
 
@@ -18,6 +17,7 @@ struct UserDetailPage: StateView {
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
+    @State private var dominantColor: SwiftUI.Color = .black
     @State private var currentTab: TabButton.ID = .topic
     @Namespace var animation
     // FIXME: couldn't be null
@@ -51,27 +51,19 @@ struct UserDetailPage: StateView {
     @ViewBuilder
     private var contentView: some View {
         ZStack(alignment: .top) {
-            // Blurred background — edge-to-edge behind status bar
+            // Dominant color gradient background — edge-to-edge behind status bar
             VStack(spacing: 0) {
-                let height = bannerViewHeight * 1.2 + max(-scrollY, 0)
-                KFImage
-                    .url(URL(string: model.avatar))
-                    .fade(duration: 0.25)
-                    .resizable()
-                    .blur(radius: 60, opaque: true)
-                    .overlay(
-                        LinearGradient(
-                            stops: [
-                                .init(color: Color.black.opacity(0.5), location: 0),
-                                .init(color: Color.black.opacity(0.35), location: 0.65),
-                                .init(color: Color(.systemBackground), location: 1.0)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: height)
-                Spacer().background(.clear)
+                LinearGradient(
+                    stops: [
+                        .init(color: dominantColor, location: 0),
+                        .init(color: dominantColor, location: 0.25),
+                        .init(color: Color(.systemBackground), location: 1.0)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: bannerViewHeight * 1.2 + max(-scrollY, 0))
+                Spacer()
             }
             .ignoresSafeArea(edges: .top)
 
@@ -95,13 +87,14 @@ struct UserDetailPage: StateView {
                 if currentTab == .topic {
                     ForEach(model.topicInfo.items) { item in
                         TopicItemView(data: item)
+                            .cardScrollTransition()
                             .background {
                                 NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                                     .opacity(0)
                             }
-                            .listRowInsets(EdgeInsets(top: Spacing.xxs, leading: Spacing.md, bottom: Spacing.xxs, trailing: Spacing.md))
+                            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.systemBackground))
+                            .listRowBackground(Color(.systemGroupedBackground))
                     }
 
                     // More topics link
@@ -113,9 +106,9 @@ struct UserDetailPage: StateView {
                                 .padding(Spacing.lg)
                                 .padding(.bottom, Spacing.md)
                         }
-                            .listRowInsets(EdgeInsets(top: Spacing.xxs, leading: Spacing.md, bottom: Spacing.xxs, trailing: Spacing.md))
+                            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.systemBackground))
+                            .listRowBackground(Color(.systemGroupedBackground))
                     } else {
                         Text("根据 \(userId) 的设置，主题列表被隐藏")
                             .greedyFrame()
@@ -126,7 +119,7 @@ struct UserDetailPage: StateView {
                             .hide(state.refreshing)
                             .listRowInsets(EdgeInsets())
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.systemBackground))
+                            .listRowBackground(Color(.systemGroupedBackground))
                     }
                 }
 
@@ -134,13 +127,14 @@ struct UserDetailPage: StateView {
                 if currentTab == .reply {
                     ForEach(model.replyInfo.items) { item in
                         ReplyItemView(data: item)
+                            .cardScrollTransition()
                             .background {
                                 NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
                                     .opacity(0)
                             }
-                            .listRowInsets(EdgeInsets(top: Spacing.xxs, leading: Spacing.md, bottom: Spacing.xxs, trailing: Spacing.md))
+                            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                             .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.systemBackground))
+                            .listRowBackground(Color(.systemGroupedBackground))
                     }
                 }
             }
@@ -166,6 +160,15 @@ struct UserDetailPage: StateView {
             customNavBar
         }
         .toolbar(.hidden, for: .navigationBar)
+        .task(id: model.avatar) {
+            guard !model.avatar.isEmpty, let url = URL(string: model.avatar) else { return }
+            guard let (data, _) = try? await URLSession.shared.data(from: url),
+                  let image = UIImage(data: data),
+                  let color = image.bannerColor else { return }
+            withAnimation(.easeInOut(duration: 0.5)) {
+                dominantColor = SwiftUI.Color(color)
+            }
+        }
         .onAppear {
             log("onAppear----")
             dispatch(UserDetailActions.FetchData.Start(id: userId, autoLoad: true))
@@ -313,7 +316,7 @@ struct UserDetailPage: StateView {
                     .foregroundColor(.tertiaryText)
                     .greedyWidth(.trailing)
             }
-            .padding(Spacing.lg)
+            .padding(Spacing.md)
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
@@ -347,7 +350,7 @@ struct UserDetailPage: StateView {
                     .lineLimit(2)
                     .padding(.top, Spacing.sm - 2)
             }
-            .padding(Spacing.lg)
+            .padding(Spacing.md)
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
             .contentShape(Rectangle())
