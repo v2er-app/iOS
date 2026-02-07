@@ -78,12 +78,12 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     .readSize {
                         bannerViewHeight = $0.height
                     }
-                    .padding(.bottom, model.topics.isEmpty ? 0 : 20)
+                    .padding(.bottom, model.topics.isEmpty ? 0 : 15)
                     .background(alignment: .bottom) {
                         if !model.topics.isEmpty {
                             Color(.systemGroupedBackground)
-                                .frame(height: 20)
-                                .clipCorner(40, corners: [.topLeft, .topRight])
+                                .frame(height: 30)
+                                .clipCorner(30, corners: [.topLeft, .topRight])
                         }
                     }
                     .listRowInsets(EdgeInsets())

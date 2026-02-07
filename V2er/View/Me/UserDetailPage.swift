@@ -75,12 +75,12 @@ struct UserDetailPage: StateView {
                     .readSize {
                         bannerViewHeight = $0.height
                     }
-                    .padding(.bottom, state.showProgressView ? 0 : 20)
+                    .padding(.bottom, state.showProgressView ? 0 : 15)
                     .background(alignment: .bottom) {
                         if !state.showProgressView {
                             Color(.systemGroupedBackground)
-                                .frame(height: 20)
-                                .clipCorner(40, corners: [.topLeft, .topRight])
+                                .frame(height: 30)
+                                .clipCorner(30, corners: [.topLeft, .topRight])
                         }
                     }
                     .listRowInsets(EdgeInsets())
