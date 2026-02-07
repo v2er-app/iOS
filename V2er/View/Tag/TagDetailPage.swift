@@ -81,12 +81,14 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     .listRowBackground(Color.clear)
 
                 // Content sheet header — rounded top edge overlapping the banner gradient
-                Color(.systemGroupedBackground)
-                    .frame(height: CornerRadius.large)
-                    .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
+                if !model.topics.isEmpty {
+                    Color(.systemGroupedBackground)
+                        .frame(height: CornerRadius.large)
+                        .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                }
 
                 // Node List Section - Each item as separate List row to prevent multiple NavigationLinks triggering
                 ForEach(model.topics) { item in

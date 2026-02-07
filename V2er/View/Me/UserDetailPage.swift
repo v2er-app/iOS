@@ -78,12 +78,14 @@ struct UserDetailPage: StateView {
                     .listRowBackground(Color.clear)
 
                 // Content sheet header — rounded top edge overlapping the banner gradient
-                Color(.systemGroupedBackground)
-                    .frame(height: CornerRadius.large)
-                    .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
+                if !state.showProgressView {
+                    Color(.systemGroupedBackground)
+                        .frame(height: CornerRadius.large)
+                        .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                }
 
                 // Tabs Section
                 tabsTitleView
