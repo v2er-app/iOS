@@ -59,13 +59,13 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 LinearGradient(
                     stops: [
                         .init(color: dominantColor, location: 0),
-                        .init(color: dominantColor, location: 0.85),
+                        .init(color: dominantColor, location: 0.7),
                         .init(color: Color(.systemGroupedBackground), location: 1.0)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                .frame(height: max(bannerViewHeight * 1.5, UIScreen.main.bounds.height) + max(-scrollY, 0))
+                .frame(height: bannerViewHeight * 1.5 + max(-scrollY, 0))
                 Spacer()
             }
             .ignoresSafeArea(edges: .top)
