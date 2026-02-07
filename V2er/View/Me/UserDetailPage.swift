@@ -57,17 +57,15 @@ struct UserDetailPage: StateView {
                     stops: [
                         .init(color: dominantColor, location: 0),
                         .init(color: dominantColor, location: 0.7),
-                        .init(color: .clear, location: 1.0)
+                        .init(color: Color(.systemGroupedBackground), location: 1.0)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .frame(height: bannerViewHeight * 1.5 + max(-scrollY, 0))
-                .clipCorner(CornerRadius.large, corners: [.bottomLeft, .bottomRight])
                 Spacer()
             }
             .ignoresSafeArea(edges: .top)
-            .background(Color(.systemGroupedBackground))
 
             List {
                 // Banner Section
@@ -75,6 +73,14 @@ struct UserDetailPage: StateView {
                     .readSize {
                         bannerViewHeight = $0.height
                     }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+
+                // Content sheet header — rounded top edge overlapping the banner gradient
+                Color(.systemGroupedBackground)
+                    .frame(height: CornerRadius.large)
+                    .clipCorner(CornerRadius.large, corners: [.topLeft, .topRight])
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
