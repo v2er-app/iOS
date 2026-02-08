@@ -43,29 +43,16 @@ struct V2erApp: App {
     }
 
     private func updateAppearance(_ appearance: AppearanceMode) {
-        updateNavigationBarAppearance(for: appearance)
+        Self.updateNavigationBarAppearance()
         updateWindowInterfaceStyle(for: appearance)
     }
 
     static func updateAppearanceStatic(_ appearance: AppearanceMode) {
-        updateNavigationBarAppearanceStatic(for: appearance)
+        updateNavigationBarAppearance()
         updateWindowInterfaceStyleStatic(for: appearance)
     }
-    
-    static func updateNavigationBarAppearanceStatic(for appearance: AppearanceMode) {
-        DispatchQueue.main.async {
-            let navbarAppearance = UINavigationBarAppearance()
-            navbarAppearance.backgroundColor = .clear
 
-            let navAppearance = UINavigationBar.appearance()
-            navAppearance.standardAppearance = navbarAppearance
-            navAppearance.compactAppearance = navbarAppearance
-            navAppearance.scrollEdgeAppearance = navbarAppearance
-            navAppearance.backgroundColor = .clear
-        }
-    }
-
-    private func updateNavigationBarAppearance(for appearance: AppearanceMode) {
+    private static func updateNavigationBarAppearance() {
         DispatchQueue.main.async {
             let navbarAppearance = UINavigationBarAppearance()
             navbarAppearance.backgroundColor = .clear

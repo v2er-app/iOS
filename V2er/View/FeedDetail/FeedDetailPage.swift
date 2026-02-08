@@ -33,7 +33,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     var instanceId: String {
         self.id
     }
-    @State var isKeyboardVisiable = false
     @State private var isLoadingMore = false
     @State private var contentReady = false
     @FocusState private var replyIsFocused: Bool
@@ -325,9 +324,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             }
 
             MultilineTextField("发表回复", text: bindingState.replyContent)
-                .onReceive(keyboardPublisher) { isKeyboardVisiable in
-                    self.isKeyboardVisiable = isKeyboardVisiable
-                }
                 .focused($replyIsFocused)
 
             Button {
