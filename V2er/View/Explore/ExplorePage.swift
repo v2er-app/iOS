@@ -83,7 +83,6 @@ struct ExplorePage: BaseHomePageView {
                                 .font(.subheadline.weight(.bold))
                                 .foregroundColor(index < 3 ? .accentColor : .tertiaryText)
                                 .frame(width: 20)
-                            AvatarView(url: item.avatar, size: 30)
                             Text(item.title)
                                 .foregroundColor(Color.primaryText)
                                 .lineLimit(2)
