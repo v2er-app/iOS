@@ -47,6 +47,9 @@ struct SettingsPage: View {
                             Image(systemName: "questionmark.circle")
                         }
                         Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(Color(.tertiaryLabel))
                     }
                     .contentShape(Rectangle())
                 }
