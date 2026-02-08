@@ -223,6 +223,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             Image(systemName: "ellipsis")
                 .font(.body)
         }
+        .tint(.primary)
     }
 
     @ViewBuilder
