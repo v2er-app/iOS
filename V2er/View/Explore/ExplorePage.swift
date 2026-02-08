@@ -81,7 +81,7 @@ struct ExplorePage: BaseHomePageView {
                         HStack(spacing: Spacing.md) {
                             Text("\(index + 1)")
                                 .font(.subheadline.weight(.bold))
-                                .foregroundColor(index < 3 ? .accentColor : .tertiaryText)
+                                .foregroundColor(index < 3 ? .red : .secondary)
                                 .frame(width: 20)
                             Text(item.title)
                                 .foregroundColor(Color.primaryText)
