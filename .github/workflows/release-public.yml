@@ -116,7 +116,7 @@ jobs:
 
     - name: Install Fastlane
       run: |
-        gem install fastlane -v 2.228.0
+        gem install fastlane -v 2.231.1
         gem install xcpretty
 
     - name: Setup SSH for Match repository
