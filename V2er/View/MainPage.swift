@@ -11,7 +11,9 @@ import Combine
 
 struct MainPage: StateView {
     @EnvironmentObject private var store: Store
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var tabReselectionPublisher = PassthroughSubject<TabId, Never>()
+    @State private var iPadSelectedTab: TabId = .feed
     @ObservedObject private var otherAppsManager = OtherAppsManager.shared
 
     var bindingState: Binding<GlobalState> {
@@ -59,6 +61,16 @@ struct MainPage: StateView {
     }
 
     var body: some View {
+        if horizontalSizeClass == .regular {
+            iPadLayout
+        } else {
+            iPhoneLayout
+        }
+    }
+
+    // MARK: - iPhone Layout (existing TabView)
+
+    private var iPhoneLayout: some View {
         TabView(selection: tabSelection) {
             // Feed Tab
             NavigationStack {
@@ -102,10 +114,54 @@ struct MainPage: StateView {
             }
             .tag(TabId.me)
         }
-        .tint(Color("TintColor"))  // Uses adaptive TintColor asset (dark gray in light mode, white in dark)
+        .tint(Color("TintColor"))
         .onReceive(tabReselectionPublisher) { tappedTab in
-            // Dispatch action for all tab taps (including same-tab taps)
             dispatch(TabbarClickAction(selectedTab: tappedTab))
+        }
+    }
+
+    // MARK: - iPad Layout (NavigationSplitView with sidebar)
+
+    private var iPadLayout: some View {
+        NavigationSplitView {
+            iPadSidebarView(
+                selectedTab: $iPadSelectedTab,
+                unReadNums: unReadNums,
+                onReselect: {
+                    dispatch(TabbarClickAction(selectedTab: iPadSelectedTab))
+                }
+            )
+        } detail: {
+            iPadDetailContent
+        }
+        .tint(Color("TintColor"))
+        .onChange(of: iPadSelectedTab) { _, newTab in
+            dispatch(TabbarClickAction(selectedTab: newTab))
+        }
+    }
+
+    @ViewBuilder
+    private var iPadDetailContent: some View {
+        switch iPadSelectedTab {
+        case .feed:
+            iPadFeedSplitView(selecedTab: iPadSelectedTab)
+        case .explore:
+            NavigationStack {
+                ExplorePage(selecedTab: iPadSelectedTab)
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
+            }
+        case .message:
+            NavigationStack {
+                MessagePage(selecedTab: iPadSelectedTab)
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
+            }
+        case .me:
+            NavigationStack {
+                MePage(selecedTab: iPadSelectedTab)
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
+            }
+        case .none:
+            iPadFeedSplitView(selecedTab: iPadSelectedTab)
         }
     }
 
