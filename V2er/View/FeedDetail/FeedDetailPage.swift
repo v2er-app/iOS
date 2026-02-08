@@ -349,6 +349,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .padding(.bottom, Spacing.md)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .overlay(
+            RoundedRectangle(cornerRadius: CornerRadius.medium)
+                .stroke(Color(.separator), lineWidth: 0.5)
+        )
+        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: -4)
         .padding(.horizontal, Spacing.sm)
         .padding(.bottom, Spacing.sm)
         .onChange(of: selectedImage) { _, newImage in
