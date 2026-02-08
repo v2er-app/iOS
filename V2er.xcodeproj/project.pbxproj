@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		C94696A1FCE94867B1E38D53 /* Routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC913F225BB24E37933B8379 /* Routes.swift */; };
+		AA1B2C3D4E5F6A7B8C9D0E20 /* iPadDetailNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F6A7B8C9D0E21 /* iPadDetailNavigation.swift */; };
+		AA1B2C3D4E5F6A7B8C9D0E22 /* iPadTabSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F6A7B8C9D0E23 /* iPadTabSplitView.swift */; };
+		AA1B2C3D4E5F6A7B8C9D0E24 /* SplitNavigationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F6A7B8C9D0E25 /* SplitNavigationLink.swift */; };
 		F0A100F51ED7465680593E94 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3076F8BDDAF54DAAB1AA56D0 /* Spacing.swift */; };
 		FF753C73138848AB894ACBF5 /* CornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810ECA8724E41CEAE8A0F72 /* CornerRadius.swift */; };
 		A52B70BA188C4C1FB7093C74 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07EA1DA655784BCE8089F313 /* Typography.swift */; };
@@ -368,6 +371,9 @@
 		FA1B2C3D4E5F6A7B8C9D0E12 /* iPadSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadSidebarView.swift; sourceTree = "<group>"; };
 		FA1B2C3D4E5F6A7B8C9D0E14 /* iPadContentWidth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadContentWidth.swift; sourceTree = "<group>"; };
 		FA1B2C3D4E5F6A7B8C9D0E17 /* iPadFeedSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadFeedSplitView.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F6A7B8C9D0E21 /* iPadDetailNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadDetailNavigation.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F6A7B8C9D0E23 /* iPadTabSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadTabSplitView.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F6A7B8C9D0E25 /* SplitNavigationLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitNavigationLink.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -463,6 +469,7 @@
 				5D68717B271853DB00329E73 /* SectionItemView.swift */,
 				5DC05A54273D5A2B003561A9 /* Toast.swift */,
 				6E349FC53BB87F2F0492D651 /* ImagePickerView.swift */,
+				AA1B2C3D4E5F6A7B8C9D0E25 /* SplitNavigationLink.swift */,
 			);
 			path = Widget;
 			sourceTree = "<group>";
@@ -871,6 +878,7 @@
 			children = (
 				FA1B2C3D4E5F6A7B8C9D0E12 /* iPadSidebarView.swift */,
 				FA1B2C3D4E5F6A7B8C9D0E17 /* iPadFeedSplitView.swift */,
+				AA1B2C3D4E5F6A7B8C9D0E23 /* iPadTabSplitView.swift */,
 			);
 			path = iPad;
 			sourceTree = "<group>";
@@ -880,6 +888,7 @@
 			isa = PBXGroup;
 			children = (
 				BC913F225BB24E37933B8379 /* Routes.swift */,
+				AA1B2C3D4E5F6A7B8C9D0E21 /* iPadDetailNavigation.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -1038,6 +1047,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA1B2C3D4E5F6A7B8C9D0E20 /* iPadDetailNavigation.swift in Sources */,
+				AA1B2C3D4E5F6A7B8C9D0E22 /* iPadTabSplitView.swift in Sources */,
+				AA1B2C3D4E5F6A7B8C9D0E24 /* SplitNavigationLink.swift in Sources */,
 				0B1A2B3C4D5E6F7081920A03 /* SplashView.swift in Sources */,
 				0B1A2B3C4D5E6F7081920A07 /* TypewriterView.swift in Sources */,
 				5D73FBDA27284ADB004558E9 /* RichText.swift in Sources */,

@@ -146,19 +146,16 @@ struct MainPage: StateView {
         case .feed:
             iPadFeedSplitView(selecedTab: iPadSelectedTab)
         case .explore:
-            NavigationStack {
+            iPadTabSplitView(placeholderIcon: "magnifyingglass", placeholderText: "选择一个主题") {
                 ExplorePage(selecedTab: iPadSelectedTab)
-                    .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
         case .message:
-            NavigationStack {
+            iPadTabSplitView(placeholderIcon: "bell", placeholderText: "选择一条通知") {
                 MessagePage(selecedTab: iPadSelectedTab)
-                    .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
         case .me:
-            NavigationStack {
+            iPadTabSplitView(placeholderIcon: "person", placeholderText: "选择一个项目") {
                 MePage(selecedTab: iPadSelectedTab)
-                    .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
         case .none:
             iPadFeedSplitView(selecedTab: iPadSelectedTab)
