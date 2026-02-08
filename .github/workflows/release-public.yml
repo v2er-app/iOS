@@ -290,7 +290,7 @@ jobs:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
         TEAM_ID: ${{ secrets.TEAM_ID }}
-        DISTRIBUTE_TO_PUBLIC_BETA: ${{ github.event.inputs.distribute_to_public_beta || 'true' }}
+        DISTRIBUTE_TO_PUBLIC_BETA: ${{ github.event.inputs.distribute_to_public_beta || 'false' }}
       run: |
         # Enable verbose output for debugging
         export FASTLANE_VERBOSE=true
