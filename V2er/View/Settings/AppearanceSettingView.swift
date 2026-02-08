@@ -42,20 +42,6 @@ struct AppearanceSettingView: View {
             } footer: {
                 Text("选择应用的显示外观")
             }
-
-            // MARK: - Font Section (Placeholder for future implementation)
-            Section {
-                HStack {
-                    Text("字体大小")
-                    Spacer()
-                    Text("默认")
-                        .foregroundStyle(.secondary)
-                }
-            } header: {
-                Text("字体")
-            } footer: {
-                Text("调整内容显示的字体大小")
-            }
         }
         .navigationTitle("外观设置")
         .navigationBarTitleDisplayMode(.large)
