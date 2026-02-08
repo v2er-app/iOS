@@ -113,11 +113,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
     @ViewBuilder
     private var contentView: some View {
-        VStack(spacing: 0) {
-            listContentView
-            replyBar
-        }
-        .navigationTitle("话题")
+        listContentView
+            .safeAreaInset(edge: .bottom) {
+                replyBar
+            }
+            .navigationTitle("话题")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
