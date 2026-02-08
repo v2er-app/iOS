@@ -241,7 +241,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         contentReady = true
                     }
                 }
-                .padding(.horizontal, Spacing.md)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
                 .listRowBackground(Color(.secondarySystemGroupedBackground))
@@ -394,52 +393,42 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
     }
 
-    /// 选中项的文字颜色（与 tintColor 背景形成对比）
-    private var segmentSelectedTextColor: Color {
-        Color.dynamicHex(light: 0xFFFFFF, dark: 0x1C1C1E)
-    }
-
     @ViewBuilder
     private var replySectionHeader: some View {
-        HStack {
+        HStack(alignment: .center) {
             Text("回复")
                 .font(.subheadline.weight(.medium))
                 .foregroundColor(.primaryText)
 
             Spacer()
 
-            // Segmented sort picker
-            HStack(spacing: 0) {
+            // Inline sort toggle
+            HStack(spacing: Spacing.xxs) {
                 ForEach(ReplySortType.allCases, id: \.self) { sortType in
+                    let isSelected = state.replySortType == sortType
                     Button {
-                        store.appState.feedDetailStates[instanceId]?.replySortType = sortType
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            store.appState.feedDetailStates[instanceId]?.replySortType = sortType
+                        }
                     } label: {
                         HStack(spacing: 3) {
                             Image(systemName: sortType.iconName)
-                                .font(.caption2)
+                                .font(.system(size: 10, weight: isSelected ? .semibold : .regular))
                             Text(sortType.displayName)
-                                .font(.caption)
+                                .font(.caption.weight(isSelected ? .semibold : .regular))
                         }
-                        .foregroundColor(state.replySortType == sortType ? segmentSelectedTextColor : .secondaryText)
-                        .padding(.horizontal, Spacing.md)
-                        .padding(.vertical, Spacing.xs + 1)
-                        .background(
-                            state.replySortType == sortType
-                                ? Color.accentColor
-                                : Color.clear
-                        )
+                        .foregroundColor(isSelected ? .primaryText : .tertiaryText)
+                        .padding(.horizontal, Spacing.sm)
+                        .padding(.vertical, Spacing.xs)
+                        .background(isSelected ? Color(.systemGray5) : Color.clear)
+                        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
                     }
+                    .buttonStyle(.plain)
                 }
             }
-            .background(Color(.secondarySystemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
-            .overlay(
-                RoundedRectangle(cornerRadius: CornerRadius.small)
-                    .stroke(Color(.separator), lineWidth: 0.5)
-            )
         }
         .padding(.horizontal, Spacing.md)
-        .padding(.vertical, Spacing.md)
+        .padding(.vertical, Spacing.sm)
         .background(Color(.secondarySystemGroupedBackground))
     }
 
