@@ -25,7 +25,9 @@ struct SplitNavigationLink<Label: View>: View {
                 detailRoute.wrappedValue = route
             } label: {
                 label()
+                    .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
         } else {
             NavigationLink(value: route) {
                 label()

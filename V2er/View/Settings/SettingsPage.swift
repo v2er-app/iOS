@@ -21,8 +21,6 @@ struct SettingsPage: View {
     @State private var showingLogoutConfirmation = false
     @State private var safariURL: IdentifiableURL?
     @State private var selectedSubSetting: AppRoute? = nil
-    /// Tracks whether we're rendering in split layout
-    @State private var isSplitMode = false
 
     // Get version and build number from Bundle
     private var appVersion: String {
@@ -33,18 +31,11 @@ struct SettingsPage: View {
 
     var body: some View {
         GeometryReader { geo in
-            if geo.size.width > 500 {
+            let isSplit = geo.size.width > 500
+            if isSplit {
                 splitLayout(totalWidth: geo.size.width)
-                    .onAppear { isSplitMode = true }
-                    .onChange(of: geo.size.width) { _, newWidth in
-                        isSplitMode = newWidth > 500
-                    }
             } else {
-                settingsListContent
-                    .onAppear { isSplitMode = false }
-                    .onChange(of: geo.size.width) { _, newWidth in
-                        isSplitMode = newWidth > 500
-                    }
+                settingsListContent(isSplitMode: false)
             }
         }
         .sheet(item: $safariURL) { item in
@@ -74,7 +65,7 @@ struct SettingsPage: View {
         let leftWidth = min(max(totalWidth * 0.38, 280), 380)
         return HStack(spacing: 0) {
             NavigationStack {
-                settingsListContent
+                settingsListContent(isSplitMode: true)
             }
             .frame(width: leftWidth)
 
@@ -109,7 +100,7 @@ struct SettingsPage: View {
 
     // MARK: - Settings List Content
 
-    private var settingsListContent: some View {
+    private func settingsListContent(isSplitMode: Bool) -> some View {
         List {
             // MARK: - Feedback Section
             Section {
@@ -140,11 +131,11 @@ struct SettingsPage: View {
 
             // MARK: - Settings Section
             Section("设置") {
-                settingsNavRow(route: .appearanceSettings) {
+                settingsNavRow(route: .appearanceSettings, isSplitMode: isSplitMode) {
                     Label("外观设置", systemImage: "paintbrush")
                 }
 
-                settingsNavRow(route: .otherSettings) {
+                settingsNavRow(route: .otherSettings, isSplitMode: isSplitMode) {
                     Label("通用设置", systemImage: "gearshape")
                 }
             }
@@ -184,7 +175,7 @@ struct SettingsPage: View {
 
             // MARK: - About Section
             Section("关于") {
-                settingsNavRow(route: .credits) {
+                settingsNavRow(route: .credits, isSplitMode: isSplitMode) {
                     Label("致谢", systemImage: "heart")
                 }
 
@@ -230,7 +221,7 @@ struct SettingsPage: View {
     // MARK: - Settings Navigation Row
 
     @ViewBuilder
-    private func settingsNavRow<Label: View>(route: AppRoute, @ViewBuilder label: () -> Label) -> some View {
+    private func settingsNavRow<Label: View>(route: AppRoute, isSplitMode: Bool, @ViewBuilder label: () -> Label) -> some View {
         if isSplitMode {
             Button {
                 selectedSubSetting = route
