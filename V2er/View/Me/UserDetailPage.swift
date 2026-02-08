@@ -40,12 +40,12 @@ struct UserDetailPage: StateView {
     }
 
     private var statusBarStyle: UIStatusBarStyle {
-        shouldHideNavbar ? .lightContent : .darkContent
+        shouldHideNavbar ? .lightContent : V2erApp.defaultStatusBarStyle()
     }
 
     var body: some View {
         contentView
-            .statusBarStyle(statusBarStyle, original: .darkContent)
+            .statusBarStyle(statusBarStyle)
     }
 
     @ViewBuilder

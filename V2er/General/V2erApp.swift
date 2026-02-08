@@ -45,6 +45,8 @@ struct V2erApp: App {
     private func updateAppearance(_ appearance: AppearanceMode) {
         Self.updateNavigationBarAppearance()
         updateWindowInterfaceStyle(for: appearance)
+        // Update status bar style to match the new appearance
+        Self.changeStatusBarStyle(Self.defaultStatusBarStyle())
     }
 
     static func updateAppearanceStatic(_ appearance: AppearanceMode) {
@@ -129,6 +131,21 @@ struct V2erApp: App {
                 if let windowScene = scene as? UIWindowScene {
                     windowScene.windows.forEach { $0.setNeedsDisplay() }
                 }            }        }
+    }
+
+    /// Returns the appropriate default status bar style for the current appearance.
+    static func defaultStatusBarStyle() -> UIStatusBarStyle {
+        let isDark: Bool
+        let appearance = Store.shared.appState.settingState.appearance
+        switch appearance {
+        case .dark:
+            isDark = true
+        case .light:
+            isDark = false
+        case .system:
+            isDark = UITraitCollection.current.userInterfaceStyle == .dark
+        }
+        return isDark ? .lightContent : .darkContent
     }
 
     static func changeStatusBarStyle(_ style: UIStatusBarStyle) {
