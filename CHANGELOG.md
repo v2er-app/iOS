@@ -2,6 +2,14 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.2.5 (Build XX)
+1. Feature: Full iPad split view support — Explore, Message, Me, and Settings tabs now use two-column layouts on iPad
+2. Feature: Tapping items in iPad sidebar opens detail content in the right pane
+3. Fix: Status bar now correctly adapts to dark mode
+4. Fix: Dark mode tint color updates immediately when switching themes
+5. Improvement: Settings page uses its own split layout on iPad with left list and right detail pane
+6. Improvement: Added disclosure chevrons to all navigable settings rows for clearer navigation cues
+
 ## v1.2.4 (Build XX)
 1. Fix: Resolved duplicate reply content display issue where replies appeared twice in topic detail page (#137)
 
