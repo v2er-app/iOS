@@ -49,7 +49,7 @@ struct SettingsPage: View {
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(Color(.tertiaryLabel))
+                            .foregroundStyle(Color.tertiaryText)
                             .accessibilityHidden(true)
                     }
                     .contentShape(Rectangle())
@@ -78,7 +78,7 @@ struct SettingsPage: View {
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(Color(.tertiaryLabel))
+                            .foregroundStyle(Color.tertiaryText)
                             .accessibilityHidden(true)
                     }
                     .contentShape(Rectangle())
@@ -93,7 +93,7 @@ struct SettingsPage: View {
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(Color(.tertiaryLabel))
+                            .foregroundStyle(Color.tertiaryText)
                             .accessibilityHidden(true)
                     }
                     .contentShape(Rectangle())
@@ -118,7 +118,7 @@ struct SettingsPage: View {
                             .foregroundStyle(.secondary)
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(Color(.tertiaryLabel))
+                            .foregroundStyle(Color.tertiaryText)
                             .accessibilityHidden(true)
                     }
                     .contentShape(Rectangle())
