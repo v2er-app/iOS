@@ -126,7 +126,10 @@ struct MainPage: StateView {
         NavigationSplitView {
             iPadSidebarView(
                 selectedTab: $iPadSelectedTab,
-                unReadNums: unReadNums
+                unReadNums: unReadNums,
+                onReselect: {
+                    dispatch(TabbarClickAction(selectedTab: iPadSelectedTab))
+                }
             )
         } detail: {
             iPadDetailContent

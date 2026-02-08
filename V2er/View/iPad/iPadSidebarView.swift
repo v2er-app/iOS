@@ -8,6 +8,7 @@ import SwiftUI
 struct iPadSidebarView: View {
     @Binding var selectedTab: TabId
     var unReadNums: Int
+    var onReselect: (() -> Void)? = nil
 
     private var optionalSelection: Binding<TabId?> {
         Binding<TabId?>(
@@ -22,9 +23,15 @@ struct iPadSidebarView: View {
         List(selection: optionalSelection) {
             Label("最新", systemImage: "newspaper")
                 .tag(TabId.feed)
+                .simultaneousGesture(TapGesture().onEnded {
+                    if selectedTab == .feed { onReselect?() }
+                })
 
             Label("搜索", systemImage: "magnifyingglass")
                 .tag(TabId.explore)
+                .simultaneousGesture(TapGesture().onEnded {
+                    if selectedTab == .explore { onReselect?() }
+                })
 
             Label {
                 Text("通知")
@@ -44,9 +51,15 @@ struct iPadSidebarView: View {
                     }
             }
             .tag(TabId.message)
+            .simultaneousGesture(TapGesture().onEnded {
+                if selectedTab == .message { onReselect?() }
+            })
 
             Label("我", systemImage: "person")
                 .tag(TabId.me)
+                .simultaneousGesture(TapGesture().onEnded {
+                    if selectedTab == .me { onReselect?() }
+                })
         }
         .listStyle(.sidebar)
         .navigationTitle("V2er")
