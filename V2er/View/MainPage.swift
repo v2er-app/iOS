@@ -129,10 +129,7 @@ struct MainPage: StateView {
                 unReadNums: unReadNums
             )
         } detail: {
-            NavigationStack {
-                iPadDetailContent
-                    .navigationDestination(for: AppRoute.self) { $0.destination() }
-            }
+            iPadDetailContent
         }
         .tint(Color("TintColor"))
         .onChange(of: iPadSelectedTab) { _, newTab in
@@ -144,15 +141,24 @@ struct MainPage: StateView {
     private var iPadDetailContent: some View {
         switch iPadSelectedTab {
         case .feed:
-            FeedPage(selecedTab: iPadSelectedTab)
+            iPadFeedSplitView(selecedTab: iPadSelectedTab)
         case .explore:
-            ExplorePage(selecedTab: iPadSelectedTab)
+            NavigationStack {
+                ExplorePage(selecedTab: iPadSelectedTab)
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
+            }
         case .message:
-            MessagePage(selecedTab: iPadSelectedTab)
+            NavigationStack {
+                MessagePage(selecedTab: iPadSelectedTab)
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
+            }
         case .me:
-            MePage(selecedTab: iPadSelectedTab)
+            NavigationStack {
+                MePage(selecedTab: iPadSelectedTab)
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
+            }
         case .none:
-            FeedPage(selecedTab: iPadSelectedTab)
+            iPadFeedSplitView(selecedTab: iPadSelectedTab)
         }
     }
 

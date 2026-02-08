@@ -175,6 +175,7 @@
 		F090B4D9D3B115551BEF05B4 /* AsyncImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E707C08835B71223A7A3359 /* AsyncImageAttachment.swift */; };
 		FA1B2C3D4E5F6A7B8C9D0E11 /* iPadSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B2C3D4E5F6A7B8C9D0E12 /* iPadSidebarView.swift */; };
 		FA1B2C3D4E5F6A7B8C9D0E13 /* iPadContentWidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B2C3D4E5F6A7B8C9D0E14 /* iPadContentWidth.swift */; };
+		FA1B2C3D4E5F6A7B8C9D0E16 /* iPadFeedSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B2C3D4E5F6A7B8C9D0E17 /* iPadFeedSplitView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -366,6 +367,7 @@
 		E43141D64D5C4A65B1700BF8 /* PostscriptItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostscriptItemView.swift; sourceTree = "<group>"; };
 		FA1B2C3D4E5F6A7B8C9D0E12 /* iPadSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadSidebarView.swift; sourceTree = "<group>"; };
 		FA1B2C3D4E5F6A7B8C9D0E14 /* iPadContentWidth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadContentWidth.swift; sourceTree = "<group>"; };
+		FA1B2C3D4E5F6A7B8C9D0E17 /* iPadFeedSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadFeedSplitView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -868,6 +870,7 @@
 			isa = PBXGroup;
 			children = (
 				FA1B2C3D4E5F6A7B8C9D0E12 /* iPadSidebarView.swift */,
+				FA1B2C3D4E5F6A7B8C9D0E17 /* iPadFeedSplitView.swift */,
 			);
 			path = iPad;
 			sourceTree = "<group>";
@@ -1085,6 +1088,7 @@
 				5D436FED24791C2C00FFA37E /* MainPage.swift in Sources */,
 				FA1B2C3D4E5F6A7B8C9D0E11 /* iPadSidebarView.swift in Sources */,
 				FA1B2C3D4E5F6A7B8C9D0E13 /* iPadContentWidth.swift in Sources */,
+				FA1B2C3D4E5F6A7B8C9D0E16 /* iPadFeedSplitView.swift in Sources */,
 				5DA2AD3E26C18043007FB1EF /* FluxState.swift in Sources */,
 				5DCE4CE8270D9551006BA98D /* UserFeedReducer.swift in Sources */,
 				5D5677CB2721916300543FE8 /* CreateReducer.swift in Sources */,
