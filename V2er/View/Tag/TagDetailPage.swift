@@ -43,12 +43,12 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     }
 
     private var statusBarStyle: UIStatusBarStyle {
-        shouldHideNavbar ? .lightContent : .darkContent
+        shouldHideNavbar ? .lightContent : V2erApp.defaultStatusBarStyle()
     }
 
     var body: some View {
         contentView
-            .statusBarStyle(statusBarStyle, original: .darkContent)
+            .statusBarStyle(statusBarStyle)
     }
 
     @ViewBuilder
@@ -146,7 +146,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             // Custom floating nav bar
             customNavBar
         }
-        .statusBarStyle(shouldHideNavbar ? .lightContent : .darkContent, original: .darkContent)
+        .statusBarStyle(shouldHideNavbar ? .lightContent : V2erApp.defaultStatusBarStyle())
         .toolbar(.hidden, for: .navigationBar)
         .task(id: model.tagImage) {
             guard !model.tagImage.isEmpty, let url = URL(string: model.tagImage) else { return }

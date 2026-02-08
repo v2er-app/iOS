@@ -78,6 +78,14 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
         }
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            // When system appearance changes, update status bar if in system mode
+            V2erApp.changeStatusBarStyle(V2erApp.defaultStatusBarStyle())
+        }
+    }
+
     func applyAppearanceFromString(_ modeString: String) {
         let style: UIUserInterfaceStyle
         switch modeString {
@@ -93,6 +101,11 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
         // Force the view to redraw
         view.setNeedsDisplay()
         view.setNeedsLayout()
+
+        // Update status bar after layout settles from the interface style change
+        DispatchQueue.main.async {
+            V2erApp.changeStatusBarStyle(V2erApp.defaultStatusBarStyle())
+        }
     }
 
     deinit {
@@ -101,12 +114,12 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
 }
 
 extension View {
-    func statusBarStyle(_ style: UIStatusBarStyle, original: UIStatusBarStyle = .darkContent) -> some View {
+    func statusBarStyle(_ style: UIStatusBarStyle) -> some View {
         return self.onAppear {
             V2erApp.changeStatusBarStyle(style)
         }
         .onDisappear {
-            V2erApp.changeStatusBarStyle(original)
+            V2erApp.changeStatusBarStyle(V2erApp.defaultStatusBarStyle())
         }
         .onChange(of: style) { newState in
             V2erApp.changeStatusBarStyle(newState)
