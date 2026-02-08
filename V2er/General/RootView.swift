@@ -178,6 +178,8 @@ struct RootHostView: View {
                 .accessibilityIdentifier("TestTopicDetailView")
             }
         }
+        .tint(Color("TintColor"))
+        .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
         .onAppear {
             // Check for test topic navigation on appear
             if isUITesting, let topicId = getTestTopicId() {

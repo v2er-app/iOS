@@ -32,7 +32,6 @@ struct V2erApp: App {
             RootView {
                 RootHostView()
                     .environmentObject(store)
-                    .preferredColorScheme(store.appState.settingState.appearance.colorScheme)
             }            .onAppear {
                 updateAppearance(store.appState.settingState.appearance)
                 // Record launch and refresh other apps badge
@@ -56,20 +55,6 @@ struct V2erApp: App {
     static func updateNavigationBarAppearanceStatic(for appearance: AppearanceMode) {
         DispatchQueue.main.async {
             let navbarAppearance = UINavigationBarAppearance()
-
-            // Determine if we should use dark mode
-            let isDarkMode: Bool
-            switch appearance {
-            case .light:
-                isDarkMode = false
-            case .dark:
-                isDarkMode = true
-            case .system:
-                isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
-            }
-            let tintColor = isDarkMode ? UIColor.white : UIColor.black
-            navbarAppearance.titleTextAttributes = [.foregroundColor: tintColor]
-            navbarAppearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
             navbarAppearance.backgroundColor = .clear
 
             let navAppearance = UINavigationBar.appearance()
@@ -77,33 +62,12 @@ struct V2erApp: App {
             navAppearance.compactAppearance = navbarAppearance
             navAppearance.scrollEdgeAppearance = navbarAppearance
             navAppearance.backgroundColor = .clear
-            navAppearance.tintColor = tintColor
-
-            // Force refresh of current navigation controllers
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                windowScene.windows.forEach { window in
-                    window.subviews.forEach { _ in
-                        window.tintColor = tintColor
-                    }                }            }        }
+        }
     }
 
     private func updateNavigationBarAppearance(for appearance: AppearanceMode) {
         DispatchQueue.main.async {
             let navbarAppearance = UINavigationBarAppearance()
-
-            // Determine if we should use dark mode
-            let isDarkMode: Bool
-            switch appearance {
-            case .light:
-                isDarkMode = false
-            case .dark:
-                isDarkMode = true
-            case .system:
-                isDarkMode = UITraitCollection.current.userInterfaceStyle == .dark
-            }
-            let tintColor = isDarkMode ? UIColor.white : UIColor.black
-            navbarAppearance.titleTextAttributes = [.foregroundColor: tintColor]
-            navbarAppearance.largeTitleTextAttributes = [.foregroundColor: tintColor]
             navbarAppearance.backgroundColor = .clear
 
             let navAppearance = UINavigationBar.appearance()
@@ -111,14 +75,7 @@ struct V2erApp: App {
             navAppearance.compactAppearance = navbarAppearance
             navAppearance.scrollEdgeAppearance = navbarAppearance
             navAppearance.backgroundColor = .clear
-            navAppearance.tintColor = tintColor
-
-            // Force refresh of current navigation controllers
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                windowScene.windows.forEach { window in
-                    window.subviews.forEach { _ in
-                        window.tintColor = tintColor
-                    }                }            }        }
+        }
     }
     
     static func updateWindowInterfaceStyleStatic(for appearance: AppearanceMode) {
