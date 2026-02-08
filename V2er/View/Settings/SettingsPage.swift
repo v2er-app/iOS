@@ -49,7 +49,7 @@ struct SettingsPage: View {
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(Color(.tertiaryLabel))
+                            .foregroundStyle(Color.tertiaryText)
                             .accessibilityHidden(true)
                     }
                     .contentShape(Rectangle())
@@ -73,14 +73,30 @@ struct SettingsPage: View {
                 Button {
                     openURL("https://www.v2ex.com/help")
                 } label: {
-                    Label("V2EX 帮助", systemImage: "book")
+                    HStack {
+                        Label("V2EX 帮助", systemImage: "book")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(Color.tertiaryText)
+                            .accessibilityHidden(true)
+                    }
+                    .contentShape(Rectangle())
                 }
                 .foregroundStyle(.primary)
 
                 Button {
                     openURL("https://github.com/v2er-app")
                 } label: {
-                    Label("源码开放", systemImage: "chevron.left.forwardslash.chevron.right")
+                    HStack {
+                        Label("源码开放", systemImage: "chevron.left.forwardslash.chevron.right")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(Color.tertiaryText)
+                            .accessibilityHidden(true)
+                    }
+                    .contentShape(Rectangle())
                 }
                 .foregroundStyle(.primary)
             }
@@ -100,7 +116,12 @@ struct SettingsPage: View {
                         Text(appVersion)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+                        Image(systemName: "chevron.right")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(Color.tertiaryText)
+                            .accessibilityHidden(true)
                     }
+                    .contentShape(Rectangle())
                 }
                 .foregroundStyle(.primary)
             }
