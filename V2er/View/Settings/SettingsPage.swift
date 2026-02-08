@@ -50,6 +50,7 @@ struct SettingsPage: View {
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(Color(.tertiaryLabel))
+                            .accessibilityHidden(true)
                     }
                     .contentShape(Rectangle())
                 }
