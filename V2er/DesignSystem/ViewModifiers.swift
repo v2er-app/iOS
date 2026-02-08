@@ -62,26 +62,41 @@ extension View {
 // MARK: - Card Scroll Transition
 
 extension View {
-    /// Subtle fade + scale as cards approach the viewport edges.
-    /// Uses `.visualEffect` which works with List (unlike `.scrollTransition`).
+    /// Scroll-driven fade + scale as cards approach the viewport edges.
+    /// Falls back to global coordinates when scroll-view bounds are unavailable (e.g. inside List).
     func cardScrollTransition() -> some View {
         visualEffect { content, proxy in
-            let frame = proxy.frame(in: .scrollView(axis: .vertical))
+            let frame: CGRect
+            let viewportHeight: CGFloat
 
-            guard let viewportHeight = proxy.bounds(of: .scrollView(axis: .vertical))?.height else {
-                return content
-                    .opacity(1)
-                    .scaleEffect(1)
+            if let scrollBounds = proxy.bounds(of: .scrollView(axis: .vertical)) {
+                frame = proxy.frame(in: .scrollView(axis: .vertical))
+                viewportHeight = scrollBounds.height
+            } else {
+                frame = proxy.frame(in: .global)
+                viewportHeight = UIScreen.main.bounds.height
             }
 
-            let zone: CGFloat = 100
+            guard !frame.isEmpty else {
+                return content.opacity(1).scaleEffect(1).offset(y: 0).blur(radius: 0)
+            }
+
+            let zone: CGFloat = 150
             let fromBottom = min(1.0, max(0.0, (viewportHeight - frame.minY) / zone))
             let fromTop = min(1.0, max(0.0, frame.maxY / zone))
-            let progress = min(fromBottom, fromTop)
+            let rawProgress = min(fromBottom, fromTop)
+
+            // Smoothstep easing for natural deceleration
+            let progress = rawProgress * rawProgress * (3 - 2 * rawProgress)
+
+            // Direction: -1 near top edge, +1 near bottom edge
+            let direction: CGFloat = fromTop < fromBottom ? -1 : 1
 
             return content
-                .opacity(0.7 + 0.3 * progress)
-                .scaleEffect(0.96 + 0.04 * progress)
+                .opacity(0.35 + 0.65 * progress)
+                .scaleEffect(0.92 + 0.08 * progress)
+                .offset(y: direction * 8 * (1 - progress))
+                .blur(radius: (1 - progress) * 3)
         }
     }
 }

@@ -56,25 +56,35 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         ZStack(alignment: .top) {
             // Dominant color gradient background — edge-to-edge behind status bar
             VStack(spacing: 0) {
+                let endColor = model.topics.isEmpty ? dominantColor : Color(.systemGroupedBackground)
                 LinearGradient(
                     stops: [
                         .init(color: dominantColor, location: 0),
                         .init(color: dominantColor, location: 0.7),
-                        .init(color: Color(.systemGroupedBackground), location: 1.0)
+                        .init(color: endColor, location: 1.0)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .frame(height: bannerViewHeight * 1.5 + max(-scrollY, 0))
-                Spacer()
+                .animation(.easeInOut(duration: 0.3), value: model.topics.isEmpty)
+                endColor
             }
             .ignoresSafeArea(edges: .top)
 
             List {
-                // Banner Section
+                // Banner Section (includes rounded corner cap at bottom)
                 topBannerView
                     .readSize {
                         bannerViewHeight = $0.height
+                    }
+                    .padding(.bottom, model.topics.isEmpty ? 0 : 35)
+                    .background(alignment: .bottom) {
+                        if !model.topics.isEmpty {
+                            Color(.systemGroupedBackground)
+                                .frame(height: 30)
+                                .clipCorner(30, corners: [.topLeft, .topRight])
+                        }
                     }
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
@@ -166,7 +176,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.body.weight(.semibold))
-                    .frame(width: 34, height: 34)
+                    .minTapTarget()
             }
 
             if !shouldHideNavbar {
@@ -184,7 +194,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             } label: {
                 Image(systemName: state.model.hasStared ? "bookmark.fill" : "bookmark")
                     .font(.body.weight(.semibold))
-                    .frame(width: 34, height: 34)
+                    .minTapTarget()
             }
             .disabled(tagId == nil)
         }

@@ -25,16 +25,19 @@ struct MyRecentPage: StateView {
     @ViewBuilder
     private var contentView: some View {
         ScrollView {
-            LazyVStack(spacing: 0) {
+            LazyVStack(spacing: Spacing.xs) {
                 ForEach(state.records ?? []) { item in
                     NavigationLink(value: AppRoute.feedDetail(id: item.id)) {
                         RecentItemView(data: item)
-                            .background(Color(.secondarySystemGroupedBackground))
                     }
                     .buttonStyle(.plain)
+                    .cardScrollTransition()
                 }
             }
+            .padding(.horizontal, Spacing.sm)
+            .padding(.vertical, Spacing.xs)
         }
+        .background(Color(.systemGroupedBackground))
         .navigationTitle("最近浏览")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -71,8 +74,9 @@ struct RecentItemView<Data: FeedItemProtocol>: View {
                 .padding(.vertical, 3)
         }
         .padding(Spacing.md)
-        .contentShape(Rectangle())
-        .divider()
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         .navigationDestination(item: $navigateToRoute) { route in
             route.destination()
         }

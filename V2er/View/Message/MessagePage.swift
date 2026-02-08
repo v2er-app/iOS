@@ -44,7 +44,8 @@ struct MessagePage: BaseHomePageView {
         List {
             ForEach(state.model.items) { item in
                 MessageItemView(item: item)
-                    .listRowInsets(EdgeInsets())
+                    .cardScrollTransition()
+                    .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color(.systemGroupedBackground))
             }
@@ -135,7 +136,7 @@ struct MessageItemView: View {
         }
         .padding(Spacing.md)
         .background(Color(.secondarySystemGroupedBackground))
-        .divider()
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         .accessibilityElement(children: .combine)
         .navigationDestination(item: $navigateToRoute) { route in
             route.destination()

@@ -53,25 +53,35 @@ struct UserDetailPage: StateView {
         ZStack(alignment: .top) {
             // Dominant color gradient background — edge-to-edge behind status bar
             VStack(spacing: 0) {
+                let endColor = state.showProgressView ? dominantColor : Color(.systemGroupedBackground)
                 LinearGradient(
                     stops: [
                         .init(color: dominantColor, location: 0),
                         .init(color: dominantColor, location: 0.7),
-                        .init(color: Color(.systemGroupedBackground), location: 1.0)
+                        .init(color: endColor, location: 1.0)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .frame(height: bannerViewHeight * 1.5 + max(-scrollY, 0))
-                Spacer()
+                .animation(.easeInOut(duration: 0.3), value: state.showProgressView)
+                Color(.systemGroupedBackground)
             }
             .ignoresSafeArea(edges: .top)
 
             List {
-                // Banner Section
+                // Banner Section (includes rounded corner cap at bottom)
                 topBannerView
                     .readSize {
                         bannerViewHeight = $0.height
+                    }
+                    .padding(.bottom, state.showProgressView ? 0 : 35)
+                    .background(alignment: .bottom) {
+                        if !state.showProgressView {
+                            Color(.systemGroupedBackground)
+                                .frame(height: 30)
+                                .clipCorner(30, corners: [.topLeft, .topRight])
+                        }
                     }
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
@@ -79,9 +89,9 @@ struct UserDetailPage: StateView {
 
                 // Tabs Section
                 tabsTitleView
-                    .listRowInsets(EdgeInsets())
+                    .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.secondarySystemGroupedBackground))
+                    .listRowBackground(Color(.systemGroupedBackground))
 
                 // Bottom Detail Section - Topics
                 if currentTab == .topic {
@@ -194,7 +204,7 @@ struct UserDetailPage: StateView {
             } label: {
                 Image(systemName: "chevron.left")
                     .font(.body.weight(.semibold))
-                    .frame(width: 34, height: 34)
+                    .minTapTarget()
             }
 
             if !shouldHideNavbar {
@@ -212,7 +222,7 @@ struct UserDetailPage: StateView {
                 } label: {
                     Image(systemName: state.model.hasFollowed ? "heart.fill" : "heart")
                         .font(.body.weight(.semibold))
-                        .frame(width: 34, height: 34)
+                        .minTapTarget()
                 }
 
                 Button {
@@ -220,7 +230,7 @@ struct UserDetailPage: StateView {
                 } label: {
                     Image(systemName: state.model.hasBlocked ? "eye.slash.fill" : "eye.slash")
                         .font(.body.weight(.semibold))
-                        .frame(width: 34, height: 34)
+                        .minTapTarget()
                 }
             }
         }
@@ -279,7 +289,7 @@ struct UserDetailPage: StateView {
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.md)
         .background(Color(.secondarySystemGroupedBackground))
-        .clipCorner(CornerRadius.medium, corners: [.topLeft, .topRight])
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
     }
     
 
