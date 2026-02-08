@@ -228,58 +228,47 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @ViewBuilder
     private var listContentView: some View {
         List {
-            // Header Section
-            AuthorInfoView(initData: initData, data: state.model.headerInfo)
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color(.secondarySystemGroupedBackground))
+            // Topic Card: Header + Content + Postscripts
+            VStack(spacing: 0) {
+                AuthorInfoView(initData: initData, data: state.model.headerInfo)
 
-            // Content Section
-            if !isContentEmpty {
-                NewsContentView(state.model.contentInfo) {
-                    withAnimation {
-                        contentReady = true
+                if !isContentEmpty {
+                    NewsContentView(state.model.contentInfo) {
+                        withAnimation {
+                            contentReady = true
+                        }
                     }
                 }
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color(.secondarySystemGroupedBackground))
+
+                if contentReady || isContentEmpty {
+                    ForEach(state.model.postscripts) { postscript in
+                        PostscriptItemView(postscript: postscript)
+                    }
+                }
             }
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color(.systemGroupedBackground))
 
-            // Show postscripts and replies only after content is ready
+            // Reply Section (shown after content loads)
             if contentReady || isContentEmpty {
-                // Postscripts Section (附言)
-                ForEach(state.model.postscripts) { postscript in
-                    PostscriptItemView(postscript: postscript)
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
-                }
-
-                // Spacer between content and replies
-                if !state.model.replyInfo.items.isEmpty {
-                    Color.clear
-                        .frame(height: Spacing.sm)
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
-                }
-
-                // Reply Section Header with Sort Toggle
+                // Reply Section Header
                 if !state.model.replyInfo.items.isEmpty {
                     replySectionHeader
-                        .listRowInsets(EdgeInsets())
+                        .listRowInsets(EdgeInsets(top: Spacing.sm, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        .listRowBackground(Color(.systemGroupedBackground))
                 }
 
-                // Reply Section
+                // Reply Cards
                 ForEach(sortedReplies, id: \.floor) { item in
                     ReplyItemView(info: item, topicId: id)
                         .cardScrollTransition()
                         .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        .listRowBackground(Color(.systemGroupedBackground))
                 }
             }
 
@@ -295,7 +284,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 .frame(height: 50)
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)
-                .listRowBackground(Color(.secondarySystemGroupedBackground))
+                .listRowBackground(Color(.systemGroupedBackground))
                 .onAppear {
                     guard !isLoadingMore else { return }
                     isLoadingMore = true
@@ -310,7 +299,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
-        .background(Color(.secondarySystemGroupedBackground))
+        .background(Color(.systemGroupedBackground))
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
@@ -321,49 +310,48 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     }
 
     private var replyBar: some View {
-        VStack(spacing: 0) {
-            Divider()
-            VStack(spacing: 0) {
-                HStack(alignment: .bottom, spacing: Spacing.sm) {
-                    // Image picker button
-                    if isUploadingImage {
-                        ProgressView()
-                            .frame(width: 28, height: 28)
-                            .padding(.leading, Spacing.xs + 2)
-                            .padding(.vertical, 3)
-                    } else {
-                        UnifiedImagePickerButton(selectedImage: $selectedImage)
-                            .padding(.leading, Spacing.xs + 2)
-                            .padding(.vertical, 3)
-                    }
-
-                    MultilineTextField("发表回复", text: bindingState.replyContent)
-                        .onReceive(keyboardPublisher) { isKeyboardVisiable in
-                            self.isKeyboardVisiable = isKeyboardVisiable
-                        }
-                        .focused($replyIsFocused)
-
-                    Button {
-                        replyIsFocused = false
-                        dispatch(FeedDetailActions.ReplyTopic(id: id))
-                    } label: {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .font(.title.weight(.regular))
-                            .foregroundColor(Color.accentColor.opacity(hasReplyContent ? 1.0 : 0.6))
-                            .padding(.trailing, Spacing.xs + 2)
-                            .padding(.vertical, 3)
-                    }
-                    .disabled(!hasReplyContent)
-                    .accessibilityLabel("发送回复")
-                }
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+        HStack(alignment: .bottom, spacing: Spacing.sm) {
+            // Image picker button
+            if isUploadingImage {
+                ProgressView()
+                    .frame(width: 28, height: 28)
+                    .padding(.leading, Spacing.xs + 2)
+                    .padding(.vertical, 3)
+            } else {
+                UnifiedImagePickerButton(selectedImage: $selectedImage)
+                    .padding(.leading, Spacing.xs + 2)
+                    .padding(.vertical, 3)
             }
-            .padding(.bottom, isKeyboardVisiable ? 0 : topSafeAreaInset().bottom * 0.9)
-            .padding(.top, Spacing.md)
-            .padding(.horizontal, Spacing.md)
-            .background(Color(.secondarySystemGroupedBackground))
+
+            MultilineTextField("发表回复", text: bindingState.replyContent)
+                .onReceive(keyboardPublisher) { isKeyboardVisiable in
+                    self.isKeyboardVisiable = isKeyboardVisiable
+                }
+                .focused($replyIsFocused)
+
+            Button {
+                replyIsFocused = false
+                dispatch(FeedDetailActions.ReplyTopic(id: id))
+            } label: {
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.title.weight(.regular))
+                    .foregroundColor(Color.accentColor.opacity(hasReplyContent ? 1.0 : 0.6))
+                    .padding(.trailing, Spacing.xs + 2)
+                    .padding(.vertical, 3)
+            }
+            .disabled(!hasReplyContent)
+            .accessibilityLabel("发送回复")
         }
+        .background(Color(.systemGray6))
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .padding(.horizontal, Spacing.sm)
+        .padding(.top, Spacing.md)
+        .padding(.bottom, Spacing.md)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .padding(.horizontal, Spacing.sm)
+        .padding(.bottom, isKeyboardVisiable ? Spacing.sm : max(Spacing.sm, topSafeAreaInset().bottom))
+        .background(Color(.systemGroupedBackground))
         .onChange(of: selectedImage) { _, newImage in
             guard let image = newImage else { return }
             uploadImage(image)
@@ -429,7 +417,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .padding(.horizontal, Spacing.md)
         .padding(.vertical, Spacing.sm)
-        .background(Color(.secondarySystemGroupedBackground))
     }
 
     @ViewBuilder
