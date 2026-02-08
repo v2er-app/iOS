@@ -33,6 +33,7 @@ struct AppearanceSettingView: View {
                                     .fontWeight(.semibold)
                             }
                         }
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                 }

@@ -35,16 +35,20 @@ struct SettingsPage: View {
                 Button {
                     openURL("https://v2er.app/help")
                 } label: {
-                    Label {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("问题反馈")
-                            Text("https://v2er.app/help")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                    HStack {
+                        Label {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("问题反馈")
+                                Text("https://v2er.app/help")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } icon: {
+                            Image(systemName: "questionmark.circle")
                         }
-                    } icon: {
-                        Image(systemName: "questionmark.circle")
+                        Spacer()
                     }
+                    .contentShape(Rectangle())
                 }
                 .foregroundStyle(.primary)
             }
