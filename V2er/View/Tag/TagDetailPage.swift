@@ -68,7 +68,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                 )
                 .frame(height: bannerViewHeight * 1.5 + max(-scrollY, 0))
                 .animation(.easeInOut(duration: 0.3), value: model.topics.isEmpty)
-                Spacer()
+                endColor
             }
             .ignoresSafeArea(edges: .top)
 

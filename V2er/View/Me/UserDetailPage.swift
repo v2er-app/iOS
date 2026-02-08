@@ -65,7 +65,7 @@ struct UserDetailPage: StateView {
                 )
                 .frame(height: bannerViewHeight * 1.5 + max(-scrollY, 0))
                 .animation(.easeInOut(duration: 0.3), value: state.showProgressView)
-                Spacer()
+                Color(.systemGroupedBackground)
             }
             .ignoresSafeArea(edges: .top)
 

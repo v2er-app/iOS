@@ -280,7 +280,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         .cardScrollTransition()
                         .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                         .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.systemGroupedBackground))
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
                 }
             }
 
