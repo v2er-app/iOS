@@ -75,7 +75,7 @@ struct UserDetailPage: StateView {
                     .readSize {
                         bannerViewHeight = $0.height
                     }
-                    .padding(.bottom, state.showProgressView ? 0 : 15)
+                    .padding(.bottom, state.showProgressView ? 0 : 35)
                     .background(alignment: .bottom) {
                         if !state.showProgressView {
                             Color(.systemGroupedBackground)

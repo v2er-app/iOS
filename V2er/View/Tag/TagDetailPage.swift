@@ -78,7 +78,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     .readSize {
                         bannerViewHeight = $0.height
                     }
-                    .padding(.bottom, model.topics.isEmpty ? 0 : 15)
+                    .padding(.bottom, model.topics.isEmpty ? 0 : 35)
                     .background(alignment: .bottom) {
                         if !model.topics.isEmpty {
                             Color(.systemGroupedBackground)
