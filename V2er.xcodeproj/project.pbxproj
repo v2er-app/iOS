@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		C94696A1FCE94867B1E38D53 /* Routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC913F225BB24E37933B8379 /* Routes.swift */; };
+		AA1B2C3D4E5F6A7B8C9D0E20 /* iPadDetailNavigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F6A7B8C9D0E21 /* iPadDetailNavigation.swift */; };
+		AA1B2C3D4E5F6A7B8C9D0E22 /* iPadTabSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F6A7B8C9D0E23 /* iPadTabSplitView.swift */; };
+		AA1B2C3D4E5F6A7B8C9D0E24 /* SplitNavigationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1B2C3D4E5F6A7B8C9D0E25 /* SplitNavigationLink.swift */; };
 		F0A100F51ED7465680593E94 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3076F8BDDAF54DAAB1AA56D0 /* Spacing.swift */; };
 		FF753C73138848AB894ACBF5 /* CornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4810ECA8724E41CEAE8A0F72 /* CornerRadius.swift */; };
 		A52B70BA188C4C1FB7093C74 /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07EA1DA655784BCE8089F313 /* Typography.swift */; };
@@ -173,6 +176,9 @@
 		E6F855004AFD402D95495FC4 /* URLRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E07C501559C4957B0DEF9D4 /* URLRouter.swift */; };
 		EC3A2A13EC68ED3A8DFA764A /* RenderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3CC744901D9A994CF6ABE7 /* RenderError.swift */; };
 		F090B4D9D3B115551BEF05B4 /* AsyncImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E707C08835B71223A7A3359 /* AsyncImageAttachment.swift */; };
+		FA1B2C3D4E5F6A7B8C9D0E11 /* iPadSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B2C3D4E5F6A7B8C9D0E12 /* iPadSidebarView.swift */; };
+		FA1B2C3D4E5F6A7B8C9D0E13 /* iPadContentWidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B2C3D4E5F6A7B8C9D0E14 /* iPadContentWidth.swift */; };
+		FA1B2C3D4E5F6A7B8C9D0E16 /* iPadFeedSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA1B2C3D4E5F6A7B8C9D0E17 /* iPadFeedSplitView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -362,6 +368,12 @@
 		E205F350A3537A3E41B1AFC3 /* RichContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RichContentView.swift; path = V2er/Sources/RichView/Views/RichContentView.swift; sourceTree = "<group>"; };
 		E302E9E724D04067809B5C8B /* OtherAppsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherAppsManager.swift; sourceTree = "<group>"; };
 		E43141D64D5C4A65B1700BF8 /* PostscriptItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostscriptItemView.swift; sourceTree = "<group>"; };
+		FA1B2C3D4E5F6A7B8C9D0E12 /* iPadSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadSidebarView.swift; sourceTree = "<group>"; };
+		FA1B2C3D4E5F6A7B8C9D0E14 /* iPadContentWidth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadContentWidth.swift; sourceTree = "<group>"; };
+		FA1B2C3D4E5F6A7B8C9D0E17 /* iPadFeedSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadFeedSplitView.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F6A7B8C9D0E21 /* iPadDetailNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadDetailNavigation.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F6A7B8C9D0E23 /* iPadTabSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadTabSplitView.swift; sourceTree = "<group>"; };
+		AA1B2C3D4E5F6A7B8C9D0E25 /* SplitNavigationLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitNavigationLink.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -457,6 +469,7 @@
 				5D68717B271853DB00329E73 /* SectionItemView.swift */,
 				5DC05A54273D5A2B003561A9 /* Toast.swift */,
 				6E349FC53BB87F2F0492D651 /* ImagePickerView.swift */,
+				AA1B2C3D4E5F6A7B8C9D0E25 /* SplitNavigationLink.swift */,
 			);
 			path = Widget;
 			sourceTree = "<group>";
@@ -767,6 +780,7 @@
 				5D843E9626A46CB800C47D95 /* Message */,
 				5D179BFD2496F6EC00E40E90 /* Widget */,
 				0B1A2B3C4D5E6F7081920A06 /* Splash */,
+				FA1B2C3D4E5F6A7B8C9D0E15 /* iPad */,
 				4EC32AF129D818FC003A3BD4 /* WebBrowserView.swift */,
 			);
 			path = View;
@@ -853,8 +867,20 @@
 				07EA1DA655784BCE8089F313 /* Typography.swift */,
 				EBAA5A313E5643CF9AEE8FA2 /* ButtonStyles.swift */,
 				B55C22A202CC4A6C8D0D71A9 /* ViewModifiers.swift */,
+				FA1B2C3D4E5F6A7B8C9D0E14 /* iPadContentWidth.swift */,
 			);
 			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+
+		FA1B2C3D4E5F6A7B8C9D0E15 /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+				FA1B2C3D4E5F6A7B8C9D0E12 /* iPadSidebarView.swift */,
+				FA1B2C3D4E5F6A7B8C9D0E17 /* iPadFeedSplitView.swift */,
+				AA1B2C3D4E5F6A7B8C9D0E23 /* iPadTabSplitView.swift */,
+			);
+			path = iPad;
 			sourceTree = "<group>";
 		};
 
@@ -862,6 +888,7 @@
 			isa = PBXGroup;
 			children = (
 				BC913F225BB24E37933B8379 /* Routes.swift */,
+				AA1B2C3D4E5F6A7B8C9D0E21 /* iPadDetailNavigation.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -1020,6 +1047,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA1B2C3D4E5F6A7B8C9D0E20 /* iPadDetailNavigation.swift in Sources */,
+				AA1B2C3D4E5F6A7B8C9D0E22 /* iPadTabSplitView.swift in Sources */,
+				AA1B2C3D4E5F6A7B8C9D0E24 /* SplitNavigationLink.swift in Sources */,
 				0B1A2B3C4D5E6F7081920A03 /* SplashView.swift in Sources */,
 				0B1A2B3C4D5E6F7081920A07 /* TypewriterView.swift in Sources */,
 				5D73FBDA27284ADB004558E9 /* RichText.swift in Sources */,
@@ -1068,6 +1098,9 @@
 				5DD2B9FE27263E3A004F357D /* SearchState.swift in Sources */,
 				5DCE4CF0270D978B006BA98D /* SettingState.swift in Sources */,
 				5D436FED24791C2C00FFA37E /* MainPage.swift in Sources */,
+				FA1B2C3D4E5F6A7B8C9D0E11 /* iPadSidebarView.swift in Sources */,
+				FA1B2C3D4E5F6A7B8C9D0E13 /* iPadContentWidth.swift in Sources */,
+				FA1B2C3D4E5F6A7B8C9D0E16 /* iPadFeedSplitView.swift in Sources */,
 				5DA2AD3E26C18043007FB1EF /* FluxState.swift in Sources */,
 				5DCE4CE8270D9551006BA98D /* UserFeedReducer.swift in Sources */,
 				5D5677CB2721916300543FE8 /* CreateReducer.swift in Sources */,
@@ -1340,7 +1373,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1365,7 +1398,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

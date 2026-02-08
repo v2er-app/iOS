@@ -10,6 +10,7 @@ import SwiftUI
 
 struct MePage: BaseHomePageView {
     @EnvironmentObject private var store: Store
+    @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @ObservedObject private var otherAppsManager = OtherAppsManager.shared
 
     var bindingState: Binding<MeState> {
@@ -50,30 +51,30 @@ struct MePage: BaseHomePageView {
 
             // MARK: - Content Section
             Section {
-                NavigationLink(value: AppRoute.createTopic) {
+                SplitNavigationLink(route: .createTopic) {
                     Label("发帖", systemImage: "pencil")
                 }
             }
 
             // MARK: - My Content Section
             Section("我的") {
-                NavigationLink(value: AppRoute.userFeed(userId: AccountState.userName)) {
+                SplitNavigationLink(route: .userFeed(userId: AccountState.userName)) {
                     Label("主题", systemImage: "paperplane")
                 }
 
-                NavigationLink(value: AppRoute.myFavorites) {
+                SplitNavigationLink(route: .myFavorites) {
                     Label("收藏", systemImage: "bookmark")
                 }
 
-                NavigationLink(value: AppRoute.myFollow) {
+                SplitNavigationLink(route: .myFollow) {
                     Label("关注", systemImage: "heart")
                 }
 
-                NavigationLink(value: AppRoute.myRecent) {
+                SplitNavigationLink(route: .myRecent) {
                     Label("最近浏览", systemImage: "clock")
                 }
 
-                NavigationLink(value: AppRoute.myUploads) {
+                SplitNavigationLink(route: .myUploads) {
                     Label("我的图片", systemImage: "photo.on.rectangle")
                 }
             }
@@ -115,7 +116,7 @@ struct MePage: BaseHomePageView {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                NavigationLink(value: AppRoute.settings) {
+                SplitNavigationLink(route: .settings) {
                     Image(systemName: "gearshape")
                 }
             }
@@ -127,14 +128,24 @@ struct MePage: BaseHomePageView {
     private var userBannerView: some View {
         HStack(spacing: Spacing.md) {
             Button {
-                navigateToUserDetail = .userDetail(userId: AccountState.userName)
+                let route = AppRoute.userDetail(userId: AccountState.userName)
+                if let detailRoute = iPadDetailRoute {
+                    detailRoute.wrappedValue = route
+                } else {
+                    navigateToUserDetail = route
+                }
             } label: {
                 AvatarView(url: AccountState.avatarUrl, size: 60)
             }
             .buttonStyle(.plain)
             VStack(alignment: .leading, spacing: Spacing.xs + 2) {
                 Button {
-                    navigateToUserDetail = .userDetail(userId: AccountState.userName)
+                    let route = AppRoute.userDetail(userId: AccountState.userName)
+                    if let detailRoute = iPadDetailRoute {
+                        detailRoute.wrappedValue = route
+                    } else {
+                        navigateToUserDetail = route
+                    }
                 } label: {
                     Text(AccountState.userName)
                         .font(.headline)

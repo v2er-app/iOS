@@ -89,10 +89,7 @@ struct ExplorePage: BaseHomePageView {
                                 .greedyWidth(.leading)
                         }
                         .padding(.vertical, Spacing.md)
-                        .background {
-                            NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
-                                .opacity(0)
-                        }
+                        .splitNavigationBackground(route: .feedDetail(id: item.id))
                         .listRowInsets(EdgeInsets(top: 0, leading: Spacing.sm, bottom: 0, trailing: Spacing.sm))
                         .listRowBackground(Color(.systemGroupedBackground))
                     }
@@ -177,10 +174,7 @@ struct ExplorePage: BaseHomePageView {
             ForEach(searchState.model?.hits ?? []) { item in
                 SearchResultItemView(hint: item)
                     .cardScrollTransition()
-                    .background {
-                        NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
-                            .opacity(0)
-                    }
+                    .splitNavigationBackground(route: .feedDetail(id: item.id))
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color(.systemGroupedBackground))

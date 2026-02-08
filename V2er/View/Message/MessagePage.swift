@@ -92,22 +92,31 @@ struct MessagePage: BaseHomePageView {
 }
 
 struct MessageItemView: View {
+    @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     let item: MessageInfo.Item
     let quoteFont = Style.font(UIFont.prfered(.subheadline))
         .foregroundColor(Color.secondaryText.uiColor)
     @State private var navigateToRoute: AppRoute?
 
+    private func navigate(to route: AppRoute) {
+        if let detailRoute = iPadDetailRoute {
+            detailRoute.wrappedValue = route
+        } else {
+            navigateToRoute = route
+        }
+    }
+
     var body: some View {
         HStack(alignment: .top, spacing: Spacing.md) {
             Button {
-                navigateToRoute = .userDetail(userId: item.username)
+                navigate(to: .userDetail(userId: item.username))
             } label: {
                 AvatarView(url: item.avatar, size: 40)
             }
             .buttonStyle(.plain)
             VStack(alignment: .leading, spacing: Spacing.xs) {
                 Button {
-                    navigateToRoute = .feedDetail(id: item.feedId)
+                    navigate(to: .feedDetail(id: item.feedId))
                 } label: {
                     Text(item.title)
                         .foregroundColor(Color(.label))

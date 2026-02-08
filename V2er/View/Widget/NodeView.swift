@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct NodeView: View {
+    @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     let id: String
     let name: String
     let img: String?
@@ -22,7 +23,12 @@ struct NodeView: View {
 
     var body: some View {
         Button {
-            navigateToRoute = .tagDetail(tagId: id)
+            let route = AppRoute.tagDetail(tagId: id)
+            if let detailRoute = iPadDetailRoute {
+                detailRoute.wrappedValue = route
+            } else {
+                navigateToRoute = route
+            }
         } label: {
             Text(name)
                 .nodeBadgeStyle()

@@ -16,6 +16,8 @@ struct FeedPage: BaseHomePageView {
         $store.appState.feedState
     }
     var selecedTab: TabId
+    var onSelectFeed: ((String) -> Void)? = nil
+    var iPadSelectedFeedId: String? = nil
 
     var isSelected: Bool {
         selecedTab == .feed
@@ -112,15 +114,26 @@ struct FeedPage: BaseHomePageView {
             List {
                 // Feed Items
                 ForEach(state.feedInfo.items) { item in
-                    FeedItemView(data: item)
-                        .cardScrollTransition()
-                        .background {
-                            NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
-                                .opacity(0)
-                        }
-                        .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color(.systemGroupedBackground))
+                    if let onSelectFeed {
+                        FeedItemView(data: item)
+                            .cardScrollTransition()
+                            .opacity(iPadSelectedFeedId == item.id ? 0.5 : 1.0)
+                            .contentShape(Rectangle())
+                            .onTapGesture { onSelectFeed(item.id) }
+                            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color(.systemGroupedBackground))
+                    } else {
+                        FeedItemView(data: item)
+                            .cardScrollTransition()
+                            .background {
+                                NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                                    .opacity(0)
+                            }
+                            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color(.systemGroupedBackground))
+                    }
                 }
 
                 // Load More Indicator
