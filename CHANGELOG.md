@@ -2,6 +2,11 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.2.6 (Build XX)
+1. Improvement: More compact image placeholders in topic detail for a cleaner reading experience
+2. Improvement: Lighter sort toggle styling for less visual clutter
+3. Improvement: Reduced content padding in topic detail for better use of screen space
+
 ## v1.2.5 (Build XX)
 1. Feature: Full iPad split view support — Explore, Message, Me, and Settings tabs now use two-column layouts on iPad
 2. Feature: Tapping items in iPad sidebar opens detail content in the right pane
