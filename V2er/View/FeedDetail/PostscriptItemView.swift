@@ -52,7 +52,6 @@ struct PostscriptItemView: View {
             }
             .padding(.horizontal, Spacing.md)
         }
-        .background(Color(.secondarySystemGroupedBackground))
     }
 
     @available(iOS 18.0, *)

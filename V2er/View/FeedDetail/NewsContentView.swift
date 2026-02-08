@@ -46,8 +46,6 @@ struct NewsContentView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-
-            Divider()
         }
         .background(
             Group {

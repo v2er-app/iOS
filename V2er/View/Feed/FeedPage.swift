@@ -89,6 +89,7 @@ struct FeedPage: BaseHomePageView {
             .foregroundColor(.primary)
             .accessibilityLabel("筛选: \(navigationTitle)")
         }
+        .tint(.primary)
     }
 
     private func showOnlineStatsTemporarily() {

@@ -102,7 +102,7 @@ struct MainPage: StateView {
             }
             .tag(TabId.me)
         }
-        .tint(Color.accentColor)  // This controls the selected icon color in TabView
+        .tint(Color("TintColor"))  // Uses adaptive TintColor asset (dark gray in light mode, white in dark)
         .onReceive(tabReselectionPublisher) { tappedTab in
             // Dispatch action for all tab taps (including same-tab taps)
             dispatch(TabbarClickAction(selectedTab: tappedTab))

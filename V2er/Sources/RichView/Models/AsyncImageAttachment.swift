@@ -111,21 +111,11 @@ public struct AsyncImageAttachment: View {
     // MARK: - Subviews
 
     private var placeholderView: some View {
-        VStack(spacing: 8) {
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
-
-            if !altText.isEmpty {
-                Text(altText)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 8)
-            }
-        }
-        .frame(maxWidth: style.maxWidth, maxHeight: min(style.maxHeight, 200))
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(style.cornerRadius)
+        ProgressView()
+            .progressViewStyle(CircularProgressViewStyle())
+            .frame(width: 40, height: 40)
+            .background(Color.gray.opacity(0.08))
+            .cornerRadius(style.cornerRadius)
     }
 
     private var errorView: some View {

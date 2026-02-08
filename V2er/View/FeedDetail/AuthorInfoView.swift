@@ -78,7 +78,6 @@ struct AuthorInfoView: View {
                 .padding(.top, Spacing.lg)
         }
         .padding(Spacing.md)
-        .background(Color(.secondarySystemGroupedBackground))
         .accessibilityElement(children: .combine)
         .navigationDestination(item: $navigateToRoute) { route in
             route.destination()
