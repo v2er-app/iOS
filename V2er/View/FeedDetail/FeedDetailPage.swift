@@ -350,8 +350,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         .padding(.horizontal, Spacing.sm)
-        .padding(.bottom, isKeyboardVisiable ? Spacing.sm : max(Spacing.sm, topSafeAreaInset().bottom))
-        .background(Color(.systemGroupedBackground))
+        .padding(.bottom, Spacing.sm)
         .onChange(of: selectedImage) { _, newImage in
             guard let image = newImage else { return }
             uploadImage(image)
