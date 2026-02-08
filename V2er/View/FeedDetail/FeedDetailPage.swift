@@ -220,7 +220,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 Label("使用浏览器打开", systemImage: "safari")
             }
         } label: {
-            Image(systemName: "ellipsis.circle")
+            Image(systemName: "ellipsis")
                 .font(.body)
         }
     }
