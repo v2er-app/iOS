@@ -45,6 +45,7 @@ struct iPadFeedSplitView: View {
                 )
                 .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
+            .environmentObject(Store.shared)
             .environment(\.iPadDetailRoute, $detailRoute)
             .frame(width: leftWidth)
 
@@ -66,6 +67,7 @@ struct iPadFeedSplitView: View {
                 .id(detailRoute)
                 .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
+            .environmentObject(Store.shared)
             .environment(\.iPadDetailPath, $detailPath)
             .onChange(of: detailRoute) { _, _ in
                 detailPath = NavigationPath()
@@ -80,6 +82,7 @@ struct iPadFeedSplitView: View {
             FeedPage(selecedTab: selecedTab)
                 .navigationDestination(for: AppRoute.self) { $0.destination() }
         }
+        .environmentObject(Store.shared)
     }
 
     // MARK: - Placeholder

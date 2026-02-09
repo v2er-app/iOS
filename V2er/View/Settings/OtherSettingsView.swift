@@ -10,7 +10,7 @@ import SwiftUI
 import Kingfisher
 
 struct OtherSettingsView: View {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @State private var cacheSizeMB: Double = 0
     @State private var imgurClientId: String = ""
     @State private var showingImgurHelp = false
@@ -108,7 +108,9 @@ struct OtherSettingsView: View {
             Section {
                 HStack {
                     TextField("使用内置 Client ID", text: $imgurClientId)
+                        #if os(iOS)
                         .textInputAutocapitalization(.never)
+                        #endif
                         .autocorrectionDisabled()
                         .onChange(of: imgurClientId) { _, newValue in
                             SettingState.saveImgurClientId(newValue)
@@ -129,7 +131,9 @@ struct OtherSettingsView: View {
             }
         }
         .navigationTitle("通用设置")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
+        #endif
         .onAppear {
             imgurClientId = SettingState.getImgurClientId() ?? ""
         }

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct UserFeedPage: StateView, InstanceIdentifiable {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.isPresented) private var isPresented
     @State private var isLoadingMore = false
@@ -29,7 +29,9 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                 dispatch(UserFeedActions.FetchStart(id: instanceId, userId: userId, autoLoad: !state.hasLoadedOnce))
             }
             .navigationTitle("\(userId)的全部主题")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
     }
 
     @ViewBuilder

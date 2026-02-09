@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MyFollowPage: StateView {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @State private var isLoadingMore = false
 
     var bindingState: Binding<MyFollowState> {
@@ -22,7 +22,9 @@ struct MyFollowPage: StateView {
                 dispatch(MyFollowActions.FetchStart(autoLoad: !state.updatableState.hasLoadedOnce))
             }
             .navigationTitle("我的关注")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
     }
 
     @ViewBuilder

@@ -8,10 +8,26 @@
 
 import Foundation
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
+#if canImport(AppKit)
+import AppKit
+#endif
+
+#if os(iOS)
+typealias PlatformColor = UIColor
+typealias PlatformImage = UIImage
+typealias PlatformFont = UIFont
+#elseif os(macOS)
+typealias PlatformColor = NSColor
+typealias PlatformImage = NSImage
+typealias PlatformFont = NSFont
+#endif
 
 extension Color {
     private init(_ hex: Int, a: CGFloat = 1.0) {
-        self.init(UIColor(hex: hex, alpha: a))
+        self.init(PlatformColor(hex: hex, alpha: a))
     }
 
     public static func hex(_ hex: Int, alpha: CGFloat = 1.0) -> Color {
@@ -26,8 +42,9 @@ extension Color {
         self.frame(width: .infinity)
     }
 
-    // MARK: - Semantic Colors (UIKit-backed, auto-adapt to light/dark/accessibility)
+    // MARK: - Semantic Colors (auto-adapt to light/dark/accessibility)
 
+    #if os(iOS)
     // Background Colors
     public static let background = Color(.systemBackground)
     public static let secondaryBackground = Color(.secondarySystemBackground)
@@ -44,40 +61,64 @@ extension Color {
     public static let tint = Color.accentColor
     public static let selection = Color(.systemGray4)
 
-    // MARK: - Deprecated Aliases (use semantic names above)
-
+    // Deprecated Aliases
     @available(*, deprecated, renamed: "separator")
     public static let border = Color(.separator)
 
     @available(*, deprecated, message: "Use Color(.systemGray6) directly")
     public static let lightGray = Color(.systemGray6)
+    #else
+    // macOS equivalents using NSColor
+    public static let background = Color(nsColor: .windowBackgroundColor)
+    public static let secondaryBackground = Color(nsColor: .controlBackgroundColor)
+    public static let tertiaryBackground = Color(nsColor: .underPageBackgroundColor)
+    public static let itemBackground = Color(nsColor: .controlBackgroundColor)
+
+    public static let primaryText = Color(nsColor: .labelColor)
+    public static let secondaryText = Color(nsColor: .secondaryLabelColor)
+    public static let tertiaryText = Color(nsColor: .tertiaryLabelColor)
+
+    public static let separator = Color(nsColor: .separatorColor)
+    public static let tint = Color.accentColor
+    public static let selection = Color(nsColor: .selectedContentBackgroundColor)
+
+    public static let border = Color(nsColor: .separatorColor)
+    public static let lightGray = Color(nsColor: .controlBackgroundColor)
+    #endif
 
     public static let debugColor = hex(0xFF0000, alpha: 0.1)
 
     @available(*, deprecated, renamed: "primaryText")
-    public static let bodyText = Color(.label)
+    public static let bodyText = primaryText
 
     @available(*, deprecated, renamed: "tint")
     public static let tintColor = Color.accentColor
 
     @available(*, deprecated, renamed: "background")
-    public static let bgColor = Color(.systemBackground)
+    public static let bgColor = background
 
     @available(*, deprecated, renamed: "itemBackground")
-    public static let itemBg = Color(.secondarySystemGroupedBackground)
+    public static let itemBg = itemBackground
 
     @available(*, deprecated, message: "Use Color(.quaternaryLabel) directly")
-    public static let dim = Color(.quaternaryLabel)
+    public static let dim = tertiaryText
 
     public static let url = Color("URLColor")
 
+    #if os(iOS)
     public var uiColor: UIColor {
         return UIColor(self)
     }
+    #else
+    public var uiColor: NSColor {
+        return NSColor(self)
+    }
+    #endif
 }
 
 // MARK: - Dynamic Color Creation
 extension Color {
+    #if os(iOS)
     static func dynamic(light: Color, dark: Color) -> Color {
         return Color(UIColor { traitCollection in
             switch traitCollection.userInterfaceStyle {
@@ -88,6 +129,14 @@ extension Color {
             }
         })
     }
+    #else
+    static func dynamic(light: Color, dark: Color) -> Color {
+        return Color(nsColor: NSColor(name: nil) { appearance in
+            let isDark = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+            return isDark ? NSColor(dark) : NSColor(light)
+        })
+    }
+    #endif
 
     static func dynamicHex(light: Int, dark: Int, alpha: CGFloat = 1.0) -> Color {
         return dynamic(
@@ -97,7 +146,7 @@ extension Color {
     }
 }
 
-extension UIColor {
+extension PlatformColor {
     convenience init(hex: Int, alpha: CGFloat = 1.0) {
         let components = (
             R: CGFloat((hex >> 16) & 0xff) / 255,
@@ -109,10 +158,8 @@ extension UIColor {
 }
 
 // MARK: - Image Color Extraction
+#if os(iOS)
 extension UIImage {
-    /// Returns the most vibrant (saturated + bright) color from the image,
-    /// darkened for use as a banner background with white text.
-    /// Falls back to a fixed dark gray banner color if no sufficiently vibrant pixel is found.
     var bannerColor: UIColor? {
         guard let cgImage = cgImage else { return nil }
 
@@ -147,18 +194,47 @@ extension UIImage {
         }
 
         let base = bestScore > 0.15 ? bestColor! : UIColor(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
-        // Darken + boost saturation for readable white text on top
         var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
         base.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
         return UIColor(hue: h, saturation: min(s * 1.3, 1), brightness: min(b, 0.4), alpha: 1)
     }
 }
+#endif
+
+// MARK: - macOS System Color Compatibility
+// Provides UIColor-like system color names on macOS so that
+// `Color(.systemGroupedBackground)` etc. compile unchanged.
+#if os(macOS)
+extension NSColor {
+    static var systemBackground: NSColor { .windowBackgroundColor }
+    static var secondarySystemBackground: NSColor { .controlBackgroundColor }
+    static var tertiarySystemBackground: NSColor { .underPageBackgroundColor }
+    static var systemGroupedBackground: NSColor { .windowBackgroundColor }
+    static var secondarySystemGroupedBackground: NSColor { .controlBackgroundColor }
+    static var systemGray: NSColor { .systemGray }
+    static var systemGray2: NSColor { .systemGray }
+    static var systemGray3: NSColor { .systemGray }
+    static var systemGray4: NSColor { .quaternaryLabelColor }
+    static var systemGray5: NSColor { .quinaryLabel }
+    static var systemGray6: NSColor { .controlBackgroundColor }
+    static var label: NSColor { .labelColor }
+    static var secondaryLabel: NSColor { .secondaryLabelColor }
+    static var tertiaryLabel: NSColor { .tertiaryLabelColor }
+    static var quaternaryLabel: NSColor { .quaternaryLabelColor }
+}
+
+extension Color {
+    /// Compatibility init so `Color(.systemGroupedBackground)` compiles on macOS
+    init(_ nsColor: NSColor) {
+        self.init(nsColor: nsColor)
+    }
+}
+#endif
 
 // MARK: - Preview
 struct Color_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            // Light Mode Preview
             VStack(spacing: 20) {
                 Text("Light Mode")
                     .font(.title)
@@ -177,7 +253,6 @@ struct Color_Previews: PreviewProvider {
             .background(Color.background)
             .environment(\.colorScheme, .light)
 
-            // Dark Mode Preview
             VStack(spacing: 20) {
                 Text("Dark Mode")
                     .font(.title)

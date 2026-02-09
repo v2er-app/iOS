@@ -8,7 +8,9 @@
 
 import Foundation
 import SwiftUI
+#if os(iOS)
 import SafariServices
+#endif
 
 extension String {
     static let `default`: String = ""
@@ -33,7 +35,7 @@ extension String {
         }
         return self
     }
-    
+
 
     func trim() -> String {
         return trimmingCharacters(in: .whitespacesAndNewlines)
@@ -46,7 +48,7 @@ extension String {
     func notEmpty()-> Bool {
         return !isEmpty
     }
-    
+
 
     func replace(segs: String..., with replacement: String) -> String {
         var result: String = self
@@ -107,15 +109,6 @@ extension Binding {
     var raw: Value {
         return self.wrappedValue
     }
-
-    //    subscript<T>(_ key: Int) -> Binding<T> where Value == [T] {
-    //        .init(get: {
-    //            self.wrappedValue[key]
-    //        },
-    //              set: {
-    //            self.wrappedValue[key] = $0
-    //        })
-    //    }
 
     subscript<K, V>(_ key: K) -> Binding<V> where Value == [K:V], K: Hashable {
         .init(get: {
@@ -199,7 +192,7 @@ extension Date {
     }
 }
 
-
+#if os(iOS)
 extension UIFont {
     static func prfered(_ font: Font) -> UIFont {
         let uiFont: UIFont
@@ -234,6 +227,13 @@ extension UIFont {
         return uiFont
     }
 }
+#elseif os(macOS)
+extension NSFont {
+    static func prfered(_ font: Font) -> NSFont {
+        return NSFont.systemFont(ofSize: NSFont.systemFontSize)
+    }
+}
+#endif
 
 
 extension Bundle {
@@ -244,10 +244,8 @@ extension Bundle {
                 result = try String(contentsOfFile: filepath)
                 log("----------> local resource: \(result) <------------")
             } catch {
-                // contents could not be loaded
             }
         } else {
-            // example.txt not found!
             log("----------> local resource \(name): not found <------------")
         }
         return result
@@ -274,7 +272,8 @@ extension URL {
 }
 
 
-// MARK: - Safari View
+// MARK: - Safari View (iOS only)
+#if os(iOS)
 struct SafariView: UIViewControllerRepresentable {
     let url: URL
     @Environment(\.colorScheme) var colorScheme
@@ -296,28 +295,21 @@ struct SafariView: UIViewControllerRepresentable {
     }
 
     private func updateAppearance(_ safariVC: SFSafariViewController) {
-        // Get the actual interface style from the root view controller
         let actualStyle = V2erApp.rootViewController?.overrideUserInterfaceStyle ?? .unspecified
 
-        // Apply the appropriate style to Safari view
         if actualStyle != .unspecified {
-            // User has explicitly set light or dark mode
             safariVC.overrideUserInterfaceStyle = actualStyle
         } else {
-            // Following system setting - use the current colorScheme
             safariVC.overrideUserInterfaceStyle = colorScheme == .dark ? .dark : .light
         }
 
-        // Set tint colors based on the effective style
         let effectiveStyle = safariVC.overrideUserInterfaceStyle == .dark ||
                            (safariVC.overrideUserInterfaceStyle == .unspecified && colorScheme == .dark)
 
         if effectiveStyle {
-            // Dark mode colors
             safariVC.preferredControlTintColor = UIColor.systemBlue
             safariVC.preferredBarTintColor = UIColor.systemBackground
         } else {
-            // Light mode colors
             safariVC.preferredControlTintColor = UIColor.systemBlue
             safariVC.preferredBarTintColor = UIColor.systemBackground
         }
@@ -367,7 +359,6 @@ class MobileWebViewController: UIViewController, WKNavigationDelegate {
     private var progressView: UIProgressView!
     private var observation: NSKeyValueObservation?
 
-    // iPhone Safari mobile User-Agent
     private static let mobileUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
 
     override func viewDidLoad() {
@@ -412,7 +403,6 @@ class MobileWebViewController: UIViewController, WKNavigationDelegate {
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
-        // Observe loading progress
         observation = webView.observe(\.estimatedProgress, options: .new) { [weak self] _, change in
             guard let progress = change.newValue else { return }
             self?.progressView.progress = Float(progress)
@@ -426,14 +416,13 @@ class MobileWebViewController: UIViewController, WKNavigationDelegate {
 
     private func injectThemeCSS() {
         let isDark = colorScheme == .dark
-        // V2EX uses prefers-color-scheme, so we inject CSS to force the theme
         let css = isDark ? """
             :root { color-scheme: dark; }
             body { background-color: #1a1a1a !important; color: #e0e0e0 !important; }
             """ : """
             :root { color-scheme: light; }
             """
-        let js = "var style = document.createElement('style'); style.innerHTML = `\(css)`; document.head.appendChild(style);"
+        let js = V2exDarkModeCSS.injectionJS(css: css)
         webView.evaluateJavaScript(js, completionHandler: nil)
     }
 
@@ -472,3 +461,4 @@ class MobileWebViewController: UIViewController, WKNavigationDelegate {
         observation?.invalidate()
     }
 }
+#endif

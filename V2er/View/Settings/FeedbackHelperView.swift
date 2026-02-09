@@ -12,7 +12,9 @@ struct FeedbackHelperView: View {
     var body: some View {
         formView
             .navigationTitle("帮助与反馈")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
     }
 
     @ViewBuilder

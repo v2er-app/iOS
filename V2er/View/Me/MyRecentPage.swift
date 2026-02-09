@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MyRecentPage: StateView {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
 
     var bindingState: Binding<MyRecentState> {
         return $store.appState.myRecentState
@@ -39,7 +39,9 @@ struct MyRecentPage: StateView {
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("最近浏览")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
 }
 

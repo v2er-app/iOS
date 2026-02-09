@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A SwiftUI view for rendering HTML content as rich text
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 public struct RichView: View {
 
     // MARK: - Properties
@@ -142,7 +142,7 @@ public struct RichView: View {
 
 // MARK: - Configuration
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 extension RichView {
 
     /// Apply configuration to the view
@@ -197,7 +197,7 @@ extension RichView {
 
 // MARK: - Error View
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 struct ErrorView: View {
     let error: RenderError
 

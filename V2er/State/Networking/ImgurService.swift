@@ -7,7 +7,12 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
+#endif
+#if canImport(AppKit)
+import AppKit
+#endif
 
 struct ImgurService {
     static let shared = ImgurService()
@@ -45,10 +50,18 @@ struct ImgurService {
         }
     }
 
-    func upload(image: UIImage, quality: CGFloat = 0.8) async -> UploadResult {
+    func upload(image: PlatformImage, quality: CGFloat = 0.8) async -> UploadResult {
+        #if os(iOS)
         guard let imageData = image.jpegData(compressionQuality: quality) else {
             return UploadResult(success: false, imageUrl: nil, error: "无法处理图片")
         }
+        #elseif os(macOS)
+        guard let tiffData = image.tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: tiffData),
+              let imageData = bitmap.representation(using: .jpeg, properties: [.compressionFactor: quality]) else {
+            return UploadResult(success: false, imageUrl: nil, error: "无法处理图片")
+        }
+        #endif
 
         // Check image size limit
         if imageData.count > maxImageSizeBytes {

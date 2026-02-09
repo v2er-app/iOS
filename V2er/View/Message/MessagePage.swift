@@ -11,7 +11,7 @@ import SwiftSoup
 import Atributika
 
 struct MessagePage: BaseHomePageView {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     var bindingState: Binding<MessageState> {
         $store.appState.messageState
     }
@@ -31,7 +31,9 @@ struct MessagePage: BaseHomePageView {
         contentView
             .background(Color(.systemGroupedBackground))
             .navigationTitle("通知")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #endif
             .onAppear {
                 if !state.hasLoadedOnce {
                     dispatch(MessageActions.FetchStart(autoLoad: true))
@@ -94,7 +96,7 @@ struct MessagePage: BaseHomePageView {
 struct MessageItemView: View {
     @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     let item: MessageInfo.Item
-    let quoteFont = Style.font(UIFont.prfered(.subheadline))
+    let quoteFont = Style.font(PlatformFont.prfered(.subheadline))
         .foregroundColor(Color.secondaryText.uiColor)
     @State private var navigateToRoute: AppRoute?
 

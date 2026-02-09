@@ -14,7 +14,9 @@ struct BrowseSettingView: View {
     var body: some View {
         formView
             .navigationTitle("浏览设置")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
     }
 
     @ViewBuilder

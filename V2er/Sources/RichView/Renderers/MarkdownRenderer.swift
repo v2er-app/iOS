@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Renders Markdown content to AttributedString with styling
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 public class MarkdownRenderer {
 
     private let stylesheet: RenderStylesheet

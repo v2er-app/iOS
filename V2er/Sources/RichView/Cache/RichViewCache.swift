@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Three-tier caching system for RichView rendering
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 public class RichViewCache {
 
     // MARK: - Singleton
@@ -51,12 +51,14 @@ public class RichViewCache {
         contentElementsCache.countLimit = 100
 
         // Observe memory warnings
+        #if os(iOS)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleMemoryWarning),
             name: UIApplication.didReceiveMemoryWarningNotification,
             object: nil
         )
+        #endif
     }
 
     deinit {
@@ -239,7 +241,7 @@ public struct CacheStatistics {
 
 // MARK: - Cached Values
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 private class CachedAttributedString {
     let attributedString: AttributedString
     let timestamp: Date

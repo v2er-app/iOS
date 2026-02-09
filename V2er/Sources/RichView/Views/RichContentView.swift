@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// Enhanced RichView that properly renders images, code blocks, and complex content
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 public struct RichContentView: View {
 
     // MARK: - Properties
@@ -202,7 +202,7 @@ public struct ContentElement: Identifiable {
 
 // MARK: - Configuration
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 extension RichContentView {
 
     public func configuration(_ config: RenderConfiguration) -> Self {
@@ -244,7 +244,7 @@ extension RichContentView {
 
 // MARK: - Table Element View
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 struct TableElementView: View {
     let rows: [[String]]
     let hasHeader: Bool

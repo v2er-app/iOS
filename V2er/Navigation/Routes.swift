@@ -44,8 +44,14 @@ enum AppRoute: Hashable {
 
 extension AppRoute {
     /// Builds the destination view for a given route.
-    @ViewBuilder
+    /// Injects Store.shared to guarantee availability across NavigationStack boundaries.
     func destination() -> some View {
+        _destinationContent()
+            .environmentObject(Store.shared)
+    }
+
+    @ViewBuilder
+    private func _destinationContent() -> some View {
         switch self {
         case .feedDetail(let id):
             FeedDetailPage(id: id)
@@ -82,9 +88,13 @@ extension AppRoute {
         case .inAppBrowser(let url):
             InAppBrowserView(url: url)
         case .safariView(let url):
+            #if os(iOS)
             SafariView(url: url)
                 .ignoresSafeArea()
                 .navigationBarHidden(true)
+            #else
+            InAppBrowserView(url: url)
+            #endif
         }
     }
 }

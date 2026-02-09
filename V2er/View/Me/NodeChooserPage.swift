@@ -66,7 +66,9 @@ struct NodeChooserPage: View {
                     .foregroundColor(.secondaryText)
                 TextField("Search ...", text: $filterText)
                     .disableAutocorrection(true)
+                    #if os(iOS)
                     .autocapitalization(.none)
+                    #endif
                     .focused($focused)
             }
             .padding(7)

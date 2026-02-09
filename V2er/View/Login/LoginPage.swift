@@ -10,7 +10,7 @@ import SwiftUI
 import Kingfisher
 
 struct LoginPage: StateView {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @Environment(\.dismiss) var dismiss
     @State var showPassword = false
 
@@ -72,9 +72,11 @@ struct LoginPage: StateView {
               .background(Color(.systemGray6))
               .cornerRadius(radius)
               .submitLabel(.next)
+              #if os(iOS)
               .autocapitalization(.none)
-              .disableAutocorrection(true)
               .keyboardType(.asciiCapable)
+              #endif
+              .disableAutocorrection(true)
               .accessibilityLabel("用户名")
             HStack(spacing: 0) {
               Group {
@@ -84,9 +86,11 @@ struct LoginPage: StateView {
                   TextField("Password", text: bindingState.password)
                 }
               }
+              #if os(iOS)
               .autocapitalization(.none)
-              .disableAutocorrection(true)
               .keyboardType(.asciiCapable)
+              #endif
+              .disableAutocorrection(true)
               .submitLabel(.continue)
               .padding(.horizontal, padding)
               .frame(maxWidth: .infinity, maxHeight: height)
@@ -113,7 +117,9 @@ struct LoginPage: StateView {
                 .padding(.horizontal, padding)
                 .frame(height: height)
                 .submitLabel(.go)
+                #if os(iOS)
                 .keyboardType(.asciiCapable)
+                #endif
                 .disableAutocorrection(true)
                 .accessibilityLabel("验证码")
               Color.separator
@@ -181,7 +187,9 @@ struct LoginPage: StateView {
         .greedyHeight()
         .background(Color(.systemBackground))
         .navigationTitle("登录")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
 
 }

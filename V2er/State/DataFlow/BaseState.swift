@@ -8,4 +8,4 @@
 
 import Foundation
 
-public protocol FluxState{}
+// FluxState is defined in FluxState.swift

@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct ExplorePage: BaseHomePageView {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @State private var isLoadingMore = false
     var bindingState: Binding<ExploreState> {
         $store.appState.exploreState
@@ -52,7 +52,11 @@ struct ExplorePage: BaseHomePageView {
                     searchResultsView
                 }
             }
+            #if os(iOS)
             .searchable(text: searchKeyword, placement: .navigationBarDrawer(displayMode: .always), prompt: "搜索主题")
+            #else
+            .searchable(text: searchKeyword, prompt: "搜索主题")
+            #endif
             .background(Color(.systemGroupedBackground))
             .onSubmit(of: .search) {
                 dispatch(SearchActions.Start())
@@ -66,7 +70,9 @@ struct ExplorePage: BaseHomePageView {
                 }
             }
             .navigationTitle("搜索")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
+            #endif
     }
 
     // MARK: - Browse Content (idle state)

@@ -10,12 +10,13 @@ import Foundation
 import SwiftSoup
 
 
-public extension Element {
+public extension SwiftSoup.Element {
     func pick(_ selector: String, at index:Int = 0,
               _ attr: HtmlAttr = .text, regex: String? = nil, `default`: String = .empty) -> String {
         let es: Elements = pickAll(selector)
-        let index = min(index, es.count - 1)
-        let e : Element? = es[safe: index]
+        let cnt = es.size()
+        let index = min(index, cnt - 1)
+        let e : SwiftSoup.Element? = index >= 0 ? es.array()[safe: index] : nil
         guard let e = e else { return `default` }
         let result: String?
         if attr == .text {
@@ -38,8 +39,8 @@ public extension Element {
         return Elements()
     }
 
-    func pickOne(_ selector: String, at index:Int = 0) -> Element? {
-        if let result = pickAll(selector)[safe: index] {
+    func pickOne(_ selector: String, at index:Int = 0) -> SwiftSoup.Element? {
+        if let result = pickAll(selector).array()[safe: index] {
             return result
         }
         return nil

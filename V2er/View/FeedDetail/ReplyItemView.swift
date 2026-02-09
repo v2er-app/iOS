@@ -15,7 +15,7 @@ struct ReplyItemView: View {
     var topicId: String
     var onNavigate: ((AppRoute) -> Void)? = nil
     var onOpenSafari: ((URL) -> Void)? = nil
-    @EnvironmentObject var store: Store
+    @ObservedObject private var store = Store.shared
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @State private var navigateToRoute: AppRoute? = nil
@@ -117,9 +117,13 @@ struct ReplyItemView: View {
             route.destination()
         }
         .navigationDestination(item: $navigateToSafariURL) { url in
+            #if os(iOS)
             SafariView(url: url)
                 .ignoresSafeArea()
                 .navigationBarHidden(true)
+            #else
+            InAppBrowserView(url: url)
+            #endif
         }
     }
 

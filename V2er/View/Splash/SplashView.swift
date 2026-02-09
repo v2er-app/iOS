@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SplashView: View {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @Environment(\.colorScheme) private var colorScheme
 
     @State private var showSlogan = false

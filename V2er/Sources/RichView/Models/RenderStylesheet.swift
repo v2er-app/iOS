@@ -714,8 +714,6 @@ extension Color {
 
     /// Create adaptive color for light/dark mode
     static func adaptive(light: Color, dark: Color) -> Color {
-        Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
-        })
+        Color.dynamic(light: light, dark: dark)
     }
 }

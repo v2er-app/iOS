@@ -8,7 +8,12 @@
 
 import Foundation
 import Combine
+#if canImport(UIKit)
 import UIKit
+#endif
+#if canImport(AppKit)
+import AppKit
+#endif
 import SwiftUI
 
 private let loggable: Bool = false
@@ -32,6 +37,7 @@ public func isSimulator() -> Bool {
 
 
 
+#if os(iOS)
 /// Publisher to read keyboard changes.
 protocol KeyboardReadable {
     var keyboardPublisher: AnyPublisher<Bool, Never> { get }
@@ -43,7 +49,7 @@ extension KeyboardReadable {
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillShowNotification)
                 .map { _ in true },
-            
+
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
                 .map { _ in false }
@@ -51,16 +57,26 @@ extension KeyboardReadable {
             .eraseToAnyPublisher()
     }
 }
+#else
+/// No-op stub on macOS (no software keyboard)
+protocol KeyboardReadable {}
+#endif
 
 
 func runInMain(delay: Int = 0, execute work: @escaping @convention(block) () -> Void) {
     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(delay), execute: work)
 }
 
+#if os(iOS)
 func hapticFeedback(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
     let impactHeavy = UIImpactFeedbackGenerator(style: style)
     impactHeavy.impactOccurred()
 }
+#else
+func hapticFeedback() {
+    // No haptic feedback on macOS
+}
+#endif
 
 func parseQueryParam(from url: String, param: String) -> String? {
     var tmpUrl: String = url
@@ -86,7 +102,11 @@ extension URL {
     }
 
     func start() {
+        #if os(iOS)
         UIApplication.shared.openURL(self)
+        #elseif os(macOS)
+        NSWorkspace.shared.open(self)
+        #endif
     }
 }
 

@@ -1,48 +1,50 @@
 import SwiftUI
 import WebKit
+#if os(iOS)
 import SafariServices
+#endif
 
-
+#if os(iOS)
 struct Webview : UIViewRepresentable {
-    
+
     @Binding var dynamicHeight: CGFloat
     private var webview: WKWebView = WKWebView()
-    
+
     let html : String
-    
+
     let lineHeight : CGFloat
     let imageRadius : CGFloat
     let fontType : fontType
-    
+
     let colorScheme : colorScheme
     let colorImportant : Bool
-    
+
     let linkOpenType : linkOpenType
-    
+
     public init(dynamicHeight:Binding<CGFloat>, webview : WKWebView = WKWebView(), html: String, lineHeight : CGFloat = 170,imageRadius : CGFloat = 0, fontType: fontType = .default, colorScheme : colorScheme = .automatic, colorImportant : Bool = false, linkOpenType: linkOpenType = .SFSafariView) {
         self._dynamicHeight = dynamicHeight
         self.webview = webview
-        
+
         self.html = html
-        
+
         self.lineHeight = lineHeight
         self.imageRadius = imageRadius
         self.fontType = fontType
-        
+
         self.colorScheme = colorScheme
         self.colorImportant = colorImportant
-        
+
         self.linkOpenType = linkOpenType
     }
-    
-    
+
+
     public class Coordinator: NSObject, WKNavigationDelegate {
         var parent: Webview
-        
+
         init(_ parent: Webview) {
             self.parent = parent
         }
-        
+
         public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
                 DispatchQueue.main.async {
@@ -50,25 +52,25 @@ struct Webview : UIViewRepresentable {
                 }
             })
         }
-        
-        
+
+
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             if navigationAction.navigationType == WKNavigationType.linkActivated {
                 if let url = navigationAction.request.url{
-                    
+
                     let root = UIApplication.shared.windows.first?.rootViewController
                     switch self.parent.linkOpenType {
                     case .SFSafariView:
                         root?.present(SFSafariViewController(url: url), animated: true, completion: nil)
-                        
+
                     case .Safari :
                         UIApplication.shared.open(url)
                     case .none :
                         print(url)
-                        
+
                     }
                 }
-                
+
                 decisionHandler(WKNavigationActionPolicy.cancel)
                 return
             }
@@ -76,11 +78,11 @@ struct Webview : UIViewRepresentable {
             decisionHandler(WKNavigationActionPolicy.allow)
         }
     }
-    
+
     public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
+
     public func makeUIView(context: Context) -> WKWebView  {
         webview.scrollView.bounces = false
         webview.navigationDelegate = context.coordinator
@@ -93,18 +95,16 @@ struct Webview : UIViewRepresentable {
         let htmlEnd = "</BODY></HTML>"
         let htmlString = "\(htmlStart)\(css(colorScheme: self.colorScheme))\(html)\(htmlEnd)"
         webview.loadHTMLString(htmlString, baseURL:  nil)
-        //웹뷰의 배경을 투명하게 만들어줌 (기본은 흰색으로 나와서 기존 UI랑 다르다는 느낌을 줌)
         webview.isOpaque = false
         webview.backgroundColor = UIColor.clear
         webview.scrollView.backgroundColor = UIColor.clear
-        //
         return webview
     }
-    
+
     public func updateUIView(_ uiView: WKWebView, context: Context) {
-        
+
     }
-    
+
     private let lightTextColor = "#1C1C1E"
     private let darkTextColor = "#F2F2F7"
 
@@ -151,7 +151,7 @@ struct Webview : UIViewRepresentable {
             """
         }
     }
-    
+
     func fontName(fontType: fontType) -> String {
         switch fontType {
         case .default:
@@ -163,3 +163,143 @@ struct Webview : UIViewRepresentable {
         }
     }
 }
+#elseif os(macOS)
+struct Webview : NSViewRepresentable {
+
+    @Binding var dynamicHeight: CGFloat
+    private var webview: WKWebView = WKWebView()
+
+    let html : String
+
+    let lineHeight : CGFloat
+    let imageRadius : CGFloat
+    let fontType : fontType
+
+    let colorScheme : colorScheme
+    let colorImportant : Bool
+
+    let linkOpenType : linkOpenType
+
+    public init(dynamicHeight:Binding<CGFloat>, webview : WKWebView = WKWebView(), html: String, lineHeight : CGFloat = 170,imageRadius : CGFloat = 0, fontType: fontType = .default, colorScheme : colorScheme = .automatic, colorImportant : Bool = false, linkOpenType: linkOpenType = .SFSafariView) {
+        self._dynamicHeight = dynamicHeight
+        self.webview = webview
+
+        self.html = html
+
+        self.lineHeight = lineHeight
+        self.imageRadius = imageRadius
+        self.fontType = fontType
+
+        self.colorScheme = colorScheme
+        self.colorImportant = colorImportant
+
+        self.linkOpenType = linkOpenType
+    }
+
+    public class Coordinator: NSObject, WKNavigationDelegate {
+        var parent: Webview
+
+        init(_ parent: Webview) {
+            self.parent = parent
+        }
+
+        public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
+                DispatchQueue.main.async {
+                    self.parent.dynamicHeight = height as! CGFloat
+                }
+            })
+        }
+
+        func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+            if navigationAction.navigationType == WKNavigationType.linkActivated {
+                if let url = navigationAction.request.url {
+                    NSWorkspace.shared.open(url)
+                }
+                decisionHandler(.cancel)
+                return
+            }
+            decisionHandler(.allow)
+        }
+    }
+
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    public func makeNSView(context: Context) -> WKWebView  {
+        webview.navigationDelegate = context.coordinator
+        let htmlStart = """
+            <HTML>
+            <head>
+                <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
+            </head>
+            """
+        let htmlEnd = "</BODY></HTML>"
+        let htmlString = "\(htmlStart)\(css(colorScheme: self.colorScheme))\(html)\(htmlEnd)"
+        webview.loadHTMLString(htmlString, baseURL: nil)
+        return webview
+    }
+
+    public func updateNSView(_ nsView: WKWebView, context: Context) {
+    }
+
+    private let lightTextColor = "#1C1C1E"
+    private let darkTextColor = "#F2F2F7"
+
+    func css(colorScheme: colorScheme) -> String {
+        let imgStyle = "img{max-height: 100%; min-height: 100%; height:auto; max-width: 100%; width:auto;margin-bottom:5px; border-radius: \(imageRadius)px;}"
+        let iframeStyle = "iframe{width:100%; height:250px;}"
+        let textStyleBase = "h1, h2, h3, h4, h5, h6, p, dl, ol, ul, pre, blockquote {text-align:left|right|center; line-height: \(lineHeight)%; font-family: '\(fontName(fontType: self.fontType))'; color: "
+        let importantSuffix = colorImportant == false ? "" : "!important"
+
+        switch colorScheme {
+        case .light:
+            return """
+            <style type='text/css'>
+                \(imgStyle)
+                \(textStyleBase)\(lightTextColor) \(importantSuffix); }
+                \(iframeStyle)
+            </style>
+            <BODY>
+            """
+        case .dark:
+            return """
+            <style type='text/css'>
+                \(imgStyle)
+                \(textStyleBase)\(darkTextColor) \(importantSuffix); }
+                \(iframeStyle)
+            </style>
+            <BODY>
+            """
+        case .automatic:
+            return """
+            <style type='text/css'>
+            @media (prefers-color-scheme: light) {
+                \(imgStyle)
+                \(textStyleBase)\(lightTextColor) \(importantSuffix); }
+                \(iframeStyle)
+            }
+            @media (prefers-color-scheme: dark) {
+                \(imgStyle)
+                \(textStyleBase)\(darkTextColor) \(importantSuffix); }
+                \(iframeStyle)
+            }
+            </style>
+            <BODY>
+            """
+        }
+    }
+
+    func fontName(fontType: fontType) -> String {
+        switch fontType {
+        case .default:
+            return NSFont.systemFont(ofSize: 17, weight: .regular).fontName
+        case .monospaced:
+            return NSFont.monospacedSystemFont(ofSize: 17, weight: .regular).fontName
+        case .italic:
+            return NSFont.systemFont(ofSize: 17).fontName
+        }
+    }
+}
+#endif

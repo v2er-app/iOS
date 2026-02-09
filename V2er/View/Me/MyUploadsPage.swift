@@ -21,7 +21,9 @@ struct MyUploadsPage: View {
     var body: some View {
         contentView
             .navigationTitle("我的图片")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .onAppear {
                 loadUploads()
             }
@@ -37,7 +39,12 @@ struct MyUploadsPage: View {
                     ForEach(uploads) { upload in
                         UploadThumbnailView(upload: upload)
                             .onTapGesture {
+                                #if os(iOS)
                                 UIPasteboard.general.string = upload.imageUrl
+                                #elseif os(macOS)
+                                NSPasteboard.general.clearContents()
+                                NSPasteboard.general.setString(upload.imageUrl, forType: .string)
+                                #endif
                                 Toast.show("链接已复制")
                             }
                     }

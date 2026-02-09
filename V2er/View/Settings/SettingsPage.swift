@@ -7,7 +7,9 @@
 //
 
 import SwiftUI
+#if os(iOS)
 import SafariServices
+#endif
 
 // Wrapper to make URL Identifiable for sheet presentation
 struct IdentifiableURL: Identifiable {
@@ -39,7 +41,11 @@ struct SettingsPage: View {
             }
         }
         .sheet(item: $safariURL) { item in
+            #if os(iOS)
             SafariView(url: item.url)
+            #else
+            InAppBrowserView(url: item.url)
+            #endif
         }
         .alert("账号注销", isPresented: $showingDeleteAccountAlert) {
             Button("确定", role: .cancel) { }
@@ -215,7 +221,9 @@ struct SettingsPage: View {
             }
         }
         .navigationTitle("设置")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
+        #endif
     }
 
     // MARK: - Settings Navigation Row

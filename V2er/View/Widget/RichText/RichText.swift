@@ -7,7 +7,9 @@
 //
 
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#endif
 import Atributika
 
 
@@ -30,22 +32,32 @@ struct RichText: View {
 
     var body: some View {
         GeometryReader { geo in
-            AttributedText(richString, detection: action, maxWidth: geo.size.width, height: $height)
+            AttributedTextView(richString, detection: action, maxWidth: geo.size.width, height: $height)
         }
         .frame(height: height)
     }
 
     struct Styles {
+        #if os(iOS)
         public static let base = Style.font(UIFont.prfered(.body))
             .foregroundColor(Color.primaryText.uiColor)
         public static let link = Style("a")
             .font(.boldSystemFont(ofSize: 16))
             .foregroundColor(Color.url.uiColor, .normal)
             .backgroundColor(UIColor.systemGray6, .highlighted)
+        #else
+        public static let base = Style.font(NSFont.prfered(.body))
+            .foregroundColor(Color.primaryText.uiColor)
+        public static let link = Style("a")
+            .font(.boldSystemFont(ofSize: 16))
+            .foregroundColor(Color.url.uiColor, .normal)
+            .backgroundColor(NSColor.controlBackgroundColor, .highlighted)
+        #endif
     }
 }
 
-fileprivate struct AttributedText: UIViewRepresentable {
+#if os(iOS)
+fileprivate struct AttributedTextView: UIViewRepresentable {
     let richString: RichString
     let detection: RichText.DetectionAction?
     var maxWidth: CGFloat
@@ -83,17 +95,17 @@ fileprivate struct AttributedText: UIViewRepresentable {
             switch detection.type {
                 case .hashtag(let tag):
                     if let url = URL(string: "\(baseURL)/hashtag/\(tag)") {
-                        UIApplication.shared.openURL(url)
+                        url.start()
                     }
                 case .mention(let name):
                     if let url = URL(string: "\(baseURL)/member/\(name)") {
-                        UIApplication.shared.openURL(url)
+                        url.start()
                     }
                 case .link(let url):
-                    UIApplication.shared.openURL(url)
+                    url.start()
                 case .tag(let tag):
                     if tag.name == "a", let href = tag.attributes["href"], let url = URL(string: href) {
-                        UIApplication.shared.openURL(url)
+                        url.start()
                     }
                 default:
                     break
@@ -102,6 +114,40 @@ fileprivate struct AttributedText: UIViewRepresentable {
     }
 
 }
+#elseif os(macOS)
+fileprivate struct AttributedTextView: NSViewRepresentable {
+    let richString: RichString
+    let detection: RichText.DetectionAction?
+    var maxWidth: CGFloat
+    @Binding var height: CGFloat
+
+    init(_ richString: RichString, detection: RichText.DetectionAction?, maxWidth: CGFloat, height: Binding<CGFloat>) {
+        self.detection = detection
+        self.richString = richString
+        self.maxWidth = maxWidth
+        self._height = height
+    }
+
+    func makeNSView(context: Context) -> NSTextField {
+        let label = NSTextField(wrappingLabelWithString: "")
+        label.isEditable = false
+        label.isSelectable = true
+        label.isBordered = false
+        label.drawsBackground = false
+        label.allowsEditingTextAttributes = true
+        label.attributedStringValue = richString.attributedString
+        return label
+    }
+
+    func updateNSView(_ label: NSTextField, context: Context) {
+        label.attributedStringValue = richString.attributedString
+        runInMain(delay: 100) {
+            let size = label.sizeThatFits(NSSize(width: maxWidth, height: .greatestFiniteMagnitude))
+            self.height = size.height
+        }
+    }
+}
+#endif
 
 extension String {
     func rich(baseStyle: Atributika.Style = RichText.Styles.base) ->RichString {
@@ -109,7 +155,6 @@ extension String {
             .style(tags: RichText.Styles.link)
             .styleLinks(RichText.Styles.link)
             .styleMentions(RichText.Styles.link)
-        //            .styleHashtags(RichText.Styles.link)
             .styleAll(baseStyle)
     }
 

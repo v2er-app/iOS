@@ -13,7 +13,7 @@ import Atributika
 struct UserDetailPage: StateView {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.isPresented) private var isPresented
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @State private var scrollY: CGFloat = 0.0
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
@@ -39,13 +39,17 @@ struct UserDetailPage: StateView {
         return scrollY < bannerViewHeight - heightOfNodeImage
     }
 
+    #if os(iOS)
     private var statusBarStyle: UIStatusBarStyle {
         shouldHideNavbar ? .lightContent : V2erApp.defaultStatusBarStyle()
     }
+    #endif
 
     var body: some View {
         contentView
+            #if os(iOS)
             .statusBarStyle(statusBarStyle)
+            #endif
     }
 
     @ViewBuilder
@@ -169,8 +173,11 @@ struct UserDetailPage: StateView {
             // Custom floating nav bar
             customNavBar
         }
+        #if os(iOS)
         .toolbar(.hidden, for: .navigationBar)
+        #endif
         .task(id: model.avatar) {
+            #if os(iOS)
             guard !model.avatar.isEmpty, let url = URL(string: model.avatar) else { return }
             guard let (data, _) = try? await URLSession.shared.data(from: url),
                   let image = UIImage(data: data),
@@ -178,6 +185,7 @@ struct UserDetailPage: StateView {
             withAnimation(.easeInOut(duration: 0.5)) {
                 dominantColor = SwiftUI.Color(color)
             }
+            #endif
         }
         .onAppear {
             log("onAppear----")
@@ -296,7 +304,7 @@ struct UserDetailPage: StateView {
 
     struct ReplyItemView: View {
         var data: UserDetailInfo.ReplyInfo.Item
-        let quoteFont = Style.font(UIFont.prfered(.footnote))
+        let quoteFont = Style.font(PlatformFont.prfered(.footnote))
             .foregroundColor(Color.primaryText.uiColor)
 
         var body: some View {

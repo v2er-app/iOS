@@ -15,28 +15,33 @@ struct WebBrowserView: View {
   
   var body: some View {
     WebView(webView: webViewStore.webView)
-      .navigationBarTitle(Text(verbatim: webViewStore.title ?? ""), displayMode: .inline)
-      .navigationBarItems(trailing: HStack {
-        Button {
-          webViewStore.webView.goBack()
-        } label: {
-          Image(systemName: "chevron.left")
-            .imageScale(.large)
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 32, height: 32)
+      .navigationTitle(webViewStore.title ?? "")
+      #if os(iOS)
+      .navigationBarTitleDisplayMode(.inline)
+      #endif
+      .toolbar {
+        ToolbarItemGroup(placement: .automatic) {
+          Button {
+            webViewStore.webView.goBack()
+          } label: {
+            Image(systemName: "chevron.left")
+              .imageScale(.large)
+              .aspectRatio(contentMode: .fit)
+              .frame(width: 32, height: 32)
+          }
+          .disabled(!webViewStore.canGoBack)
+
+          Button {
+            webViewStore.webView.goForward()
+          } label: {
+            Image(systemName: "chevron.right")
+              .imageScale(.large)
+              .aspectRatio(contentMode: .fit)
+              .frame(width: 32, height: 32)
+          }
+          .disabled(!webViewStore.canGoForward)
         }
-        .disabled(!webViewStore.canGoBack)
-        
-        Button {
-          webViewStore.webView.goForward()
-        } label: {
-          Image(systemName: "chevron.right")
-            .imageScale(.large)
-            .aspectRatio(contentMode: .fit)
-            .frame(width: 32, height: 32)
-        }
-        .disabled(!webViewStore.canGoForward)
-      })
+      }
       .onAppear {
         self.webViewStore.webView.load(URLRequest(url: URL(string: self.url)!))
       }

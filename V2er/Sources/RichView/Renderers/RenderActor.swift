@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 /// Actor for thread-safe background rendering
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 public actor RenderActor {
 
     // MARK: - Properties
@@ -318,7 +318,7 @@ public actor RenderActor {
 
 // MARK: - Render Result
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 public struct RenderResult {
     public let elements: [ContentElement]
     public let metadata: RenderMetadata

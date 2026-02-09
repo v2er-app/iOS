@@ -12,7 +12,7 @@ import SwiftUI
 struct TagDetailPage: StateView, InstanceIdentifiable {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Environment(\.isPresented) private var isPresented
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @State private var isLoadingMore = false
     var instanceId: String {
         tagId ?? .default
@@ -42,13 +42,17 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
         return scrollY < bannerViewHeight - heightOfNodeImage
     }
 
+    #if os(iOS)
     private var statusBarStyle: UIStatusBarStyle {
         shouldHideNavbar ? .lightContent : V2erApp.defaultStatusBarStyle()
     }
+    #endif
 
     var body: some View {
         contentView
+            #if os(iOS)
             .statusBarStyle(statusBarStyle)
+            #endif
     }
 
     @ViewBuilder
@@ -146,9 +150,14 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             // Custom floating nav bar
             customNavBar
         }
+        #if os(iOS)
         .statusBarStyle(shouldHideNavbar ? .lightContent : V2erApp.defaultStatusBarStyle())
+        #endif
+        #if os(iOS)
         .toolbar(.hidden, for: .navigationBar)
+        #endif
         .task(id: model.tagImage) {
+            #if os(iOS)
             guard !model.tagImage.isEmpty, let url = URL(string: model.tagImage) else { return }
             guard let (data, _) = try? await URLSession.shared.data(from: url),
                   let image = UIImage(data: data),
@@ -156,6 +165,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             withAnimation(.easeInOut(duration: 0.5)) {
                 dominantColor = Color(color)
             }
+            #endif
         }
         .onAppear {
             dispatch(TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, autoLoad: !state.hasLoadedOnce))
