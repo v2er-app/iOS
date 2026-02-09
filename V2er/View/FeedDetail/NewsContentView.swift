@@ -10,21 +10,23 @@ import SwiftUI
 
 struct NewsContentView: View {
     var contentInfo: FeedDetailInfo.ContentInfo?
+    var onNavigate: ((AppRoute) -> Void)? = nil
+    var onOpenSafari: ((URL) -> Void)? = nil
     var onContentReady: (() -> Void)?
     @EnvironmentObject var store: Store
     @Environment(\.colorScheme) var colorScheme
-    @State private var navigateToTopic: String? = nil
-    @State private var navigateToUser: String? = nil
-    @State private var navigateToNode: String? = nil
-    @State private var navigateToBrowserURL: URL? = nil
+    @Environment(\.iPadDetailRoute) private var iPadDetailRoute
+    @State private var navigateToRoute: AppRoute? = nil
     @State private var navigateToSafariURL: URL? = nil
 
     private var useBuiltinBrowser: Bool {
         store.appState.settingState.useBuiltinBrowser
     }
 
-    init(_ contentInfo: FeedDetailInfo.ContentInfo?, onContentReady: (() -> Void)? = nil) {
+    init(_ contentInfo: FeedDetailInfo.ContentInfo?, onNavigate: ((AppRoute) -> Void)? = nil, onOpenSafari: ((URL) -> Void)? = nil, onContentReady: (() -> Void)? = nil) {
         self.contentInfo = contentInfo
+        self.onNavigate = onNavigate
+        self.onOpenSafari = onOpenSafari
         self.onContentReady = onContentReady
     }
 
@@ -47,76 +49,24 @@ struct NewsContentView: View {
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
         }
-        .background(
-            Group {
-                NavigationLink(
-                    destination: FeedDetailPage(id: navigateToTopic ?? ""),
-                    isActive: Binding(
-                        get: { navigateToTopic != nil },
-                        set: { if !$0 { navigateToTopic = nil } }
-                    )
-                ) {
-                    EmptyView()
-                }
-                .hidden()
+        .navigationDestination(item: $navigateToRoute) { route in
+            route.destination()
+        }
+        .navigationDestination(item: $navigateToSafariURL) { url in
+            SafariView(url: url)
+                .ignoresSafeArea()
+                .navigationBarHidden(true)
+        }
+    }
 
-                NavigationLink(
-                    destination: UserDetailPage(userId: navigateToUser ?? ""),
-                    isActive: Binding(
-                        get: { navigateToUser != nil },
-                        set: { if !$0 { navigateToUser = nil } }
-                    )
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-
-                NavigationLink(
-                    destination: TagDetailPage(tagId: navigateToNode ?? ""),
-                    isActive: Binding(
-                        get: { navigateToNode != nil },
-                        set: { if !$0 { navigateToNode = nil } }
-                    )
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-
-                // Use NavigationLink instead of fullScreenCover for InAppBrowser (iOS 26 bug workaround)
-                NavigationLink(
-                    destination: Group {
-                        if let url = navigateToBrowserURL {
-                            InAppBrowserView(url: url)
-                        }
-                    },
-                    isActive: Binding(
-                        get: { navigateToBrowserURL != nil },
-                        set: { if !$0 { navigateToBrowserURL = nil } }
-                    )
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-
-                // Use NavigationLink for SafariView (iOS 26 bug workaround)
-                NavigationLink(
-                    destination: Group {
-                        if let url = navigateToSafariURL {
-                            SafariView(url: url)
-                                .ignoresSafeArea()
-                                .navigationBarHidden(true)
-                        }
-                    },
-                    isActive: Binding(
-                        get: { navigateToSafariURL != nil },
-                        set: { if !$0 { navigateToSafariURL = nil } }
-                    )
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-            }
-        )
+    private func navigate(to route: AppRoute) {
+        if let onNavigate {
+            onNavigate(route)
+        } else if let detailRoute = iPadDetailRoute {
+            detailRoute.wrappedValue = route
+        } else {
+            navigateToRoute = route
+        }
     }
 
     private func handleLinkTap(_ url: URL) {
@@ -124,20 +74,26 @@ struct NewsContentView: View {
 
         switch action {
         case .navigateToTopic(let id):
-            navigateToTopic = id
+            navigate(to: .feedDetail(id: id))
         case .navigateToUser(let username):
-            navigateToUser = username
+            navigate(to: .userDetail(userId: username))
         case .navigateToNode(let name):
-            navigateToNode = name
+            navigate(to: .tagDetail(tagId: name))
         case .openInAppBrowser(let browserUrl):
-            navigateToBrowserURL = browserUrl
+            navigate(to: .inAppBrowser(url: browserUrl))
         case .openInSafariViewController(let webviewUrl):
             openInSafari(webviewUrl)
         }
     }
 
     private func openInSafari(_ url: URL) {
-        navigateToSafariURL = url
+        if let onOpenSafari {
+            onOpenSafari(url)
+        } else if let detailRoute = iPadDetailRoute {
+            detailRoute.wrappedValue = .safariView(url: url)
+        } else {
+            navigateToSafariURL = url
+        }
     }
 
     private func configurationForAppearance() -> RenderConfiguration {
@@ -166,5 +122,3 @@ struct NewsContentView: View {
         return config
     }
 }
-
-

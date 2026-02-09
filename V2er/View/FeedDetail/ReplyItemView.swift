@@ -13,8 +13,11 @@ import Atributika
 struct ReplyItemView: View {
     var info: FeedDetailInfo.ReplyInfo.Item
     var topicId: String
+    var onNavigate: ((AppRoute) -> Void)? = nil
+    var onOpenSafari: ((URL) -> Void)? = nil
     @EnvironmentObject var store: Store
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @State private var navigateToRoute: AppRoute? = nil
     @State private var navigateToSafariURL: URL? = nil
 
@@ -26,7 +29,7 @@ struct ReplyItemView: View {
         HStack(alignment: .top) {
             VStack(spacing: 0) {
                 Button {
-                    navigateToRoute = .userDetail(userId: info.userName)
+                    navigate(to: .userDetail(userId: info.userName))
                 } label: {
                     AvatarView(url: info.avatar, size: 36)
                 }
@@ -82,7 +85,7 @@ struct ReplyItemView: View {
                         openInSafari(url)
                     }
                     .onMentionTapped { username in
-                        navigateToRoute = .userDetail(userId: username)
+                        navigate(to: .userDetail(userId: username))
                     }
 
                 Text("\(info.floor)楼")
@@ -120,25 +123,41 @@ struct ReplyItemView: View {
         }
     }
 
+    private func navigate(to route: AppRoute) {
+        if let onNavigate {
+            onNavigate(route)
+        } else if let detailRoute = iPadDetailRoute {
+            detailRoute.wrappedValue = route
+        } else {
+            navigateToRoute = route
+        }
+    }
+
     private func handleLinkTap(_ url: URL) {
         let action = LinkHandler.action(for: url, useBuiltinBrowser: useBuiltinBrowser)
 
         switch action {
         case .navigateToTopic(let id):
-            navigateToRoute = .feedDetail(id: id)
+            navigate(to: .feedDetail(id: id))
         case .navigateToUser(let username):
-            navigateToRoute = .userDetail(userId: username)
+            navigate(to: .userDetail(userId: username))
         case .navigateToNode(let name):
-            navigateToRoute = .tagDetail(tagId: name)
+            navigate(to: .tagDetail(tagId: name))
         case .openInAppBrowser(let browserUrl):
-            navigateToRoute = .inAppBrowser(url: browserUrl)
+            navigate(to: .inAppBrowser(url: browserUrl))
         case .openInSafariViewController(let webviewUrl):
             openInSafari(webviewUrl)
         }
     }
 
     private func openInSafari(_ url: URL) {
-        navigateToSafariURL = url
+        if let onOpenSafari {
+            onOpenSafari(url)
+        } else if let detailRoute = iPadDetailRoute {
+            detailRoute.wrappedValue = .safariView(url: url)
+        } else {
+            navigateToSafariURL = url
+        }
     }
 
     private func compactConfigurationForAppearance() -> RenderConfiguration {

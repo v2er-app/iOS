@@ -14,6 +14,7 @@ struct iPadTabSplitView<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     @State private var detailRoute: AppRoute?
+    @State private var detailPath = NavigationPath()
 
     var body: some View {
         GeometryReader { geo in
@@ -41,15 +42,21 @@ struct iPadTabSplitView<Content: View>: View {
             Divider()
 
             // Right pane: detail or placeholder
-            NavigationStack {
-                if let route = detailRoute {
-                    route.destination()
-                        .navigationDestination(for: AppRoute.self) { $0.destination() }
-                } else {
-                    placeholderView
+            NavigationStack(path: $detailPath) {
+                Group {
+                    if let route = detailRoute {
+                        route.destination()
+                    } else {
+                        placeholderView
+                    }
                 }
+                .id(detailRoute)
+                .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
-            .id(detailRoute)
+            .environment(\.iPadDetailPath, $detailPath)
+            .onChange(of: detailRoute) { _, _ in
+                detailPath = NavigationPath()
+            }
         }
     }
 

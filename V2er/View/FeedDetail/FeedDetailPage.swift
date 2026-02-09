@@ -13,11 +13,17 @@ import PhotosUI
 struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Environment(\.isPresented) private var isPresented
     @Environment(\.dismiss) var dismiss
+    @Environment(\.iPadDetailRoute) private var iPadDetailRoute
+    @Environment(\.iPadDetailPath) private var iPadDetailPath
     @EnvironmentObject private var store: Store
     @State private var selectedImage: UIImage? = nil
     @State private var isUploadingImage = false
     @State private var navigateToBrowserURL: URL? = nil
     @State private var navigateToSafariURL: URL? = nil
+    /// Shared navigation route for subviews (AuthorInfoView, ReplyItemView, NewsContentView).
+    /// Placed at FeedDetailPage level so .navigationDestination works reliably on iPad.
+    @State private var subviewNavRoute: AppRoute? = nil
+    @State private var subviewSafariURL: URL? = nil
 
     private var useBuiltinBrowser: Bool {
         store.appState.settingState.useBuiltinBrowser
@@ -108,6 +114,45 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     .ignoresSafeArea()
                     .navigationBarHidden(true)
             }
+            .navigationDestination(item: $subviewNavRoute) { route in
+                route.destination()
+            }
+            .navigationDestination(item: $subviewSafariURL) { url in
+                SafariView(url: url)
+                    .ignoresSafeArea()
+                    .navigationBarHidden(true)
+            }
+    }
+
+    private func navigateToURL(_ url: URL) {
+        let route: AppRoute = useBuiltinBrowser ? .inAppBrowser(url: url) : .safariView(url: url)
+        if let path = iPadDetailPath {
+            path.wrappedValue.append(route)
+        } else if let detailRoute = iPadDetailRoute {
+            detailRoute.wrappedValue = route
+        } else if useBuiltinBrowser {
+            navigateToBrowserURL = url
+        } else {
+            navigateToSafariURL = url
+        }
+    }
+
+    /// Push a route within the right pane stack (iPad) or use local state (iPhone).
+    private func handleSubviewNavigate(_ route: AppRoute) {
+        if let path = iPadDetailPath {
+            path.wrappedValue.append(route)
+        } else {
+            subviewNavRoute = route
+        }
+    }
+
+    /// Push a SafariView within the right pane stack (iPad) or use local state (iPhone).
+    private func handleSubviewSafari(_ url: URL) {
+        if let path = iPadDetailPath {
+            path.wrappedValue.append(AppRoute.safariView(url: url))
+        } else {
+            subviewSafariURL = url
+        }
     }
 
     @ViewBuilder
@@ -209,11 +254,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
             Button {
                 if let url = URL(string: APIService.baseUrlString + "/t/\(id)") {
-                    if useBuiltinBrowser {
-                        navigateToBrowserURL = url
-                    } else {
-                        navigateToSafariURL = url
-                    }
+                    navigateToURL(url)
                 }
             } label: {
                 Label("使用浏览器打开", systemImage: "safari")
@@ -230,10 +271,10 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         List {
             // Topic Card: Header + Content + Postscripts
             VStack(spacing: 0) {
-                AuthorInfoView(initData: initData, data: state.model.headerInfo)
+                AuthorInfoView(initData: initData, data: state.model.headerInfo, onNavigate: { handleSubviewNavigate($0) })
 
                 if !isContentEmpty {
-                    NewsContentView(state.model.contentInfo) {
+                    NewsContentView(state.model.contentInfo, onNavigate: { handleSubviewNavigate($0) }, onOpenSafari: { handleSubviewSafari($0) }) {
                         withAnimation {
                             contentReady = true
                         }
@@ -264,7 +305,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
                 // Reply Cards
                 ForEach(sortedReplies, id: \.floor) { item in
-                    ReplyItemView(info: item, topicId: id)
+                    ReplyItemView(info: item, topicId: id, onNavigate: { handleSubviewNavigate($0) }, onOpenSafari: { handleSubviewSafari($0) })
                         .cardScrollTransition()
                         .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                         .listRowSeparator(.hidden)

@@ -10,13 +10,14 @@ import SwiftUI
 
 struct FeedItemView<Data: FeedItemProtocol>: View {
     let data: Data
+    @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @State private var navigateToRoute: AppRoute?
 
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
                 Button {
-                    navigateToRoute = .userDetail(userId: data.userName.safe)
+                    navigate(to: .userDetail(userId: data.userName.safe))
                 } label: {
                     AvatarView(url: data.avatar)
                 }
@@ -32,7 +33,7 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
                 .lineLimit(1)
                 Spacer()
                 Button {
-                    navigateToRoute = .tagDetail(tagId: data.nodeId.safe)
+                    navigate(to: .tagDetail(tagId: data.nodeId.safe))
                 } label: {
                     Text(data.nodeName.safe)
                         .nodeBadgeStyle()
@@ -62,6 +63,14 @@ struct FeedItemView<Data: FeedItemProtocol>: View {
         .accessibilityLabel("\(data.userName.safe), \(data.title.safe), \(data.nodeName.safe), \(data.replyNum.safe)条评论")
         .navigationDestination(item: $navigateToRoute) { route in
             route.destination()
+        }
+    }
+
+    private func navigate(to route: AppRoute) {
+        if let detailRoute = iPadDetailRoute {
+            detailRoute.wrappedValue = route
+        } else {
+            navigateToRoute = route
         }
     }
 }

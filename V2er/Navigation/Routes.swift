@@ -37,6 +37,7 @@ enum AppRoute: Hashable {
     // MARK: - Browser
     case webBrowser(url: String)
     case inAppBrowser(url: URL)
+    case safariView(url: URL)
 }
 
 // MARK: - Destination Builder
@@ -80,6 +81,10 @@ extension AppRoute {
             WebBrowserView(url: url)
         case .inAppBrowser(let url):
             InAppBrowserView(url: url)
+        case .safariView(let url):
+            SafariView(url: url)
+                .ignoresSafeArea()
+                .navigationBarHidden(true)
         }
     }
 }

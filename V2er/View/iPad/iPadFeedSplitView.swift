@@ -10,7 +10,14 @@ import SwiftUI
 
 struct iPadFeedSplitView: View {
     var selecedTab: TabId
-    @State private var selectedFeedId: String?
+    @State private var detailRoute: AppRoute?
+    @State private var detailPath = NavigationPath()
+
+    /// Extract the feed ID from detailRoute for highlighting the selected feed in the list.
+    private var selectedFeedId: String? {
+        if case .feedDetail(let id) = detailRoute { return id }
+        return nil
+    }
 
     var body: some View {
         GeometryReader { geo in
@@ -32,26 +39,37 @@ struct iPadFeedSplitView: View {
                 FeedPage(
                     selecedTab: selecedTab,
                     onSelectFeed: { feedId in
-                        selectedFeedId = feedId
+                        detailRoute = .feedDetail(id: feedId)
                     },
                     iPadSelectedFeedId: selectedFeedId
                 )
                 .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
+            .environment(\.iPadDetailRoute, $detailRoute)
             .frame(width: leftWidth)
 
             Divider()
 
-            // Right pane: feed detail or placeholder
-            NavigationStack {
-                if let feedId = selectedFeedId {
-                    FeedDetailPage(id: feedId)
-                        .navigationDestination(for: AppRoute.self) { $0.destination() }
-                } else {
-                    placeholderView
+            // Right pane: detail or placeholder.
+            // Uses NavigationStack(path:) for programmatic stack control.
+            // .id(detailRoute) on the inner Group recreates the root content
+            // when left-pane selection changes, WITHOUT destroying the
+            // NavigationStack itself (which would break push navigation).
+            NavigationStack(path: $detailPath) {
+                Group {
+                    if let route = detailRoute {
+                        route.destination()
+                    } else {
+                        placeholderView
+                    }
                 }
+                .id(detailRoute)
+                .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
-            .id(selectedFeedId)
+            .environment(\.iPadDetailPath, $detailPath)
+            .onChange(of: detailRoute) { _, _ in
+                detailPath = NavigationPath()
+            }
         }
     }
 
