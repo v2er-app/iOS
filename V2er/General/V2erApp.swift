@@ -11,41 +11,64 @@ import Combine
 
 @main
 struct V2erApp: App {
+    #if os(iOS)
     public static let deviceType = UIDevice().type
     public static var rootViewController: UIViewController?
     public static var statusBarState: UIStatusBarStyle = .darkContent
     public static var window: UIWindow?
+    #endif
+
     @StateObject private var store = Store.shared
 
     init() {
+        #if os(iOS)
         setupApperance()
+        #endif
     }
-    
+
+    #if os(iOS)
     private func setupApperance() {
-        // Navigation bar appearance will be set dynamically based on color scheme
         let navAppearance = UINavigationBar.appearance()
         navAppearance.isTranslucent = true
     }
-    
+    #endif
+
     var body: some Scene {
         WindowGroup {
+            #if os(iOS)
             RootView {
                 RootHostView()
                     .environmentObject(store)
-            }            .onAppear {
+            }
+            .onAppear {
                 updateAppearance(store.appState.settingState.appearance)
-                // Record launch and refresh other apps badge
                 OtherAppsManager.shared.recordLaunch()
                 OtherAppsManager.shared.refreshBadge()
-            }            .onChange(of: store.appState.settingState.appearance) { newValue in
+            }
+            .onChange(of: store.appState.settingState.appearance) { newValue in
                 updateAppearance(newValue)
-            }        }
+            }
+            #else
+            RootHostView()
+                .environmentObject(store)
+                .macOSLifecycle()
+                .onAppear {
+                    OtherAppsManager.shared.recordLaunch()
+                    OtherAppsManager.shared.refreshBadge()
+                }
+            #endif
+        }
+        #if os(macOS)
+        .commands {
+            V2erCommands()
+        }
+        #endif
     }
 
+    #if os(iOS)
     private func updateAppearance(_ appearance: AppearanceMode) {
         Self.updateNavigationBarAppearance()
         updateWindowInterfaceStyle(for: appearance)
-        // Update status bar style to match the new appearance
         Self.changeStatusBarStyle(Self.defaultStatusBarStyle())
     }
 
@@ -66,7 +89,7 @@ struct V2erApp: App {
             navAppearance.backgroundColor = .clear
         }
     }
-    
+
     static func updateWindowInterfaceStyleStatic(for appearance: AppearanceMode) {
         DispatchQueue.main.async {
             let style: UIUserInterfaceStyle
@@ -79,25 +102,25 @@ struct V2erApp: App {
                 style = .unspecified
             }
 
-            // Update all connected scenes
             UIApplication.shared.connectedScenes.forEach { scene in
                 if let windowScene = scene as? UIWindowScene {
                     windowScene.windows.forEach { window in
                         window.overrideUserInterfaceStyle = style
-                    }                }            }
-            // Also update the stored window if available
+                    }
+                }
+            }
             if let window = V2erApp.window {
                 window.overrideUserInterfaceStyle = style
             }
-            // Update the root hosting controller
             if let rootHostingController = V2erApp.rootViewController as? RootHostingController<RootHostView> {
                 rootHostingController.applyAppearanceFromString(appearance.rawValue)
             }
-            // Force a redraw
             UIApplication.shared.connectedScenes.forEach { scene in
                 if let windowScene = scene as? UIWindowScene {
                     windowScene.windows.forEach { $0.setNeedsDisplay() }
-                }            }        }
+                }
+            }
+        }
     }
 
     private func updateWindowInterfaceStyle(for appearance: AppearanceMode) {
@@ -112,28 +135,27 @@ struct V2erApp: App {
                 style = .unspecified
             }
 
-            // Update all connected scenes
             UIApplication.shared.connectedScenes.forEach { scene in
                 if let windowScene = scene as? UIWindowScene {
                     windowScene.windows.forEach { window in
                         window.overrideUserInterfaceStyle = style
-                    }                }            }
-            // Also update the stored window if available
+                    }
+                }
+            }
             if let window = V2erApp.window {
                 window.overrideUserInterfaceStyle = style
             }
-            // Update the root hosting controller
             if let rootHostingController = V2erApp.rootViewController as? RootHostingController<RootHostView> {
                 rootHostingController.applyAppearanceFromString(appearance.rawValue)
             }
-            // Force a redraw
             UIApplication.shared.connectedScenes.forEach { scene in
                 if let windowScene = scene as? UIWindowScene {
                     windowScene.windows.forEach { $0.setNeedsDisplay() }
-                }            }        }
+                }
+            }
+        }
     }
 
-    /// Returns the appropriate default status bar style for the current appearance.
     static func defaultStatusBarStyle() -> UIStatusBarStyle {
         let isDark: Bool
         let appearance = Store.shared.appState.settingState.appearance
@@ -154,9 +176,5 @@ struct V2erApp: App {
         rootViewController?
             .setNeedsStatusBarAppearanceUpdate()
     }
-
+    #endif
 }
-
-
-
-

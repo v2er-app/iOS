@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// Code block view with optional syntax highlighting
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 public struct CodeBlockAttachment: View {
 
     // MARK: - Properties
@@ -71,13 +71,13 @@ public struct CodeBlockAttachment: View {
             ScrollView(.horizontal, showsIndicators: true) {
                 Text(code)
                     .font(.system(size: style.blockFontSize, design: .monospaced))
-                    .foregroundColor(Color(uiColor: style.blockTextColor.uiColor))
+                    .foregroundColor(Color( style.blockTextColor.uiColor))
                     .padding(style.blockPadding.edgeInsets)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .textSelection(.enabled)
             }
         }
-        .background(Color(uiColor: style.blockBackgroundColor.uiColor))
+        .background(Color( style.blockBackgroundColor.uiColor))
         .cornerRadius(style.blockCornerRadius)
         .overlay(
             RoundedRectangle(cornerRadius: style.blockCornerRadius)
@@ -229,7 +229,7 @@ extension EdgeInsets {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 struct CodeBlockAttachment_Previews: PreviewProvider {
     static let swiftCode = """
         func fibonacci(_ n: Int) -> Int {

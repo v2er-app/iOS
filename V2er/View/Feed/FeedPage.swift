@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct FeedPage: BaseHomePageView {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @State private var isLoadingMore = false
     @State private var showOnlineStats = false
     var bindingState: Binding<FeedState> {
@@ -30,7 +30,9 @@ struct FeedPage: BaseHomePageView {
     var body: some View {
         contentView
             .navigationTitle("")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Button {
@@ -43,7 +45,7 @@ struct FeedPage: BaseHomePageView {
                             .foregroundColor(.primary)
                     }
                 }
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .automatic) {
                     filterMenu
                 }
             }
@@ -209,7 +211,7 @@ private struct OnlineStatsHeaderView: View {
                 .fill(Color.green)
                 .frame(width: 6, height: 6)
 
-            if #available(iOS 16.0, *) {
+            if #available(iOS 16.0, macOS 13.0, *) {
                 Text("\(animatedOnlineCount) 人在线")
                     .font(.caption)
                     .foregroundColor(.secondaryText)

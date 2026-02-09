@@ -7,7 +7,9 @@
 //
 
 import SwiftUI
+#if os(iOS)
 import SafariServices
+#endif
 
 struct CreditsPage: View {
     @State private var safariURL: IdentifiableURL?
@@ -60,9 +62,15 @@ struct CreditsPage: View {
             }
         }
         .navigationTitle("致谢")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
+        #endif
         .sheet(item: $safariURL) { item in
+            #if os(iOS)
             SafariView(url: item.url)
+            #else
+            InAppBrowserView(url: item.url)
+            #endif
         }
     }
 

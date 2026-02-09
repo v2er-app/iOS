@@ -22,7 +22,9 @@ struct TwoStepLoginPage: View {
                     .foregroundColor(Color(.label))
                 TextField("2FA码", text: $twoStepCode)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    #if os(iOS)
                     .keyboardType(.numberPad)
+                    #endif
                     .foregroundColor(Color(.label))
                     .padding(.vertical, Spacing.xs + 2)
                     .padding(.horizontal)

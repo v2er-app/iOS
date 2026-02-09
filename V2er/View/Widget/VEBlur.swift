@@ -6,9 +6,9 @@
 //  Copyright © 2020 lessmore.io. All rights reserved.
 //
 
-//import Foundation
 import SwiftUI
 
+#if os(iOS)
 struct VEBlur: UIViewRepresentable {
     var style: UIBlurEffect.Style = .systemUltraThinMaterial
     var bg: Color = .clear
@@ -22,19 +22,20 @@ struct VEBlur: UIViewRepresentable {
     func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
         uiView.effect = UIBlurEffect(style: style)
     }
-    
-    // mark: bug here
-//    var blurStyle: UIBlurEffect.Style = .systemThinMaterial
-//        var vibrancyStyle: UIVibrancyEffectStyle = .label
-//
-//        func makeUIView(context: Context) -> UIVisualEffectView {
-//            let effect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: blurStyle), style: vibrancyStyle)
-//            let effectView = UIVisualEffectView(effect: effect)
-//            return effectView
-//        }
-//
-//        func updateUIView(_ uiView: UIVisualEffectView, context: Context) {
-//            uiView.effect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: blurStyle), style: vibrancyStyle)
-//        }
-    
 }
+#elseif os(macOS)
+struct VEBlur: NSViewRepresentable {
+    var bg: Color = .clear
+
+    func makeNSView(context: Context) -> NSVisualEffectView {
+        let effectView = NSVisualEffectView()
+        effectView.material = .hudWindow
+        effectView.blendingMode = .behindWindow
+        effectView.state = .active
+        return effectView
+    }
+
+    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
+    }
+}
+#endif

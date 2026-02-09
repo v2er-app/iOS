@@ -74,7 +74,11 @@ extension View {
                 viewportHeight = scrollBounds.height
             } else {
                 frame = proxy.frame(in: .global)
+                #if os(iOS)
                 viewportHeight = UIScreen.main.bounds.height
+                #else
+                viewportHeight = NSScreen.main?.frame.height ?? 800
+                #endif
             }
 
             guard !frame.isEmpty else {

@@ -7,7 +7,9 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
+#endif
 
 func defaultReducer(_ state: AppState, _ action: Action) -> (AppState, Action?) {
     var state = state
@@ -18,7 +20,11 @@ func defaultReducer(_ state: AppState, _ action: Action) -> (AppState, Action?) 
             globalState.lastSelectedTab = globalState.selectedTab
             globalState.selectedTab = action.selectedTab
             if globalState.lastSelectedTab == globalState.selectedTab {
+                #if os(iOS)
                 hapticFeedback(.soft)
+                #else
+                hapticFeedback()
+                #endif
                 globalState.scrollTopTab = globalState.selectedTab
                 let tab = globalState.scrollTopTab
                 if tab == .message {

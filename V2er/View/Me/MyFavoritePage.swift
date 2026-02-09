@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MyFavoritePage: StateView {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @State private var selectedTab: Int = 0
     @State private var isFeedLoadingMore = false
     @State private var navigateToNode: AppRoute?
@@ -30,9 +30,13 @@ struct MyFavoritePage: StateView {
             nodeView
                 .tag(1)
         }
+        #if os(iOS)
         .tabViewStyle(.page)
+        #endif
         .navigationTitle("收藏")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Picker("收藏", selection: $selectedTab) {

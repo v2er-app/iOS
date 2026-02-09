@@ -9,7 +9,8 @@
 import Foundation
 import SwiftUI
 
-struct RichText: UIViewRepresentable {
+#if os(iOS)
+struct HtmlRichText: UIViewRepresentable {
     let html: String
 
     init(_ html: String) {
@@ -29,3 +30,4 @@ struct RichText: UIViewRepresentable {
 
     func updateUIView(_ uiView: UILabel, context: Context) {}
 }
+#endif

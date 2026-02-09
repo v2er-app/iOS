@@ -36,6 +36,7 @@ struct iPadTabSplitView<Content: View>: View {
                 content()
                     .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
+            .environmentObject(Store.shared)
             .environment(\.iPadDetailRoute, $detailRoute)
             .frame(width: leftWidth)
 
@@ -53,6 +54,7 @@ struct iPadTabSplitView<Content: View>: View {
                 .id(detailRoute)
                 .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
+            .environmentObject(Store.shared)
             .environment(\.iPadDetailPath, $detailPath)
             .onChange(of: detailRoute) { _, _ in
                 detailPath = NavigationPath()
@@ -67,6 +69,7 @@ struct iPadTabSplitView<Content: View>: View {
             content()
                 .navigationDestination(for: AppRoute.self) { $0.destination() }
         }
+        .environmentObject(Store.shared)
     }
 
     // MARK: - Placeholder

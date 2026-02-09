@@ -36,7 +36,7 @@ struct PostscriptItemView: View {
 
                     // Content
                     if postscript.contentHtml.notEmpty() {
-                        if #available(iOS 18.0, *) {
+                        if #available(iOS 18.0, macOS 15.0, *) {
                             RichContentView(htmlContent: postscript.contentHtml)
                                 .configuration(configurationForAppearance())
                         } else {
@@ -54,7 +54,7 @@ struct PostscriptItemView: View {
         }
     }
 
-    @available(iOS 18.0, *)
+    @available(iOS 18.0, macOS 15.0, *)
     private func configurationForAppearance() -> RenderConfiguration {
         RenderConfiguration(
             stylesheet: .v2ex,

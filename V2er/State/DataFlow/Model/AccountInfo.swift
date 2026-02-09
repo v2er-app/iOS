@@ -120,10 +120,10 @@ struct BalanceInfo: BaseModel, Codable {
         let rows = root.pickAll("table.data tbody tr")
 
         for row in rows {
-            let cells = row.pickAll("td")
-            if cells.count >= 2 {
-                let valueCell = cells[0].value(.text).trimmingCharacters(in: .whitespacesAndNewlines)
-                let labelCell = cells[1].value(.text).trimmingCharacters(in: .whitespacesAndNewlines)
+            let cellsArray = row.pickAll("td").array()
+            if cellsArray.count >= 2 {
+                let valueCell = cellsArray[0].value(.text).trimmingCharacters(in: .whitespacesAndNewlines)
+                let labelCell = cellsArray[1].value(.text).trimmingCharacters(in: .whitespacesAndNewlines)
 
                 if let value = parseNumber(valueCell) {
                     if labelCell.contains("金币") {

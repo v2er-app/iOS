@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct MePage: BaseHomePageView {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @ObservedObject private var otherAppsManager = OtherAppsManager.shared
 
@@ -90,7 +90,9 @@ struct MePage: BaseHomePageView {
                     .padding(.top, 8)
             }
         }
+        #if os(iOS)
         .listStyle(.insetGrouped)
+        #endif
         .overlay {
             if !AccountState.hasSignIn() {
                 loginOverlayView
@@ -113,9 +115,11 @@ struct MePage: BaseHomePageView {
             }
         }
         .navigationTitle("我")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
+        #endif
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .automatic) {
                 SplitNavigationLink(route: .settings) {
                     Image(systemName: "gearshape")
                 }
@@ -225,7 +229,7 @@ private struct OtherAppItemView: View {
     var body: some View {
         Button {
             if let url = app.appStoreUrl {
-                UIApplication.shared.open(url)
+                url.start()
             }
         } label: {
             HStack(spacing: Spacing.md) {

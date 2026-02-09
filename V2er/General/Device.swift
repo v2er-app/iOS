@@ -6,6 +6,7 @@
 //  Copyright © 2021 lessmore.io. All rights reserved.
 //
 
+#if os(iOS)
 import Foundation
 import UIKit
 
@@ -302,5 +303,4 @@ public extension UIDevice {
     }
 }
 
-
-
+#endif // os(iOS)

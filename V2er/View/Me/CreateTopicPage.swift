@@ -14,10 +14,10 @@ struct CreateTopicPage: StateView {
     @State var showNodeChooseView = false
     @FocusState private var focused: Bool
     @State var isPreviewing = false
-    @State private var selectedImage: UIImage? = nil
+    @State private var selectedImage: PlatformImage? = nil
     @State private var isUploadingImage = false
 
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     var bindingState: Binding<CreateTopicState> {
         return $store.appState.createTopicState
     }
@@ -25,9 +25,11 @@ struct CreateTopicPage: StateView {
     var body: some View {
         contentView
             .navigationTitle("创作主题")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .automatic) {
                     Button {
                         if isPreviewing {
                             // continue edit
@@ -175,7 +177,7 @@ struct CreateTopicPage: StateView {
         .divider()
     }
 
-    private func uploadImage(_ image: UIImage) {
+    private func uploadImage(_ image: PlatformImage) {
         isUploadingImage = true
         Task {
             let result = await ImgurService.shared.upload(image: image)

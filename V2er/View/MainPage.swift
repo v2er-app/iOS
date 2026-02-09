@@ -10,7 +10,7 @@ import SwiftUI
 import Combine
 
 struct MainPage: StateView {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var tabReselectionPublisher = PassthroughSubject<TabId, Never>()
     @State private var iPadSelectedTab: TabId = .feed
@@ -28,6 +28,7 @@ struct MainPage: StateView {
     }
 
     init() {
+        #if os(iOS)
         // Configure unselected item color using UITabBar.appearance()
         // Selected color is controlled by .accentColor() modifier on TabView
         let unselectedColor = UIColor { traitCollection in
@@ -42,6 +43,7 @@ struct MainPage: StateView {
         }
 
         UITabBar.appearance().unselectedItemTintColor = unselectedColor
+        #endif
     }
 
     // Create an intermediate binding that captures all tab selections
@@ -133,7 +135,9 @@ struct MainPage: StateView {
             )
         } detail: {
             iPadDetailContent
+                .environmentObject(store)
         }
+        .environmentObject(store)
         .tint(Color("TintColor"))
         .onChange(of: iPadSelectedTab) { _, newTab in
             dispatch(TabbarClickAction(selectedTab: newTab))

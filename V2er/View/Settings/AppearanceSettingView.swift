@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct AppearanceSettingView: View {
-    @EnvironmentObject private var store: Store
+    @ObservedObject private var store = Store.shared
 
     private var currentAppearance: AppearanceMode {
         store.appState.settingState.appearance
@@ -44,7 +44,9 @@ struct AppearanceSettingView: View {
             }
         }
         .navigationTitle("外观设置")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
+        #endif
     }
 }
 

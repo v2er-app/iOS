@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 struct RichContentView_Previews: PreviewProvider {
 
     static var previews: some View {
@@ -138,7 +138,7 @@ struct RichContentView_Previews: PreviewProvider {
 
 // MARK: - Interactive Preview
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 struct RichContentViewInteractive: View {
     @State private var htmlInput = RichContentView_Previews.complexExample
     @State private var selectedStyle: StylePreset = .default
@@ -195,11 +195,13 @@ struct RichContentViewInteractive: View {
                 .frame(height: 200)
         }
         .navigationTitle("RichContentView Preview")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 struct RichContentViewPlayground: View {
     var body: some View {
         NavigationView {
@@ -208,7 +210,7 @@ struct RichContentViewPlayground: View {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 struct RichContentViewPlayground_Previews: PreviewProvider {
     static var previews: some View {
         RichContentViewPlayground()

@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct RichText: View {
+public struct WebRichText: View {
     @State private var dynamicHeight : CGFloat = .zero
     
     let html : String
@@ -33,9 +33,9 @@ public struct RichText: View {
 }
 
 
-struct RichText_Previews: PreviewProvider {
+struct WebRichText_Previews: PreviewProvider {
     static var previews: some View {
-        RichText(html: "")
+        WebRichText(html: "")
     }
 }
 

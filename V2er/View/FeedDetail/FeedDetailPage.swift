@@ -7,7 +7,9 @@
 //
 
 import SwiftUI
+#if os(iOS)
 import SafariServices
+#endif
 import PhotosUI
 
 struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
@@ -15,8 +17,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Environment(\.dismiss) var dismiss
     @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @Environment(\.iPadDetailPath) private var iPadDetailPath
-    @EnvironmentObject private var store: Store
-    @State private var selectedImage: UIImage? = nil
+    @ObservedObject private var store = Store.shared
+    @State private var selectedImage: PlatformImage? = nil
     @State private var isUploadingImage = false
     @State private var navigateToBrowserURL: URL? = nil
     @State private var navigateToSafariURL: URL? = nil
@@ -88,11 +90,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             Toast.show("分享链接生成失败")
             return
         }
-        let activityItems: [Any] = [title, shareURL]
 
+        #if os(iOS)
+        let activityItems: [Any] = [title, shareURL]
         let activityVC = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
 
-        // For iPad, we need to provide a source view
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first,
            let rootVC = window.rootViewController {
@@ -102,6 +104,12 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         } else {
             Toast.show("无法打开分享")
         }
+        #elseif os(macOS)
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString("\(title)\n\(shareURL.absoluteString)", forType: .string)
+        Toast.show("已复制分享内容到剪贴板")
+        #endif
     }
 
     var body: some View {
@@ -110,17 +118,25 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 InAppBrowserView(url: url)
             }
             .navigationDestination(item: $navigateToSafariURL) { url in
+                #if os(iOS)
                 SafariView(url: url)
                     .ignoresSafeArea()
                     .navigationBarHidden(true)
+                #else
+                InAppBrowserView(url: url)
+                #endif
             }
             .navigationDestination(item: $subviewNavRoute) { route in
                 route.destination()
             }
             .navigationDestination(item: $subviewSafariURL) { url in
+                #if os(iOS)
                 SafariView(url: url)
                     .ignoresSafeArea()
                     .navigationBarHidden(true)
+                #else
+                InAppBrowserView(url: url)
+                #endif
             }
     }
 
@@ -162,9 +178,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 replyBar
             }
             .navigationTitle("话题")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .automatic) {
                 moreMenu
             }
         }
@@ -400,7 +418,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
     }
 
-    private func uploadImage(_ image: UIImage) {
+    private func uploadImage(_ image: PlatformImage) {
         isUploadingImage = true
         Task {
             let result = await ImgurService.shared.upload(image: image)
