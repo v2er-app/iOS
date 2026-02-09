@@ -281,6 +281,9 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             Image(systemName: "ellipsis")
                 .font(.body)
         }
+        #if os(macOS)
+        .menuIndicator(.hidden)
+        #endif
         .tint(.primary)
     }
 
