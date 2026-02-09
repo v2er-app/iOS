@@ -72,7 +72,7 @@ extension Color {
     public static let background = Color(nsColor: .windowBackgroundColor)
     public static let secondaryBackground = Color(nsColor: .controlBackgroundColor)
     public static let tertiaryBackground = Color(nsColor: .underPageBackgroundColor)
-    public static let itemBackground = Color(nsColor: .controlBackgroundColor)
+    public static let itemBackground = Color(nsColor: .secondarySystemGroupedBackground)
 
     public static let primaryText = Color(nsColor: .labelColor)
     public static let secondaryText = Color(nsColor: .secondaryLabelColor)
@@ -209,8 +209,20 @@ extension NSColor {
     static var systemBackground: NSColor { .windowBackgroundColor }
     static var secondarySystemBackground: NSColor { .controlBackgroundColor }
     static var tertiarySystemBackground: NSColor { .underPageBackgroundColor }
-    static var systemGroupedBackground: NSColor { .windowBackgroundColor }
-    static var secondarySystemGroupedBackground: NSColor { .controlBackgroundColor }
+    static var systemGroupedBackground: NSColor {
+        NSColor(name: nil) { appearance in
+            appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+                ? NSColor(red: 0, green: 0, blue: 0, alpha: 1)
+                : NSColor(red: 0.949, green: 0.949, blue: 0.969, alpha: 1)
+        }
+    }
+    static var secondarySystemGroupedBackground: NSColor {
+        NSColor(name: nil) { appearance in
+            appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+                ? NSColor(red: 0.110, green: 0.110, blue: 0.118, alpha: 1)
+                : .white
+        }
+    }
     static var systemGray: NSColor { .systemGray }
     static var systemGray2: NSColor { .systemGray }
     static var systemGray3: NSColor { .systemGray }
