@@ -10,7 +10,7 @@
 
 import SwiftUI
 
-// MARK: - Environment Key
+// MARK: - Environment Key (detail route replacement)
 
 private struct iPadDetailRouteKey: EnvironmentKey {
     static let defaultValue: Binding<AppRoute?>? = nil
@@ -22,3 +22,17 @@ extension EnvironmentValues {
         set { self[iPadDetailRouteKey.self] = newValue }
     }
 }
+
+// MARK: - Environment Key (detail path for push navigation)
+
+private struct iPadDetailPathKey: EnvironmentKey {
+    static let defaultValue: Binding<NavigationPath>? = nil
+}
+
+extension EnvironmentValues {
+    var iPadDetailPath: Binding<NavigationPath>? {
+        get { self[iPadDetailPathKey.self] }
+        set { self[iPadDetailPathKey.self] = newValue }
+    }
+}
+

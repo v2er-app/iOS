@@ -89,6 +89,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
 
     struct ItemView: View {
         var data: UserFeedInfo.Item
+        @Environment(\.iPadDetailRoute) private var iPadDetailRoute
         @State private var navigateToRoute: AppRoute?
 
         var body: some View {
@@ -106,7 +107,7 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
                     }
                     Spacer()
                     Button {
-                        navigateToRoute = .tagDetail(tagId: data.tagId)
+                        navigate(to: .tagDetail(tagId: data.tagId))
                     } label: {
                         Text(data.tag)
                             .nodeBadgeStyle()
@@ -128,6 +129,14 @@ struct UserFeedPage: StateView, InstanceIdentifiable {
             .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
             .navigationDestination(item: $navigateToRoute) { route in
                 route.destination()
+            }
+        }
+
+        private func navigate(to route: AppRoute) {
+            if let detailRoute = iPadDetailRoute {
+                detailRoute.wrappedValue = route
+            } else {
+                navigateToRoute = route
             }
         }
     }

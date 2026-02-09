@@ -45,6 +45,7 @@ struct MyRecentPage: StateView {
 
 struct RecentItemView<Data: FeedItemProtocol>: View {
     let data: Data
+    @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @State private var navigateToRoute: AppRoute?
 
     var body: some View {
@@ -61,7 +62,7 @@ struct RecentItemView<Data: FeedItemProtocol>: View {
                 }
                 Spacer()
                 Button {
-                    navigateToRoute = .tagDetail(tagId: data.nodeId.safe)
+                    navigate(to: .tagDetail(tagId: data.nodeId.safe))
                 } label: {
                     Text(data.nodeName.safe)
                         .nodeBadgeStyle()
@@ -79,6 +80,14 @@ struct RecentItemView<Data: FeedItemProtocol>: View {
         .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         .navigationDestination(item: $navigateToRoute) { route in
             route.destination()
+        }
+    }
+
+    private func navigate(to route: AppRoute) {
+        if let detailRoute = iPadDetailRoute {
+            detailRoute.wrappedValue = route
+        } else {
+            navigateToRoute = route
         }
     }
 }

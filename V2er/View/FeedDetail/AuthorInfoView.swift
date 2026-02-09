@@ -11,6 +11,8 @@ import SwiftUI
 struct AuthorInfoView: View {
     var initData: FeedInfo.Item? = nil
     var data: FeedDetailInfo.HeaderInfo? = nil
+    var onNavigate: ((AppRoute) -> Void)? = nil
+    @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @State private var navigateToRoute: AppRoute?
 
     private var title: String {
@@ -49,7 +51,7 @@ struct AuthorInfoView: View {
         VStack(spacing: 0) {
             HStack(alignment: .top) {
                 Button {
-                    navigateToRoute = .userDetail(userId: userName)
+                    navigate(to: .userDetail(userId: userName))
                 } label: {
                     AvatarView(url: avatar, size: 42)
                 }
@@ -64,7 +66,7 @@ struct AuthorInfoView: View {
                 }
                 Spacer()
                 Button {
-                    navigateToRoute = .tagDetailWithName(tag: tag, tagId: tagId)
+                    navigate(to: .tagDetailWithName(tag: tag, tagId: tagId))
                 } label: {
                     Text(tag)
                         .nodeBadgeStyle()
@@ -81,6 +83,16 @@ struct AuthorInfoView: View {
         .accessibilityElement(children: .combine)
         .navigationDestination(item: $navigateToRoute) { route in
             route.destination()
+        }
+    }
+
+    private func navigate(to route: AppRoute) {
+        if let onNavigate {
+            onNavigate(route)
+        } else if let detailRoute = iPadDetailRoute {
+            detailRoute.wrappedValue = route
+        } else {
+            navigateToRoute = route
         }
     }
 }

@@ -241,13 +241,14 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
 
     struct TagFeedItemView: View {
         var data: TagDetailInfo.Item
+        @Environment(\.iPadDetailRoute) private var iPadDetailRoute
         @State private var navigateToRoute: AppRoute?
 
         var body: some View {
             VStack(spacing: 0) {
                 HStack(alignment: .top) {
                     Button {
-                        navigateToRoute = .userDetail(userId: data.userName)
+                        navigate(to: .userDetail(userId: data.userName))
                     } label: {
                         AvatarView(url: data.avatar)
                     }
@@ -287,6 +288,14 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             .contentShape(Rectangle())
             .navigationDestination(item: $navigateToRoute) { route in
                 route.destination()
+            }
+        }
+
+        private func navigate(to route: AppRoute) {
+            if let detailRoute = iPadDetailRoute {
+                detailRoute.wrappedValue = route
+            } else {
+                navigateToRoute = route
             }
         }
     }
