@@ -7,6 +7,9 @@
 //
 
 import SwiftUI
+#if canImport(AppKit)
+import AppKit
+#endif
 
 struct FeedPage: BaseHomePageView {
     @ObservedObject private var store = Store.shared
