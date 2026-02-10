@@ -24,7 +24,7 @@ jobs:
       run: |
         # Update all Swift package dependencies to latest versions
         xcodebuild -project V2er.xcodeproj \
-          -scheme V2er \
+          -scheme V2er-iOS \
           -resolvePackageDependencies \
           -scmProvider system
     

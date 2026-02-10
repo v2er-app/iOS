@@ -39,7 +39,7 @@ platform :ios do
     profile_name = options[:profile_name] || lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]["v2er.app"] || "match AppStore v2er.app"
 
     build_app(
-      scheme: "V2er",
+      scheme: "V2er-iOS",
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
@@ -153,7 +153,7 @@ platform :ios do
       team_id: ENV["TEAM_ID"],
       profile_name: profile_name,
       code_sign_identity: "iPhone Distribution",
-      targets: ["V2er"]
+      targets: ["V2er-iOS"]
     )
 
     # Explicitly set provisioning profile for CI
@@ -161,7 +161,7 @@ platform :ios do
       update_project_provisioning(
         xcodeproj: "V2er.xcodeproj",
         profile: ENV["sigh_v2er.app_appstore_profile-path"],
-        target_filter: "V2er",
+        target_filter: "V2er-iOS",
         build_configuration: "Release"
       )
     end

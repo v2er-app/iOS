@@ -92,10 +92,10 @@ Managed via Swift Package Manager:
 ### Building
 ```bash
 # Build the project
-xcodebuild -project V2er.xcodeproj -scheme V2er -configuration Debug build
+xcodebuild -project V2er.xcodeproj -scheme V2er-iOS-configuration Debug build
 
 # Build for simulator
-xcodebuild -project V2er.xcodeproj -scheme V2er -sdk iphonesimulator -configuration Debug
+xcodebuild -project V2er.xcodeproj -scheme V2er-iOS-sdk iphonesimulator -configuration Debug
 
 # Clean build
 xcodebuild clean -project V2er.xcodeproj -scheme V2er
@@ -104,7 +104,7 @@ xcodebuild clean -project V2er.xcodeproj -scheme V2er
 ### Testing
 ```bash
 # Run tests
-xcodebuild test -project V2er.xcodeproj -scheme V2er -destination 'platform=iOS Simulator,name=iPhone 14'
+xcodebuild test -project V2er.xcodeproj -scheme V2er-iOS-destination 'platform=iOS Simulator,name=iPhone 14'
 ```
 
 Test locations:
@@ -114,7 +114,7 @@ Test locations:
 ### Archiving
 ```bash
 # Archive for App Store
-xcodebuild archive -project V2er.xcodeproj -scheme V2er -archivePath V2er.xcarchive
+xcodebuild archive -project V2er.xcodeproj -scheme V2er-iOS-archivePath V2er.xcarchive
 ```
 
 ## Release Management
