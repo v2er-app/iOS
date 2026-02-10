@@ -225,11 +225,12 @@ struct MePage: BaseHomePageView {
 
 private struct OtherAppItemView: View {
     let app: OtherApp
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         Button {
             if let url = app.appStoreUrl {
-                url.start()
+                openURL(url)
             }
         } label: {
             HStack(spacing: Spacing.md) {
@@ -266,6 +267,7 @@ private struct OtherAppItemView: View {
                     .background(Color.accentColor.opacity(0.12))
                     .clipShape(Capsule())
             }
+            .contentShape(Rectangle())
             .padding(.vertical, 6)
         }
         .buttonStyle(.plain)
