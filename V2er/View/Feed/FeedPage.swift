@@ -7,11 +7,17 @@
 //
 
 import SwiftUI
+#if canImport(AppKit)
+import AppKit
+#endif
 
 struct FeedPage: BaseHomePageView {
     @ObservedObject private var store = Store.shared
     @State private var isLoadingMore = false
     @State private var showOnlineStats = false
+    #if os(macOS)
+    @State private var macToolbarWidth: CGFloat = 350
+    #endif
     var bindingState: Binding<FeedState> {
         $store.appState.feedState
     }
@@ -27,28 +33,54 @@ struct FeedPage: BaseHomePageView {
         state.selectedTab.displayName()
     }
 
+    private var brandTitleButton: some View {
+        Button {
+            withAnimation {
+                store.appState.feedState.scrollToTop = Int.random(in: 1...Int.max)
+            }
+        } label: {
+            Text("V2EX")
+                .font(AppFont.brandTitle)
+                .foregroundColor(.primary)
+        }
+    }
+
     var body: some View {
         contentView
             .navigationTitle("")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
-            #endif
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Button {
-                        withAnimation {
-                            store.appState.feedState.scrollToTop = Int.random(in: 1...Int.max)
-                        }
-                    } label: {
-                        Text("V2EX")
-                            .font(AppFont.brandTitle)
-                            .foregroundColor(.primary)
-                    }
+                    brandTitleButton
                 }
                 ToolbarItem(placement: .automatic) {
                     filterMenu
                 }
             }
+            #else
+            .toolbar {
+                ToolbarItem(placement: .navigation) {
+                    HStack {
+                        brandTitleButton
+                            .padding(.leading, Spacing.sm)
+                        Spacer()
+                        filterMenu
+                            .padding(.trailing, Spacing.md)
+                    }
+                    .frame(width: macToolbarWidth - Spacing.md)
+                }
+            }
+            .onAppear {
+                for delay in [0.1, 0.5] {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                        for window in NSApp.windows {
+                            window.toolbar?.items.forEach { $0.isBordered = false }
+                        }
+                    }
+                }
+            }
+            #endif
             .onAppear {
                 log("FeedPage.onAppear")
                 if !state.hasLoadedOnce {
@@ -84,6 +116,11 @@ struct FeedPage: BaseHomePageView {
                 .disabled(tabNeedsLogin)
             }
         } label: {
+            #if os(macOS)
+            (Text(navigationTitle).font(AppFont.filterLabel) + Text("  \(Image(systemName: "chevron.down"))").font(AppFont.filterChevron))
+                .foregroundColor(.primary)
+                .accessibilityLabel("筛选: \(navigationTitle)")
+            #else
             HStack(spacing: Spacing.xs) {
                 Text(navigationTitle)
                     .font(AppFont.filterLabel)
@@ -92,7 +129,12 @@ struct FeedPage: BaseHomePageView {
             }
             .foregroundColor(.primary)
             .accessibilityLabel("筛选: \(navigationTitle)")
+            #endif
         }
+        #if os(macOS)
+        .menuIndicator(.hidden)
+        .menuStyle(.borderlessButton)
+        #endif
         .tint(.primary)
     }
 
@@ -175,6 +217,12 @@ struct FeedPage: BaseHomePageView {
                 }
             }
         }
+        #if os(macOS)
+        .background(GeometryReader { geo in
+            Color.clear.onAppear { macToolbarWidth = geo.size.width }
+                .onChange(of: geo.size.width) { macToolbarWidth = $1 }
+        })
+        #endif
         .refreshable {
             if AccountState.hasSignIn() {
                 // Fetch online stats in parallel with feed data

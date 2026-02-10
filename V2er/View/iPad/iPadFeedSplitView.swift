@@ -31,25 +31,40 @@ struct iPadFeedSplitView: View {
 
     // MARK: - Two-Column (iPad landscape)
 
+    private var feedPage: some View {
+        FeedPage(
+            selecedTab: selecedTab,
+            onSelectFeed: { feedId in
+                detailRoute = .feedDetail(id: feedId)
+            },
+            iPadSelectedFeedId: selectedFeedId
+        )
+    }
+
     private func twoColumnLayout(totalWidth: CGFloat) -> some View {
         let leftWidth = min(max(totalWidth * 0.38, 320), 420)
         return HStack(spacing: 0) {
             // Left pane: feed list
+            // On macOS, skip NavigationStack to avoid the empty toolbar area;
+            // the left pane only shows the list and delegates selection to the right pane.
+            #if os(macOS)
+            feedPage
+                .environmentObject(Store.shared)
+                .environment(\.iPadDetailRoute, $detailRoute)
+                .frame(width: leftWidth)
+            #else
             NavigationStack {
-                FeedPage(
-                    selecedTab: selecedTab,
-                    onSelectFeed: { feedId in
-                        detailRoute = .feedDetail(id: feedId)
-                    },
-                    iPadSelectedFeedId: selectedFeedId
-                )
-                .navigationDestination(for: AppRoute.self) { $0.destination() }
+                feedPage
+                    .navigationDestination(for: AppRoute.self) { $0.destination() }
             }
             .environmentObject(Store.shared)
             .environment(\.iPadDetailRoute, $detailRoute)
             .frame(width: leftWidth)
+            #endif
 
+            #if os(iOS)
             Divider()
+            #endif
 
             // Right pane: detail or placeholder.
             // Uses NavigationStack(path:) for programmatic stack control.
