@@ -2,13 +2,17 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
-## v1.2.7 (Build 54)
+## v1.2.8 (Build 55)
 1. Feature: Native macOS support — V2er now runs as a full macOS app with sidebar navigation and three-column layout
 2. Fix: macOS accent color now matches the iOS dark gray tint instead of defaulting to system blue
 3. Fix: Feed item card backgrounds have proper contrast on macOS
 4. Fix: iPad detail pane no longer resets when switching between topics
 5. Fix: iPad multitasking now works correctly with proper launch screen configuration
 6. Improvement: Feed toolbar items positioned in macOS column header for native feel
+7. Fix: CI/CD pipeline updated for new scheme naming
+
+## v1.2.7 (Build 54)
+1. Skipped due to CI pipeline issue
 
 ## v1.2.6 (Build XX)
 1. Improvement: More compact image placeholders in topic detail for a cleaner reading experience
