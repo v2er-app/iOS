@@ -83,7 +83,7 @@ struct MePage: BaseHomePageView {
 
             // MARK: - Other Apps Section
             Section {
-                OtherAppCarouselView(apps: otherApps, currentIndex: $carouselIndex)
+                OtherAppCarouselView(apps: otherApps, currentIndex: $carouselIndex, isVisible: isSelected)
                     .listRowInsets(EdgeInsets())
             } header: {
                 HStack {
@@ -125,14 +125,7 @@ struct MePage: BaseHomePageView {
                 otherApps = OtherAppsManager.otherApps.shuffled()
             }
         }
-        .onChange(of: isSelected) { _, newValue in
-            // Advance carousel by one page when tab becomes selected
-            if newValue && !otherApps.isEmpty {
-                withAnimation(.easeInOut(duration: 0.4)) {
-                    carouselIndex = (carouselIndex + 1) % otherApps.count
-                }
-            }
-        }
+        .onChange(of: isSelected) { _, _ in }
         .navigationTitle("我")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
@@ -248,7 +241,11 @@ struct MePage: BaseHomePageView {
 private struct OtherAppCarouselView: View {
     let apps: [OtherApp]
     @Binding var currentIndex: Int
+    let isVisible: Bool
     @State private var scrolledID: String?
+    // Incrementing this restarts the auto-rotation timer
+    @State private var timerEpoch = 0
+    private let autoRotateInterval: UInt64 = 10_000_000_000 // 10s
 
     var body: some View {
         VStack(spacing: Spacing.sm) {
@@ -268,7 +265,11 @@ private struct OtherAppCarouselView: View {
             .scrollPosition(id: $scrolledID)
             .onChange(of: scrolledID) { _, newID in
                 if let newID, let idx = apps.firstIndex(where: { $0.id == newID }) {
-                    currentIndex = idx
+                    if currentIndex != idx {
+                        currentIndex = idx
+                        // User swiped manually — restart timer
+                        timerEpoch += 1
+                    }
                 }
             }
             .onChange(of: currentIndex) { _, newIndex in
@@ -293,6 +294,29 @@ private struct OtherAppCarouselView: View {
                 }
             }
             .padding(.bottom, Spacing.xs)
+        }
+        // Advance after a short delay when tab becomes visible, then restart timer
+        .onChange(of: isVisible) { _, visible in
+            if visible && apps.count > 1 {
+                Task {
+                    try? await Task.sleep(nanoseconds: 500_000_000)
+                    withAnimation(.easeInOut(duration: 0.35)) {
+                        currentIndex = (currentIndex + 1) % apps.count
+                    }
+                    timerEpoch += 1
+                }
+            }
+        }
+        // Auto-rotation: restarts whenever timerEpoch changes
+        .task(id: timerEpoch) {
+            guard apps.count > 1 else { return }
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: autoRotateInterval)
+                guard !Task.isCancelled else { break }
+                withAnimation(.easeInOut(duration: 0.35)) {
+                    currentIndex = (currentIndex + 1) % apps.count
+                }
+            }
         }
     }
 }
@@ -344,7 +368,8 @@ struct OtherAppItemView: View {
                     .clipShape(Capsule())
             }
             .contentShape(Rectangle())
-            .padding(.vertical, Spacing.md)
+            .padding(.top, Spacing.lg)
+            .padding(.bottom, Spacing.sm)
         }
         .buttonStyle(.plain)
     }
