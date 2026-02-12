@@ -102,7 +102,9 @@ struct MePage: BaseHomePageView {
                     .buttonStyle(.plain)
                 }
             } footer: {
-                Text("感谢你的支持")
+                Image(systemName: "heart.fill")
+                    .font(.caption)
+                    .foregroundStyle(.secondary.opacity(0.5))
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.top, 8)
             }
@@ -120,9 +122,10 @@ struct MePage: BaseHomePageView {
                 dispatch(MeActions.FetchBalance.Start())
             }
             otherAppsManager.dismissBadge()
-            // Initialize with shuffled apps on first appear
+            // Initialize with fixed order, random start index on first appear
             if otherApps.isEmpty {
-                otherApps = OtherAppsManager.otherApps.shuffled()
+                otherApps = OtherAppsManager.otherApps
+                carouselIndex = Int.random(in: 0..<otherApps.count)
             }
         }
         .onChange(of: isSelected) { _, _ in }
