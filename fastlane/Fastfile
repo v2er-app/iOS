@@ -147,8 +147,8 @@ platform :ios do
       keychain_path = get_ci_keychain_path
       keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ""
 
-      # Explicitly add keychain to search list to prevent password prompts
-      sh("security list-keychains -d user -s #{Shellwords.escape(keychain_path)}")
+      # Add keychain to search list while keeping login keychain (for WWDR certs)
+      sh("security list-keychains -d user -s #{Shellwords.escape(keychain_path)} login.keychain-db")
       UI.message("Added keychain to search list: #{keychain_path}")
 
       # Unlock keychain to prevent codesign errors

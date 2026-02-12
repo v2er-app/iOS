@@ -148,7 +148,7 @@ All notable changes to V2er iOS app will be documented in this file.
 
 ## How to Update Changelog
 
-When updating the version in `V2er/Config/Version.xcconfig`:
+When updating the version in `Version.xcconfig`:
 
 1. Add a new version section at the top of this file
 2. Add a `### What's New` subsection with user-facing changes (used for App Store release notes)

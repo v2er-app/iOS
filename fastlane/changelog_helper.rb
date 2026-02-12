@@ -198,9 +198,9 @@ module ChangelogHelper
       UI.success("Found '### What's New' section for version #{version}")
       formatted = whats_new
     else
-      # Fallback: extract full changelog and filter out technical entries
+      # Fallback: extract full raw changelog and filter out technical entries
       UI.important("No '### What's New' section found for #{version}, falling back to filtering")
-      raw = extract_changelog(version)
+      raw = extract_raw_changelog(version) || "Bug fixes and improvements"
       formatted = filter_for_app_store(raw)
     end
 
