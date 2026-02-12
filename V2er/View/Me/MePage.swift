@@ -125,10 +125,11 @@ struct MePage: BaseHomePageView {
             // Initialize with fixed order, random start index on first appear
             if otherApps.isEmpty {
                 otherApps = OtherAppsManager.otherApps
-                carouselIndex = Int.random(in: 0..<otherApps.count)
+                if !otherApps.isEmpty {
+                    carouselIndex = Int.random(in: 0..<otherApps.count)
+                }
             }
         }
-        .onChange(of: isSelected) { _, _ in }
         .navigationTitle("我")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
@@ -248,6 +249,8 @@ private struct OtherAppCarouselView: View {
     @State private var scrolledID: String?
     // Incrementing this restarts the auto-rotation timer
     @State private var timerEpoch = 0
+    // Tracks visibility changes for the delayed advance task
+    @State private var visibilityEpoch = 0
     private let autoRotateInterval: UInt64 = 10_000_000_000 // 10s
 
     var body: some View {
@@ -276,6 +279,7 @@ private struct OtherAppCarouselView: View {
                 }
             }
             .onChange(of: currentIndex) { _, newIndex in
+                guard apps.indices.contains(newIndex) else { return }
                 let targetID = apps[newIndex].id
                 if scrolledID != targetID {
                     withAnimation(.easeInOut(duration: 0.35)) {
@@ -284,6 +288,7 @@ private struct OtherAppCarouselView: View {
                 }
             }
             .onAppear {
+                guard apps.indices.contains(currentIndex) else { return }
                 scrolledID = apps[currentIndex].id
             }
 
@@ -301,14 +306,17 @@ private struct OtherAppCarouselView: View {
         // Advance after a short delay when tab becomes visible, then restart timer
         .onChange(of: isVisible) { _, visible in
             if visible && apps.count > 1 {
-                Task {
-                    try? await Task.sleep(nanoseconds: 500_000_000)
-                    withAnimation(.easeInOut(duration: 0.35)) {
-                        currentIndex = (currentIndex + 1) % apps.count
-                    }
-                    timerEpoch += 1
-                }
+                visibilityEpoch += 1
             }
+        }
+        .task(id: visibilityEpoch) {
+            guard visibilityEpoch > 0, apps.count > 1 else { return }
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeInOut(duration: 0.35)) {
+                currentIndex = (currentIndex + 1) % apps.count
+            }
+            timerEpoch += 1
         }
         // Auto-rotation: restarts whenever timerEpoch changes
         .task(id: timerEpoch) {

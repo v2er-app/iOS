@@ -225,10 +225,10 @@ struct FeedPage: BaseHomePageView {
         .refreshable {
             if AccountState.hasSignIn() {
                 isRefreshing = true
+                defer { isRefreshing = false }
                 async let onlineStatsTask = run(action: FeedActions.FetchOnlineStats.Start())
                 async let feedTask = run(action: FeedActions.FetchData.Start())
                 await (onlineStatsTask, feedTask)
-                isRefreshing = false
                 showOnlineStatsTemporarily()
             }
         }
@@ -260,7 +260,7 @@ private struct BrandTitleView: View {
                 .contentTransition(.numericText())
                 .animation(.easeInOut(duration: 0.5), value: isRefreshing)
         } else {
-            Text("V2ER")
+            Text("V2er")
                 .font(AppFont.brandTitle)
                 .foregroundColor(.primary)
         }
