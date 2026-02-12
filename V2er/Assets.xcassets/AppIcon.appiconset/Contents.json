@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -13,6 +13,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "app_icon_dark.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -24,66 +25,67 @@
           "value" : "tinted"
         }
       ],
+      "filename" : "app_icon_dark.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
     },
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"
     },
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "32x32"
     },
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "32x32"
     },
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "128x128"
     },
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "128x128"
     },
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
     },
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "256x256"
     },
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
     },
     {
-      "filename" : "logo.png",
+      "filename" : "app_icon_light.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "512x512"

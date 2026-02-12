@@ -31,7 +31,7 @@ struct SplashView: View {
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(width: 200, height: 200)
+                .frame(width: 133, height: 133)
                 .foregroundColor(logoColor)
 
             // Slogan with typewriter effect (fixed position below logo)
