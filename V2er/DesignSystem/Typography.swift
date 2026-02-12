@@ -10,8 +10,8 @@
 import SwiftUI
 
 enum AppFont {
-    /// Brand title in navigation bar — replaces .system(size: 22, weight: .black)
-    static let brandTitle: Font = .system(.title2, design: .default).weight(.black)
+    /// Brand title in navigation bar — monospaced for stable width during V2EX ↔ V2er animation
+    static let brandTitle: Font = .system(.title2, design: .monospaced).weight(.black)
 
     /// Section headers — replaces inline .headline.weight(.heavy)
     static let sectionTitle: Font = .headline.weight(.heavy)

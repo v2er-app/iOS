@@ -39,9 +39,7 @@ struct FeedPage: BaseHomePageView {
                 store.appState.feedState.scrollToTop = Int.random(in: 1...Int.max)
             }
         } label: {
-            Text("V2EX")
-                .font(AppFont.brandTitle)
-                .foregroundColor(.primary)
+            BrandTitleView()
         }
     }
 
@@ -246,6 +244,38 @@ struct FeedPage: BaseHomePageView {
         }
     }
 
+}
+
+// Brand Title with intermittent V2EX → V2er animation
+private struct BrandTitleView: View {
+    @State private var showAppName = false
+
+    var body: some View {
+        if #available(iOS 16.0, macOS 13.0, *) {
+            Text(showAppName ? "V2er" : "V2EX")
+                .font(AppFont.brandTitle)
+                .foregroundColor(.primary)
+                .contentTransition(.numericText())
+                .task {
+                    while !Task.isCancelled {
+                        try? await Task.sleep(nanoseconds: UInt64.random(in: 5_000_000_000...8_000_000_000))
+                        guard !Task.isCancelled else { break }
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            showAppName = true
+                        }
+                        try? await Task.sleep(nanoseconds: 1_500_000_000)
+                        guard !Task.isCancelled else { break }
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            showAppName = false
+                        }
+                    }
+                }
+        } else {
+            Text("V2EX")
+                .font(AppFont.brandTitle)
+                .foregroundColor(.primary)
+        }
+    }
 }
 
 // Online Stats Header View
