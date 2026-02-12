@@ -1,0 +1,90 @@
+name: Cancel actions on merge
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cancel-running-workflows:
+    name: Cancel Running Workflows
+    runs-on: ubuntu-latest
+    # Only run if the PR was actually merged, not just closed
+    if: github.event.pull_request.merged == true
+
+    steps:
+      - name: Cancel in-progress workflow runs
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const headSha = context.payload.pull_request.head.sha;
+            const headRef = context.payload.pull_request.head.ref;
+
+            console.log(`PR #${prNumber} was merged. Canceling related workflow runs...`);
+            console.log(`Head SHA: ${headSha}`);
+            console.log(`Head ref: ${headRef}`);
+
+            try {
+              let allRuns = [];
+
+              for (const status of ['queued', 'in_progress']) {
+                let page = 1;
+                let fetched;
+                do {
+                  const { data: runs } = await github.rest.actions.listWorkflowRunsForRepo({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    status: status,
+                    per_page: 100,
+                    page: page
+                  });
+                  fetched = runs.workflow_runs.length;
+                  allRuns = allRuns.concat(runs.workflow_runs);
+                  page++;
+                } while (fetched === 100);
+              }
+
+              // Filter runs that match this PR's head SHA
+              // Exclude the current workflow run to avoid self-cancellation
+              const relatedRuns = allRuns.filter(run =>
+                run.head_sha === headSha &&
+                run.id !== context.runId
+              );
+
+              if (relatedRuns.length === 0) {
+                console.log('No queued or in-progress workflow runs found for this PR.');
+                return;
+              }
+
+              console.log(`Found ${relatedRuns.length} queued/in-progress workflow run(s) to cancel:`);
+
+              const cancelPromises = relatedRuns.map(async (run) => {
+                console.log(`  - Canceling: ${run.name} (ID: ${run.id}, Run #${run.run_number}, Status: ${run.status})`);
+                try {
+                  await github.rest.actions.cancelWorkflowRun({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    run_id: run.id
+                  });
+                  console.log(`    Done`);
+                  return { success: true, run };
+                } catch (error) {
+                  console.log(`    Failed: ${error.message}`);
+                  return { success: false, run, error };
+                }
+              });
+
+              const results = await Promise.all(cancelPromises);
+              const successCount = results.filter(r => r.success).length;
+              const failCount = results.filter(r => !r.success).length;
+
+              console.log(`\nSummary: ${successCount} canceled, ${failCount} failed`);
+
+            } catch (error) {
+              console.error('Error while canceling workflow runs:', error);
+              core.setFailed(`Failed to cancel workflows: ${error.message}`);
+            }
