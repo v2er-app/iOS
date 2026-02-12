@@ -38,7 +38,9 @@ struct MePage: BaseHomePageView {
     }
 
     @State private var otherApps: [OtherApp] = []
+    @State private var carouselIndex = 0
     @State private var navigateToUserDetail: AppRoute?
+    @State private var navigateToAllApps: AppRoute?
 
     var body: some View {
         List {
@@ -81,8 +83,23 @@ struct MePage: BaseHomePageView {
 
             // MARK: - Other Apps Section
             Section {
-                ForEach(otherApps, id: \.id) { app in
-                    OtherAppItemView(app: app)
+                OtherAppCarouselView(apps: otherApps, currentIndex: $carouselIndex)
+                    .listRowInsets(EdgeInsets())
+            } header: {
+                HStack {
+                    Spacer()
+                    Button {
+                        navigateToAllApps = .allOtherApps
+                    } label: {
+                        HStack(spacing: Spacing.xs) {
+                            Text("查看全部")
+                            Image(systemName: "chevron.right")
+                                .font(.caption2)
+                        }
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                    }
+                    .buttonStyle(.plain)
                 }
             } footer: {
                 Text("感谢你的支持")
@@ -109,9 +126,11 @@ struct MePage: BaseHomePageView {
             }
         }
         .onChange(of: isSelected) { _, newValue in
-            // Shuffle apps when tab becomes selected
-            if newValue {
-                otherApps = OtherAppsManager.otherApps.shuffled()
+            // Advance carousel by one page when tab becomes selected
+            if newValue && !otherApps.isEmpty {
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    carouselIndex = (carouselIndex + 1) % otherApps.count
+                }
             }
         }
         .navigationTitle("我")
@@ -195,6 +214,9 @@ struct MePage: BaseHomePageView {
         .navigationDestination(item: $navigateToUserDetail) { route in
             route.destination()
         }
+        .navigationDestination(item: $navigateToAllApps) { route in
+            route.destination()
+        }
     }
 
     // MARK: - Login Overlay View
@@ -221,9 +243,63 @@ struct MePage: BaseHomePageView {
     }
 }
 
+// MARK: - Other App Carousel View
+
+private struct OtherAppCarouselView: View {
+    let apps: [OtherApp]
+    @Binding var currentIndex: Int
+    @State private var scrolledID: String?
+
+    var body: some View {
+        VStack(spacing: Spacing.sm) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 0) {
+                    ForEach(apps) { app in
+                        OtherAppItemView(app: app)
+                            .frame(maxHeight: .infinity)
+                            .padding(.horizontal, Spacing.lg)
+                            .containerRelativeFrame(.horizontal)
+                            .id(app.id)
+                    }
+                }
+                .scrollTargetLayout()
+            }
+            .scrollTargetBehavior(.viewAligned)
+            .scrollPosition(id: $scrolledID)
+            .onChange(of: scrolledID) { _, newID in
+                if let newID, let idx = apps.firstIndex(where: { $0.id == newID }) {
+                    currentIndex = idx
+                }
+            }
+            .onChange(of: currentIndex) { _, newIndex in
+                let targetID = apps[newIndex].id
+                if scrolledID != targetID {
+                    withAnimation(.easeInOut(duration: 0.35)) {
+                        scrolledID = targetID
+                    }
+                }
+            }
+            .onAppear {
+                scrolledID = apps[currentIndex].id
+            }
+
+            // Page dots
+            HStack(spacing: 6) {
+                ForEach(apps.indices, id: \.self) { index in
+                    Circle()
+                        .fill(index == currentIndex ? Color.accentColor : Color.gray.opacity(0.3))
+                        .frame(width: 6, height: 6)
+                        .animation(.easeInOut(duration: 0.3), value: currentIndex)
+                }
+            }
+            .padding(.bottom, Spacing.xs)
+        }
+    }
+}
+
 // MARK: - Other App Item View
 
-private struct OtherAppItemView: View {
+struct OtherAppItemView: View {
     let app: OtherApp
     @Environment(\.openURL) private var openURL
 
@@ -261,16 +337,35 @@ private struct OtherAppItemView: View {
                 // Download Button
                 Text("获取")
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.tint)
+                    .foregroundStyle(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, Spacing.sm)
-                    .background(Color.accentColor.opacity(0.12))
+                    .background(Color.blue)
                     .clipShape(Capsule())
             }
             .contentShape(Rectangle())
-            .padding(.vertical, 6)
+            .padding(.vertical, Spacing.md)
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - All Other Apps Page
+
+struct AllOtherAppsPage: View {
+    private let apps = OtherAppsManager.otherApps
+
+    var body: some View {
+        List(apps) { app in
+            OtherAppItemView(app: app)
+        }
+        #if os(iOS)
+        .listStyle(.insetGrouped)
+        #endif
+        .navigationTitle("更多 App")
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
 }
 
