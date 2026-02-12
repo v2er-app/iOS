@@ -14,6 +14,7 @@ import AppKit
 struct FeedPage: BaseHomePageView {
     @ObservedObject private var store = Store.shared
     @State private var isLoadingMore = false
+    @State private var isRefreshing = false
     @State private var showOnlineStats = false
     #if os(macOS)
     @State private var macToolbarWidth: CGFloat = 350
@@ -39,7 +40,7 @@ struct FeedPage: BaseHomePageView {
                 store.appState.feedState.scrollToTop = Int.random(in: 1...Int.max)
             }
         } label: {
-            BrandTitleView()
+            BrandTitleView(isRefreshing: isRefreshing)
         }
     }
 
@@ -223,10 +224,11 @@ struct FeedPage: BaseHomePageView {
         #endif
         .refreshable {
             if AccountState.hasSignIn() {
-                // Fetch online stats in parallel with feed data
+                isRefreshing = true
                 async let onlineStatsTask = run(action: FeedActions.FetchOnlineStats.Start())
                 async let feedTask = run(action: FeedActions.FetchData.Start())
                 await (onlineStatsTask, feedTask)
+                isRefreshing = false
                 showOnlineStatsTemporarily()
             }
         }
@@ -246,32 +248,19 @@ struct FeedPage: BaseHomePageView {
 
 }
 
-// Brand Title with intermittent V2EX → V2er animation
+// Brand Title: default "V2er", shows "V2EX" during refresh
 private struct BrandTitleView: View {
-    @State private var showAppName = false
+    var isRefreshing: Bool
 
     var body: some View {
         if #available(iOS 16.0, macOS 13.0, *) {
-            Text(showAppName ? "V2er" : "V2EX")
+            Text(isRefreshing ? "V2EX" : "V2ER")
                 .font(AppFont.brandTitle)
                 .foregroundColor(.primary)
                 .contentTransition(.numericText())
-                .task {
-                    while !Task.isCancelled {
-                        try? await Task.sleep(nanoseconds: UInt64.random(in: 5_000_000_000...8_000_000_000))
-                        guard !Task.isCancelled else { break }
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            showAppName = true
-                        }
-                        try? await Task.sleep(nanoseconds: 1_500_000_000)
-                        guard !Task.isCancelled else { break }
-                        withAnimation(.easeInOut(duration: 0.5)) {
-                            showAppName = false
-                        }
-                    }
-                }
+                .animation(.easeInOut(duration: 0.5), value: isRefreshing)
         } else {
-            Text("V2EX")
+            Text("V2ER")
                 .font(AppFont.brandTitle)
                 .foregroundColor(.primary)
         }
