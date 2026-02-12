@@ -27,6 +27,9 @@ enum AppRoute: Hashable {
     case myUploads
     case createTopic
 
+    // MARK: - Other Apps
+    case allOtherApps
+
     // MARK: - Settings
     case settings
     case appearanceSettings
@@ -73,6 +76,8 @@ extension AppRoute {
             MyUploadsPage()
         case .createTopic:
             CreateTopicPage()
+        case .allOtherApps:
+            AllOtherAppsPage()
         case .settings:
             SettingsPage()
         case .appearanceSettings:
