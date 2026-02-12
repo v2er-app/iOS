@@ -1,0 +1,111 @@
+# Submit for App Store Review Pipeline
+#
+# This workflow submits the latest processed build on App Store Connect
+# for App Store review — without rebuilding the app.
+#
+# Use this when a build is already uploaded to TestFlight and you want
+# to submit it for review separately (e.g., after beta testing).
+#
+# Prerequisites:
+# 1. A valid build already uploaded via `fastlane beta` or Xcode
+# 2. CHANGELOG.md updated with entry for the current version
+# 3. Required secrets configured in repository settings
+
+name: Submit for App Store Review
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: "Specific build number to submit (leave empty for latest)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+# Prevent concurrent submissions
+concurrency:
+  group: submit-review
+  cancel-in-progress: false
+
+jobs:
+  submit-review:
+    name: Submit for App Store Review
+    runs-on: macos-26
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: false
+
+      - name: Install Fastlane
+        run: |
+          gem install fastlane -v 2.231.1
+
+      - name: Create App Store Connect API Key
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.ORG_APP_STORE_CONNECT_KEY_ID || secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.ORG_APP_STORE_CONNECT_ISSUER_ID || secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.ORG_APP_STORE_CONNECT_API_KEY_BASE64 || secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          # Validate secrets
+          for var in APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_API_KEY_BASE64; do
+            if [ -z "${!var}" ]; then
+              echo "ERROR: $var is not set"
+              exit 1
+            fi
+            echo "$var is set"
+          done
+
+          # Create API key file
+          mkdir -p ~/.appstoreconnect/private_keys
+          KEY_PATH=~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+
+          if echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 -d > "$KEY_PATH" 2>/dev/null; then
+            echo "API key decoded"
+          elif echo "$APP_STORE_CONNECT_API_KEY_BASE64" | base64 --decode > "$KEY_PATH" 2>/dev/null; then
+            echo "API key decoded (--decode)"
+          elif echo "$APP_STORE_CONNECT_API_KEY_BASE64" | tr -d '\n\r ' | base64 -d > "$KEY_PATH" 2>/dev/null; then
+            echo "API key decoded (stripped whitespace)"
+          else
+            echo "ERROR: Failed to decode API key"
+            exit 1
+          fi
+
+          chmod 600 "$KEY_PATH"
+
+          echo "APP_STORE_CONNECT_API_KEY_KEY_ID=$APP_STORE_CONNECT_KEY_ID" >> $GITHUB_ENV
+          echo "APP_STORE_CONNECT_API_KEY_ISSUER_ID=$APP_STORE_CONNECT_ISSUER_ID" >> $GITHUB_ENV
+          echo "APP_STORE_CONNECT_API_KEY_KEY=$KEY_PATH" >> $GITHUB_ENV
+
+      - name: Submit for App Store Review
+        timeout-minutes: 10
+        env:
+          LC_ALL: en_US.UTF-8
+          LANG: en_US.UTF-8
+          BUILD_NUMBER: ${{ inputs.build_number }}
+        run: |
+          echo "========================================="
+          echo "Submit for App Store Review"
+          echo "========================================="
+
+          if [ -n "$BUILD_NUMBER" ]; then
+            echo "Submitting specific build: $BUILD_NUMBER"
+            fastlane submit_review build_number:"$BUILD_NUMBER"
+          else
+            echo "Submitting latest build..."
+            fastlane submit_review
+          fi
+
+      - name: Post submission notification
+        if: success()
+        run: |
+          VERSION=$(grep '^MARKETING_VERSION = ' Version.xcconfig | sed 's/.*MARKETING_VERSION = //' | xargs)
+          echo "Successfully submitted version $VERSION for App Store review!"
+          echo "Apple typically reviews within 24-48 hours"

@@ -1,5 +1,6 @@
 # Fastfile for V2er iOS app
 
+require 'shellwords'
 # Import changelog helper
 require_relative 'changelog_helper'
 
@@ -12,12 +13,16 @@ platform :ios do
     if ENV["APP_STORE_CONNECT_API_KEY_KEY"]
       # CI environment with key file path
       key_content = File.read(ENV["APP_STORE_CONNECT_API_KEY_KEY"])
-    elsif ENV["APP_STORE_CONNECT_API_KEY_CONTENT"]
+    elsif ENV["ORG_APP_STORE_CONNECT_API_KEY_BASE64"]
       # Local environment with key content directly
+      key_content = ENV["ORG_APP_STORE_CONNECT_API_KEY_BASE64"]
+    elsif ENV["APP_STORE_CONNECT_API_KEY_CONTENT"]
+      # Legacy local environment variable
       key_content = ENV["APP_STORE_CONNECT_API_KEY_CONTENT"]
     else
       # Try to read from standard location
-      key_path = File.expand_path("~/.appstoreconnect/private_keys/AuthKey_#{ENV["APP_STORE_CONNECT_KEY_ID"]}.p8")
+      key_id = ENV["ORG_APP_STORE_CONNECT_KEY_ID"] || ENV["APP_STORE_CONNECT_KEY_ID"]
+      key_path = File.expand_path("~/.appstoreconnect/private_keys/AuthKey_#{key_id}.p8")
       if File.exist?(key_path)
         key_content = File.read(key_path)
       else
@@ -26,17 +31,32 @@ platform :ios do
     end
 
     app_store_connect_api_key(
-      key_id: ENV["APP_STORE_CONNECT_KEY_ID"] || ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
-      issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"] || ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+      key_id: ENV["ORG_APP_STORE_CONNECT_KEY_ID"] || ENV["APP_STORE_CONNECT_KEY_ID"] || ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+      issuer_id: ENV["ORG_APP_STORE_CONNECT_ISSUER_ID"] || ENV["APP_STORE_CONNECT_ISSUER_ID"] || ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
       key_content: key_content,
       in_house: false
     )
   end
 
+  # Helper method to get consistent keychain path across all operations
+  private_lane :get_ci_keychain_path do
+    # Fastlane's setup_ci creates keychain with -db suffix
+    # Use MATCH_KEYCHAIN_PATH if set, otherwise use default path
+    path = ENV["MATCH_KEYCHAIN_PATH"] || ENV["KEYCHAIN_PATH"] || "~/Library/Keychains/fastlane_tmp_keychain-db"
+    File.expand_path(path)
+  end
+
   # Helper method for building the app
   private_lane :build_ipa do |options|
     # Get profile name from match context or use default
-    profile_name = options[:profile_name] || lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]["v2er.app"] || "match AppStore v2er.app"
+    profile_name = options[:profile_name] || ENV["sigh_v2er.app_appstore_profile-name"] || "match AppStore v2er.app"
+
+    # Build xcargs with keychain path for CI to prevent errSecInternalComponent
+    xcargs = "-allowProvisioningUpdates CODE_SIGN_STYLE=Manual"
+    if is_ci
+      keychain_path = get_ci_keychain_path
+      xcargs += " OTHER_CODE_SIGN_FLAGS=--keychain\\ #{Shellwords.escape(keychain_path)}"
+    end
 
     build_app(
       scheme: "V2er-iOS",
@@ -45,10 +65,10 @@ platform :ios do
         provisioningProfiles: {
           "v2er.app" => profile_name
         },
-        teamID: ENV["TEAM_ID"]
+        teamID: ENV["ORG_TEAM_ID"] || ENV["TEAM_ID"]
       },
-      export_team_id: ENV["TEAM_ID"],
-      xcargs: "-allowProvisioningUpdates CODE_SIGN_STYLE=Manual",
+      export_team_id: ENV["ORG_TEAM_ID"] || ENV["TEAM_ID"],
+      xcargs: xcargs,
       clean: true,
       output_directory: "./build",
       output_name: "V2er.ipa",
@@ -60,14 +80,22 @@ platform :ios do
 
   desc "Sync certificates and provisioning profiles"
   lane :sync_certificates do
-    match(
+    # Note: When using setup_ci, MATCH_KEYCHAIN_NAME and MATCH_KEYCHAIN_PASSWORD
+    # are automatically set by Fastlane. No need to manually specify keychain.
+    match_options = {
       type: "appstore",
       readonly: is_ci,
       app_identifier: "v2er.app",
-      git_url: ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/ios-certificates.git",
-      keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "login.keychain",
-      keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || ""
-    )
+      git_url: ENV["ORG_MATCH_GIT_URL"] || ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/ios-certificates.git"
+    }
+
+    # Only specify keychain if explicitly provided (setup_ci sets these automatically)
+    if ENV["MATCH_KEYCHAIN_NAME"]
+      match_options[:keychain_name] = ENV["MATCH_KEYCHAIN_NAME"]
+      match_options[:keychain_password] = ENV["MATCH_KEYCHAIN_PASSWORD"] if ENV["MATCH_KEYCHAIN_PASSWORD"]
+    end
+
+    match(match_options)
   end
 
   desc "Distribute existing build to beta testers"
@@ -102,7 +130,7 @@ platform :ios do
         }
       )
 
-      UI.success("✅ Successfully distributed build to beta testers!")
+      UI.success("Successfully distributed build to beta testers!")
     rescue => e
       UI.error("Failed to distribute: #{e.message}")
       UI.message("You may need to manually distribute the build in App Store Connect")
@@ -111,6 +139,31 @@ platform :ios do
 
   desc "Build and upload to TestFlight"
   lane :beta do
+    # Setup CI environment (creates temporary keychain automatically)
+    if ENV['CI']
+      setup_ci
+
+      # Get consistent keychain path
+      keychain_path = get_ci_keychain_path
+      keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ""
+
+      # Add keychain to search list while keeping login keychain (for WWDR certs)
+      sh("security list-keychains -d user -s #{Shellwords.escape(keychain_path)} login.keychain-db")
+      UI.message("Added keychain to search list: #{keychain_path}")
+
+      # Unlock keychain to prevent codesign errors
+      unlock_keychain(
+        path: keychain_path,
+        password: keychain_password,
+        set_default: true,
+        add_to_search_list: true
+      )
+
+      # Set timeout to prevent auto-lock during build
+      sh("security set-keychain-settings -t 3600 -l #{Shellwords.escape(keychain_path)}")
+      UI.message("Set keychain timeout to 3600 seconds to prevent auto-lock")
+    end
+
     # Validate that changelog exists for current version
     unless ChangelogHelper.validate_changelog_exists
       UI.user_error!("Please update CHANGELOG.md with an entry for the current version before releasing!")
@@ -119,6 +172,22 @@ platform :ios do
     # Ensure we have the latest certificates
     sync_certificates
 
+    # Set partition list AFTER certificates are imported to prevent UI prompts
+    if ENV['CI']
+      ensure_ci_keychain_partition_list
+
+      # Unlock keychain AGAIN after setting partition list
+      keychain_path = get_ci_keychain_path
+      keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ""
+
+      unlock_keychain(
+        path: keychain_path,
+        password: keychain_password,
+        set_default: true,
+        add_to_search_list: true
+      )
+    end
+
     # Get App Store Connect API key
     api_key = get_api_key
 
@@ -126,8 +195,18 @@ platform :ios do
     # Read current build number from xcconfig
     xcconfig_path = "../Version.xcconfig"
     xcconfig_content = File.read(xcconfig_path)
-    current_build_number = xcconfig_content.match(/CURRENT_PROJECT_VERSION = (\d+)/)[1].to_i
-    current_version = xcconfig_content.match(/MARKETING_VERSION = (.+)/)[1].strip
+
+    build_match = xcconfig_content.match(/CURRENT_PROJECT_VERSION = (\d+)/)
+    if build_match.nil?
+      UI.user_error!("Could not find CURRENT_PROJECT_VERSION in #{xcconfig_path}.")
+    end
+    current_build_number = build_match[1].to_i
+
+    version_match = xcconfig_content.match(/MARKETING_VERSION = (.+)/)
+    if version_match.nil?
+      UI.user_error!("Could not find MARKETING_VERSION in #{xcconfig_path}.")
+    end
+    current_version = version_match[1].strip
 
     latest_testflight = latest_testflight_build_number(api_key: api_key)
 
@@ -143,16 +222,16 @@ platform :ios do
       UI.message("Updated build number to #{new_build_number}")
     end
 
-    # Get profile name from match context
-    profile_name = lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]["v2er.app"] || "match AppStore v2er.app"
+    # Use dynamic profile name from match environment variables
+    profile_name = ENV["sigh_v2er.app_appstore_profile-name"] || "match AppStore v2er.app"
 
     # Ensure proper code signing
     update_code_signing_settings(
       use_automatic_signing: false,
       path: "V2er.xcodeproj",
-      team_id: ENV["TEAM_ID"],
+      team_id: ENV["ORG_TEAM_ID"] || ENV["TEAM_ID"],
       profile_name: profile_name,
-      code_sign_identity: "iPhone Distribution",
+      code_sign_identity: "Apple Distribution",
       targets: ["V2er-iOS"]
     )
 
@@ -169,72 +248,114 @@ platform :ios do
     # Build the app
     build_ipa
 
-    # Check if we should distribute to public beta
-    distribute_to_public_beta = ENV["DISTRIBUTE_TO_PUBLIC_BETA"] == "true"
+    submit_for_review = ENV['SUBMIT_FOR_REVIEW'] == 'true'
 
-    if distribute_to_public_beta
-      begin
-        # Upload to TestFlight and wait for processing to distribute to public beta
-        UI.message("📦 Will distribute to public beta group after upload...")
-        upload_to_testflight(
-          api_key: api_key,
-          skip_submission: false,
-          skip_waiting_for_build_processing: false,  # Wait for processing to distribute
-          distribute_external: true,  # Distribute to external testers (public beta)
-          groups: ["Public Beta", "External Testers", "Beta Testers"],  # Public beta groups
-          notify_external_testers: true,  # Send email notifications
-          uses_non_exempt_encryption: false,
-          submit_beta_review: true,  # Automatically submit for Beta review
-          changelog: ChangelogHelper.get_current_changelog || "Bug fixes and improvements",
-          beta_app_description: "V2er is an elegant third-party client for V2EX forum",
-          beta_app_feedback_email: "hi@v2er.app",
-          demo_account_required: false,
-          beta_app_review_info: {
-            contact_email: "hi@v2er.app",
-            contact_first_name: "V2er",
-            contact_last_name: "Support",
-            contact_phone: "+86 13800138000",
-            notes: "This is a third-party client app for V2EX forum. No special account needed for testing."
-          }
-        )
-        UI.success("✅ Build uploaded and distributed to public beta testers!")
-        UI.success("📧 External testers will be notified via email")
-      rescue => e
-        UI.error("Failed to distribute to public beta: #{e.message}")
-        UI.message("Build may have been uploaded but distribution failed")
-        UI.message("You can manually distribute using: fastlane distribute_beta")
+    if submit_for_review
+      # Upload to App Store Connect and submit for review
+      UI.important("Submitting build for App Store review...")
+
+      # Extract App Store "What's New" text from CHANGELOG.md
+      changelog = ChangelogHelper.app_store_whats_new(current_version)
+
+      # Set "What's New" on App Store version localizations via Spaceship API
+      UI.message("Preparing App Store version localizations...")
+      app = Spaceship::ConnectAPI::App.find("v2er.app")
+
+      # Cancel any existing submission that would block the new one
+      review_states = ["WAITING_FOR_REVIEW", "IN_REVIEW"]
+      app.get_app_store_versions.each do |v|
+        next unless review_states.include?(v.app_store_state)
+
+        UI.important("Found version #{v.version_string} in '#{v.app_store_state}' — cancelling to unblock new submission...")
+        begin
+          v.reject!
+          UI.success("Cancelled review for version #{v.version_string}")
+        rescue => e
+          UI.important("Could not cancel version #{v.version_string}: #{e.message}")
+        end
       end
+
+      edit_version = app.get_edit_app_store_version
+
+      # Get metadata from the live (published) version as fallback for any missing fields
+      live_version = app.get_live_app_store_version
+      live_metadata = {}
+      if live_version
+        live_version.get_app_store_version_localizations.each do |loc|
+          live_metadata[loc.locale] = loc
+        end
+      end
+
+      localizations = edit_version.get_app_store_version_localizations
+      localizations.each do |loc|
+        attrs = { whats_new: changelog }
+
+        # Fill in required fields from live version if missing
+        ref = live_metadata[loc.locale] || live_metadata.values.first
+        if ref
+          attrs[:description] = ref.description if loc.description.nil? || loc.description.to_s.strip.empty?
+          attrs[:keywords] = ref.keywords if loc.keywords.nil? || loc.keywords.to_s.strip.empty?
+          attrs[:support_url] = ref.support_url if loc.support_url.nil? || loc.support_url.to_s.strip.empty?
+          attrs[:marketing_url] = ref.marketing_url if loc.marketing_url.nil? || loc.marketing_url.to_s.strip.empty?
+        end
+
+        UI.message("  Updating #{loc.locale} (#{attrs.keys.join(', ')})...")
+        loc.update(attributes: attrs)
+      end
+      UI.success("Updated localizations for #{localizations.length} locale(s)")
+
+      # Upload binary and submit for review (skip metadata — already set above)
+      upload_to_app_store(
+        api_key: api_key,
+        skip_metadata: true,
+        skip_screenshots: true,
+        submit_for_review: true,
+        automatic_release: false,
+        precheck_include_in_app_purchases: false,
+        force: is_ci,
+        run_precheck_before_submit: false,
+        submission_information: {
+          add_id_info_uses_idfa: false,
+          export_compliance_uses_encryption: false,
+          export_compliance_encryption_updated: false
+        }
+      )
+
+      UI.success("Build uploaded and submitted for App Store review!")
+      UI.important("The build will be reviewed by Apple (usually 24-48 hours)")
+      UI.important("The build is also available on TestFlight for beta testing")
+
+      notification(
+        title: "V2er iOS",
+        subtitle: "Submitted for App Store Review",
+        message: "Build has been uploaded and submitted for App Store review"
+      ) if is_ci == false
     else
-      # Upload to TestFlight without waiting (original behavior)
+      # Upload to TestFlight only
       # NOTE: We skip waiting for build processing to avoid timeout issues.
-      # Apple's build processing can take 5-30 minutes, which often exceeds reasonable timeout limits.
-      # Distribution to testers can be done after processing completes using: fastlane distribute_beta
+      # IMPORTANT: Do NOT add a `changelog` parameter here — it causes fastlane to wait
+      # for Apple's build processing even with skip_waiting_for_build_processing: true.
       upload_to_testflight(
         api_key: api_key,
         skip_submission: false,
-        skip_waiting_for_build_processing: true,  # Don't wait - avoid timeout issues
-        distribute_external: false,  # Can't distribute until Apple finishes processing
+        skip_waiting_for_build_processing: true,
+        distribute_external: false,
         uses_non_exempt_encryption: false
-        # NOTE: changelog parameter intentionally omitted
-        # Even with skip_waiting_for_build_processing: true, providing a changelog
-        # causes fastlane to wait for the build to appear in App Store Connect,
-        # which defeats the purpose of skipping. Changelog can be added manually
-        # in App Store Connect or when distributing with: fastlane distribute_beta
       )
-      UI.success("✅ Build uploaded successfully to TestFlight!")
-      UI.important("📦 Build will be available for testing once Apple finishes processing (usually 5-30 minutes)")
-      UI.important("🔔 You can distribute to testers using: fastlane distribute_beta")
-    end
 
-    # Notify success
-    notification(
-      title: "V2er iOS",
-      subtitle: "Successfully uploaded to TestFlight",
-      message: "Build has been uploaded and will be available for testing soon"
-    ) if is_ci == false
+      UI.success("Build uploaded successfully to TestFlight!")
+      UI.important("Build will be available for testing once Apple finishes processing (usually 5-30 minutes)")
+      UI.important("You can distribute to testers using: fastlane distribute_beta")
+
+      notification(
+        title: "V2er iOS",
+        subtitle: "Successfully uploaded to TestFlight",
+        message: "Build has been uploaded and will be available for testing soon"
+      ) if is_ci == false
+    end
   end
 
-  desc "Submit to App Store Review"
+  desc "Submit to App Store Review (legacy — builds first, use submit_review instead)"
   lane :release do
     # Ensure we have the latest certificates
     sync_certificates
@@ -253,6 +374,147 @@ platform :ios do
       submit_for_review: false,
       precheck_include_in_app_purchases: false
     )
+  end
+
+  desc "Submit latest build to App Store Review (no build required)"
+  lane :submit_review do |options|
+    # Get App Store Connect API key
+    api_key = get_api_key
+
+    # Read current version from Version.xcconfig
+    xcconfig_path = "../Version.xcconfig"
+    xcconfig_content = File.read(xcconfig_path)
+
+    version_match = xcconfig_content.match(/MARKETING_VERSION = (.+)/)
+    UI.user_error!("Could not find MARKETING_VERSION in Version.xcconfig") if version_match.nil?
+    current_version = version_match[1].strip
+
+    UI.important("Preparing to submit version #{current_version} for App Store review...")
+
+    # Validate that changelog exists for current version
+    unless ChangelogHelper.validate_changelog_exists
+      UI.user_error!("Please update CHANGELOG.md with an entry for version #{current_version}!")
+    end
+
+    # Find the app on App Store Connect
+    app = Spaceship::ConnectAPI::App.find("v2er.app")
+    UI.user_error!("App 'v2er.app' not found on App Store Connect!") unless app
+
+    # Cancel any existing submission that would block the new one
+    review_states = ["WAITING_FOR_REVIEW", "IN_REVIEW"]
+    app.get_app_store_versions.each do |v|
+      next unless review_states.include?(v.app_store_state)
+
+      UI.important("Found version #{v.version_string} in '#{v.app_store_state}' — cancelling to unblock new submission...")
+      begin
+        v.reject!
+        UI.success("Cancelled review for version #{v.version_string}")
+      rescue => e
+        UI.important("Could not cancel version #{v.version_string}: #{e.message}")
+      end
+    end
+
+    # Get the editable App Store version (or create one)
+    edit_version = app.get_edit_app_store_version
+    unless edit_version
+      UI.important("No editable version found, creating version #{current_version}...")
+      edit_version = app.create_version!(
+        platform: Spaceship::ConnectAPI::Platform::IOS,
+        version_string: current_version
+      )
+    end
+
+    UI.message("Using App Store version: #{edit_version.version_string}")
+
+    # Find the latest processed build on App Store Connect
+    target_build_number = options[:build_number]
+
+    builds = Spaceship::ConnectAPI::Build.all(
+      app_id: app.id,
+      processing_state: "VALID",
+      sort: "-uploadedDate",
+      limit: 15
+    )
+
+    if builds.empty?
+      UI.user_error!("No valid (processed) builds found on App Store Connect! Upload a build first using `fastlane beta`.")
+    end
+
+    if target_build_number
+      latest_build = builds.find { |b| b.version == target_build_number.to_s }
+      UI.user_error!("Build #{target_build_number} not found or not yet processed!") unless latest_build
+    else
+      latest_build = builds.first
+    end
+
+    UI.success("Selected build: #{latest_build.version} (uploaded: #{latest_build.uploaded_date})")
+
+    # Attach the build to the App Store version
+    begin
+      edit_version.select_build(build_id: latest_build.id)
+      UI.success("Attached build #{latest_build.version} to version #{edit_version.version_string}")
+    rescue => e
+      UI.important("Build attachment note: #{e.message}")
+      UI.message("The build may already be attached — continuing...")
+    end
+
+    # Update "What's New" metadata on all localizations
+    UI.message("Preparing App Store version localizations...")
+    changelog = ChangelogHelper.app_store_whats_new(current_version)
+
+    # Get metadata from the live (published) version as fallback for any missing fields
+    live_version = app.get_live_app_store_version
+    live_metadata = {}
+    if live_version
+      live_version.get_app_store_version_localizations.each do |loc|
+        live_metadata[loc.locale] = loc
+      end
+    end
+
+    localizations = edit_version.get_app_store_version_localizations
+    localizations.each do |loc|
+      attrs = { whats_new: changelog }
+
+      # Fill in required fields from live version if missing
+      ref = live_metadata[loc.locale] || live_metadata.values.first
+      if ref
+        attrs[:description] = ref.description if loc.description.nil? || loc.description.to_s.strip.empty?
+        attrs[:keywords] = ref.keywords if loc.keywords.nil? || loc.keywords.to_s.strip.empty?
+        attrs[:support_url] = ref.support_url if loc.support_url.nil? || loc.support_url.to_s.strip.empty?
+        attrs[:marketing_url] = ref.marketing_url if loc.marketing_url.nil? || loc.marketing_url.to_s.strip.empty?
+      end
+
+      UI.message("  Updating #{loc.locale} (#{attrs.keys.join(', ')})...")
+      loc.update(attributes: attrs)
+    end
+    UI.success("Updated localizations for #{localizations.length} locale(s)")
+
+    # Submit for review via deliver (handles submission information properly)
+    upload_to_app_store(
+      api_key: api_key,
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: true,
+      automatic_release: false,
+      precheck_include_in_app_purchases: false,
+      force: true,
+      run_precheck_before_submit: false,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        export_compliance_uses_encryption: false,
+        export_compliance_encryption_updated: false
+      }
+    )
+
+    UI.success("Build #{latest_build.version} submitted for App Store review!")
+    UI.important("The build will be reviewed by Apple (usually 24-48 hours)")
+
+    notification(
+      title: "V2er iOS",
+      subtitle: "Submitted for App Store Review",
+      message: "Build #{latest_build.version} submitted for review"
+    ) if is_ci == false
   end
 
   desc "Create a new version on App Store Connect"
@@ -283,7 +545,91 @@ platform :ios do
     )
   end
 
+  private_lane :ensure_ci_keychain_partition_list do
+    # Get keychain password
+    keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ENV["CI_KEYCHAIN_PASSWORD"]
+
+    unless keychain_password
+      UI.important("No keychain password found, skipping partition list setup")
+      next
+    end
+
+    # Use consistent keychain path
+    resolved_keychain = get_ci_keychain_path
+
+    # Verify keychain file exists
+    unless File.exist?(resolved_keychain)
+      UI.error("Keychain not found at: #{resolved_keychain}")
+      UI.important("Available keychains:")
+      sh("security list-keychains")
+      raise "Keychain file not found: #{resolved_keychain}"
+    end
+
+    begin
+      UI.message("Setting up keychain partition list...")
+      UI.message("Keychain: #{resolved_keychain}")
+
+      # Set partition list to allow codesign tools to access keys without prompting
+      sh("security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k #{Shellwords.escape(keychain_password)} #{Shellwords.escape(resolved_keychain)} 2>&1")
+      UI.success("Successfully updated key partition list")
+
+      # Set timeout to prevent auto-lock
+      sh("security set-keychain-settings -t 3600 -l #{Shellwords.escape(resolved_keychain)}")
+      UI.message("Set keychain timeout to 3600 seconds (1 hour)")
+
+      # Verify keychain settings
+      UI.message("Verifying keychain settings:")
+      sh("security show-keychain-info #{Shellwords.escape(resolved_keychain)} 2>&1 || true")
+    rescue => e
+      UI.error("Failed to setup keychain partition list")
+      raise e
+    end
+  end
+
+  # Clean up CI keychain to prevent accumulation on self-hosted runners
+  private_lane :cleanup_ci_keychain do
+    # Only run cleanup in CI environment
+    next unless ENV['CI']
+
+    keychain_path = get_ci_keychain_path
+
+    begin
+      UI.message("Cleaning up CI keychain...")
+
+      if File.exist?(keychain_path)
+        # Reset keychain search list to default (only login keychain)
+        sh("security list-keychains -d user -s login.keychain-db 2>&1 || true")
+
+        # Lock the keychain before deleting
+        sh("security lock-keychain #{Shellwords.escape(keychain_path)} 2>&1 || true")
+
+        # Delete the keychain using security command
+        sh("security delete-keychain #{Shellwords.escape(keychain_path)} 2>&1 || true")
+
+        # Force delete the file if it still exists
+        if File.exist?(keychain_path)
+          File.delete(keychain_path)
+        end
+
+        UI.success("Successfully cleaned up CI keychain")
+      else
+        UI.message("Keychain file doesn't exist, skipping cleanup")
+      end
+    rescue => e
+      # Don't fail the build if cleanup fails
+      UI.important("Failed to clean up keychain: #{e.message}")
+    end
+  end
+
+  after_all do |lane|
+    # Clean up temporary keychain after successful completion
+    cleanup_ci_keychain
+  end
+
   error do |lane, exception|
+    # Clean up temporary keychain even on failure
+    cleanup_ci_keychain
+
     notification(
       title: "V2er iOS - #{lane} failed",
       subtitle: "Error occurred",

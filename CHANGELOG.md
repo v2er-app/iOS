@@ -148,10 +148,12 @@ All notable changes to V2er iOS app will be documented in this file.
 
 ## How to Update Changelog
 
-When updating the version in `V2er/Config/Version.xcconfig`:
+When updating the version in `Version.xcconfig`:
 
 1. Add a new version section at the top of this file
-2. List all changes since the last version:
+2. Add a `### What's New` subsection with user-facing changes (used for App Store release notes)
+3. Add a `### All Changes` subsection with the complete list of changes
+4. List all changes since the last version:
    - Use "Feature:" for new features
    - Use "Fix:" for bug fixes
    - Use "Improvement:" for enhancements
@@ -160,9 +162,18 @@ When updating the version in `V2er/Config/Version.xcconfig`:
 Example format:
 ```
 ## vX.Y.Z (Build N)
+
+### What's New
+- User-facing change 1
+- User-facing change 2
+
+### All Changes
 1. Feature: Description of new feature
 2. Fix: Description of bug fix
 3. Improvement: Description of enhancement
+4. Infrastructure: CI/CD or build system change
 ```
 
-The changelog will be automatically extracted and used in TestFlight release notes.
+The `### What's New` section is extracted verbatim for App Store release notes.
+The full changelog is used for TestFlight release notes.
+If no `### What's New` section exists, technical entries are automatically filtered out for the App Store.

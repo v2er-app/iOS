@@ -6,8 +6,43 @@ require 'fastlane_core/ui/ui'
 module ChangelogHelper
   # Import Fastlane's UI for logging
   UI = FastlaneCore::UI unless defined?(UI)
-  # Extract changelog for a specific version from CHANGELOG.md
-  # @param version [String] The version to extract (e.g., "1.1.1")
+
+  # GitHub repository URL for feedback links (TestFlight)
+  GITHUB_REPO_URL = "https://github.com/v2er-app/iOS"
+
+  # Support email for App Store release notes
+  SUPPORT_EMAIL = "hi@v2er.app"
+
+  # TestFlight changelog character limit
+  TESTFLIGHT_CHANGELOG_LIMIT = 4000
+
+  # Patterns for individual entries to exclude when falling back to filtering
+  # (used only for old changelog entries without "### What's New" section)
+  TECHNICAL_ENTRY_PATTERNS = [
+    /\bCI\/?CD\b/i,
+    /\bpipeline\b/i,
+    /\binfrastructure\b/i,
+    /\bworkflow\b/i,
+    /\bcodebase\b/i,
+    /\brefactor/i,
+    /\bdeprecated API\b/i,
+    /\bInfo\.plist\b/i,
+    /\bTestFlight\b/i,
+    /\bcode signing\b/i,
+    /\bkeychain\b/i,
+    /\bcertificate/i,
+    /\brelease pipeline\b/i,
+    /\bversion management\b/i,
+    /\bconfiguration files\b/i,
+    /\bautomated workflow\b/i,
+    /\bgit remote\b/i,
+    /\brepository\b/i,
+    /\bMatch\b.*\bbranch\b/i,
+    /\bbuild.*deploy/i,
+  ].freeze
+
+  # Extract the full changelog section for a specific version from CHANGELOG.md
+  # @param version [String] The version to extract (e.g., "1.2.8")
   # @return [String] The changelog content for the specified version
   def self.extract_changelog(version)
     changelog_path = File.expand_path("../CHANGELOG.md", __dir__)
@@ -20,7 +55,7 @@ module ChangelogHelper
     content = File.read(changelog_path)
 
     # Match the version section, handling both "vX.Y.Z" and "X.Y.Z" formats
-    # Also capture optional build number like "v1.1.1 (Build 31)"
+    # Also capture optional build number like "v1.2.8 (Build 55)"
     version_pattern = /^##\s+v?#{Regexp.escape(version)}(?:\s+\(Build\s+\w+\))?\s*$/
 
     lines = content.lines
@@ -71,7 +106,6 @@ module ChangelogHelper
     end
 
     # Format for TestFlight (convert numbered list to bullet points if needed)
-    # TestFlight supports basic formatting
     formatted_changelog = format_for_testflight(changelog)
 
     UI.success("Extracted changelog for version #{version}:")
@@ -80,30 +114,148 @@ module ChangelogHelper
     formatted_changelog
   end
 
+  # Extract only the "### What's New" section for a specific version.
+  # This section contains pre-written, App Store-ready user-facing text.
+  # @param version [String] The version to extract (e.g., "1.2.8")
+  # @return [String, nil] The What's New content, or nil if section not found
+  def self.extract_whats_new(version)
+    changelog_path = File.expand_path("../CHANGELOG.md", __dir__)
+    return nil unless File.exist?(changelog_path)
+
+    content = File.read(changelog_path)
+    version_pattern = /^##\s+v?#{Regexp.escape(version)}(?:\s+\(Build\s+\w+\))?\s*$/
+
+    lines = content.lines
+    version_start = nil
+
+    # Find the version section
+    lines.each_with_index do |line, index|
+      if line.match?(version_pattern)
+        version_start = index
+        break
+      end
+    end
+
+    return nil if version_start.nil?
+
+    # Find the "### What's New" header within this version section
+    whats_new_start = nil
+    ((version_start + 1)...lines.length).each do |index|
+      line = lines[index]
+      # Stop if we hit the next version or separator
+      break if line.match?(/^##\s+/) || line.match?(/^---/)
+
+      if line.strip.match?(/^###\s+What's New\s*$/i)
+        whats_new_start = index
+        break
+      end
+    end
+
+    return nil if whats_new_start.nil?
+
+    # Collect lines until the next ### header, ## header, or ---
+    result_lines = []
+    ((whats_new_start + 1)...lines.length).each do |index|
+      line = lines[index]
+      break if line.match?(/^###?\s+/) || line.match?(/^---/)
+      result_lines << line
+    end
+
+    text = result_lines.join("").strip
+    text.empty? ? nil : text
+  end
+
   # Format changelog content for TestFlight display
   # @param content [String] Raw changelog content
   # @return [String] Formatted changelog
   def self.format_for_testflight(content)
-    # TestFlight supports:
-    # - Plain text
-    # - Line breaks
-    # - Basic formatting
-
     # Convert numbered lists to bullet points for better readability
-    # "1. Feature: xxx" -> "• Feature: xxx"
     formatted = content.gsub(/^\d+\.\s+/, "• ")
 
     # Add feedback link at the end
-    feedback_link = "\n\n问题反馈: https://github.com/v2er-app/iOS/issues"
+    feedback_link = "\n\n问题反馈: #{GITHUB_REPO_URL}/issues"
 
     # Ensure we don't exceed TestFlight's changelog length limit (4000 chars)
-    if (formatted + feedback_link).length > 4000
-      extra_message = "\n\n(See full changelog at github.com/v2er-app/iOS)"
-      max_length = 4000 - feedback_link.length - extra_message.length
+    if (formatted + feedback_link).length > TESTFLIGHT_CHANGELOG_LIMIT
+      extra_message = "\n\n(See full changelog at #{GITHUB_REPO_URL.sub('https://', '')})"
+      max_length = TESTFLIGHT_CHANGELOG_LIMIT - feedback_link.length - extra_message.length
       formatted = formatted[0...max_length] + extra_message
     end
 
     formatted + feedback_link
+  end
+
+  # Get App Store "What's New" text for a specific version.
+  # Prefers the dedicated "### What's New" section in CHANGELOG.md (new format).
+  # Falls back to filtering the full changelog for older entries without that section.
+  # @param version [String] The version (e.g., "1.2.8")
+  # @return [String] Clean, App Store-ready release notes
+  def self.app_store_whats_new(version)
+    # Try the dedicated "### What's New" section first (new CHANGELOG format)
+    whats_new = extract_whats_new(version)
+
+    if whats_new
+      UI.success("Found '### What's New' section for version #{version}")
+      formatted = whats_new
+    else
+      # Fallback: extract full raw changelog and filter out technical entries
+      UI.important("No '### What's New' section found for #{version}, falling back to filtering")
+      raw = extract_raw_changelog(version) || "Bug fixes and improvements"
+      formatted = filter_for_app_store(raw)
+    end
+
+    # Append support email
+    formatted += "\n\nFeedback: #{SUPPORT_EMAIL}"
+
+    # App Store "What's New" limit is 4000 chars
+    if formatted.length > TESTFLIGHT_CHANGELOG_LIMIT
+      max_length = TESTFLIGHT_CHANGELOG_LIMIT - "\n\nFeedback: #{SUPPORT_EMAIL}".length - 3
+      formatted = formatted[0...max_length] + "...\n\nFeedback: #{SUPPORT_EMAIL}"
+    end
+
+    UI.message("App Store What's New:\n#{formatted}")
+    formatted
+  end
+
+  # Filter raw changelog content by removing technical entries, emojis, and headers.
+  # Used as fallback for old changelog entries without "### What's New" section.
+  # @param content [String] Raw changelog content
+  # @return [String] Filtered user-facing text
+  def self.filter_for_app_store(content)
+    lines = content.lines
+    result_lines = []
+    skip_section = false
+
+    lines.each do |line|
+      stripped = line.strip
+
+      # Check for section headers (### Section Name)
+      if stripped.match?(/^###\s+/)
+        section_name = stripped.gsub(/^###\s+/, '').gsub(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}]/, '').strip
+        skip_section = section_name.downcase.include?("technical")
+        next
+      end
+
+      next if skip_section
+      next if stripped.empty?
+      next if TECHNICAL_ENTRY_PATTERNS.any? { |pattern| stripped.match?(pattern) }
+
+      entry = stripped.sub(/^[-*•]\s+/, '').strip
+      next if entry.empty?
+
+      result_lines << "- #{entry}"
+    end
+
+    formatted = result_lines.join("\n")
+
+    # Strip emojis (App Store Connect rejects them)
+    formatted = formatted
+      .encode('UTF-8')
+      .gsub(/[\u{00A9}\u{00AE}\u{203C}\u{2049}\u{20E3}\u{2122}\u{2139}\u{2194}-\u{2199}\u{21A9}-\u{21AA}\u{231A}-\u{231B}\u{2328}\u{23CF}\u{23E9}-\u{23F3}\u{23F8}-\u{23FA}\u{24C2}\u{25AA}-\u{25AB}\u{25B6}\u{25C0}\u{25FB}-\u{27BF}\u{2934}-\u{2935}\u{2B05}-\u{2B07}\u{2B1B}-\u{2B1C}\u{2B50}\u{2B55}\u{3030}\u{303D}\u{3297}\u{3299}\u{FE00}-\u{FE0F}\u{1F000}-\u{1FFFF}\u{200D}\u{E0020}-\u{E007F}]/, '')
+      .gsub(/  +/, ' ')
+      .strip
+
+    formatted.empty? ? "Bug fixes and improvements" : formatted
   end
 
   # Get the current version from Version.xcconfig
@@ -126,9 +278,6 @@ module ChangelogHelper
       UI.user_error!("Could not find MARKETING_VERSION in Version.xcconfig")
     end
   end
-
-  # TestFlight changelog character limit
-  TESTFLIGHT_CHANGELOG_LIMIT = 4000
 
   # Get all versions from CHANGELOG.md in order (newest first)
   # @return [Array<String>] List of version strings
@@ -213,7 +362,7 @@ module ChangelogHelper
     # Build combined changelog
     combined_parts = []
     feedback_header = "唯一问题反馈渠道:https://v2er.app/help\n\n"
-    truncation_notice = "\n\n(See full changelog at github.com/v2er-app/iOS)"
+    truncation_notice = "\n\n(See full changelog at #{GITHUB_REPO_URL.sub('https://', '')})"
 
     # Reserve space for feedback header
     available_space = TESTFLIGHT_CHANGELOG_LIMIT - feedback_header.length
@@ -240,7 +389,6 @@ module ChangelogHelper
         # Try to fit as much as possible with truncation notice
         remaining_space = available_space - current_length - truncation_notice.length
         if remaining_space > 50 && index > 0
-          # Only add partial content if there's meaningful space
           combined_parts << version_section[0...remaining_space]
           combined_parts << truncation_notice
         end
@@ -267,7 +415,7 @@ module ChangelogHelper
     changelog_path = File.expand_path("../CHANGELOG.md", __dir__)
 
     unless File.exist?(changelog_path)
-      UI.error("❌ CHANGELOG.md not found!")
+      UI.error("CHANGELOG.md not found!")
       UI.message("Please create CHANGELOG.md with an entry for version #{current_version}")
       return false
     end
@@ -276,14 +424,16 @@ module ChangelogHelper
     version_pattern = /^##\s+v?#{Regexp.escape(current_version)}/
 
     if content.match?(version_pattern)
-      UI.success("✅ Changelog entry found for version #{current_version}")
+      UI.success("Changelog entry found for version #{current_version}")
       return true
     else
-      UI.error("❌ No changelog entry found for version #{current_version}")
+      UI.error("No changelog entry found for version #{current_version}")
       UI.message("Please add a changelog entry in CHANGELOG.md:")
       UI.message("")
       UI.message("## v#{current_version}")
-      UI.message("1. Feature/Fix: Description of changes")
+      UI.message("")
+      UI.message("### What's New")
+      UI.message("- User-facing change description")
       UI.message("")
       return false
     end
