@@ -261,21 +261,28 @@ platform :ios do
       UI.message("Preparing App Store version localizations...")
       app = Spaceship::ConnectAPI::App.find("v2er.app")
 
-      # Cancel any existing submission that would block the new one
-      review_states = ["WAITING_FOR_REVIEW", "IN_REVIEW"]
-      app.get_app_store_versions.each do |v|
-        next unless review_states.include?(v.app_store_state)
-
-        UI.important("Found version #{v.version_string} in '#{v.app_store_state}' — cancelling to unblock new submission...")
-        begin
-          v.reject!
-          UI.success("Cancelled review for version #{v.version_string}")
-        rescue => e
-          UI.important("Could not cancel version #{v.version_string}: #{e.message}")
+      # Cancel any in-progress review submission (Apple only allows one at a time)
+      begin
+        submission = app.get_in_progress_review_submission(platform: Spaceship::ConnectAPI::Platform::IOS)
+        if submission
+          UI.important("Cancelling in-progress review submission...")
+          submission.cancel_submission
+          # Poll until cancellation takes effect
+          poll_count = 0
+          loop do
+            break if app.get_in_progress_review_submission(platform: Spaceship::ConnectAPI::Platform::IOS).nil?
+            poll_count += 1
+            UI.message("Waiting for cancellation to take effect... (#{poll_count * 15}s)")
+            break if poll_count >= 20  # 5 minute max
+            sleep(15)
+          end
+          UI.success("Review submission cancelled")
         end
+      rescue => e
+        UI.important("Could not cancel existing submission: #{e.message}")
       end
 
-      edit_version = app.get_edit_app_store_version
+      edit_version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
 
       # Get metadata from the live (published) version as fallback for any missing fields
       live_version = app.get_live_app_store_version
@@ -400,22 +407,29 @@ platform :ios do
     app = Spaceship::ConnectAPI::App.find("v2er.app")
     UI.user_error!("App 'v2er.app' not found on App Store Connect!") unless app
 
-    # Cancel any existing submission that would block the new one
-    review_states = ["WAITING_FOR_REVIEW", "IN_REVIEW"]
-    app.get_app_store_versions.each do |v|
-      next unless review_states.include?(v.app_store_state)
-
-      UI.important("Found version #{v.version_string} in '#{v.app_store_state}' — cancelling to unblock new submission...")
-      begin
-        v.reject!
-        UI.success("Cancelled review for version #{v.version_string}")
-      rescue => e
-        UI.important("Could not cancel version #{v.version_string}: #{e.message}")
+    # Cancel any in-progress review submission (Apple only allows one at a time)
+    begin
+      submission = app.get_in_progress_review_submission(platform: Spaceship::ConnectAPI::Platform::IOS)
+      if submission
+        UI.important("Cancelling in-progress review submission...")
+        submission.cancel_submission
+        # Poll until cancellation takes effect
+        poll_count = 0
+        loop do
+          break if app.get_in_progress_review_submission(platform: Spaceship::ConnectAPI::Platform::IOS).nil?
+          poll_count += 1
+          UI.message("Waiting for cancellation to take effect... (#{poll_count * 15}s)")
+          break if poll_count >= 20  # 5 minute max
+          sleep(15)
+        end
+        UI.success("Review submission cancelled")
       end
+    rescue => e
+      UI.important("Could not cancel existing submission: #{e.message}")
     end
 
     # Get the editable App Store version (or create one)
-    edit_version = app.get_edit_app_store_version
+    edit_version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
     unless edit_version
       UI.important("No editable version found, creating version #{current_version}...")
       edit_version = app.create_version!(

@@ -85,22 +85,18 @@ jobs:
           echo "APP_STORE_CONNECT_API_KEY_KEY=$KEY_PATH" >> $GITHUB_ENV
 
       - name: Submit for App Store Review
-        timeout-minutes: 10
+        timeout-minutes: 15
         env:
+          ORG_APP_STORE_CONNECT_KEY_ID: ${{ secrets.ORG_APP_STORE_CONNECT_KEY_ID }}
+          ORG_APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.ORG_APP_STORE_CONNECT_ISSUER_ID }}
           LC_ALL: en_US.UTF-8
           LANG: en_US.UTF-8
-          BUILD_NUMBER: ${{ inputs.build_number }}
+          BUILD_NUMBER_INPUT: ${{ inputs.build_number }}
         run: |
-          echo "========================================="
-          echo "Submit for App Store Review"
-          echo "========================================="
-
-          if [ -n "$BUILD_NUMBER" ]; then
-            echo "Submitting specific build: $BUILD_NUMBER"
-            fastlane submit_review build_number:"$BUILD_NUMBER"
+          if [ -n "$BUILD_NUMBER_INPUT" ]; then
+            fastlane ios submit_review build_number:"$BUILD_NUMBER_INPUT"
           else
-            echo "Submitting latest build..."
-            fastlane submit_review
+            fastlane ios submit_review
           fi
 
       - name: Post submission notification
