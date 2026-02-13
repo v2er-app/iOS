@@ -12,10 +12,14 @@ import PhotosUI
 struct CreateTopicPage: StateView {
     @Environment(\.dismiss) var dismiss
     @State var showNodeChooseView = false
-    @FocusState private var focused: Bool
+    @FocusState private var focusedField: Field?
     @State var isPreviewing = false
     @State private var selectedImage: PlatformImage? = nil
     @State private var isUploadingImage = false
+
+    private enum Field: Hashable {
+        case title, content
+    }
 
     @ObservedObject private var store = Store.shared
     var bindingState: Binding<CreateTopicState> {
@@ -32,23 +36,19 @@ struct CreateTopicPage: StateView {
                 ToolbarItem(placement: .automatic) {
                     Button {
                         if isPreviewing {
-                            // continue edit
                             isPreviewing = false
-                            focused = true
+                            focusedField = .content
                         } else {
                             isPreviewing = true
-                            focused = false
+                            focusedField = nil
                         }
                     } label: {
-                        Text(isPreviewing ? "编辑" : "预览")
-                            .font(.callout)
-                            .foregroundColor(Color(.systemBackground))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.accentColor)
-                            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
+                        Label(isPreviewing ? "编辑" : "预览",
+                              systemImage: isPreviewing ? "pencil" : "eye")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundColor(.accentColor)
                     }
-                    .disabled(state.title.isEmpty)
+                    .disabled(state.title.isEmpty && state.content.isEmpty)
                 }
             }
             .onChange(of: state.createResultInfo?.id) { newId in
@@ -66,116 +66,170 @@ struct CreateTopicPage: StateView {
 
     @ViewBuilder
     private var contentView: some View {
-        VStack(spacing: 0) {
-            let paddingH: CGFloat = 16
-            TextField("标题", text: bindingState.title)
-                .padding(.vertical)
-                .padding(.horizontal, paddingH)
-                .background(Color(.secondarySystemGroupedBackground))
-                .lineLimit(3)
-                .divider()
-                .greedyWidth()
-                .focused($focused)
-            TextEditor(text: bindingState.content)
-                .padding(.horizontal, 10)
-                .opacity(isPreviewing ? 0 : 1.0)
-                .background(Color(.secondarySystemGroupedBackground))
-                .frame(maxWidth: .infinity, minHeight: 250)
-                .divider()
-                .focused($focused)
-                .overlay {
-                    Group {
-                        if state.content.isEmpty {
-                            // show placeholder
-                            Text("如果标题能够表达完整内容, 此处可为空")
-                                .greedyFrame(.topLeading)
-                                .foregroundColor(.secondaryText)
-                        } else if isPreviewing {
-                            Text(state.content.attributedString)
-                                .greedyFrame(.topLeading)
-                        }
-                    }
-                    .textSelection(.enabled)
-                    .padding(.horizontal, paddingH)
-                    .padding(.vertical, 10)
-                }
-                .onChange(of: selectedImage) { _, newImage in
-                    guard let image = newImage else { return }
-                    uploadImage(image)
-                }
+        ScrollView {
+            VStack(spacing: Spacing.lg) {
+                // MARK: - Node Selection
+                nodeSelectionCard
 
-            // Image upload toolbar
-            HStack(spacing: 8) {
-                if isUploadingImage {
-                    ProgressView()
-                        .frame(width: 24, height: 24)
-                    Text("上传中...")
-                        .font(.caption)
-                        .foregroundColor(.secondaryText)
-                } else {
-                    UnifiedImagePickerButton(selectedImage: $selectedImage)
-                    Text("上传图片")
-                        .font(.caption)
-                        .foregroundColor(.secondaryText)
-                }
-                Spacer()
-            }
-            .padding(.horizontal, paddingH)
-            .padding(.vertical, 8)
-            .background(Color(.secondarySystemGroupedBackground))
-            .divider()
+                // MARK: - Title & Content Card
+                editorCard
 
-            Button {
-                showNodeChooseView = true
-            } label: {
-                sectionItemView
-                    .foregroundColor(Color.accentColor)
-                    .background(Color(.secondarySystemGroupedBackground))
-            }
-            .sheet(isPresented: $showNodeChooseView) {
-                NodeChooserPage(nodes: state.sectionNodes, selectedNode: bindingState.selectedNode)
-            }
+                // MARK: - Attachments
+                attachmentBar
 
-            HStack {
-                Spacer()
-                Button {
-                    dispatch(CreateTopicActions.PostStart())
-                } label: {
-                    Text("发布主题")
-                        .font(.callout)
-                        .foregroundColor(Color(.systemBackground))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.accentColor)
-                        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
-                }
-                .disabled(state.title.isEmpty || state.selectedNode == nil)
-                .padding()
+                // MARK: - Publish
+                publishSection
             }
-            Spacer()
+            .padding(.horizontal, Spacing.lg)
+            .padding(.vertical, Spacing.lg)
         }
-        .onTapGesture {
-            focused = false
+        .onTapGesture { focusedField = nil }
+        .background(Color(.systemGroupedBackground))
+        .sheet(isPresented: $showNodeChooseView) {
+            NodeChooserPage(nodes: state.sectionNodes, selectedNode: bindingState.selectedNode)
         }
-        .background(Color(.systemBackground))
     }
+
+    // MARK: - Node Selection Card
 
     @ViewBuilder
-    private var sectionItemView: some View {
-        HStack {
-            Image(systemName: "grid.circle")
-                .foregroundColor(.secondaryText)
-            Text(state.selectedNode?.text ?? "选择节点")
-            Spacer()
-            Image(systemName: "chevron.right")
-                .font(.body.weight(.regular))
-                .foregroundColor(.secondaryText)
-                .padding(.trailing)
+    private var nodeSelectionCard: some View {
+        Button {
+            showNodeChooseView = true
+        } label: {
+            HStack(spacing: Spacing.md) {
+                Image(systemName: "number.square.fill")
+                    .font(.title3)
+                    .foregroundColor(.accentColor)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("节点")
+                        .font(.caption)
+                        .foregroundColor(.secondaryText)
+                    Text(state.selectedNode?.text ?? "选择一个节点")
+                        .font(.body)
+                        .foregroundColor(state.selectedNode != nil ? .primaryText : .tertiaryText)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundColor(.tertiaryText)
+            }
+            .padding(.horizontal, Spacing.lg)
+            .padding(.vertical, Spacing.md)
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         }
-        .padding()
-        .contentShape(Rectangle())
-        .divider()
+        .buttonStyle(.plain)
     }
+
+    // MARK: - Editor Card
+
+    @ViewBuilder
+    private var editorCard: some View {
+        VStack(spacing: 0) {
+            // Title field
+            TextField("标题", text: bindingState.title, axis: .vertical)
+                .font(.body.weight(.semibold))
+                .lineLimit(1...3)
+                .padding(.horizontal, Spacing.lg)
+                .padding(.vertical, Spacing.md)
+                .focused($focusedField, equals: .title)
+                .onSubmit { focusedField = .content }
+
+            Divider().padding(.leading, Spacing.lg)
+
+            // Content area
+            ZStack(alignment: .topLeading) {
+                TextEditor(text: bindingState.content)
+                    .font(.body)
+                    .padding(.horizontal, 10)
+                    .frame(minHeight: 200)
+                    .focused($focusedField, equals: .content)
+                    .opacity(isPreviewing ? 0 : 1)
+                    .scrollContentBackground(.hidden)
+
+                if isPreviewing {
+                    Text(state.content.attributedString)
+                        .font(.body)
+                        .textSelection(.enabled)
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.vertical, Spacing.md)
+                        .frame(maxWidth: .infinity, minHeight: 200, alignment: .topLeading)
+                } else if state.content.isEmpty {
+                    Text("如果标题能够表达完整内容, 此处可为空")
+                        .font(.body)
+                        .foregroundColor(.tertiaryText)
+                        .padding(.horizontal, Spacing.lg)
+                        .padding(.vertical, Spacing.md)
+                        .allowsHitTesting(false)
+                }
+            }
+        }
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .onChange(of: selectedImage) { _, newImage in
+            guard let image = newImage else { return }
+            uploadImage(image)
+        }
+    }
+
+    // MARK: - Attachment Bar
+
+    @ViewBuilder
+    private var attachmentBar: some View {
+        HStack(spacing: Spacing.md) {
+            if isUploadingImage {
+                ProgressView()
+                    .frame(width: 20, height: 20)
+                Text("上传中...")
+                    .font(.subheadline)
+                    .foregroundColor(.secondaryText)
+            } else {
+                UnifiedImagePickerButton(selectedImage: $selectedImage)
+                Text("上传图片")
+                    .font(.subheadline)
+                    .foregroundColor(.secondaryText)
+            }
+            Spacer()
+        }
+        .padding(.horizontal, Spacing.lg)
+        .padding(.vertical, Spacing.md)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+    }
+
+    // MARK: - Publish Section
+
+    @ViewBuilder
+    private var publishSection: some View {
+        VStack(spacing: Spacing.sm) {
+            Button {
+                focusedField = nil
+                dispatch(CreateTopicActions.PostStart())
+            } label: {
+                if state.posting {
+                    ProgressView()
+                        .tint(.white)
+                } else {
+                    Label("发布主题", systemImage: "paperplane.fill")
+                }
+            }
+            .buttonStyle(PrimaryButtonStyle())
+            .disabled(state.title.isEmpty || state.selectedNode == nil || state.posting)
+
+            if state.selectedNode == nil {
+                Text("请先选择节点")
+                    .font(.caption)
+                    .foregroundColor(.secondaryText)
+            }
+        }
+        .padding(.top, Spacing.sm)
+    }
+
+    // MARK: - Image Upload
 
     private func uploadImage(_ image: PlatformImage) {
         isUploadingImage = true
@@ -185,10 +239,8 @@ struct CreateTopicPage: StateView {
                 isUploadingImage = false
                 selectedImage = nil
                 if result.success, let imageUrl = result.imageUrl {
-                    // Save to upload history
                     let record = MyUploadsState.UploadRecord(imageUrl: imageUrl)
                     MyUploadsState.saveUpload(record)
-                    // Insert image URL on its own line
                     let currentContent = state.content
                     let prefix = currentContent.isEmpty || currentContent.hasSuffix("\n") ? "" : "\n"
                     store.appState.createTopicState.content += "\(prefix)\(imageUrl)\n"
@@ -202,7 +254,6 @@ struct CreateTopicPage: StateView {
 }
 
 struct CreateTopicPage_Previews: PreviewProvider {
-    //    @State private static var title: String
     static var previews: some View {
         CreateTopicPage()
     }

@@ -10,98 +10,103 @@ import SwiftUI
 
 struct NodeChooserPage: View {
     @State var filterText: String = .empty
-    @State private var isEditing = false
     var nodes: SectionNodes?
     @Binding var selectedNode: Node?
     @Environment(\.dismiss) var dismiss
-    @FocusState private var focused: Bool
+    @FocusState private var searchFocused: Bool
 
     var body: some View {
-        contentView
+        NavigationStack {
+            VStack(spacing: 0) {
+                searchBar
+                    .padding(.horizontal, Spacing.lg)
+                    .padding(.vertical, Spacing.sm)
+
+                List {
+                    ForEach(filterNodes ?? []) { section in
+                        Section {
+                            ForEach(section.nodes) { node in
+                                Button {
+                                    selectedNode = node
+                                    dismiss()
+                                } label: {
+                                    HStack {
+                                        Text(node.text)
+                                            .foregroundColor(.primaryText)
+                                        Spacer()
+                                        if selectedNode == node {
+                                            Image(systemName: "checkmark")
+                                                .font(.footnote.weight(.semibold))
+                                                .foregroundColor(.accentColor)
+                                        }
+                                    }
+                                    .contentShape(Rectangle())
+                                }
+                                .listRowBackground(
+                                    selectedNode == node
+                                        ? Color.accentColor.opacity(0.08)
+                                        : Color(.secondarySystemGroupedBackground)
+                                )
+                            }
+                        } header: {
+                            Text(section.name)
+                        }
+                    }
+                }
+                .listStyle(.insetGrouped)
+            }
+            .background(Color(.systemGroupedBackground))
+            .navigationTitle("选择节点")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("取消") { dismiss() }
+                }
+            }
+        }
     }
 
     var filterNodes: SectionNodes? {
-        var hotSection = SectionNode(name: "热门节点",
-                                     nodes: nodes?[0].nodes.filter { filterText.isEmpty || $0.text.contains(filterText) } ?? [])
-        var allSection = SectionNode(name: "其它节点",
-                                     nodes: nodes?[1].nodes.filter { filterText.isEmpty || $0.text.contains(filterText) } ?? [])
+        guard let nodes = nodes, nodes.count >= 2 else { return nodes }
+        let hotSection = SectionNode(
+            name: "热门节点",
+            nodes: nodes[0].nodes.filter { filterText.isEmpty || $0.text.localizedCaseInsensitiveContains(filterText) }
+        )
+        let allSection = SectionNode(
+            name: "其它节点",
+            nodes: nodes[1].nodes.filter { filterText.isEmpty || $0.text.localizedCaseInsensitiveContains(filterText) }
+        )
         return [hotSection, allSection]
     }
 
     @ViewBuilder
-    private var contentView: some View {
-        VStack(spacing: 0) {
-            Text("选择节点")
-                .font(.title3)
-                .fontWeight(.semibold)
-                .padding(.vertical, 16)
-            searchBar
-            Spacer()
-            List {
-                ForEach(filterNodes ?? [] ) { section in
-                    Section(header: Text(section.name)) {
-                        ForEach(section.nodes) { node in
-                            Button {
-                                selectedNode = node
-                                dismiss()
-                            } label: {
-                                Text(node.text)
-                                    .greedyFrame(.leading)
-                                    .contentShape(Rectangle())
-                            }
-                            .listRowBackground(selectedNode == node ? Color(.systemBackground) : Color(.secondarySystemGroupedBackground))
-                        }
-                    }
-                }
-            }
-            .background(Color(.systemBackground))
-        }
-    }
-
-    @ViewBuilder
     private var searchBar: some View {
-        HStack {
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.secondaryText)
-                TextField("Search ...", text: $filterText)
-                    .disableAutocorrection(true)
-                    #if os(iOS)
-                    .autocapitalization(.none)
-                    #endif
-                    .focused($focused)
-            }
-            .padding(7)
-            .padding(.horizontal, 8)
-            .background(Color(.systemGray6))
-            .cornerRadius(8)
-            .padding(.horizontal, 16)
-            .onTapGesture {
-                withAnimation {
-                    self.isEditing = true
-                }
-            }
-            if isEditing {
+        HStack(spacing: Spacing.sm) {
+            Image(systemName: "magnifyingglass")
+                .font(.subheadline)
+                .foregroundColor(.secondaryText)
+
+            TextField("搜索节点...", text: $filterText)
+                .disableAutocorrection(true)
+                #if os(iOS)
+                .autocapitalization(.none)
+                #endif
+                .focused($searchFocused)
+
+            if !filterText.isEmpty {
                 Button {
-                    withAnimation {
-                        self.isEditing = false
-                        self.filterText = ""
-                        self.focused = false
-                    }
+                    filterText = ""
                 } label: {
-                    Text("Cancel")
-                        .foregroundColor(.primary)
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.subheadline)
+                        .foregroundColor(.tertiaryText)
                 }
-                .padding(.trailing, 10)
+                .buttonStyle(.plain)
             }
         }
+        .padding(.horizontal, Spacing.md)
+        .padding(.vertical, Spacing.sm)
+        .background(Color(.tertiarySystemFill))
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
     }
-
 }
-
-//struct NodeChooserPage_Previews: PreviewProvider {
-//    private static var text: String = .empty
-//    static var previews: some View {
-//        NodeChooserPage(text: text)
-//    }
-//}

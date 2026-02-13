@@ -13,6 +13,11 @@ struct LoginPage: StateView {
     @ObservedObject private var store = Store.shared
     @Environment(\.dismiss) var dismiss
     @State var showPassword = false
+    @FocusState private var focusedField: LoginField?
+
+    private enum LoginField: Hashable {
+        case username, password, captcha
+    }
 
     var bindingState: Binding<LoginState> {
         $store.appState.loginState
@@ -53,177 +58,192 @@ struct LoginPage: StateView {
 
     @ViewBuilder
     private var contentView: some View {
-        VStack(alignment: .center) {
-          Image("logo")
-            .cornerBorder(radius: 25)
-            .padding(.top, Spacing.xl)
-          Text("Login to V2EX")
-            .font(.title2)
-            .foregroundColor(.primary)
-            .fontWeight(.heavy)
-            .padding(.vertical, Spacing.xl)
-          VStack(spacing: Spacing.md) {
-            let radius: CGFloat = CornerRadius.medium
-            let padding: CGFloat = Spacing.lg
-            let height: CGFloat = 46
-            TextField("Username", text: bindingState.username)
-              .padding(.horizontal, padding)
-              .frame(height: height)
-              .background(Color(.systemGray6))
-              .cornerRadius(radius)
-              .submitLabel(.next)
-              #if os(iOS)
-              .autocapitalization(.none)
-              .keyboardType(.asciiCapable)
-              #endif
-              .disableAutocorrection(true)
-              .accessibilityLabel("用户名")
-            HStack(spacing: 0) {
-              Group {
-                if !showPassword {
-                  SecureField("Password", text: bindingState.password)
-                } else {
-                  TextField("Password", text: bindingState.password)
+        ScrollView {
+            VStack(spacing: 0) {
+                // MARK: - Header
+                VStack(spacing: Spacing.md) {
+                    Image("logo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 72, height: 72)
+                        .cornerBorder(radius: 18)
+                        .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
+                        .padding(.top, Spacing.xxxl)
+
+                    Text("Login to V2EX")
+                        .font(.title2.weight(.bold))
+                        .foregroundColor(.primaryText)
+
+                    Text("Sign in to join the discussion")
+                        .font(.subheadline)
+                        .foregroundColor(.secondaryText)
                 }
-              }
-              #if os(iOS)
-              .autocapitalization(.none)
-              .keyboardType(.asciiCapable)
-              #endif
-              .disableAutocorrection(true)
-              .submitLabel(.continue)
-              .padding(.horizontal, padding)
-              .frame(maxWidth: .infinity, maxHeight: height)
-              Color.separator
-                .opacity(0.5)
-                .padding(.vertical, 14)
-                .frame(width: 1.5, height: height)
-                .padding(.horizontal, 2)
-              Button {
-                withAnimation {
-                  showPassword.toggle()
+                .padding(.bottom, Spacing.xxl)
+
+                // MARK: - Input Fields Card
+                VStack(spacing: 0) {
+                    // Username
+                    inputRow(icon: "person.fill") {
+                        TextField("Username", text: bindingState.username)
+                            .submitLabel(.next)
+                            #if os(iOS)
+                            .autocapitalization(.none)
+                            .keyboardType(.asciiCapable)
+                            #endif
+                            .disableAutocorrection(true)
+                            .focused($focusedField, equals: .username)
+                            .onSubmit { focusedField = .password }
+                            .accessibilityLabel("用户名")
+                    }
+
+                    Divider().padding(.leading, 52)
+
+                    // Password
+                    inputRow(icon: "lock.fill") {
+                        Group {
+                            if !showPassword {
+                                SecureField("Password", text: bindingState.password)
+                            } else {
+                                TextField("Password", text: bindingState.password)
+                            }
+                        }
+                        #if os(iOS)
+                        .autocapitalization(.none)
+                        .keyboardType(.asciiCapable)
+                        #endif
+                        .disableAutocorrection(true)
+                        .submitLabel(.next)
+                        .focused($focusedField, equals: .password)
+                        .onSubmit { focusedField = .captcha }
+
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                showPassword.toggle()
+                            }
+                        } label: {
+                            Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
+                                .font(.footnote)
+                                .foregroundColor(.tertiaryText)
+                                .frame(width: 32, height: 32)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    Divider().padding(.leading, 52)
+
+                    // Captcha
+                    inputRow(icon: "shield.lefthalf.filled") {
+                        TextField("Captcha", text: bindingState.captcha)
+                            .submitLabel(.go)
+                            #if os(iOS)
+                            .keyboardType(.asciiCapable)
+                            #endif
+                            .disableAutocorrection(true)
+                            .focused($focusedField, equals: .captcha)
+                            .onSubmit {
+                                focusedField = nil
+                                if notEmpty(state.username, state.password, state.captcha) {
+                                    dispatch(LoginActions.StartLogin())
+                                }
+                            }
+                            .accessibilityLabel("验证码")
+
+                        captchaImageView
+                    }
                 }
-              } label: {
-                Image(systemName: showPassword ? "eye.slash" : "eye")
-                  .foregroundColor(.accentColor)
-                  .font(.footnote.weight(.light))
-                  .padding(.horizontal, Spacing.md)
-              }
-            }
-            .background(Color(.systemGray6))
-            .cornerRadius(radius)
-            HStack(spacing: 0) {
-              TextField("Captcha", text: bindingState.captcha)
-                .padding(.horizontal, padding)
-                .frame(height: height)
-                .submitLabel(.go)
-                #if os(iOS)
-                .keyboardType(.asciiCapable)
-                #endif
-                .disableAutocorrection(true)
-                .accessibilityLabel("验证码")
-              Color.separator
-                .opacity(0.5)
-                .padding(.vertical, 14)
-                .frame(width: 1.5, height: height)
-                .padding(.horizontal, 2)
-              KFImage.url(URL(string: state.captchaUrl))
-                .placeholder { ProgressView() }
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 100, height: height)
-                .onTapGesture {
-                  dispatch(LoginActions.FetchCaptchaStart())
+                .background(Color(.secondarySystemGroupedBackground))
+                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+                .padding(.horizontal, Spacing.lg)
+
+                // MARK: - Actions
+                VStack(spacing: Spacing.md) {
+                    Button {
+                        focusedField = nil
+                        dispatch(LoginActions.StartLogin())
+                    } label: {
+                        if state.logining {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Text("Login")
+                        }
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    .disabled(!notEmpty(state.username, state.password, state.captcha) || state.logining)
+
+                    NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/signup?r=ghui")) {
+                        Text("Register")
+                    }
+                    .buttonStyle(SecondaryButtonStyle())
                 }
+                .padding(.horizontal, Spacing.lg)
+                .padding(.top, Spacing.xl)
+
+                Spacer(minLength: Spacing.xxxl)
+
+                // MARK: - Footer
+                HStack(spacing: Spacing.xl) {
+                    NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/faq")) {
+                        Text("FAQ")
+                    }
+                    NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/about")) {
+                        Text("About")
+                    }
+                    NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/forgot")) {
+                        Text("Password")
+                    }
+                }
+                .font(.footnote.weight(.medium))
+                .foregroundColor(.tertiaryText)
+                .buttonStyle(.plain)
+                .padding(.top, Spacing.xxl)
+                .padding(.bottom, Spacing.xl)
             }
-            .background(Color(.systemGray6))
-            .cornerRadius(radius)
-          }
-          .padding(.horizontal, Spacing.xl)
-          .padding(.bottom, Spacing.md)
-          HStack {
-            NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/signup?r=ghui")) {
-              Text("Register")
-                .font(.headline)
-                .foregroundColor(Color.accentColor)
-                .padding()
-                .greedyWidth()
-                .cornerBorder(radius: CornerRadius.large, borderWidth: 2, color: Color.accentColor)
-            }
-            .buttonStyle(.plain)
-            
-            Button {
-              dispatch(LoginActions.StartLogin())
-            } label: {
-              Text("Login")
-                .font(.headline)
-                .foregroundColor(Color(.secondarySystemGroupedBackground))
-                .padding()
-                .greedyWidth()
-                .background(Color.accentColor)
-                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.large))
-            }
-            .disabled(!notEmpty(state.username,
-                                state.password,
-                                state.captcha))
-          }
-          .padding(.horizontal, Spacing.xl)
-          Spacer()
-          HStack {
-            NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/faq")) {
-              Text("FAQ")
-            }
-            NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/about")) {
-              Text("About")
-            }
-            NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/forgot")) {
-              Text("Password")
-            }
-          }
-          .font(.callout.bold())
-          .opacity(0.6)
-          .buttonStyle(.plain)
         }
-        .greedyHeight()
-        .background(Color(.systemBackground))
+        .background(Color(.systemGroupedBackground))
+        .onTapGesture { focusedField = nil }
         .navigationTitle("登录")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
     }
 
+    // MARK: - Components
+
+    @ViewBuilder
+    private func inputRow<Content: View>(icon: String, @ViewBuilder content: () -> Content) -> some View {
+        HStack(spacing: Spacing.md) {
+            Image(systemName: icon)
+                .font(.body)
+                .foregroundColor(.secondaryText)
+                .frame(width: 24, alignment: .center)
+                .padding(.leading, Spacing.lg)
+
+            content()
+                .frame(minHeight: 50)
+        }
+        .padding(.trailing, Spacing.md)
+    }
+
+    @ViewBuilder
+    private var captchaImageView: some View {
+        KFImage.url(URL(string: state.captchaUrl))
+            .placeholder {
+                ProgressView()
+                    .frame(width: 120, height: 44)
+            }
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 44)
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
+            .overlay(
+                RoundedRectangle(cornerRadius: CornerRadius.small)
+                    .stroke(Color.separator.opacity(0.5), lineWidth: 0.5)
+            )
+            .onTapGesture {
+                dispatch(LoginActions.FetchCaptchaStart())
+            }
+            .padding(.trailing, Spacing.xs)
+    }
 }
-
-
-//struct LoginPage_Previews: PreviewProvider {
-//
-//    @State static var twoStepCode: String = .empty
-//    @State static var showTwoStepDialog = false
-//
-//    static var previews: some View {
-//        VStack {
-//            Text("两步验证")
-//                .font(.subheadline)
-//            TextField("2FA码", text: $twoStepCode)
-//                .padding(.horizontal)
-//                .padding(.vertical, 6)
-//                .background(Color.white.opacity(0.8))
-//                .cornerBorder(radius: 8)
-//            HStack {
-//                Spacer()
-//                Button {
-//                    showTwoStepDialog = false
-//                } label: { Text("取消") }
-//                Button {
-//                    showTwoStepDialog = false
-//                    // doSubmit
-//                } label: { Text("确定") }
-//            }
-//            .foregroundColor(.bodyText)
-//        }
-//        .frame(width: 200)
-//        .padding()
-//        .visualBlur()
-//        .cornerBorder(radius: 20)
-//    }
-//}

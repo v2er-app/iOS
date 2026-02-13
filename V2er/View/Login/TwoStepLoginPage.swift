@@ -10,49 +10,76 @@ import SwiftUI
 
 struct TwoStepLoginPage: View {
     @State var twoStepCode: String = .empty
+    @FocusState private var isFocused: Bool
 
     var body: some View {
         ZStack {
-            Color(.quaternaryLabel)
-                .opacity(0.8)
+            Color.black.opacity(0.4)
                 .ignoresSafeArea()
+                .onTapGesture {
+                    isFocused = false
+                }
+
             VStack(spacing: Spacing.lg) {
+                // Header
+                Image(systemName: "lock.shield.fill")
+                    .font(.largeTitle)
+                    .foregroundColor(.accentColor)
+                    .padding(.top, Spacing.sm)
+
                 Text("两步验证")
+                    .font(.headline)
+                    .foregroundColor(.primaryText)
+
+                Text("请输入您的两步验证码")
                     .font(.subheadline)
-                    .foregroundColor(Color(.label))
-                TextField("2FA码", text: $twoStepCode)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    #if os(iOS)
-                    .keyboardType(.numberPad)
-                    #endif
-                    .foregroundColor(Color(.label))
-                    .padding(.vertical, Spacing.xs + 2)
-                    .padding(.horizontal)
-                    .accessibilityLabel("两步验证码")
-                HStack(spacing: Spacing.lg) {
-                    Spacer()
+                    .foregroundColor(.secondaryText)
+
+                // Input
+                HStack(spacing: Spacing.md) {
+                    Image(systemName: "number")
+                        .font(.body)
+                        .foregroundColor(.secondaryText)
+                        .frame(width: 24)
+
+                    TextField("验证码", text: $twoStepCode)
+                        #if os(iOS)
+                        .keyboardType(.numberPad)
+                        #endif
+                        .font(.title3.monospaced())
+                        .focused($isFocused)
+                        .accessibilityLabel("两步验证码")
+                }
+                .padding(.horizontal, Spacing.lg)
+                .frame(height: 50)
+                .background(Color(.tertiarySystemFill))
+                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+
+                // Buttons
+                HStack(spacing: Spacing.md) {
                     Button {
                         dispatch(LoginActions.TwoStepLoginCancel())
-                    } label: { 
+                    } label: {
                         Text("取消")
-                            .foregroundColor(Color(.secondaryLabel))
                     }
+                    .buttonStyle(SecondaryButtonStyle())
+
                     Button {
                         dispatch(LoginActions.TwoStepLogin(input: twoStepCode))
-                    } label: { 
+                    } label: {
                         Text("确定")
-                            .foregroundColor(.accentColor)
-                            .fontWeight(.medium)
                     }
+                    .buttonStyle(PrimaryButtonStyle())
                     .disabled(twoStepCode.isEmpty)
                 }
             }
             .padding(Spacing.xl)
             .background(Color(.secondarySystemBackground))
             .clipShape(RoundedRectangle(cornerRadius: CornerRadius.large))
-            .padding(50)
+            .shadow(color: .black.opacity(0.15), radius: 20, y: 10)
+            .padding(.horizontal, 40)
+            .onAppear { isFocused = true }
         }
-
     }
 }
 
