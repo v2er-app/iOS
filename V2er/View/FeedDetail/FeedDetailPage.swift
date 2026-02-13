@@ -45,6 +45,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @State private var contentReady = false
     @FocusState private var replyIsFocused: Bool
     @State private var replyBarExpanded = false
+    @State private var showNavTitle = false
     @Namespace private var replyBarNamespace
     var initData: FeedInfo.Item? = nil
     var id: String
@@ -78,6 +79,18 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 return a.floor < b.floor
             }
         }
+    }
+
+    private var topicTitle: String {
+        state.model.headerInfo?.title ?? initData?.title ?? ""
+    }
+
+    private var authorUserName: String {
+        state.model.headerInfo?.userName ?? initData?.userName ?? ""
+    }
+
+    private var authorAvatar: String {
+        initData?.avatar ?? state.model.headerInfo?.avatar ?? ""
     }
 
     private var isContentEmpty: Bool {
@@ -188,11 +201,33 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     replyFAB
                 }
             }
-            .navigationTitle("话题")
+            .navigationTitle("")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                ZStack {
+                    Text("话题")
+                        .opacity(showNavTitle ? 0 : 1)
+
+                    HStack(spacing: Spacing.xs) {
+                        Button {
+                            handleSubviewNavigate(.userDetail(userId: authorUserName))
+                        } label: {
+                            AvatarView(url: authorAvatar, size: 24)
+                        }
+                        .buttonStyle(.plain)
+
+                        Text(topicTitle)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(.primaryText)
+                            .lineLimit(1)
+                    }
+                    .opacity(showNavTitle ? 1 : 0)
+                }
+                .animation(.easeInOut(duration: 0.2), value: showNavTitle)
+            }
             ToolbarItem(placement: .automatic) {
                 moreMenu
             }
@@ -308,7 +343,14 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         List {
             // Topic Card: Header + Content + Postscripts
             VStack(spacing: 0) {
-                AuthorInfoView(initData: initData, data: state.model.headerInfo, onNavigate: { handleSubviewNavigate($0) })
+                AuthorInfoView(initData: initData, data: state.model.headerInfo, onNavigate: { handleSubviewNavigate($0) }, onTitleVisibilityChange: { isVisible in
+                    let shouldShow = !isVisible && topicTitle.isEmpty == false
+                    if shouldShow != showNavTitle {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showNavTitle = shouldShow
+                        }
+                    }
+                })
 
                 if !isContentEmpty {
                     NewsContentView(state.model.contentInfo, onNavigate: { handleSubviewNavigate($0) }, onOpenSafari: { handleSubviewSafari($0) }) {
