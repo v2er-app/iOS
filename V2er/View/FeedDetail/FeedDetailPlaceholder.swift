@@ -29,6 +29,7 @@ struct FeedDetailPlaceholder: View {
             // Author info
             HStack(alignment: .top) {
                 Circle()
+                    .fill(Color(.systemGray5))
                     .frame(width: 42, height: 42)
                 VStack(alignment: .leading, spacing: Spacing.xs + 2) {
                     Text("placeholder")
@@ -80,6 +81,7 @@ struct FeedDetailPlaceholder: View {
     private var replyPlaceholder: some View {
         HStack(alignment: .top) {
             Circle()
+                .fill(Color(.systemGray5))
                 .frame(width: 36, height: 36)
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 VStack(alignment: .leading, spacing: Spacing.xs) {
