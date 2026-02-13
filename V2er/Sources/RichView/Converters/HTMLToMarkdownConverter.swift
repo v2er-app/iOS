@@ -91,8 +91,14 @@ public class HTMLToMarkdownConverter {
                     result += "*\(content)*"
 
                 case "a":
+                    // Cloudflare email protection: decode obfuscated email
+                    if let cfEmail = try? childElement.attr("data-cfemail"),
+                       !cfEmail.isEmpty,
+                       let decoded = Self.cfDecodeEmail(cfEmail) {
+                        result += "[\(decoded)](mailto:\(decoded))"
+                    }
                     // Check if this link wraps an image (common V2EX pattern)
-                    if let img = try? childElement.select("img").first(),
+                    else if let img = try? childElement.select("img").first(),
                        let src = try? img.attr("src"), !src.isEmpty {
                         // Link wrapping an image - output as markdown image
                         // The image will be clickable via onImageTapped handler
@@ -514,5 +520,21 @@ public class HTMLToMarkdownConverter {
         cleaned = cleaned.trimmingCharacters(in: .whitespacesAndNewlines)
 
         return cleaned
+    }
+
+    /// Decode a Cloudflare-obfuscated email address.
+    /// Cloudflare replaces emails with `<a data-cfemail="hex">` where the first byte is the XOR key.
+    static func cfDecodeEmail(_ encoded: String) -> String? {
+        let cleaned = encoded.replacingOccurrences(of: "\"", with: "")
+        guard cleaned.count >= 4, cleaned.count % 2 == 0 else { return nil }
+        guard let key = UInt8(cleaned.prefix(2), radix: 16) else { return nil }
+        var result = ""
+        for i in stride(from: 2, to: cleaned.count, by: 2) {
+            let start = cleaned.index(cleaned.startIndex, offsetBy: i)
+            let end = cleaned.index(start, offsetBy: 2)
+            guard let byte = UInt8(cleaned[start..<end], radix: 16) else { return nil }
+            result.append(Character(UnicodeScalar(byte ^ key)))
+        }
+        return result.isEmpty ? nil : result
     }
 }
