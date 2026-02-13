@@ -146,66 +146,77 @@ struct MePage: BaseHomePageView {
     // MARK: - User Banner View
     @ViewBuilder
     private var userBannerView: some View {
-        HStack(spacing: Spacing.md) {
-            Button {
-                let route = AppRoute.userDetail(userId: AccountState.userName)
-                if let detailRoute = iPadDetailRoute {
-                    detailRoute.wrappedValue = route
-                } else {
-                    navigateToUserDetail = route
-                }
-            } label: {
-                AvatarView(url: AccountState.avatarUrl, size: 60)
-            }
-            .buttonStyle(.plain)
-            VStack(alignment: .leading, spacing: Spacing.xs + 2) {
+        VStack(spacing: Spacing.lg) {
+            // Profile row
+            HStack(spacing: Spacing.lg) {
                 Button {
-                    let route = AppRoute.userDetail(userId: AccountState.userName)
-                    if let detailRoute = iPadDetailRoute {
-                        detailRoute.wrappedValue = route
-                    } else {
-                        navigateToUserDetail = route
-                    }
+                    navigateToProfile()
                 } label: {
-                    Text(AccountState.userName)
-                        .font(.headline)
-                        .foregroundColor(.primary)
+                    AvatarView(url: AccountState.avatarUrl, size: 64)
+                        .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
                 }
-                if let balance = AccountState.balance, balance.isValid() {
-                    BalanceView(balance: balance, size: 12)
-                }
-                if checkinDays > 0 {
-                    Text("已连续签到 \(checkinDays) 天")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            Spacer()
-            // Checkin Button
-            Button {
-                dispatch(SettingActions.StartAutoCheckinAction())
-            } label: {
-                HStack(spacing: Spacing.xs) {
-                    if isCheckingIn {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                            .tint(hasCheckedInToday ? Color.secondary : Color.accentColor)
-                    } else {
-                        Image(systemName: hasCheckedInToday ? "checkmark.circle.fill" : "checkmark.circle")
-                            .font(.subheadline)
+                .buttonStyle(.plain)
+
+                VStack(alignment: .leading, spacing: Spacing.xs) {
+                    Button {
+                        navigateToProfile()
+                    } label: {
+                        Text(AccountState.userName)
+                            .font(.title3.weight(.semibold))
+                            .foregroundColor(.primaryText)
                     }
-                    Text(hasCheckedInToday ? "已签到" : "签到")
-                        .font(.subheadline)
+                    .buttonStyle(.plain)
+
+                    if let balance = AccountState.balance, balance.isValid() {
+                        BalanceView(balance: balance, size: 13)
+                    }
                 }
-                .foregroundColor(hasCheckedInToday ? .secondary : .accentColor)
+
+                Spacer()
+
+                // Checkin Button
+                Button {
+                    dispatch(SettingActions.StartAutoCheckinAction())
+                } label: {
+                    HStack(spacing: Spacing.xs) {
+                        if isCheckingIn {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                                .tint(hasCheckedInToday ? Color.secondary : Color.accentColor)
+                        } else {
+                            Image(systemName: hasCheckedInToday ? "checkmark.circle.fill" : "checkmark.circle")
+                                .font(.subheadline)
+                        }
+                        Text(hasCheckedInToday ? "已签到" : "签到")
+                            .font(.subheadline.weight(.medium))
+                    }
+                    .foregroundColor(hasCheckedInToday ? .secondary : .accentColor)
+                    .padding(.horizontal, Spacing.md)
+                    .padding(.vertical, Spacing.sm)
+                    .background(hasCheckedInToday ? Color.secondary.opacity(0.1) : Color.accentColor.opacity(0.1))
+                    .clipShape(Capsule())
+                }
+                .disabled(isCheckingIn)
+                .accessibilityLabel(hasCheckedInToday ? "已签到" : "签到")
+                .accessibilityHint(hasCheckedInToday ? "今日已完成签到" : "点击完成每日签到")
+            }
+
+            // Streak info bar
+            if checkinDays > 0 {
+                HStack(spacing: Spacing.sm) {
+                    Image(systemName: "flame.fill")
+                        .font(.caption)
+                        .foregroundColor(.secondaryText)
+                    Text("已连续签到 \(checkinDays) 天")
+                        .font(.caption.weight(.medium))
+                        .foregroundColor(.secondaryText)
+                    Spacer()
+                }
                 .padding(.horizontal, Spacing.md)
                 .padding(.vertical, Spacing.sm)
-                .background(hasCheckedInToday ? Color.secondary.opacity(0.12) : Color.accentColor.opacity(0.12))
-                .clipShape(Capsule())
+                .background(Color(.systemGray5).opacity(0.6))
+                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
             }
-            .disabled(isCheckingIn)
-            .accessibilityLabel(hasCheckedInToday ? "已签到" : "签到")
-            .accessibilityHint(hasCheckedInToday ? "今日已完成签到" : "点击完成每日签到")
         }
         .padding(.vertical, Spacing.sm)
         .navigationDestination(item: $navigateToUserDetail) { route in
@@ -213,6 +224,15 @@ struct MePage: BaseHomePageView {
         }
         .navigationDestination(item: $navigateToAllApps) { route in
             route.destination()
+        }
+    }
+
+    private func navigateToProfile() {
+        let route = AppRoute.userDetail(userId: AccountState.userName)
+        if let detailRoute = iPadDetailRoute {
+            detailRoute.wrappedValue = route
+        } else {
+            navigateToUserDetail = route
         }
     }
 
