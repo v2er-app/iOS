@@ -94,52 +94,54 @@ struct UserDetailPage: StateView {
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
 
-                // Tabs Section
-                tabsTitleView
-                    .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color(.systemGroupedBackground))
+                if !state.showProgressView {
+                    // Tabs Section
+                    tabsTitleView
+                        .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color(.systemGroupedBackground))
 
-                // Bottom Detail Section - Topics
-                if currentTab == .topic {
-                    ForEach(model.topicInfo.items) { item in
-                        TopicItemView(data: item)
-                            .cardScrollTransition()
-                            .background {
-                                NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
-                                    .opacity(0)
-                            }
-                            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.systemGroupedBackground))
+                    // Bottom Detail Section - Topics
+                    if currentTab == .topic {
+                        ForEach(model.topicInfo.items) { item in
+                            TopicItemView(data: item)
+                                .cardScrollTransition()
+                                .background {
+                                    NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                                        .opacity(0)
+                                }
+                                .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color(.systemGroupedBackground))
+                        }
+
+                        // More topics link
+                        if model.topicInfo.items.count > 0 {
+                            moreTopicsCard
+                                .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color(.systemGroupedBackground))
+                        } else {
+                            emptyTopicsView
+                                .listRowInsets(EdgeInsets())
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color(.systemGroupedBackground))
+                        }
                     }
 
-                    // More topics link
-                    if model.topicInfo.items.count > 0 {
-                        moreTopicsCard
-                            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.systemGroupedBackground))
-                    } else {
-                        emptyTopicsView
-                            .listRowInsets(EdgeInsets())
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.systemGroupedBackground))
-                    }
-                }
-
-                // Bottom Detail Section - Replies
-                if currentTab == .reply {
-                    ForEach(model.replyInfo.items) { item in
-                        ReplyItemView(data: item)
-                            .cardScrollTransition()
-                            .background {
-                                NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
-                                    .opacity(0)
-                            }
-                            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.systemGroupedBackground))
+                    // Bottom Detail Section - Replies
+                    if currentTab == .reply {
+                        ForEach(model.replyInfo.items) { item in
+                            ReplyItemView(data: item)
+                                .cardScrollTransition()
+                                .background {
+                                    NavigationLink(value: AppRoute.feedDetail(id: item.id)) { EmptyView() }
+                                        .opacity(0)
+                                }
+                                .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color(.systemGroupedBackground))
+                        }
                     }
                 }
             }
