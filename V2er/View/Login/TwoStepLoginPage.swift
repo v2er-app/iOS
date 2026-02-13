@@ -17,7 +17,7 @@ struct TwoStepLoginPage: View {
             Color.black.opacity(0.4)
                 .ignoresSafeArea()
                 .onTapGesture {
-                    dispatch(LoginActions.TwoStepLoginCancel())
+                    isFocused = false
                 }
 
             VStack(spacing: Spacing.lg) {
