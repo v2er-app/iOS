@@ -14,6 +14,8 @@ struct OtherSettingsView: View {
     @State private var cacheSizeMB: Double = 0
     @State private var imgurClientId: String = ""
     @State private var showingImgurHelp = false
+    @State private var v2exAccessToken: String = ""
+    @State private var showingTokenHelp = false
 
     private var autoCheckin: Bool {
         store.appState.settingState.autoCheckin
@@ -104,6 +106,32 @@ struct OtherSettingsView: View {
                 Text("清除图片缓存可释放存储空间")
             }
 
+            // MARK: - V2EX API Section
+            Section {
+                HStack {
+                    SecureField("输入 Personal Access Token", text: $v2exAccessToken)
+                        #if os(iOS)
+                        .textInputAutocapitalization(.never)
+                        #endif
+                        .autocorrectionDisabled()
+                        .onChange(of: v2exAccessToken) { _, newValue in
+                            SettingState.saveV2exAccessToken(newValue)
+                        }
+
+                    Button {
+                        showingTokenHelp = true
+                    } label: {
+                        Image(systemName: "questionmark.circle")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            } header: {
+                Text("V2EX API")
+            } footer: {
+                Text("配置后将通过官方 API 加载帖子详情，速度更快更稳定")
+            }
+
             // MARK: - Imgur Section
             Section {
                 HStack {
@@ -136,6 +164,7 @@ struct OtherSettingsView: View {
         #endif
         .onAppear {
             imgurClientId = SettingState.getImgurClientId() ?? ""
+            v2exAccessToken = SettingState.getV2exAccessToken() ?? ""
         }
         .task {
             ImageCache.default.calculateDiskStorageSize { result in
@@ -151,6 +180,11 @@ struct OtherSettingsView: View {
             Button("确定", role: .cancel) { }
         } message: {
             Text("Imgur Client ID 用于上传图片。你可以在 https://api.imgur.com/oauth2/addclient 注册获取自己的 Client ID。如不填写，将使用内置的公共 ID。")
+        }
+        .alert("V2EX Access Token", isPresented: $showingTokenHelp) {
+            Button("确定", role: .cancel) { }
+        } message: {
+            Text("Personal Access Token 用于通过 V2EX 官方 API 加载内容。请在 v2ex.com/settings/tokens 创建一个 Token，不需要勾选任何额外权限。")
         }
     }
 }

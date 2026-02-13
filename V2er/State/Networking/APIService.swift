@@ -20,10 +20,15 @@ struct APIService {
     private var session: URLSession
     private let jsonDecoder: JSONDecoder
 
+    private static let v2ApiBase = "https://www.v2ex.com/api/v2/"
+    private let v2JsonDecoder: JSONDecoder
+
     private init() {
         // TODO: support multi accounts
         self.session = URLSession.shared;
         jsonDecoder = JSONDecoder()
+        v2JsonDecoder = JSONDecoder()
+        v2JsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
         KingfisherManager.shared.downloader.sessionConfiguration = session.configuration
     }
 
@@ -58,6 +63,44 @@ struct APIService {
         } catch {
             log(error)
             return .failure(.decodingError())
+        }
+    }
+
+    func v2ApiGet<T: Decodable>(path: String, params: Params? = nil) async -> APIResult<T> {
+        guard let token = SettingState.getV2exAccessToken() else {
+            return .failure(.networkError("未配置 Access Token"))
+        }
+
+        guard var components = URLComponents(string: Self.v2ApiBase + path) else {
+            return .failure(.networkError("无效的 API 路径"))
+        }
+
+        if let params = params {
+            components.queryItems = params.map { URLQueryItem(name: $0.key, value: $0.value) }
+        }
+
+        guard let url = components.url else {
+            return .failure(.networkError("无效的 URL"))
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        do {
+            let (data, response) = try await session.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+                log("V2 API error: HTTP \(httpResponse.statusCode)")
+                return .failure(.networkError("API 请求失败: HTTP \(httpResponse.statusCode)"))
+            }
+            let decoded = try v2JsonDecoder.decode(T.self, from: data)
+            return .success(decoded)
+        } catch let error as DecodingError {
+            log("V2 API decode error: \(error)")
+            return .failure(.decodingError())
+        } catch {
+            log("V2 API network error: \(error)")
+            return .failure(.networkError())
         }
     }
 

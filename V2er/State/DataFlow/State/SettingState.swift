@@ -12,11 +12,13 @@ import SwiftUI
 struct SettingState: FluxState {
     static let imgurClientIdKey = "imgurClientId"
     static let useBuiltinBrowserKey = "useBuiltinBrowser"
+    static let v2exAccessTokenKey = "v2exAccessToken"
 
     var appearance: AppearanceMode = .system
     var autoCheckin: Bool = false
     var imgurClientId: String = ""
     var useBuiltinBrowser: Bool = false
+    var v2exAccessToken: String = ""
 
     // Checkin state
     var isCheckingIn: Bool = false
@@ -42,6 +44,8 @@ struct SettingState: FluxState {
         self.imgurClientId = UserDefaults.standard.string(forKey: Self.imgurClientIdKey) ?? ""
         // Load builtin browser preference
         self.useBuiltinBrowser = UserDefaults.standard.bool(forKey: Self.useBuiltinBrowserKey)
+        // Load V2EX access token
+        self.v2exAccessToken = UserDefaults.standard.string(forKey: Self.v2exAccessTokenKey) ?? ""
     }
 
     static func saveImgurClientId(_ clientId: String) {
@@ -51,6 +55,15 @@ struct SettingState: FluxState {
     static func getImgurClientId() -> String? {
         let clientId = UserDefaults.standard.string(forKey: imgurClientIdKey)
         return (clientId?.isEmpty == false) ? clientId : nil
+    }
+
+    static func saveV2exAccessToken(_ token: String) {
+        UserDefaults.standard.set(token, forKey: v2exAccessTokenKey)
+    }
+
+    static func getV2exAccessToken() -> String? {
+        let token = UserDefaults.standard.string(forKey: v2exAccessTokenKey)
+        return (token?.isEmpty == false) ? token : nil
     }
 
     /// Check if we should attempt auto-checkin today
