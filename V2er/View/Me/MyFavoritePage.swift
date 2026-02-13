@@ -24,15 +24,14 @@ struct MyFavoritePage: StateView {
 
     @ViewBuilder
     private var contentView: some View {
-        TabView(selection: $selectedTab) {
-            feedView
-                .tag(0)
-            nodeView
-                .tag(1)
+        Group {
+            switch selectedTab {
+            case 0: feedView
+            case 1: nodeView
+            default: feedView
+            }
         }
-        #if os(iOS)
-        .tabViewStyle(.page)
-        #endif
+        .animation(.easeInOut(duration: 0.2), value: selectedTab)
         .navigationTitle("收藏")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
@@ -40,14 +39,12 @@ struct MyFavoritePage: StateView {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Picker("收藏", selection: $selectedTab) {
-                    Text("主题")
+                    Text("主题").padding(.horizontal, Spacing.lg)
                         .tag(0)
-                    Text("节点")
+                    Text("节点").padding(.horizontal, Spacing.lg)
                         .tag(1)
                 }
-                .font(.headline)
                 .pickerStyle(.segmented)
-                .frame(maxWidth: 200)
             }
         }
     }

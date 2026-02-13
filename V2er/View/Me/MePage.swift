@@ -206,7 +206,7 @@ struct MePage: BaseHomePageView {
                 HStack(spacing: Spacing.sm) {
                     Image(systemName: "flame.fill")
                         .font(.caption)
-                        .foregroundColor(.orange)
+                        .foregroundColor(.secondaryText)
                     Text("已连续签到 \(checkinDays) 天")
                         .font(.caption.weight(.medium))
                         .foregroundColor(.secondaryText)
@@ -214,7 +214,7 @@ struct MePage: BaseHomePageView {
                 }
                 .padding(.horizontal, Spacing.md)
                 .padding(.vertical, Spacing.sm)
-                .background(Color.orange.opacity(0.08))
+                .background(Color(.systemGray5).opacity(0.6))
                 .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
             }
         }
