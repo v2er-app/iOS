@@ -14,23 +14,34 @@ struct UserDetailPlaceholder: View {
         #else
         let screenHeight: CGFloat = 900
         #endif
-        let bannerHeight: CGFloat = 280
+        let bannerHeight: CGFloat = 240
         let tabHeight: CGFloat = 60
-        let cardHeight: CGFloat = 100
+        let cardHeight: CGFloat = 80
         return max(2, Int(ceil((screenHeight - bannerHeight - tabHeight) / cardHeight)))
     }
 
     var body: some View {
-        // Banner
+        // Banner — compact layout with inline follow button
         VStack(spacing: Spacing.md) {
             Color.clear.frame(height: 34)
             Circle()
                 .fill(Color.white.opacity(0.2))
                 .frame(width: 60, height: 60)
-            Text("username")
-                .font(.title3.weight(.bold))
+            HStack(alignment: .center, spacing: Spacing.xs) {
+                Circle()
+                    .fill(Color.white.opacity(0.4))
+                    .frame(width: 8, height: 8)
+                Text("username")
+                    .font(.title3.weight(.bold))
+                Text("关注")
+                    .font(.subheadline.weight(.medium))
+                    .padding(.horizontal, Spacing.lg)
+                    .padding(.vertical, Spacing.xs)
+                    .background(Capsule().stroke(.white.opacity(0.8), lineWidth: 1))
+            }
             Text("A short bio description here")
                 .font(.subheadline)
+                .lineLimit(2)
                 .foregroundColor(.white.opacity(0.8))
         }
         .foregroundColor(.white)
@@ -38,18 +49,26 @@ struct UserDetailPlaceholder: View {
         .listRowSeparator(.hidden)
         .listRowBackground(Color.black)
 
-        // Tab selector
+        // Tab selector with counts
         HStack(spacing: 0) {
-            Text("Topics")
-                .font(.subheadline.weight(.semibold))
-                .foregroundColor(.primaryText)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, Spacing.sm)
-            Text("Replies")
-                .font(.subheadline.weight(.semibold))
-                .foregroundColor(.primaryText)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, Spacing.sm)
+            HStack(spacing: Spacing.xxs) {
+                Text("主题")
+                    .font(.subheadline.weight(.semibold))
+                Text("(5)")
+                    .font(.subheadline.weight(.semibold).monospacedDigit())
+            }
+            .foregroundColor(.primaryText)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, Spacing.sm)
+            HStack(spacing: Spacing.xxs) {
+                Text("回复")
+                    .font(.subheadline.weight(.semibold))
+                Text("(3)")
+                    .font(.subheadline.weight(.semibold).monospacedDigit())
+            }
+            .foregroundColor(.primaryText)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, Spacing.sm)
         }
         .background(Color(.systemGray5), in: RoundedRectangle(cornerRadius: CornerRadius.medium))
         .padding(.horizontal, Spacing.md)
@@ -60,7 +79,7 @@ struct UserDetailPlaceholder: View {
         .listRowSeparator(.hidden)
         .listRowBackground(Color(.systemGroupedBackground))
 
-        // Topic cards
+        // Topic cards — simplified layout (no username, just timestamp + node)
         ForEach(0..<itemCount, id: \.self) { _ in
             topicPlaceholder
                 .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
@@ -71,17 +90,11 @@ struct UserDetailPlaceholder: View {
 
     private var topicPlaceholder: some View {
         VStack(spacing: 0) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: Spacing.xxs) {
-                    Text("username")
-                        .font(AppFont.username)
-                        .foregroundColor(.primaryText)
-                        .lineLimit(1)
-                    Text("3 hours ago")
-                        .font(AppFont.timestamp)
-                        .foregroundColor(.secondaryText)
-                        .lineLimit(1)
-                }
+            HStack(alignment: .center) {
+                Text("3 hours ago")
+                    .font(AppFont.timestamp)
+                    .foregroundColor(.secondaryText)
+                    .lineLimit(1)
                 Spacer()
                 Text("Node")
                     .nodeBadgeStyle()
