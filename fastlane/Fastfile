@@ -6,9 +6,9 @@ require_relative 'changelog_helper'
 
 # Monkey-patch Spaceship to skip malformed version strings (e.g. "1.2..8")
 # that cause Gem::Version to raise ArgumentError during sort_by.
-module Spaceship
+module ::Spaceship
   class ConnectAPI
-    class App < Spaceship::ConnectAPI::Model
+    class App
       alias_method :original_get_edit_app_store_version, :get_edit_app_store_version
 
       def get_edit_app_store_version(**kwargs)
@@ -21,7 +21,7 @@ module Spaceship
         filter = { appStoreState: ["PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED", "WAITING_FOR_REVIEW", "INVALID_BINARY", "IN_REVIEW", "PENDING_DEVELOPER_RELEASE"] }
         filter[:platform] = platform if platform
 
-        versions = Spaceship::ConnectAPI.get_app_store_versions(app_id: self.id, filter: filter).select do |v|
+        versions = ::Spaceship::ConnectAPI.get_app_store_versions(app_id: self.id, filter: filter).select do |v|
           begin
             Gem::Version.new(v.version_string)
             true
