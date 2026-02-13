@@ -370,54 +370,50 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @ViewBuilder
     private var listContentView: some View {
         List {
-            if isInitialLoading {
-                FeedDetailPlaceholder()
-                    .redacted(reason: .placeholder)
-            } else {
-                // Topic Card: Header + Content + Postscripts
-                VStack(spacing: 0) {
-                    AuthorInfoView(initData: initData, data: state.model.headerInfo, onNavigate: { handleSubviewNavigate($0) })
+            // Topic Card: Header + Content + Postscripts
+            VStack(spacing: 0) {
+                AuthorInfoView(initData: initData, data: state.model.headerInfo, onNavigate: { handleSubviewNavigate($0) })
 
-                    if !isContentEmpty {
-                        NewsContentView(state.model.contentInfo, onNavigate: { handleSubviewNavigate($0) }, onOpenSafari: { handleSubviewSafari($0) }) {
-                            contentReady = true
-                        }
-                    }
-
-                    if contentReady || isContentEmpty {
-                        ForEach(state.model.postscripts) { postscript in
-                            PostscriptItemView(postscript: postscript)
-                        }
+                if !isContentEmpty {
+                    NewsContentView(state.model.contentInfo, onNavigate: { handleSubviewNavigate($0) }, onOpenSafari: { handleSubviewSafari($0) }) {
+                        contentReady = true
                     }
                 }
-                .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
-                .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color(.systemGroupedBackground))
 
-                // Reply Section (shown after content loads)
                 if contentReady || isContentEmpty {
-                    // Reply Section Header
-                    if !state.model.replyInfo.items.isEmpty {
-                        replySectionHeader
-                            .listRowInsets(EdgeInsets(top: Spacing.sm, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.systemGroupedBackground))
-                    }
-
-                    // Reply Cards
-                    ForEach(sortedReplies, id: \.floor) { item in
-                        ReplyItemView(info: item, topicId: id, onNavigate: { handleSubviewNavigate($0) }, onOpenSafari: { handleSubviewSafari($0) })
-                            .cardScrollTransition()
-                            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
-                            .listRowSeparator(.hidden)
-                            .listRowBackground(Color(.systemGroupedBackground))
+                    ForEach(state.model.postscripts) { postscript in
+                        PostscriptItemView(postscript: postscript)
                     }
                 }
+            }
+            .background(Color(.secondarySystemGroupedBackground))
+            .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color(.systemGroupedBackground))
 
-                // Load More Indicator
-                if state.hasMoreData {
+            // Reply Section (shown after content loads)
+            if contentReady || isContentEmpty {
+                // Reply Section Header
+                if !state.model.replyInfo.items.isEmpty {
+                    replySectionHeader
+                        .listRowInsets(EdgeInsets(top: Spacing.sm, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color(.systemGroupedBackground))
+                }
+
+                // Reply Cards
+                ForEach(sortedReplies, id: \.floor) { item in
+                    ReplyItemView(info: item, topicId: id, onNavigate: { handleSubviewNavigate($0) }, onOpenSafari: { handleSubviewSafari($0) })
+                        .cardScrollTransition()
+                        .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color(.systemGroupedBackground))
+                }
+            }
+
+            // Load More Indicator
+            if state.hasMoreData {
                 HStack {
                     Spacer()
                     if isLoadingMore {
@@ -439,7 +435,6 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                         }
                     }
                 }
-                }
             }
         }
         .listStyle(.plain)
@@ -458,6 +453,25 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             replyIsFocused = false
             collapseReplyBarIfEmpty()
         }
+        .overlay {
+            if isInitialLoading {
+                placeholderOverlay
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeOut(duration: 0.4), value: isInitialLoading)
+    }
+
+    private var placeholderOverlay: some View {
+        List {
+            FeedDetailPlaceholder()
+                .redacted(reason: .placeholder)
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color(.systemGroupedBackground))
+        .environment(\.defaultMinListRowHeight, 1)
+        .scrollDisabled(true)
     }
 
     private func expandReplyBar() {
