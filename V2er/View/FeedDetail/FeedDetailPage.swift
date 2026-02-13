@@ -179,6 +179,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             .safeAreaInset(edge: .bottom) {
                 if replyBarExpanded {
                     expandedReplyBar
+                } else {
+                    Spacer().frame(height: 72)
                 }
             }
             .overlay(alignment: .bottomTrailing) {
@@ -391,7 +393,9 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             replyBarExpanded = true
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-            replyIsFocused = true
+            if replyBarExpanded {
+                replyIsFocused = true
+            }
         }
     }
 
@@ -419,6 +423,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .padding(.trailing, Spacing.md)
         .padding(.bottom, Spacing.md)
+        .accessibilityLabel("发表回复")
     }
 
     private var expandedReplyBar: some View {
