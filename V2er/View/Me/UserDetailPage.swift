@@ -165,8 +165,15 @@ struct UserDetailPage: StateView {
             }
             .overlay {
                 if state.showProgressView {
-                    ProgressView()
-                        .scaleEffect(1.5)
+                    List {
+                        UserDetailPlaceholder()
+                            .redacted(reason: .placeholder)
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .environment(\.defaultMinListRowHeight, 1)
+                    .scrollDisabled(true)
+                    .transition(.opacity.animation(.easeOut(duration: 0.4)))
                 }
             }
 
@@ -397,17 +404,14 @@ struct UserDetailPage: StateView {
             } label: {
                 Text(title)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundColor(isSelected ? .white : .secondaryText)
+                    .foregroundColor(isSelected ? Color(.systemBackground) : .secondaryText)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, Spacing.sm)
                     .background {
-                        VStack {
-                            if isSelected {
-                                RoundedRectangle(cornerRadius: CornerRadius.medium)
-                                    .fill(Color.accentColor)
-                                    .matchedGeometryEffect(id: "TAB", in: animation)
-                            }
-                        }
+                        RoundedRectangle(cornerRadius: CornerRadius.medium)
+                            .fill(Color.accentColor)
+                            .opacity(isSelected ? 1 : 0)
+                            .matchedGeometryEffect(id: "TAB", in: animation, isSource: isSelected)
                     }
                     .contentShape(Rectangle())
             }

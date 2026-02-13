@@ -142,8 +142,15 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             }
             .overlay {
                 if state.showProgressView {
-                    ProgressView()
-                        .scaleEffect(1.5)
+                    List {
+                        TagDetailPlaceholder()
+                            .redacted(reason: .placeholder)
+                    }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .environment(\.defaultMinListRowHeight, 1)
+                    .scrollDisabled(true)
+                    .transition(.opacity.animation(.easeOut(duration: 0.4)))
                 }
             }
 

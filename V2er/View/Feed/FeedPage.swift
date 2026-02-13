@@ -240,8 +240,16 @@ struct FeedPage: BaseHomePageView {
         }
         .overlay {
             if state.showProgressView {
-                ProgressView()
-                    .scaleEffect(1.5)
+                List {
+                    FeedPlaceholder()
+                        .redacted(reason: .placeholder)
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color(.systemGroupedBackground))
+                .environment(\.defaultMinListRowHeight, 1)
+                .scrollDisabled(true)
+                .transition(.opacity.animation(.easeOut(duration: 0.4)))
             }
         }
     }
