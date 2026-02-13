@@ -2,6 +2,22 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.2.9 (Build 56)
+
+### What's New
+- Updated app logo with light and dark mode variants
+- Added brand title animation and Other Apps carousel on Me page
+- Fixed Other Apps section not responding to taps on Me page
+
+### All Changes
+- ✨ Updated app logo with light/dark variants
+- ✨ Added brand title animation and Other Apps carousel
+- 🐛 Fixed Other Apps section not being tappable on Me page
+- 🔧 Added App Store submission workflow and release pipeline enhancements
+- 🔧 Applied release pipeline optimizations from FlareKit
+
+---
+
 ## v1.2.8 (Build 55)
 1. Feature: Native macOS support — V2er now runs as a full macOS app with sidebar navigation and three-column layout
 2. Fix: macOS accent color now matches the iOS dark gray tint instead of defaulting to system blue
