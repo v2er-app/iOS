@@ -231,11 +231,11 @@ struct LoginPage: StateView {
         KFImage.url(URL(string: state.captchaUrl))
             .placeholder {
                 ProgressView()
-                    .frame(width: 90, height: 36)
+                    .frame(width: 120, height: 44)
             }
             .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 90, height: 36)
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 44)
             .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
             .overlay(
                 RoundedRectangle(cornerRadius: CornerRadius.small)
