@@ -248,7 +248,7 @@ struct MePage: BaseHomePageView {
             } label: {
                 Text("登录")
                     .font(.headline)
-                    .foregroundColor(.white)
+                    .foregroundColor(Color(.systemBackground))
                     .padding()
                     .padding(.horizontal, 50)
                     .background(Color.accentColor)
