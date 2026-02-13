@@ -4,6 +4,17 @@ require 'shellwords'
 # Import changelog helper
 require_relative 'changelog_helper'
 
+# Patch Gem::Version to handle malformed version strings from App Store Connect
+# (e.g. "1.2..8"). Without this, Spaceship crashes in sort_by across multiple
+# internal code paths that we cannot rescue from the Fastfile.
+original_gem_version_create = Gem::Version.method(:create)
+Gem::Version.define_singleton_method(:create) do |input|
+  original_gem_version_create.call(input)
+rescue ArgumentError => e
+  raise unless e.message.include?("Malformed version number string")
+  original_gem_version_create.call("0")
+end
+
 default_platform(:ios)
 
 platform :ios do
@@ -282,21 +293,7 @@ platform :ios do
         UI.important("Could not cancel existing submission: #{e.message}")
       end
 
-      begin
-        edit_version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
-      rescue ArgumentError => e
-        raise unless e.message.include?("Malformed version number string")
-        UI.important("Encountered malformed version on ASC, fetching with fallback...")
-        all_versions = Spaceship::ConnectAPI.get_app_store_versions(
-          app_id: app.id,
-          filter: { platform: Spaceship::ConnectAPI::Platform::IOS }
-        )
-        editable_states = %w[PREPARE_FOR_SUBMISSION DEVELOPER_REJECTED REJECTED METADATA_REJECTED WAITING_FOR_REVIEW INVALID_BINARY IN_REVIEW PENDING_DEVELOPER_RELEASE]
-        edit_version = all_versions
-          .select { |v| editable_states.include?(v.app_store_state) && v.version_string.match?(/\A\d+(\.\d+)*\z/) }
-          .sort_by { |v| Gem::Version.new(v.version_string) }
-          .last
-      end
+      edit_version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
 
       if edit_version
         # Update "What's New" on existing editable version
@@ -448,21 +445,7 @@ platform :ios do
     end
 
     # Get the editable App Store version (or create one)
-    begin
-      edit_version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
-    rescue ArgumentError => e
-      raise unless e.message.include?("Malformed version number string")
-      UI.important("Encountered malformed version on ASC, fetching with fallback...")
-      all_versions = Spaceship::ConnectAPI.get_app_store_versions(
-        app_id: app.id,
-        filter: { platform: Spaceship::ConnectAPI::Platform::IOS }
-      )
-      editable_states = %w[PREPARE_FOR_SUBMISSION DEVELOPER_REJECTED REJECTED METADATA_REJECTED WAITING_FOR_REVIEW INVALID_BINARY IN_REVIEW PENDING_DEVELOPER_RELEASE]
-      edit_version = all_versions
-        .select { |v| editable_states.include?(v.app_store_state) && v.version_string.match?(/\A\d+(\.\d+)*\z/) }
-        .sort_by { |v| Gem::Version.new(v.version_string) }
-        .last
-    end
+    edit_version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
     unless edit_version
       UI.important("No editable version found, creating version #{current_version}...")
       edit_version = app.create_version!(
