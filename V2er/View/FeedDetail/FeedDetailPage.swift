@@ -44,6 +44,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @State private var isLoadingMore = false
     @State private var contentReady = false
     @FocusState private var replyIsFocused: Bool
+    @State private var replyBarExpanded = false
+    @Namespace private var replyBarNamespace
     var initData: FeedInfo.Item? = nil
     var id: String
 
@@ -175,7 +177,16 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     private var contentView: some View {
         listContentView
             .safeAreaInset(edge: .bottom) {
-                replyBar
+                if replyBarExpanded {
+                    expandedReplyBar
+                } else {
+                    Spacer().frame(height: 72)
+                }
+            }
+            .overlay(alignment: .bottomTrailing) {
+                if !replyBarExpanded {
+                    replyFAB
+                }
             }
             .navigationTitle("话题")
         #if os(iOS)
@@ -191,9 +202,14 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 dismiss()
             }
         }
+        .onChange(of: replyIsFocused) { focused in
+            if !focused {
+                collapseReplyBarIfEmpty()
+            }
+        }
         .onChange(of: state.shouldFocusReply) { shouldFocus in
             if shouldFocus {
-                replyIsFocused = true
+                expandReplyBar()
                 store.appState.feedDetailStates[instanceId]?.shouldFocusReply = false
             }
         }
@@ -368,10 +384,49 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .onTapGesture {
             replyIsFocused = false
+            collapseReplyBarIfEmpty()
         }
     }
 
-    private var replyBar: some View {
+    private func expandReplyBar() {
+        withAnimation(.spring(duration: 0.4, bounce: 0.15)) {
+            replyBarExpanded = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            if replyBarExpanded {
+                replyIsFocused = true
+            }
+        }
+    }
+
+    private func collapseReplyBarIfEmpty() {
+        guard !hasReplyContent else { return }
+        withAnimation(.spring(duration: 0.35, bounce: 0.1)) {
+            replyBarExpanded = false
+        }
+    }
+
+    private var replyFAB: some View {
+        Button {
+            expandReplyBar()
+        } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 24, weight: .medium))
+                .foregroundStyle(Color.accentColor)
+                .frame(width: 56, height: 56)
+                .background(
+                    Circle()
+                        .fill(Color(.secondarySystemGroupedBackground))
+                        .matchedGeometryEffect(id: "replyBarBg", in: replyBarNamespace)
+                )
+                .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 4)
+        }
+        .padding(.trailing, Spacing.md)
+        .padding(.bottom, Spacing.md)
+        .accessibilityLabel("发表回复")
+    }
+
+    private var expandedReplyBar: some View {
         HStack(alignment: .bottom, spacing: Spacing.sm) {
             // Image picker button
             if isUploadingImage {
@@ -401,19 +456,20 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             .disabled(!hasReplyContent)
             .accessibilityLabel("发送回复")
         }
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         .padding(.horizontal, Spacing.sm)
         .padding(.top, Spacing.md)
         .padding(.bottom, Spacing.md)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
+        .background(
+            RoundedRectangle(cornerRadius: CornerRadius.medium)
+                .fill(Color(.secondarySystemGroupedBackground))
+                .matchedGeometryEffect(id: "replyBarBg", in: replyBarNamespace)
+        )
         .overlay(
             RoundedRectangle(cornerRadius: CornerRadius.medium)
                 .stroke(Color(.separator), lineWidth: 0.5)
         )
-        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: -4)
-        .padding(.horizontal, Spacing.sm)
+        .shadow(color: .black.opacity(0.18), radius: 12, x: 0, y: -4)
+        .padding(.horizontal, Spacing.md)
         .padding(.bottom, Spacing.sm)
         .onChange(of: selectedImage) { _, newImage in
             guard let image = newImage else { return }
