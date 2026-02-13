@@ -100,6 +100,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         return contentInfo == nil || contentInfo!.html.isEmpty
     }
 
+    /// True during the first load before any data has arrived.
+    private var isInitialLoading: Bool {
+        state.refreshing && state.model.headerInfo == nil
+    }
+
     private func updateNavTitleVisibility(scrollOffset: CGFloat) {
         guard !topicTitle.isEmpty else {
             if showNavTitle {
@@ -448,6 +453,25 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             replyIsFocused = false
             collapseReplyBarIfEmpty()
         }
+        .overlay {
+            if isInitialLoading {
+                placeholderOverlay
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeOut(duration: 0.4), value: isInitialLoading)
+    }
+
+    private var placeholderOverlay: some View {
+        List {
+            FeedDetailPlaceholder()
+                .redacted(reason: .placeholder)
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color(.systemGroupedBackground))
+        .environment(\.defaultMinListRowHeight, 1)
+        .scrollDisabled(true)
     }
 
     private func expandReplyBar() {
