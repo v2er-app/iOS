@@ -12,6 +12,7 @@ struct AuthorInfoView: View {
     var initData: FeedInfo.Item? = nil
     var data: FeedDetailInfo.HeaderInfo? = nil
     var onNavigate: ((AppRoute) -> Void)? = nil
+    var onTitleVisibilityChange: ((Bool) -> Void)? = nil
     @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @State private var navigateToRoute: AppRoute?
 
@@ -78,6 +79,11 @@ struct AuthorInfoView: View {
                 .foregroundColor(.primaryText)
                 .greedyWidth(.leading)
                 .padding(.top, Spacing.lg)
+                .onGeometryChange(for: Bool.self) { proxy in
+                    proxy.frame(in: .global).maxY > 100
+                } action: { isVisible in
+                    onTitleVisibilityChange?(isVisible)
+                }
         }
         .padding(Spacing.md)
         .accessibilityElement(children: .combine)
