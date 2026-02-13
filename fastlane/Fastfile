@@ -298,51 +298,48 @@ platform :ios do
           .last
       end
 
-      unless edit_version
-        UI.important("No editable version found, creating version #{current_version}...")
-        edit_version = app.create_version!(
-          platform: Spaceship::ConnectAPI::Platform::IOS,
-          version_string: current_version
-        )
-      end
-
-      # Get metadata from the live (published) version as fallback for any missing fields
-      live_version = app.get_live_app_store_version
-      live_metadata = {}
-      if live_version
-        live_version.get_app_store_version_localizations.each do |loc|
-          live_metadata[loc.locale] = loc
-        end
-      end
-
-      localizations = edit_version.get_app_store_version_localizations
-      localizations.each do |loc|
-        attrs = { whats_new: changelog }
-
-        # Fill in required fields from live version if missing
-        ref = live_metadata[loc.locale] || live_metadata.values.first
-        if ref
-          attrs[:description] = ref.description if loc.description.nil? || loc.description.to_s.strip.empty?
-          attrs[:keywords] = ref.keywords if loc.keywords.nil? || loc.keywords.to_s.strip.empty?
-          attrs[:support_url] = ref.support_url if loc.support_url.nil? || loc.support_url.to_s.strip.empty?
-          attrs[:marketing_url] = ref.marketing_url if loc.marketing_url.nil? || loc.marketing_url.to_s.strip.empty?
+      if edit_version
+        # Update "What's New" on existing editable version
+        live_version = app.get_live_app_store_version
+        live_metadata = {}
+        if live_version
+          live_version.get_app_store_version_localizations.each do |loc|
+            live_metadata[loc.locale] = loc
+          end
         end
 
-        UI.message("  Updating #{loc.locale} (#{attrs.keys.join(', ')})...")
-        loc.update(attributes: attrs)
-      end
-      UI.success("Updated localizations for #{localizations.length} locale(s)")
+        localizations = edit_version.get_app_store_version_localizations
+        localizations.each do |loc|
+          attrs = { whats_new: changelog }
 
-      # Upload binary and submit for review (skip metadata — already set above)
+          ref = live_metadata[loc.locale] || live_metadata.values.first
+          if ref
+            attrs[:description] = ref.description if loc.description.nil? || loc.description.to_s.strip.empty?
+            attrs[:keywords] = ref.keywords if loc.keywords.nil? || loc.keywords.to_s.strip.empty?
+            attrs[:support_url] = ref.support_url if loc.support_url.nil? || loc.support_url.to_s.strip.empty?
+            attrs[:marketing_url] = ref.marketing_url if loc.marketing_url.nil? || loc.marketing_url.to_s.strip.empty?
+          end
+
+          UI.message("  Updating #{loc.locale} (#{attrs.keys.join(', ')})...")
+          loc.update(attributes: attrs)
+        end
+        UI.success("Updated localizations for #{localizations.length} locale(s)")
+      else
+        UI.important("No editable version found on ASC — deliver will create version #{current_version}")
+      end
+
+      # Upload binary and submit for review
       upload_to_app_store(
         api_key: api_key,
-        skip_metadata: true,
+        app_version: current_version,
+        skip_metadata: edit_version != nil,
         skip_screenshots: true,
         submit_for_review: true,
         automatic_release: false,
         precheck_include_in_app_purchases: false,
         force: is_ci,
         run_precheck_before_submit: false,
+        release_notes: edit_version ? nil : { "default" => changelog },
         submission_information: {
           add_id_info_uses_idfa: false,
           export_compliance_uses_encryption: false,
