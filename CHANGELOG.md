@@ -2,6 +2,35 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.2.10 (Build 57)
+
+### What's New
+- Redesigned User Profile and Tag Detail pages with improved layout
+- Added smooth loading placeholders across topic detail and user pages
+- Fixed topic list jumping back when scrolling through long replies
+- Topic title and author avatar now appear in navigation bar when scrolling
+- Redesigned login and create topic pages
+- Redesigned Me card with balanced badges layout
+- Added collapsible reply bar with floating action button on topic detail
+- Fixed Cloudflare-protected email addresses not displaying correctly
+- Fixed dark mode issues in login button and tab buttons
+
+### All Changes
+- ✨ Redesigned UserDetailPage and TagDetailPage UI/UX (#178)
+- ✨ Added redacted loading placeholders and fixed TabButton dark mode (#177)
+- ✨ Added loading placeholder with fade transition for FeedDetail (#176)
+- ✨ Show topic title and author avatar in nav bar on scroll (#174)
+- ✨ Redesigned login and create topic pages (#170)
+- ✨ Redesigned Me card, balanced badges, and fixed favorites (#171)
+- ✨ Added collapsible reply bar with FAB on topic detail (#172)
+- 🐛 Fixed tabs hidden during loading to prevent white-block flash on UserDetailPage (#179)
+- 🐛 Fixed FeedDetail list snap-back when replies exceed screen (#175)
+- 🐛 Fixed Cloudflare-protected email decoding and login button dark mode (#173)
+- 🔧 Fixed CI pipeline Gem::Version handling for malformed ASC versions
+- 🔧 Fixed CI deliver fallback and ASC version creation issues
+
+---
+
 ## v1.2.9 (Build 56)
 
 ### What's New
