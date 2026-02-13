@@ -463,8 +463,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
             RoundedRectangle(cornerRadius: CornerRadius.medium)
                 .stroke(Color(.separator), lineWidth: 0.5)
         )
-        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: -4)
-        .padding(.horizontal, Spacing.sm)
+        .shadow(color: .black.opacity(0.18), radius: 12, x: 0, y: -4)
+        .padding(.horizontal, Spacing.md)
         .padding(.bottom, Spacing.sm)
         .onChange(of: selectedImage) { _, newImage in
             guard let image = newImage else { return }
