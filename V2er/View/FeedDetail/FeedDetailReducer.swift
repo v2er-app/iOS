@@ -47,6 +47,10 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
                 state.model.headerInfo?.isThankable = htmlHeader.isThankable
                 state.model.headerInfo?.favoriteLink = htmlHeader.favoriteLink
                 state.model.headerInfo?.appendText = htmlHeader.appendText
+                // Merge replyUpdate from HTML (contains click/time info not in API)
+                if let htmlReplyUpdate = htmlHeader.replyUpdate, htmlReplyUpdate.notEmpty() {
+                    state.model.headerInfo?.replyUpdate = htmlReplyUpdate
+                }
                 // Update totalPage from HTML if it's more accurate
                 if htmlHeader.totalPage > (state.model.headerInfo?.totalPage ?? 1) {
                     state.model.headerInfo?.totalPage = htmlHeader.totalPage

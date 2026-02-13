@@ -28,16 +28,17 @@ struct FeedDetailActions {
                     return
                 }
 
-                // Phase 1: Fetch via V2 API (fast, reliable)
-                let topicResult: APIResult<V2Response<V2TopicDetail>> = await APIService.shared
+                // Phase 1: Fetch via V2 API (fast, reliable) — concurrent
+                async let topicResult: APIResult<V2Response<V2TopicDetail>> = APIService.shared
                     .v2ApiGet(path: "topics/\(topicId)")
-                let repliesResult: APIResult<V2Response<[V2ReplyDetail]>> = await APIService.shared
+                async let repliesResult: APIResult<V2Response<[V2ReplyDetail]>> = APIService.shared
                     .v2ApiGet(path: "topics/\(topicId)/replies", params: ["p": "1"])
+                let (topicRes, repliesRes) = await (topicResult, repliesResult)
 
-                if case let .success(topicResp) = topicResult,
-                   let topicResp = topicResp,
-                   case let .success(repliesResp) = repliesResult,
-                   let repliesResp = repliesResp {
+                if case let .success(topicResp) = topicRes,
+                   let topicResp = topicResp, topicResp.success,
+                   case let .success(repliesResp) = repliesRes,
+                   let repliesResp = repliesResp, repliesResp.success {
                     let feedDetailInfo = V2APIAdapter.buildFeedDetailInfo(
                         topic: topicResp, replies: repliesResp, page: 1
                     )
@@ -93,7 +94,7 @@ struct FeedDetailActions {
                     .v2ApiGet(path: "topics/\(topicId)/replies", params: ["p": "\(willLoadPage)"])
 
                 if case let .success(repliesResp) = repliesResult,
-                   let repliesResp = repliesResp {
+                   let repliesResp = repliesResp, repliesResp.success {
                     let state = store.appState.feedDetailStates[id]
                     let totalPage = state?.model.headerInfo?.totalPage ?? 1
                     let owner = state?.model.replyInfo.owner ?? ""
