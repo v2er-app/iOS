@@ -4,15 +4,12 @@ require 'shellwords'
 # Import changelog helper
 require_relative 'changelog_helper'
 
-# Patch Gem::Version to handle malformed version strings from App Store Connect
-# (e.g. "1.2..8"). Without this, Spaceship crashes in sort_by across multiple
-# internal code paths that we cannot rescue from the Fastfile.
-original_gem_version_create = Gem::Version.method(:create)
-Gem::Version.define_singleton_method(:create) do |input|
-  original_gem_version_create.call(input)
-rescue ArgumentError => e
-  raise unless e.message.include?("Malformed version number string")
-  original_gem_version_create.call("0")
+# Ignore malformed version strings from App Store Connect (e.g. "1.2..8")
+original_gem_version_new = Gem::Version.method(:new)
+Gem::Version.define_singleton_method(:new) do |version|
+  original_gem_version_new.call(version)
+rescue ArgumentError
+  original_gem_version_new.call("0")
 end
 
 default_platform(:ios)
