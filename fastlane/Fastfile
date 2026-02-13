@@ -298,6 +298,14 @@ platform :ios do
           .last
       end
 
+      unless edit_version
+        UI.important("No editable version found, creating version #{current_version}...")
+        edit_version = app.create_version!(
+          platform: Spaceship::ConnectAPI::Platform::IOS,
+          version_string: current_version
+        )
+      end
+
       # Get metadata from the live (published) version as fallback for any missing fields
       live_version = app.get_live_app_store_version
       live_metadata = {}
