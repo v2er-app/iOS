@@ -49,6 +49,8 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     @Namespace private var replyBarNamespace
     var initData: FeedInfo.Item? = nil
     var id: String
+    private let navTitleShowThreshold: CGFloat = 96
+    private let navTitleHideThreshold: CGFloat = 72
 
     init(id: String) {
         self.id = id
@@ -96,6 +98,26 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     private var isContentEmpty: Bool {
         let contentInfo = state.model.contentInfo
         return contentInfo == nil || contentInfo!.html.isEmpty
+    }
+
+    private func updateNavTitleVisibility(scrollOffset: CGFloat) {
+        guard !topicTitle.isEmpty else {
+            if showNavTitle {
+                showNavTitle = false
+            }
+            return
+        }
+
+        let shouldShow: Bool
+        if showNavTitle {
+            shouldShow = scrollOffset > navTitleHideThreshold
+        } else {
+            shouldShow = scrollOffset > navTitleShowThreshold
+        }
+
+        if shouldShow != showNavTitle {
+            showNavTitle = shouldShow
+        }
     }
 
     private func shareTopicContent() {
@@ -193,7 +215,9 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 if replyBarExpanded {
                     expandedReplyBar
                 } else {
-                    Spacer().frame(height: 72)
+                    Color.clear
+                        .frame(height: 72)
+                        .allowsHitTesting(false)
                 }
             }
             .overlay(alignment: .bottomTrailing) {
@@ -343,20 +367,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         List {
             // Topic Card: Header + Content + Postscripts
             VStack(spacing: 0) {
-                AuthorInfoView(initData: initData, data: state.model.headerInfo, onNavigate: { handleSubviewNavigate($0) }, onTitleVisibilityChange: { isVisible in
-                    let shouldShow = !isVisible && topicTitle.isEmpty == false
-                    if shouldShow != showNavTitle {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            showNavTitle = shouldShow
-                        }
-                    }
-                })
+                AuthorInfoView(initData: initData, data: state.model.headerInfo, onNavigate: { handleSubviewNavigate($0) })
 
                 if !isContentEmpty {
                     NewsContentView(state.model.contentInfo, onNavigate: { handleSubviewNavigate($0) }, onOpenSafari: { handleSubviewSafari($0) }) {
-                        withAnimation {
-                            contentReady = true
-                        }
+                        contentReady = true
                     }
                 }
 
@@ -423,6 +438,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .environment(\.defaultMinListRowHeight, 1)
         .refreshable {
             await run(action: FeedDetailActions.FetchData.Start(id: instanceId, feedId: initData?.id))
+        }
+        .onScrollGeometryChange(for: CGFloat.self) { geometry in
+            geometry.contentOffset.y
+        } action: { _, newValue in
+            updateNavTitleVisibility(scrollOffset: newValue)
         }
         .onTapGesture {
             replyIsFocused = false

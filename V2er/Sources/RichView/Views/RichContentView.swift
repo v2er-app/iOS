@@ -37,6 +37,13 @@ public struct RichContentView: View {
     public init(htmlContent: String) {
         self.htmlContent = htmlContent
         self.configuration = .default
+
+        // Pre-fill from shared cache so recreated views never flash a loading state.
+        // This prevents List scroll-position jumps caused by brief height collapse.
+        if let cached = RichViewCache.shared.getContentElements(forHTML: htmlContent) {
+            _contentElements = State(initialValue: cached)
+            _isLoading = State(initialValue: false)
+        }
     }
 
     // MARK: - Body
@@ -145,6 +152,9 @@ public struct RichContentView: View {
 
     @MainActor
     private func parseContent() async {
+        // Already populated (e.g. from cache in init) — skip re-parse.
+        guard contentElements.isEmpty else { return }
+
         isLoading = true
         error = nil
 
