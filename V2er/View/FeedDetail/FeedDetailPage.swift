@@ -456,10 +456,9 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .overlay {
             if isInitialLoading {
                 placeholderOverlay
-                    .transition(.opacity)
+                    .transition(.opacity.animation(.easeOut(duration: 0.4)))
             }
         }
-        .animation(.easeOut(duration: 0.4), value: isInitialLoading)
     }
 
     private var placeholderOverlay: some View {
