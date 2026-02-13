@@ -287,10 +287,15 @@ platform :ios do
       rescue ArgumentError => e
         raise unless e.message.include?("Malformed version number string")
         UI.important("Encountered malformed version on ASC, fetching with fallback...")
-        edit_states = ["PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED", "WAITING_FOR_REVIEW", "INVALID_BINARY", "IN_REVIEW", "PENDING_DEVELOPER_RELEASE"]
-        all_versions = Spaceship::ConnectAPI.get_app_store_versions(app_id: app.id, filter: { appStoreState: edit_states, platform: Spaceship::ConnectAPI::Platform::IOS })
-        valid_versions = all_versions.select { |v| v.version_string.match?(/\A\d+(\.\d+)*\z/) }
-        edit_version = valid_versions.sort_by { |v| Gem::Version.new(v.version_string) }.last
+        all_versions = Spaceship::ConnectAPI.get_app_store_versions(
+          app_id: app.id,
+          filter: { platform: Spaceship::ConnectAPI::Platform::IOS }
+        )
+        editable_states = %w[PREPARE_FOR_SUBMISSION DEVELOPER_REJECTED REJECTED METADATA_REJECTED WAITING_FOR_REVIEW INVALID_BINARY IN_REVIEW PENDING_DEVELOPER_RELEASE]
+        edit_version = all_versions
+          .select { |v| editable_states.include?(v.app_store_state) && v.version_string.match?(/\A\d+(\.\d+)*\z/) }
+          .sort_by { |v| Gem::Version.new(v.version_string) }
+          .last
       end
 
       # Get metadata from the live (published) version as fallback for any missing fields
@@ -443,10 +448,15 @@ platform :ios do
     rescue ArgumentError => e
       raise unless e.message.include?("Malformed version number string")
       UI.important("Encountered malformed version on ASC, fetching with fallback...")
-      edit_states = ["PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED", "WAITING_FOR_REVIEW", "INVALID_BINARY", "IN_REVIEW", "PENDING_DEVELOPER_RELEASE"]
-      all_versions = Spaceship::ConnectAPI.get_app_store_versions(app_id: app.id, filter: { appStoreState: edit_states, platform: Spaceship::ConnectAPI::Platform::IOS })
-      valid_versions = all_versions.select { |v| v.version_string.match?(/\A\d+(\.\d+)*\z/) }
-      edit_version = valid_versions.sort_by { |v| Gem::Version.new(v.version_string) }.last
+      all_versions = Spaceship::ConnectAPI.get_app_store_versions(
+        app_id: app.id,
+        filter: { platform: Spaceship::ConnectAPI::Platform::IOS }
+      )
+      editable_states = %w[PREPARE_FOR_SUBMISSION DEVELOPER_REJECTED REJECTED METADATA_REJECTED WAITING_FOR_REVIEW INVALID_BINARY IN_REVIEW PENDING_DEVELOPER_RELEASE]
+      edit_version = all_versions
+        .select { |v| editable_states.include?(v.app_store_state) && v.version_string.match?(/\A\d+(\.\d+)*\z/) }
+        .sort_by { |v| Gem::Version.new(v.version_string) }
+        .last
     end
     unless edit_version
       UI.important("No editable version found, creating version #{current_version}...")
