@@ -4,39 +4,6 @@ require 'shellwords'
 # Import changelog helper
 require_relative 'changelog_helper'
 
-# Monkey-patch Spaceship to skip malformed version strings (e.g. "1.2..8")
-# that cause Gem::Version to raise ArgumentError during sort_by.
-module ::Spaceship
-  class ConnectAPI
-    class App
-      alias_method :original_get_edit_app_store_version, :get_edit_app_store_version
-
-      def get_edit_app_store_version(**kwargs)
-        original_get_edit_app_store_version(**kwargs)
-      rescue ArgumentError => e
-        raise unless e.message.include?("Malformed version number string")
-
-        # Fallback: fetch versions and filter out malformed ones before sorting
-        platform = kwargs[:platform]
-        filter = { appStoreState: ["PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED", "WAITING_FOR_REVIEW", "INVALID_BINARY", "IN_REVIEW", "PENDING_DEVELOPER_RELEASE"] }
-        filter[:platform] = platform if platform
-
-        versions = ::Spaceship::ConnectAPI.get_app_store_versions(app_id: self.id, filter: filter).select do |v|
-          begin
-            Gem::Version.new(v.version_string)
-            true
-          rescue ArgumentError
-            Fastlane::UI.important("Skipping malformed version: #{v.version_string}")
-            false
-          end
-        end
-
-        versions.sort_by { |v| Gem::Version.new(v.version_string) }.last
-      end
-    end
-  end
-end
-
 default_platform(:ios)
 
 platform :ios do
@@ -315,7 +282,16 @@ platform :ios do
         UI.important("Could not cancel existing submission: #{e.message}")
       end
 
-      edit_version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+      begin
+        edit_version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+      rescue ArgumentError => e
+        raise unless e.message.include?("Malformed version number string")
+        UI.important("Encountered malformed version on ASC, fetching with fallback...")
+        edit_states = ["PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED", "WAITING_FOR_REVIEW", "INVALID_BINARY", "IN_REVIEW", "PENDING_DEVELOPER_RELEASE"]
+        all_versions = Spaceship::ConnectAPI.get_app_store_versions(app_id: app.id, filter: { appStoreState: edit_states, platform: Spaceship::ConnectAPI::Platform::IOS })
+        valid_versions = all_versions.select { |v| v.version_string.match?(/\A\d+(\.\d+)*\z/) }
+        edit_version = valid_versions.sort_by { |v| Gem::Version.new(v.version_string) }.last
+      end
 
       # Get metadata from the live (published) version as fallback for any missing fields
       live_version = app.get_live_app_store_version
@@ -462,7 +438,16 @@ platform :ios do
     end
 
     # Get the editable App Store version (or create one)
-    edit_version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+    begin
+      edit_version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+    rescue ArgumentError => e
+      raise unless e.message.include?("Malformed version number string")
+      UI.important("Encountered malformed version on ASC, fetching with fallback...")
+      edit_states = ["PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED", "WAITING_FOR_REVIEW", "INVALID_BINARY", "IN_REVIEW", "PENDING_DEVELOPER_RELEASE"]
+      all_versions = Spaceship::ConnectAPI.get_app_store_versions(app_id: app.id, filter: { appStoreState: edit_states, platform: Spaceship::ConnectAPI::Platform::IOS })
+      valid_versions = all_versions.select { |v| v.version_string.match?(/\A\d+(\.\d+)*\z/) }
+      edit_version = valid_versions.sort_by { |v| Gem::Version.new(v.version_string) }.last
+    end
     unless edit_version
       UI.important("No editable version found, creating version #{current_version}...")
       edit_version = app.create_version!(
