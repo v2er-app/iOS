@@ -14,13 +14,13 @@ struct TagDetailPlaceholder: View {
         #else
         let screenHeight: CGFloat = 900
         #endif
-        let bannerHeight: CGFloat = 260
+        let bannerHeight: CGFloat = 300
         let cardHeight: CGFloat = 130
         return max(2, Int(ceil((screenHeight - bannerHeight) / cardHeight)))
     }
 
     var body: some View {
-        // Banner
+        // Banner — with favorite button and icon stats
         VStack(spacing: Spacing.md) {
             Color.clear.frame(height: 34)
             Circle()
@@ -30,13 +30,24 @@ struct TagDetailPlaceholder: View {
                 .font(.title3.weight(.bold))
             Text("A brief description of this node topic")
                 .font(.subheadline)
+                .lineLimit(3)
                 .foregroundColor(.white.opacity(0.8))
-            HStack(spacing: Spacing.sm) {
-                Text("128 topics")
-                Text("64 favorites")
+            HStack(spacing: Spacing.lg) {
+                Label("128 个主题", systemImage: "text.bubble.fill")
+                Label("64 个收藏", systemImage: "star.fill")
             }
             .font(.subheadline)
             .foregroundColor(.white.opacity(0.7))
+            // Favorite button placeholder
+            HStack(spacing: Spacing.xs) {
+                Image(systemName: "star")
+                    .font(.subheadline)
+                Text("收藏")
+                    .font(.subheadline.weight(.medium))
+            }
+            .padding(.horizontal, Spacing.xl)
+            .padding(.vertical, Spacing.xs + 2)
+            .background(Capsule().stroke(.white.opacity(0.8), lineWidth: 1))
             .padding(.bottom, Spacing.lg)
         }
         .foregroundColor(.white)
@@ -44,7 +55,13 @@ struct TagDetailPlaceholder: View {
         .listRowSeparator(.hidden)
         .listRowBackground(Color.black)
 
-        // Topic cards
+        // Section header
+        SectionTitleView("最新主题", style: .small)
+            .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color(.systemGroupedBackground))
+
+        // Topic cards — with reply count in header
         ForEach(0..<itemCount, id: \.self) { _ in
             topicPlaceholder
                 .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
@@ -71,6 +88,13 @@ struct TagDetailPlaceholder: View {
                         .greedyWidth(.leading)
                 }
                 Spacer()
+                HStack(spacing: Spacing.xxs) {
+                    Image(systemName: "bubble.right")
+                        .font(AppFont.metadata)
+                    Text("8")
+                        .font(AppFont.metadata)
+                }
+                .foregroundColor(.secondaryText)
             }
             Text("Placeholder title for a topic card that fills width")
                 .font(.subheadline.weight(.medium))
@@ -79,14 +103,6 @@ struct TagDetailPlaceholder: View {
                 .lineLimit(2)
                 .padding(.top, Spacing.sm - 2)
                 .padding(.vertical, Spacing.xs)
-            HStack(spacing: Spacing.xxs) {
-                Spacer()
-                Image(systemName: "bubble.right")
-                    .font(AppFont.metadata)
-                Text("8")
-                    .font(AppFont.metadata)
-            }
-            .foregroundColor(.secondaryText)
         }
         .padding(Spacing.md)
         .background(Color(.secondarySystemGroupedBackground))

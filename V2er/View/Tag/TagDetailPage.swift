@@ -14,6 +14,7 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     @Environment(\.isPresented) private var isPresented
     @ObservedObject private var store = Store.shared
     @State private var isLoadingMore = false
+    @State private var showFullDescription = false
     var instanceId: String {
         tagId ?? .default
     }
@@ -33,13 +34,16 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
     private let heightOfNodeImage = 60.0
     @State private var bannerViewHeight: CGFloat = 0
     @State private var dominantColor: Color = .black
+    @State private var navbarVisible = false
+
+    private let navShowThreshold: CGFloat = -60
+    private let navHideThreshold: CGFloat = -84
 
     var tag: String?
     var tagId: String?
 
     private var shouldHideNavbar: Bool {
-        guard bannerViewHeight > 0 else { return true }
-        return scrollY < bannerViewHeight - heightOfNodeImage
+        !navbarVisible
     }
 
     #if os(iOS)
@@ -94,8 +98,16 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
 
+                // Section header
+                if !model.topics.isEmpty {
+                    SectionTitleView("最新主题", style: .small)
+                        .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color(.systemGroupedBackground))
+                }
+
                 // Node List Section - Each item as separate List row to prevent multiple NavigationLinks triggering
-                ForEach(model.topics) { item in
+                ForEach(Array(model.topics.enumerated()), id: \.element.id) { index, item in
                     TagFeedItemView(data: item)
                         .cardScrollTransition()
                         .background {
@@ -105,6 +117,11 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                         .listRowInsets(EdgeInsets(top: Spacing.xs, leading: Spacing.sm, bottom: Spacing.xs, trailing: Spacing.sm))
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color(.systemGroupedBackground))
+                        .onAppear {
+                            if index == model.topics.count - 3 {
+                                triggerLoadMore()
+                            }
+                        }
                 }
 
                 // Load More Indicator
@@ -120,25 +137,19 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color(.systemGroupedBackground))
-                    .onAppear {
-                        guard !isLoadingMore else { return }
-                        isLoadingMore = true
-                        Task {
-                            await run(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, willLoadPage: state.willLoadPage))
-                            await MainActor.run {
-                                isLoadingMore = false
-                            }
-                        }
-                    }
                 }
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .environment(\.defaultMinListRowHeight, 1)
+            .refreshable {
+                await run(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, willLoadPage: 1))
+            }
             .onScrollGeometryChange(for: CGFloat.self) { geometry in
                 geometry.contentOffset.y
             } action: { _, newValue in
                 self.scrollY = newValue
+                updateNavbarVisibility(scrollOffset: newValue)
             }
             .overlay {
                 if state.showProgressView {
@@ -181,6 +192,34 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             if !isPresented {
                 log("onPageClosed----->")
                 // dispatch(InstanceDestoryAction(target: .userdetail, id: instanceId))
+            }
+        }
+    }
+
+    private func updateNavbarVisibility(scrollOffset: CGFloat) {
+        guard bannerViewHeight > 0 else {
+            if navbarVisible { navbarVisible = false }
+            return
+        }
+        let relativeOffset = scrollOffset - bannerViewHeight
+        let shouldShow: Bool
+        if navbarVisible {
+            shouldShow = relativeOffset > (bannerViewHeight + navHideThreshold)
+        } else {
+            shouldShow = relativeOffset > (bannerViewHeight + navShowThreshold)
+        }
+        if shouldShow != navbarVisible {
+            navbarVisible = shouldShow
+        }
+    }
+
+    private func triggerLoadMore() {
+        guard state.hasMoreData, !isLoadingMore else { return }
+        isLoadingMore = true
+        Task {
+            await run(action: TagDetailActions.LoadMore.Start(id: instanceId, tagId: tagId, willLoadPage: state.willLoadPage))
+            await MainActor.run {
+                isLoadingMore = false
             }
         }
     }
@@ -237,19 +276,46 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
             AvatarView(url: model.tagImage, size: heightOfNodeImage)
             Text(model.tagName)
                 .font(.title3.weight(.bold))
-            Text(model.tagDesc)
-                .font(.subheadline)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, Spacing.lg)
-                .foregroundColor(.white.opacity(0.8))
-            HStack(spacing: Spacing.sm) {
-                Text("\(model.topicsCount)个主题")
-                Circle()
-                    .frame(width: 3, height: 3)
-                Text("\(model.countOfStaredPeople)个收藏")
+            Group {
+                Text(model.tagDesc)
+                    .lineLimit(showFullDescription ? nil : 3)
+                if model.tagDesc.count > 80 {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            showFullDescription.toggle()
+                        }
+                    } label: {
+                        Text(showFullDescription ? "收起" : "展开")
+                            .font(.caption.weight(.medium))
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            .font(.subheadline)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, Spacing.lg)
+            .foregroundColor(.white.opacity(0.8))
+            HStack(spacing: Spacing.lg) {
+                Label("\(model.topicsCount) 个主题", systemImage: "text.bubble.fill")
+                Label("\(model.countOfStaredPeople) 个收藏", systemImage: "star.fill")
             }
             .font(.subheadline)
             .foregroundColor(.white.opacity(0.7))
+            Button {
+                guard let tagId = tagId else { return }
+                dispatch(TagDetailActions.StarNode(id: tagId))
+            } label: {
+                HStack(spacing: Spacing.xs) {
+                    Image(systemName: state.model.hasStared ? "star.fill" : "star")
+                        .font(.subheadline)
+                    Text(state.model.hasStared ? "已收藏" : "收藏")
+                        .font(.subheadline.weight(.medium))
+                }
+                .padding(.horizontal, Spacing.xl)
+                .padding(.vertical, Spacing.xs + 2)
+                .background(Capsule().stroke(.white.opacity(0.8), lineWidth: 1))
+            }
+            .disabled(tagId == nil)
             .padding(.bottom, Spacing.lg)
         }
         .foregroundColor(.white)
@@ -282,6 +348,15 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                             .greedyWidth(.leading)
                     }
                     Spacer()
+                    if !data.replyCount.isEmpty && data.replyCount != "0" {
+                        HStack(spacing: Spacing.xxs) {
+                            Image(systemName: "bubble.right")
+                                .font(AppFont.metadata)
+                            Text(data.replyCount)
+                                .font(AppFont.metadata)
+                        }
+                        .foregroundColor(.secondaryText)
+                    }
                 }
                 Text(data.title)
                     .font(.subheadline.weight(.medium))
@@ -290,14 +365,6 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
                     .lineLimit(2)
                     .padding(.top, Spacing.sm - 2)
                     .padding(.vertical, Spacing.xs)
-                HStack(spacing: Spacing.xxs) {
-                    Spacer()
-                    Image(systemName: "bubble.right")
-                        .font(AppFont.metadata)
-                    Text(data.replyCount)
-                        .font(AppFont.metadata)
-                }
-                .foregroundColor(.secondaryText)
             }
             .padding(Spacing.md)
             .background(Color(.secondarySystemGroupedBackground))
