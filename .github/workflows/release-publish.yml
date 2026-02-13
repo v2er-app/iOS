@@ -48,65 +48,9 @@ jobs:
           fi
           echo "Branch verified: main"
 
-  validate-secrets:
-    name: Validate Required Secrets
-    needs: branch-guard
-    runs-on: ubuntu-latest
-
-    outputs:
-      secrets_valid: ${{ steps.check.outputs.secrets_valid }}
-
-    steps:
-      - name: Check required secrets
-        id: check
-        env:
-          HAS_DEPLOY_KEY: ${{ secrets.ORG_DEPLOY_KEY != '' }}
-          HAS_MATCH_PASSWORD: ${{ secrets.ORG_MATCH_PASSWORD != '' }}
-          HAS_MATCH_GIT_URL: ${{ secrets.ORG_MATCH_GIT_URL != '' }}
-          HAS_TEAM_ID: ${{ secrets.ORG_TEAM_ID != '' }}
-          HAS_ASC_KEY_ID: ${{ secrets.ORG_APP_STORE_CONNECT_KEY_ID != '' }}
-          HAS_ASC_ISSUER_ID: ${{ secrets.ORG_APP_STORE_CONNECT_ISSUER_ID != '' }}
-          HAS_ASC_API_KEY: ${{ secrets.ORG_APP_STORE_CONNECT_API_KEY_BASE64 != '' }}
-        run: |
-          echo "Checking required secrets..."
-          ALL_VALID=true
-
-          check_secret() {
-            local name="$1"
-            local value="$2"
-            local required="$3"
-
-            if [ "$value" = "true" ]; then
-              echo "  $name ... present"
-            elif [ "$required" = "true" ]; then
-              echo "::error::Required secret '$name' is missing"
-              ALL_VALID=false
-            else
-              echo "::warning::Optional secret '$name' is missing"
-            fi
-          }
-
-          check_secret "ORG_DEPLOY_KEY" "$HAS_DEPLOY_KEY" "true"
-          check_secret "ORG_MATCH_PASSWORD" "$HAS_MATCH_PASSWORD" "true"
-          check_secret "ORG_MATCH_GIT_URL" "$HAS_MATCH_GIT_URL" "true"
-          check_secret "ORG_TEAM_ID" "$HAS_TEAM_ID" "true"
-          check_secret "ORG_APP_STORE_CONNECT_KEY_ID" "$HAS_ASC_KEY_ID" "true"
-          check_secret "ORG_APP_STORE_CONNECT_ISSUER_ID" "$HAS_ASC_ISSUER_ID" "true"
-          check_secret "ORG_APP_STORE_CONNECT_API_KEY_BASE64" "$HAS_ASC_API_KEY" "true"
-
-          if [ "$ALL_VALID" = "true" ]; then
-            echo "secrets_valid=true" >> $GITHUB_OUTPUT
-            echo "All required secrets are configured"
-          else
-            echo "secrets_valid=false" >> $GITHUB_OUTPUT
-            echo "::error::Some required secrets are missing. Please configure them in repository settings."
-            exit 1
-          fi
-
   version-check:
     name: Check Version and Create Tag
-    needs: validate-secrets
-    if: needs.validate-secrets.outputs.secrets_valid == 'true'
+    needs: branch-guard
     runs-on: ubuntu-latest
 
     outputs:
