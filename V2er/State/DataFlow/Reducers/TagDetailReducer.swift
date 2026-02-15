@@ -39,6 +39,16 @@ func tagDetailStateReducer(_ states: TagDetailStates, _ action: Action) -> (TagD
             } else {
                 // failed
             }
+        case let action as TagDetailActions.InjectActionMetadata:
+            let html = action.htmlInfo
+            // Merge star-related metadata from HTML
+            state.model.starLink = html.starLink
+            state.model.hasStared = html.hasStared
+            // Update totalPage if HTML has more accurate pagination
+            if html.totalPage > state.model.totalPage {
+                state.model.totalPage = html.totalPage
+                state.hasMoreData = state.willLoadPage <= html.totalPage
+            }
         case let action as TagDetailActions.StarNodeDone:
             if action.success {
                 Toast.show(action.originalStared ? "取消成功" : "收藏成功")
@@ -67,9 +77,65 @@ struct TagDetailActions {
             var autoLoad: Bool = false
 
             func execute(in store: Store) async {
-                let result: APIResult<TagDetailInfo> = await APIService.shared
-                    .htmlGet(endpoint: .tagDetail(tagId: tagId ?? .default), ["p" : willLoadPage.string])
-                dispatch(LoadMore.Done(id: id, result: result))
+                let nodeName = tagId ?? .default
+
+                guard SettingState.getV2exAccessToken() != nil else {
+                    // No token — fallback to HTML
+                    let result: APIResult<TagDetailInfo> = await APIService.shared
+                        .htmlGet(endpoint: .tagDetail(tagId: nodeName), ["p": willLoadPage.string])
+                    dispatch(LoadMore.Done(id: id, result: result))
+                    return
+                }
+
+                if willLoadPage == 1 {
+                    // Phase 1: Fetch node info + topics concurrently
+                    async let nodeResult: APIResult<V2Response<V2NodeDetail>> = APIService.shared
+                        .v2ApiGet(path: "nodes/\(nodeName)")
+                    async let topicsResult: APIResult<V2Response<[V2TopicDetail]>> = APIService.shared
+                        .v2ApiGet(path: "nodes/\(nodeName)/topics", params: ["p": "1"])
+                    let (nodeRes, topicsRes) = await (nodeResult, topicsResult)
+
+                    if case let .success(nodeResp) = nodeRes,
+                       let nodeResp = nodeResp, nodeResp.success,
+                       case let .success(topicsResp) = topicsRes,
+                       let topicsResp = topicsResp, topicsResp.success {
+                        let tagDetailInfo = V2APIAdapter.buildTagDetailInfo(
+                            node: nodeResp, topics: topicsResp, page: 1
+                        )
+                        dispatch(LoadMore.Done(id: id, result: .success(tagDetailInfo)))
+
+                        // Phase 2: Background HTML for star metadata
+                        let htmlResult: APIResult<TagDetailInfo> = await APIService.shared
+                            .htmlGet(endpoint: .tagDetail(tagId: nodeName), ["p": "1"])
+                        if case let .success(htmlInfo) = htmlResult, let htmlInfo = htmlInfo {
+                            dispatch(InjectActionMetadata(id: id, htmlInfo: htmlInfo))
+                        }
+                    } else {
+                        // API failed — fallback to HTML
+                        let result: APIResult<TagDetailInfo> = await APIService.shared
+                            .htmlGet(endpoint: .tagDetail(tagId: nodeName), ["p": "1"])
+                        dispatch(LoadMore.Done(id: id, result: result))
+                    }
+                } else {
+                    // Pages 2+: Only fetch topics
+                    let topicsResult: APIResult<V2Response<[V2TopicDetail]>> = await APIService.shared
+                        .v2ApiGet(path: "nodes/\(nodeName)/topics", params: ["p": "\(willLoadPage)"])
+
+                    if case let .success(topicsResp) = topicsResult,
+                       let topicsResp = topicsResp, topicsResp.success {
+                        let state = store.appState.tagDetailStates[id]
+                        let totalPage = state?.model.totalPage ?? 1
+                        let tagDetailInfo = V2APIAdapter.buildTagDetailTopics(
+                            from: topicsResp, totalPage: totalPage
+                        )
+                        dispatch(LoadMore.Done(id: id, result: .success(tagDetailInfo)))
+                    } else {
+                        // API failed — fallback to HTML
+                        let result: APIResult<TagDetailInfo> = await APIService.shared
+                            .htmlGet(endpoint: .tagDetail(tagId: nodeName), ["p": willLoadPage.string])
+                        dispatch(LoadMore.Done(id: id, result: result))
+                    }
+                }
             }
         }
 
@@ -78,6 +144,12 @@ struct TagDetailActions {
             var id: String
             let result: APIResult<TagDetailInfo>
         }
+    }
+
+    struct InjectActionMetadata: Action {
+        var target: Reducer = R
+        var id: String
+        let htmlInfo: TagDetailInfo
     }
 
     struct StarNode: AwaitAction {

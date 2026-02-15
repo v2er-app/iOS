@@ -46,6 +46,24 @@ struct V2NodeBrief: Decodable {
     let url: String?
 }
 
+struct V2NodeDetail: Decodable {
+    let id: Int
+    let name: String
+    let title: String?
+    let url: String?
+    let topics: Int?
+    let stars: Int?
+    let header: String?
+    let footer: String?
+    let titleAlternative: String?
+    let avatarLarge: String?
+    let avatarNormal: String?
+    let avatarMini: String?
+    let root: Bool?
+    let parentNodeName: String?
+    let aliases: [String]?
+}
+
 struct V2NotificationDetail: Decodable {
     let id: Int
     let memberID: Int?

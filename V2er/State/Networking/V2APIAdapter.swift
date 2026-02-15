@@ -95,6 +95,59 @@ enum V2APIAdapter {
         return replyInfo
     }
 
+    // MARK: - Node Detail
+
+    static func buildTagDetailInfo(
+        node: V2Response<V2NodeDetail>,
+        topics: V2Response<[V2TopicDetail]>,
+        page: Int
+    ) -> TagDetailInfo {
+        let n = node.result
+        let topicsCount = n.topics ?? 0
+        let pageSize = 20
+        let totalPage = max((topicsCount + pageSize - 1) / pageSize, 1)
+
+        var info = TagDetailInfo()
+        info.tagName = n.title ?? n.name
+        info.tagDesc = stripHtmlTags(n.header ?? "")
+        info.tagId = n.name
+        info.tagImage = parseAvatar(n.avatarLarge ?? n.avatarNormal ?? "")
+        info.countOfStaredPeople = n.stars.map { "\($0)" } ?? ""
+        info.topicsCount = "\(topicsCount)"
+        info.totalPage = totalPage
+        info.topics = buildTagTopicItems(from: topics.result)
+        return info
+    }
+
+    static func buildTagDetailTopics(
+        from topics: V2Response<[V2TopicDetail]>,
+        totalPage: Int
+    ) -> TagDetailInfo {
+        var info = TagDetailInfo()
+        info.totalPage = totalPage
+        info.topics = buildTagTopicItems(from: topics.result)
+        return info
+    }
+
+    private static func buildTagTopicItems(from topics: [V2TopicDetail]) -> [TagDetailInfo.Item] {
+        topics.map { topic in
+            var item = TagDetailInfo.Item()
+            item.id = "\(topic.id)"
+            item.title = topic.title ?? ""
+            item.userName = topic.member?.username ?? ""
+            item.avatar = parseAvatar(topic.member?.avatarNormal ?? topic.member?.avatar ?? "")
+            item.replyCount = topic.replies.map { "\($0)" } ?? ""
+            // Build "time • lastReplier" string similar to HTML version
+            let time = formatTimestamp(topic.created)
+            if let replier = topic.lastReplyBy, replier.notEmpty() {
+                item.timeAndReplier = "\(time) • \(replier)"
+            } else {
+                item.timeAndReplier = time
+            }
+            return item
+        }
+    }
+
     // MARK: - Notifications
 
     static func buildMessageInfo(
