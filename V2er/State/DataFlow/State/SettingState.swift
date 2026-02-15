@@ -86,7 +86,9 @@ struct SettingState: FluxState {
         guard status == errSecSuccess,
               let data = result as? Data,
               let token = String(data: data, encoding: .utf8),
-              !token.isEmpty else { return nil }
+              !token.isEmpty else {
+            return nil
+        }
         return token
     }
 

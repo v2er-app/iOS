@@ -89,17 +89,16 @@ struct APIService {
 
         do {
             let (data, response) = try await session.data(for: request)
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
-                log("V2 API error: HTTP \(httpResponse.statusCode)")
-                return .failure(.networkError("API 请求失败: HTTP \(httpResponse.statusCode)"))
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode != 200 {
+                    return .failure(.networkError("API 请求失败: HTTP \(httpResponse.statusCode)"))
+                }
             }
             let decoded = try v2JsonDecoder.decode(T.self, from: data)
             return .success(decoded)
-        } catch let error as DecodingError {
-            log("V2 API decode error: \(error)")
+        } catch is DecodingError {
             return .failure(.decodingError())
         } catch {
-            log("V2 API network error: \(error)")
             return .failure(.networkError())
         }
     }
