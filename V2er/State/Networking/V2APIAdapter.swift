@@ -95,6 +95,24 @@ enum V2APIAdapter {
         return replyInfo
     }
 
+    // MARK: - Member Profile (Self Only)
+
+    static func buildUserDetailInfo(
+        from response: V2Response<V2MemberDetail>
+    ) -> UserDetailInfo {
+        let m = response.result
+        var info = UserDetailInfo()
+        info.userName = m.username ?? ""
+        info.avatar = parseAvatar(m.avatarLarge ?? m.avatarNormal ?? m.avatar ?? "")
+        // Build description from tagline and bio
+        if let tagline = m.tagline, tagline.notEmpty() {
+            info.desc = tagline
+        } else if let bio = m.bio, bio.notEmpty() {
+            info.desc = bio
+        }
+        return info
+    }
+
     // MARK: - Node Detail
 
     static func buildTagDetailInfo(

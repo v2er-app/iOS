@@ -64,6 +64,26 @@ struct V2NodeDetail: Decodable {
     let aliases: [String]?
 }
 
+struct V2MemberDetail: Decodable {
+    let id: Int
+    let username: String?
+    let url: String?
+    let website: String?
+    let twitter: String?
+    let psn: String?
+    let github: String?
+    let btc: String?
+    let location: String?
+    let tagline: String?
+    let bio: String?
+    let avatar: String?
+    let avatarMini: String?
+    let avatarNormal: String?
+    let avatarLarge: String?
+    let created: Int?
+    let lastModified: Int?
+}
+
 struct V2NotificationDetail: Decodable {
     let id: Int
     let memberID: Int?
