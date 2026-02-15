@@ -13,6 +13,7 @@ struct MessageState: FluxState {
     var hasLoadedOnce = false
     var updatableState: UpdatableState = UpdatableState()
     var model = MessageInfo()
+    var dataSource: DataSource? = nil
 }
 
 struct MessageInfo: BaseModel {
@@ -21,13 +22,15 @@ struct MessageInfo: BaseModel {
 
     struct Item: HtmlItemModel {
         var id: String = UUID().uuidString
-        var feedId: String
+        var feedId: String = .default
         var username: String = .default
         var avatar: String = .default
         var title: String = .default
         var link: String = .default
         var content: String = .default
         var time: String = .default
+
+        init() {}
 
         init?(from html: Element?) {
             guard let root = html else { return nil }

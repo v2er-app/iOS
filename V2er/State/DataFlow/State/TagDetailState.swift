@@ -17,6 +17,7 @@ struct TagDetailState: FluxState {
     var willLoadPage = 1
     var hasMoreData = true
     var model: TagDetailInfo = TagDetailInfo()
+    var dataSource: DataSource? = nil
 }
 
 typealias TagDetailStates = [String : TagDetailState]

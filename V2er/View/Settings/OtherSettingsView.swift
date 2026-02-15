@@ -33,6 +33,10 @@ struct OtherSettingsView: View {
         store.appState.settingState.useBuiltinBrowser
     }
 
+    private var showDataSourceIndicator: Bool {
+        store.appState.settingState.showDataSourceIndicator
+    }
+
     var body: some View {
         List {
             // MARK: - Checkin Section
@@ -106,8 +110,15 @@ struct OtherSettingsView: View {
                 Text("清除图片缓存可释放存储空间")
             }
 
-            // MARK: - V2EX API Section
+            // MARK: - Advanced Section
             Section {
+                Toggle("数据来源指示器", isOn: Binding(
+                    get: { showDataSourceIndicator },
+                    set: { newValue in
+                        dispatch(SettingActions.ToggleDataSourceIndicatorAction(enabled: newValue))
+                    }
+                ))
+
                 HStack {
                     SecureField("输入 Personal Access Token", text: $v2exAccessToken)
                         #if os(iOS)
@@ -126,14 +137,7 @@ struct OtherSettingsView: View {
                     }
                     .buttonStyle(.plain)
                 }
-            } header: {
-                Text("V2EX API")
-            } footer: {
-                Text("配置后将通过官方 API 加载帖子详情，速度更快更稳定")
-            }
 
-            // MARK: - Imgur Section
-            Section {
                 HStack {
                     TextField("使用内置 Client ID", text: $imgurClientId)
                         #if os(iOS)
@@ -153,9 +157,9 @@ struct OtherSettingsView: View {
                     .buttonStyle(.plain)
                 }
             } header: {
-                Text("Imgur Client ID")
+                Text("高级设置")
             } footer: {
-                Text("用于图片上传，留空则使用内置公共 ID")
+                Text("开启数据来源指示器后，已迁移的页面会显示当前数据来源（API v2 或 HTML）。Access Token 用于通过 V2EX 官方 API 加载内容。Imgur Client ID 用于图片上传，留空则使用内置公共 ID。")
             }
         }
         .navigationTitle("通用设置")

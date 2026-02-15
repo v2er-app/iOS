@@ -34,6 +34,11 @@ struct MessagePage: BaseHomePageView {
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
             #endif
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    DataSourceBadge(dataSource: state.dataSource)
+                }
+            }
             .onAppear {
                 if !state.hasLoadedOnce {
                     dispatch(MessageActions.FetchStart(autoLoad: true))

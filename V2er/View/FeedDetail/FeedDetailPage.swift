@@ -258,7 +258,10 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 .animation(.easeInOut(duration: 0.2), value: showNavTitle)
             }
             ToolbarItem(placement: .automatic) {
-                moreMenu
+                HStack(spacing: Spacing.xs) {
+                    DataSourceBadge(dataSource: state.dataSource)
+                    moreMenu
+                }
             }
         }
         .onChange(of: state.ignored) { ignored in

@@ -15,6 +15,7 @@ struct UserDetailState: FluxState {
     var hasLoadedOnce = false
     var showProgressView = false
     var model = UserDetailInfo()
+    var dataSource: DataSource? = nil
 }
 
 typealias UserDetailStates=[String : UserDetailState]

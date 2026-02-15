@@ -18,16 +18,52 @@ struct UserDetailActions {
             var autoLoad: Bool = false
 
             func execute(in store: Store) async {
-                let result: APIResult<UserDetailInfo> = await APIService.shared
-                    .htmlGet(endpoint: .userPage(userName: id ?? .default))
-                dispatch(FetchData.Done(id: id, result: result))
+                let userName = id ?? .default
+
+                // API v2 GET member only works for self
+                guard AccountState.isSelf(userName: userName),
+                      SettingState.getV2exAccessToken() != nil else {
+                    let result: APIResult<UserDetailInfo> = await APIService.shared
+                        .htmlGet(endpoint: .userPage(userName: userName))
+                    dispatch(FetchData.Done(id: id, result: result))
+                    return
+                }
+
+                // Phase 1: Fetch own profile via V2 API
+                let apiResult: APIResult<V2Response<V2MemberDetail>> = await APIService.shared
+                    .v2ApiGet(path: "member")
+
+                if case let .success(response) = apiResult,
+                   let response = response, response.success {
+                    let userDetailInfo = V2APIAdapter.buildUserDetailInfo(from: response)
+                    dispatch(FetchData.Done(id: id, source: .apiV2, result: .success(userDetailInfo)))
+
+                    // Phase 2: Background HTML for topics, replies, and action metadata
+                    let htmlResult: APIResult<UserDetailInfo> = await APIService.shared
+                        .htmlGet(endpoint: .userPage(userName: userName))
+                    if case let .success(htmlInfo) = htmlResult, let htmlInfo = htmlInfo {
+                        dispatch(InjectHtmlData(id: id, htmlInfo: htmlInfo))
+                    }
+                } else {
+                    // API failed — fallback to HTML
+                    let result: APIResult<UserDetailInfo> = await APIService.shared
+                        .htmlGet(endpoint: .userPage(userName: userName))
+                    dispatch(FetchData.Done(id: id, result: result))
+                }
             }
         }
 
         struct Done: Action {
             var target: Reducer = R
             var id: String
+            var source: DataSource = .html
             let result: APIResult<UserDetailInfo>
+        }
+
+        struct InjectHtmlData: Action {
+            var target: Reducer = R
+            var id: String
+            let htmlInfo: UserDetailInfo
         }
     }
 

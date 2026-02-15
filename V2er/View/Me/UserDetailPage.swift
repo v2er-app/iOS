@@ -242,6 +242,8 @@ struct UserDetailPage: StateView {
 
             Spacer()
 
+            DataSourceBadge(dataSource: state.dataSource)
+
             if !isSelf() {
                 Menu {
                     Button {

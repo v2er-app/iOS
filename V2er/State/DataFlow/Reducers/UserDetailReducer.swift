@@ -27,8 +27,23 @@ func userDetailReducer(_ states: UserDetailStates, _ action: Action) -> (UserDet
             state.showProgressView = false
             if case let .success(result) = action.result {
                 state.model = result!
+                state.dataSource = action.source
             } else {
                 // load failed
+            }
+        case let action as UserDetailActions.FetchData.InjectHtmlData:
+            let html = action.htmlInfo
+            // Merge full HTML data into API-sourced model
+            state.model.isOnline = html.isOnline
+            state.model.topicInfo = html.topicInfo
+            state.model.replyInfo = html.replyInfo
+            state.model.hasFollowed = html.hasFollowed
+            state.model.followUrl = html.followUrl
+            state.model.hasBlocked = html.hasBlocked
+            state.model.blockUrl = html.blockUrl
+            // Update desc if HTML has richer content
+            if html.desc.notEmpty() && state.model.desc.isEmpty {
+                state.model.desc = html.desc
             }
         case let action as OnAppearChangeAction:
             // FIXME: consider multi instances

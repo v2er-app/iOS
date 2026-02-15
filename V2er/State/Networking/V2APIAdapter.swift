@@ -95,6 +95,120 @@ enum V2APIAdapter {
         return replyInfo
     }
 
+    // MARK: - Member Profile (Self Only)
+
+    static func buildUserDetailInfo(
+        from response: V2Response<V2MemberDetail>
+    ) -> UserDetailInfo {
+        let m = response.result
+        var info = UserDetailInfo()
+        info.userName = m.username ?? ""
+        info.avatar = parseAvatar(m.avatarLarge ?? m.avatarNormal ?? m.avatar ?? "")
+        // Build description from tagline and bio
+        if let tagline = m.tagline, tagline.notEmpty() {
+            info.desc = tagline
+        } else if let bio = m.bio, bio.notEmpty() {
+            info.desc = bio
+        }
+        return info
+    }
+
+    // MARK: - Node Detail
+
+    static func buildTagDetailInfo(
+        node: V2Response<V2NodeDetail>,
+        topics: V2Response<[V2TopicDetail]>,
+        page: Int
+    ) -> TagDetailInfo {
+        let n = node.result
+        let topicsCount = n.topics ?? 0
+        let pageSize = 20
+        let totalPage = max((topicsCount + pageSize - 1) / pageSize, 1)
+
+        var info = TagDetailInfo()
+        info.tagName = n.title ?? n.name
+        info.tagDesc = stripHtmlTags(n.header ?? "")
+        info.tagId = n.name
+        info.tagImage = parseAvatar(n.avatarLarge ?? n.avatarNormal ?? "")
+        info.countOfStaredPeople = n.stars.map { "\($0)" } ?? ""
+        info.topicsCount = "\(topicsCount)"
+        info.totalPage = totalPage
+        info.topics = buildTagTopicItems(from: topics.result)
+        return info
+    }
+
+    static func buildTagDetailTopics(
+        from topics: V2Response<[V2TopicDetail]>,
+        totalPage: Int
+    ) -> TagDetailInfo {
+        var info = TagDetailInfo()
+        info.totalPage = totalPage
+        info.topics = buildTagTopicItems(from: topics.result)
+        return info
+    }
+
+    private static func buildTagTopicItems(from topics: [V2TopicDetail]) -> [TagDetailInfo.Item] {
+        topics.map { topic in
+            var item = TagDetailInfo.Item()
+            item.id = "\(topic.id)"
+            item.title = topic.title ?? ""
+            item.userName = topic.member?.username ?? ""
+            item.avatar = parseAvatar(topic.member?.avatarNormal ?? topic.member?.avatar ?? "")
+            item.replyCount = topic.replies.map { "\($0)" } ?? ""
+            // Build "time • lastReplier" string similar to HTML version
+            let time = formatTimestamp(topic.created)
+            if let replier = topic.lastReplyBy, replier.notEmpty() {
+                item.timeAndReplier = "\(time) • \(replier)"
+            } else {
+                item.timeAndReplier = time
+            }
+            return item
+        }
+    }
+
+    // MARK: - Notifications
+
+    static func buildMessageInfo(
+        from response: V2Response<[V2NotificationDetail]>,
+        page: Int
+    ) -> MessageInfo {
+        var info = MessageInfo()
+        // V2 API doesn't return totalPage directly; estimate from result count
+        // If we get a full page (typically 20 items), there might be more
+        let pageSize = 20
+        info.totalPage = response.result.count >= pageSize ? page + 1 : page
+        for notification in response.result {
+            var item = MessageInfo.Item()
+            item.username = notification.member?.username ?? ""
+            item.avatar = parseAvatar(notification.member?.avatarNormal ?? notification.member?.avatar ?? "")
+            item.title = stripHtmlTags(notification.text ?? "")
+            item.content = notification.payloadRendered ?? notification.payload ?? ""
+            item.time = formatTimestamp(notification.created)
+            // Extract topic link from the `text` HTML (contains <a href="/t/xxx">)
+            item.link = extractTopicLink(from: notification.text ?? "")
+            item.feedId = parseFeedId(item.link)
+            info.items.append(item)
+        }
+        return info
+    }
+
+    private static func stripHtmlTags(_ html: String) -> String {
+        guard html.contains("<") else { return html }
+        return html.replacingOccurrences(
+            of: "<[^>]+>",
+            with: "",
+            options: .regularExpression
+        ).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func extractTopicLink(from html: String) -> String {
+        // Look for href="/t/xxxxx" or href="/t/xxxxx#replyN" pattern and capture only the path
+        guard let range = html.range(of: #"(?<=href=\")/t/\d+[^"]*(?=\")"#, options: .regularExpression) else {
+            return ""
+        }
+        return String(html[range])
+    }
+
     private static func formatTimestamp(_ timestamp: Int?) -> String {
         guard let ts = timestamp else { return "" }
         let date = Date(timeIntervalSince1970: TimeInterval(ts))

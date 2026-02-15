@@ -212,6 +212,7 @@
 		934E7EB0FAE32A58AF59CE80 /* UserDetailState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86A055AE5714A1B9A567B757 /* UserDetailState.swift */; };
 		9352F9869526C9786ECF5A01 /* MessageState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56272E71A683FB8F81C991B /* MessageState.swift */; };
 		94EFD91C12B2842AAA5AE383 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248924FD3E33BF3D0899A961 /* Toast.swift */; };
+		DA7A8B1D2F15A3B40012FAC1 /* DataSourceBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7A8B1C2F15A3B40012FACE /* DataSourceBadge.swift */; };
 		9532BFBC7D19CEF327BF8088 /* bootstrap.min.css in Resources */ = {isa = PBXBuildFile; fileRef = 1227FAFAF7BEC84E134A54E2 /* bootstrap.min.css */; };
 		9545CA7F8303533DCC68B8ED /* TypewriterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70ABF5A5C9AC40762D6779C3 /* TypewriterView.swift */; };
 		95CDE5DF8D3DF6D9B5A1BBA0 /* MyFollowPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6920FEC02B30E2630B64F549 /* MyFollowPage.swift */; };
@@ -234,6 +235,7 @@
 		A261FAE82CDC1151A2ED2B1C /* BrowseSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A929553CCF3D8678282DF4 /* BrowseSettingView.swift */; };
 		A421138A89905BCEDE607DB5 /* iPadContentWidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A00D82CE69D9BAA0FD50733 /* iPadContentWidth.swift */; };
 		A421F69A0FE3BE9CC0516B6F /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248924FD3E33BF3D0899A961 /* Toast.swift */; };
+		DA7A8B1E2F15A3B40012FAC2 /* DataSourceBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7A8B1C2F15A3B40012FACE /* DataSourceBadge.swift */; };
 		A4D8E184D3EA738CD405270A /* RichView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28866DF7F12A94DC2786AB0C /* RichView.swift */; };
 		A564ABF7CD7A1717678EF388 /* NewsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCED364965729A81223AB348 /* NewsContentView.swift */; };
 		A61C54F37F95755AAB24EB38 /* RenderStylesheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D7A0D799463374E931B2E5 /* RenderStylesheet.swift */; };
@@ -432,6 +434,7 @@
 		24772F3892EA26EF27186B28 /* iPadTabSplitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadTabSplitView.swift; sourceTree = "<group>"; };
 		24786ACA925448993EC4AE52 /* FeedDetailReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedDetailReducer.swift; sourceTree = "<group>"; };
 		248924FD3E33BF3D0899A961 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
+		DA7A8B1C2F15A3B40012FACE /* DataSourceBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceBadge.swift; sourceTree = "<group>"; };
 		28866DF7F12A94DC2786AB0C /* RichView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichView.swift; sourceTree = "<group>"; };
 		2A57BEF77FBD554FA801F78B /* MarkdownRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownRenderer.swift; sourceTree = "<group>"; };
 		2F0FE5BCE57FD705A5D8E2ED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -866,6 +869,7 @@
 				48C722EDC6E9588AFA10C0DC /* SectionItemView.swift */,
 				4B5730F298D111F47151FB8E /* SectionTitleView.swift */,
 				83E8FD34EEEC1B4A3F946C98 /* SplitNavigationLink.swift */,
+				DA7A8B1C2F15A3B40012FACE /* DataSourceBadge.swift */,
 				248924FD3E33BF3D0899A961 /* Toast.swift */,
 				453C969E13CED7095FF39939 /* VEBlur.swift */,
 			);
@@ -1512,6 +1516,7 @@
 				BC7162F18E3A8B3DD68617BB /* TagDetailState.swift in Sources */,
 				410EDADA1D252AF565A81BAD /* TestView.swift in Sources */,
 				6B4681C9C734EF9AED638191 /* ThxAuthorInfo.swift in Sources */,
+				DA7A8B1E2F15A3B40012FAC2 /* DataSourceBadge.swift in Sources */,
 				A421F69A0FE3BE9CC0516B6F /* Toast.swift in Sources */,
 				CB6616273DC2222FAA867B71 /* TwoStepLoginInfo.swift in Sources */,
 				7DD6D9CFF0659196C5EDED49 /* TwoStepLoginPage.swift in Sources */,
@@ -1683,6 +1688,7 @@
 				0AF5C9B8547523A3BB1BBCE1 /* TagDetailState.swift in Sources */,
 				A05886AD6441C31420CCE0ED /* TestView.swift in Sources */,
 				28D60FC2D6286908383ECDD9 /* ThxAuthorInfo.swift in Sources */,
+				DA7A8B1D2F15A3B40012FAC1 /* DataSourceBadge.swift in Sources */,
 				94EFD91C12B2842AAA5AE383 /* Toast.swift in Sources */,
 				681F110F48525D9DFFF173E3 /* TwoStepLoginInfo.swift in Sources */,
 				B5A44A7F7876A4A2CE60B45C /* TwoStepLoginPage.swift in Sources */,

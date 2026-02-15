@@ -244,6 +244,8 @@ struct TagDetailPage: StateView, InstanceIdentifiable {
 
             Spacer()
 
+            DataSourceBadge(dataSource: state.dataSource)
+
             Button {
                 guard let tagId = tagId else { return }
                 dispatch(TagDetailActions.StarNode(id: tagId))
