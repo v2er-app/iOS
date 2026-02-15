@@ -32,6 +32,7 @@ func tagDetailStateReducer(_ states: TagDetailStates, _ action: Action) -> (TagD
                 state.hasMoreData = state.willLoadPage <= result?.totalPage ?? 1
                 if state.willLoadPage == 2 {
                     state.model = result!
+                    state.dataSource = action.source
                 } else {
                     let newItems = result!.topics
                     state.model.topics.append(contentsOf: newItems)
@@ -102,7 +103,7 @@ struct TagDetailActions {
                         let tagDetailInfo = V2APIAdapter.buildTagDetailInfo(
                             node: nodeResp, topics: topicsResp, page: 1
                         )
-                        dispatch(LoadMore.Done(id: id, result: .success(tagDetailInfo)))
+                        dispatch(LoadMore.Done(id: id, source: .apiV2, result: .success(tagDetailInfo)))
 
                         // Phase 2: Background HTML for star metadata
                         let htmlResult: APIResult<TagDetailInfo> = await APIService.shared
@@ -128,7 +129,7 @@ struct TagDetailActions {
                         let tagDetailInfo = V2APIAdapter.buildTagDetailTopics(
                             from: topicsResp, totalPage: totalPage
                         )
-                        dispatch(LoadMore.Done(id: id, result: .success(tagDetailInfo)))
+                        dispatch(LoadMore.Done(id: id, source: .apiV2, result: .success(tagDetailInfo)))
                     } else {
                         // API failed — fallback to HTML
                         let result: APIResult<TagDetailInfo> = await APIService.shared
@@ -142,6 +143,7 @@ struct TagDetailActions {
         struct Done: Action {
             var target: Reducer = R
             var id: String
+            var source: DataSource = .html
             let result: APIResult<TagDetailInfo>
         }
     }

@@ -42,7 +42,7 @@ struct FeedDetailActions {
                     let feedDetailInfo = V2APIAdapter.buildFeedDetailInfo(
                         topic: topicResp, replies: repliesResp, page: 1
                     )
-                    dispatch(FetchData.Done(id: id, result: .success(feedDetailInfo)))
+                    dispatch(FetchData.Done(id: id, source: .apiV2, result: .success(feedDetailInfo)))
 
                     // Phase 2: Background HTML fetch for action metadata
                     let htmlResult: APIResult<FeedDetailInfo> = await APIService.shared
@@ -62,6 +62,7 @@ struct FeedDetailActions {
         struct Done: Action {
             var target: Reducer = R
             var id: String
+            var source: DataSource = .html
 
             let result: APIResult<FeedDetailInfo>
         }
@@ -102,7 +103,7 @@ struct FeedDetailActions {
                         replies: repliesResp, owner: owner,
                         page: willLoadPage, totalPage: totalPage
                     )
-                    dispatch(LoadMore.Done(id: id, result: .success(feedDetailInfo)))
+                    dispatch(LoadMore.Done(id: id, source: .apiV2, result: .success(feedDetailInfo)))
 
                     // Background: fetch HTML for reply love counts and thank status
                     let htmlResult: APIResult<FeedDetailInfo> = await APIService.shared
@@ -122,6 +123,7 @@ struct FeedDetailActions {
         struct Done: Action {
             var target: Reducer = R
             var id: String
+            var source: DataSource = .html
             let result: APIResult<FeedDetailInfo>
         }
     }

@@ -27,6 +27,7 @@ func userDetailReducer(_ states: UserDetailStates, _ action: Action) -> (UserDet
             state.showProgressView = false
             if case let .success(result) = action.result {
                 state.model = result!
+                state.dataSource = action.source
             } else {
                 // load failed
             }

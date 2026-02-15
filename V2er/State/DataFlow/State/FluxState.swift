@@ -8,6 +8,11 @@
 
 import Foundation
 
+enum DataSource: String {
+    case apiV2 = "API v2"
+    case html = "HTML"
+}
+
 public protocol FluxState{
     mutating func reset()
 }

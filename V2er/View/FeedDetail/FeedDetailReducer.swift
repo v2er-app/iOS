@@ -29,6 +29,7 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
             if case let .success(result) = action.result {
                 state.model = result!
                 state.model.injectId(id)
+                state.dataSource = action.source
                 // Ensure no duplicate replies after initial load
                 state.model.replyInfo.items = state.model.replyInfo.items.uniqued()
                 state.willLoadPage = 2

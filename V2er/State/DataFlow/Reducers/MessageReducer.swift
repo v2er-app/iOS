@@ -29,6 +29,7 @@ func messageStateReducer(_ state: MessageState, _ action: Action) -> (MessageSta
             if case let .success(messageInfo) = action.result {
                 state.model = messageInfo!
                 state.updatableState.willLoadPage = 2
+                state.dataSource = action.source
                 dispatch(FeedActions.ClearMsgBadge(), .default)
             } else {
                 // failed
@@ -77,7 +78,7 @@ struct MessageActions {
             if case let .success(response) = apiResult,
                let response = response, response.success {
                 let messageInfo = V2APIAdapter.buildMessageInfo(from: response, page: 1)
-                dispatch(FetchDone(result: .success(messageInfo)))
+                dispatch(FetchDone(source: .apiV2, result: .success(messageInfo)))
             } else {
                 // API failed — fallback to HTML
                 let result: APIResult<MessageInfo> = await APIService.shared
@@ -89,6 +90,7 @@ struct MessageActions {
 
     struct FetchDone: Action {
         var target: Reducer = R
+        var source: DataSource = .html
         let result: APIResult<MessageInfo>
     }
 
@@ -112,7 +114,7 @@ struct MessageActions {
             if case let .success(response) = apiResult,
                let response = response, response.success {
                 let messageInfo = V2APIAdapter.buildMessageInfo(from: response, page: page)
-                dispatch(LoadMoreDone(result: .success(messageInfo)))
+                dispatch(LoadMoreDone(source: .apiV2, result: .success(messageInfo)))
             } else {
                 let params = ["p": page.string]
                 let result: APIResult<MessageInfo> = await APIService.shared
@@ -124,6 +126,7 @@ struct MessageActions {
 
     struct LoadMoreDone: Action {
         var target: Reducer = R
+        var source: DataSource = .html
         let result: APIResult<MessageInfo>
     }
 

@@ -13,6 +13,7 @@ struct MessageState: FluxState {
     var hasLoadedOnce = false
     var updatableState: UpdatableState = UpdatableState()
     var model = MessageInfo()
+    var dataSource: DataSource? = nil
 }
 
 struct MessageInfo: BaseModel {

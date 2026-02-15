@@ -14,12 +14,14 @@ struct SettingState: FluxState {
     static let imgurClientIdKey = "imgurClientId"
     static let useBuiltinBrowserKey = "useBuiltinBrowser"
     static let v2exAccessTokenKey = "v2exAccessToken"
+    static let showDataSourceIndicatorKey = "showDataSourceIndicator"
 
     var appearance: AppearanceMode = .system
     var autoCheckin: Bool = false
     var imgurClientId: String = ""
     var useBuiltinBrowser: Bool = false
     var v2exAccessToken: String = ""
+    var showDataSourceIndicator: Bool = false
 
     // Checkin state
     var isCheckingIn: Bool = false
@@ -45,6 +47,8 @@ struct SettingState: FluxState {
         self.imgurClientId = UserDefaults.standard.string(forKey: Self.imgurClientIdKey) ?? ""
         // Load builtin browser preference
         self.useBuiltinBrowser = UserDefaults.standard.bool(forKey: Self.useBuiltinBrowserKey)
+        // Load data source indicator preference
+        self.showDataSourceIndicator = UserDefaults.standard.bool(forKey: Self.showDataSourceIndicatorKey)
         // Load V2EX access token from Keychain
         self.v2exAccessToken = Self.getV2exAccessToken() ?? ""
     }
@@ -172,6 +176,11 @@ struct SettingActions {
     }
 
     struct ToggleBuiltinBrowserAction: Action {
+        var target: Reducer = R
+        let enabled: Bool
+    }
+
+    struct ToggleDataSourceIndicatorAction: Action {
         var target: Reducer = R
         let enabled: Bool
     }

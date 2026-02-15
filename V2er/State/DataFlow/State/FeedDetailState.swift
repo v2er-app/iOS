@@ -41,6 +41,7 @@ struct FeedDetailState: FluxState {
     var replyContent: String = .empty
     var replySortType: ReplySortType = .byTime
     var shouldFocusReply: Bool = false
+    var dataSource: DataSource? = nil
 }
 
 typealias FeedDetailStates=[String : FeedDetailState]

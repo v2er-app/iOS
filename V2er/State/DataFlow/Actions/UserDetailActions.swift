@@ -36,7 +36,7 @@ struct UserDetailActions {
                 if case let .success(response) = apiResult,
                    let response = response, response.success {
                     let userDetailInfo = V2APIAdapter.buildUserDetailInfo(from: response)
-                    dispatch(FetchData.Done(id: id, result: .success(userDetailInfo)))
+                    dispatch(FetchData.Done(id: id, source: .apiV2, result: .success(userDetailInfo)))
 
                     // Phase 2: Background HTML for topics, replies, and action metadata
                     let htmlResult: APIResult<UserDetailInfo> = await APIService.shared
@@ -56,6 +56,7 @@ struct UserDetailActions {
         struct Done: Action {
             var target: Reducer = R
             var id: String
+            var source: DataSource = .html
             let result: APIResult<UserDetailInfo>
         }
 
