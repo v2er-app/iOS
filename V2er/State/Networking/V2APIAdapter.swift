@@ -51,7 +51,7 @@ enum V2APIAdapter {
         var header = FeedDetailInfo.HeaderInfo(
             id: "\(topic.id)",
             title: topic.title,
-            avatar: normalizeAvatar(topic.member?.avatarNormal ?? topic.member?.avatar)
+            avatar: parseAvatar(topic.member?.avatarNormal ?? topic.member?.avatar ?? "")
         )
         header.userName = topic.member?.username
         header.replyUpdate = formatTimestamp(topic.created)
@@ -87,23 +87,12 @@ enum V2APIAdapter {
             item.replyId = "r_\(reply.id)"
             item.content = reply.contentRendered ?? reply.content ?? ""
             item.userName = reply.member?.username ?? ""
-            item.avatar = normalizeAvatar(reply.member?.avatarNormal ?? reply.member?.avatar)
+            item.avatar = parseAvatar(reply.member?.avatarNormal ?? reply.member?.avatar ?? "")
             item.time = formatTimestamp(reply.created)
             item.owner = owner
             replyInfo.items.append(item)
         }
         return replyInfo
-    }
-
-    private static func normalizeAvatar(_ url: String?) -> String {
-        guard let url = url, url.notEmpty() else { return "" }
-        if url.hasPrefix("//") {
-            return "https:" + url
-        }
-        if url.hasPrefix("/") {
-            return APIService.baseUrlString + url
-        }
-        return url
     }
 
     private static func formatTimestamp(_ timestamp: Int?) -> String {
