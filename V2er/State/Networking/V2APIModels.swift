@@ -45,3 +45,23 @@ struct V2NodeBrief: Decodable {
     let title: String?
     let url: String?
 }
+
+struct V2NotificationDetail: Decodable {
+    let id: Int
+    let memberID: Int?
+    let forMemberID: Int?
+    let text: String?
+    let payload: String?
+    let payloadRendered: String?
+    let created: Int?
+    let member: V2MemberBrief?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case memberID = "member_id"
+        case forMemberID = "for_member_id"
+        case text, payload
+        case payloadRendered = "payload_rendered"
+        case created, member
+    }
+}

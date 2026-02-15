@@ -95,6 +95,53 @@ enum V2APIAdapter {
         return replyInfo
     }
 
+    // MARK: - Notifications
+
+    static func buildMessageInfo(
+        from response: V2Response<[V2NotificationDetail]>,
+        page: Int
+    ) -> MessageInfo {
+        var info = MessageInfo()
+        // V2 API doesn't return totalPage directly; estimate from result count
+        // If we get a full page (typically 20 items), there might be more
+        let pageSize = 20
+        info.totalPage = response.result.count >= pageSize ? page + 1 : page
+        for notification in response.result {
+            var item = MessageInfo.Item()
+            item.username = notification.member?.username ?? ""
+            item.avatar = parseAvatar(notification.member?.avatarNormal ?? notification.member?.avatar ?? "")
+            item.title = stripHtmlTags(notification.text ?? "")
+            item.content = notification.payloadRendered ?? notification.payload ?? ""
+            item.time = formatTimestamp(notification.created)
+            // Extract topic link from the `text` HTML (contains <a href="/t/xxx">)
+            item.link = extractTopicLink(from: notification.text ?? "")
+            item.feedId = parseFeedId(item.link)
+            info.items.append(item)
+        }
+        return info
+    }
+
+    private static func stripHtmlTags(_ html: String) -> String {
+        guard html.contains("<") else { return html }
+        return html.replacingOccurrences(
+            of: "<[^>]+>",
+            with: "",
+            options: .regularExpression
+        ).trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func extractTopicLink(from html: String) -> String {
+        // Look for href="/t/xxxxx" or href="/t/xxxxx#replyN" pattern
+        guard let range = html.range(of: #"href="(/t/\d+[^"]*)"#, options: .regularExpression) else {
+            return ""
+        }
+        let match = String(html[range])
+        // Extract the path portion between quotes
+        let start = match.index(match.startIndex, offsetBy: 6) // skip href="
+        let end = match.index(before: match.endIndex)           // skip trailing "
+        return String(match[start..<end])
+    }
+
     private static func formatTimestamp(_ timestamp: Int?) -> String {
         guard let ts = timestamp else { return "" }
         let date = Date(timeIntervalSince1970: TimeInterval(ts))
