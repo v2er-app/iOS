@@ -202,15 +202,11 @@ enum V2APIAdapter {
     }
 
     private static func extractTopicLink(from html: String) -> String {
-        // Look for href="/t/xxxxx" or href="/t/xxxxx#replyN" pattern
-        guard let range = html.range(of: #"href="(/t/\d+[^"]*)"#, options: .regularExpression) else {
+        // Look for href="/t/xxxxx" or href="/t/xxxxx#replyN" pattern and capture only the path
+        guard let range = html.range(of: #"(?<=href=\")/t/\d+[^"]*(?=\")"#, options: .regularExpression) else {
             return ""
         }
-        let match = String(html[range])
-        // Extract the path portion between quotes
-        let start = match.index(match.startIndex, offsetBy: 6) // skip href="
-        let end = match.index(before: match.endIndex)           // skip trailing "
-        return String(match[start..<end])
+        return String(html[range])
     }
 
     private static func formatTimestamp(_ timestamp: Int?) -> String {
