@@ -8,15 +8,18 @@
 
 import Foundation
 import SwiftUI
+import Security
 
 struct SettingState: FluxState {
     static let imgurClientIdKey = "imgurClientId"
     static let useBuiltinBrowserKey = "useBuiltinBrowser"
+    static let v2exAccessTokenKey = "v2exAccessToken"
 
     var appearance: AppearanceMode = .system
     var autoCheckin: Bool = false
     var imgurClientId: String = ""
     var useBuiltinBrowser: Bool = false
+    var v2exAccessToken: String = ""
 
     // Checkin state
     var isCheckingIn: Bool = false
@@ -42,6 +45,8 @@ struct SettingState: FluxState {
         self.imgurClientId = UserDefaults.standard.string(forKey: Self.imgurClientIdKey) ?? ""
         // Load builtin browser preference
         self.useBuiltinBrowser = UserDefaults.standard.bool(forKey: Self.useBuiltinBrowserKey)
+        // Load V2EX access token from Keychain
+        self.v2exAccessToken = Self.getV2exAccessToken() ?? ""
     }
 
     static func saveImgurClientId(_ clientId: String) {
@@ -51,6 +56,40 @@ struct SettingState: FluxState {
     static func getImgurClientId() -> String? {
         let clientId = UserDefaults.standard.string(forKey: imgurClientIdKey)
         return (clientId?.isEmpty == false) ? clientId : nil
+    }
+
+    static func saveV2exAccessToken(_ token: String) {
+        let trimmed = token.trimmingCharacters(in: .whitespacesAndNewlines)
+        let data = Data(trimmed.utf8)
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: v2exAccessTokenKey,
+            kSecAttrService as String: "v2er.app"
+        ]
+        SecItemDelete(query as CFDictionary)
+        if trimmed.isEmpty { return }
+        var addQuery = query
+        addQuery[kSecValueData as String] = data
+        SecItemAdd(addQuery as CFDictionary, nil)
+    }
+
+    static func getV2exAccessToken() -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: v2exAccessTokenKey,
+            kSecAttrService as String: "v2er.app",
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        guard status == errSecSuccess,
+              let data = result as? Data,
+              let token = String(data: data, encoding: .utf8),
+              !token.isEmpty else {
+            return nil
+        }
+        return token
     }
 
     /// Check if we should attempt auto-checkin today

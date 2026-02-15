@@ -34,6 +34,44 @@ func feedDetailStateReducer(_ states: FeedDetailStates, _ action: Action) -> (Fe
                 state.willLoadPage = 2
                 state.hasMoreData = state.willLoadPage <= result?.headerInfo?.totalPage ?? 1
             }
+        case let action as FeedDetailActions.FetchData.InjectActionMetadata:
+            let html = action.htmlInfo
+            state.model.once = html.once
+            state.model.reportLink = html.reportLink
+            state.model.hasReported = html.hasReported
+            state.model.fadeStr = html.fadeStr
+            state.model.stickyStr = html.stickyStr
+            if let htmlHeader = html.headerInfo {
+                state.model.headerInfo?.hadStared = htmlHeader.hadStared
+                state.model.headerInfo?.hadThanked = htmlHeader.hadThanked
+                state.model.headerInfo?.isThankable = htmlHeader.isThankable
+                state.model.headerInfo?.favoriteLink = htmlHeader.favoriteLink
+                state.model.headerInfo?.appendText = htmlHeader.appendText
+                // Merge replyUpdate from HTML (contains click/time info not in API)
+                if let htmlReplyUpdate = htmlHeader.replyUpdate, htmlReplyUpdate.notEmpty() {
+                    state.model.headerInfo?.replyUpdate = htmlReplyUpdate
+                }
+                // Update totalPage from HTML if it's more accurate
+                if htmlHeader.totalPage > (state.model.headerInfo?.totalPage ?? 1) {
+                    state.model.headerInfo?.totalPage = htmlHeader.totalPage
+                    state.hasMoreData = state.willLoadPage <= htmlHeader.totalPage
+                }
+            }
+            // Merge reply love counts and thank status from HTML
+            for htmlReply in html.replyInfo.items {
+                if let idx = state.model.replyInfo.items.firstIndex(where: { $0.replyId == htmlReply.replyId }) {
+                    state.model.replyInfo.items[idx].love = htmlReply.love
+                    state.model.replyInfo.items[idx].hadThanked = htmlReply.hadThanked
+                }
+            }
+            // Inject postscripts from HTML (not available via API)
+            if !html.postscripts.isEmpty && state.model.postscripts.isEmpty {
+                state.model.postscripts = html.postscripts
+            }
+            // Inject problem info from HTML (not available via API)
+            if let problem = html.problem, state.model.problem == nil {
+                state.model.problem = problem
+            }
         case let action as FeedDetailActions.LoadMore.Start:
             guard !state.refreshing else { break }
             guard !state.loadingMore else { break }

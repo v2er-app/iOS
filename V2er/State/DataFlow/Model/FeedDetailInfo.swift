@@ -126,6 +126,8 @@ struct FeedDetailInfo: BaseModel {
         var html: String? = .default
         var imgs: [String] = []
 
+        init() {}
+
         init(from doc: Element?) {
             guard let root = doc else { return }
             root.remove(selector: ".header")
@@ -236,6 +238,8 @@ struct FeedDetailInfo: BaseModel {
             func hash(into hasher: inout Hasher) {
                 hasher.combine(floor)
             }
+            init() {}
+
             init(from html: Element?) {
                 self.init(from: html, owner: .empty)
             }

@@ -19,9 +19,43 @@ struct FeedDetailActions {
             var autoLoad: Bool = false
 
             func execute(in store: Store) async {
-                let result: APIResult<FeedDetailInfo> = await APIService.shared
-                    .htmlGet(endpoint: .topic(id: feedId ?? .default), ["p": 1.string])
-                dispatch(FetchData.Done(id: id, result: result))
+                let topicId = feedId ?? .default
+
+                guard SettingState.getV2exAccessToken() != nil else {
+                    let result: APIResult<FeedDetailInfo> = await APIService.shared
+                        .htmlGet(endpoint: .topic(id: topicId), ["p": 1.string])
+                    dispatch(FetchData.Done(id: id, result: result))
+                    return
+                }
+
+                // Phase 1: Fetch via V2 API (fast, reliable) — concurrent
+                async let topicResult: APIResult<V2Response<V2TopicDetail>> = APIService.shared
+                    .v2ApiGet(path: "topics/\(topicId)")
+                async let repliesResult: APIResult<V2Response<[V2ReplyDetail]>> = APIService.shared
+                    .v2ApiGet(path: "topics/\(topicId)/replies", params: ["p": "1"])
+                let (topicRes, repliesRes) = await (topicResult, repliesResult)
+
+                if case let .success(topicResp) = topicRes,
+                   let topicResp = topicResp, topicResp.success,
+                   case let .success(repliesResp) = repliesRes,
+                   let repliesResp = repliesResp, repliesResp.success {
+                    let feedDetailInfo = V2APIAdapter.buildFeedDetailInfo(
+                        topic: topicResp, replies: repliesResp, page: 1
+                    )
+                    dispatch(FetchData.Done(id: id, result: .success(feedDetailInfo)))
+
+                    // Phase 2: Background HTML fetch for action metadata
+                    let htmlResult: APIResult<FeedDetailInfo> = await APIService.shared
+                        .htmlGet(endpoint: .topic(id: topicId), ["p": 1.string])
+                    if case let .success(htmlInfo) = htmlResult, let htmlInfo = htmlInfo {
+                        dispatch(FetchData.InjectActionMetadata(id: id, htmlInfo: htmlInfo))
+                    }
+                } else {
+                    // API failed — fallback to HTML
+                    let result: APIResult<FeedDetailInfo> = await APIService.shared
+                        .htmlGet(endpoint: .topic(id: topicId), ["p": 1.string])
+                    dispatch(FetchData.Done(id: id, result: result))
+                }
             }
         }
 
@@ -30,6 +64,12 @@ struct FeedDetailActions {
             var id: String
 
             let result: APIResult<FeedDetailInfo>
+        }
+
+        struct InjectActionMetadata: Action {
+            var target: Reducer = R
+            var id: String
+            let htmlInfo: FeedDetailInfo
         }
     }
 
@@ -41,9 +81,41 @@ struct FeedDetailActions {
             var willLoadPage: Int = 2
 
             func execute(in store: Store) async {
-                let result: APIResult<FeedDetailInfo> = await APIService.shared
-                    .htmlGet(endpoint: .topic(id: feedId ?? .default), ["p" : willLoadPage.string])
-                dispatch(LoadMore.Done(id: id, result: result))
+                let topicId = feedId ?? .default
+
+                guard SettingState.getV2exAccessToken() != nil else {
+                    let result: APIResult<FeedDetailInfo> = await APIService.shared
+                        .htmlGet(endpoint: .topic(id: topicId), ["p" : willLoadPage.string])
+                    dispatch(LoadMore.Done(id: id, result: result))
+                    return
+                }
+
+                let repliesResult: APIResult<V2Response<[V2ReplyDetail]>> = await APIService.shared
+                    .v2ApiGet(path: "topics/\(topicId)/replies", params: ["p": "\(willLoadPage)"])
+
+                if case let .success(repliesResp) = repliesResult,
+                   let repliesResp = repliesResp, repliesResp.success {
+                    let state = store.appState.feedDetailStates[id]
+                    let totalPage = state?.model.headerInfo?.totalPage ?? 1
+                    let owner = state?.model.replyInfo.owner ?? ""
+                    let feedDetailInfo = V2APIAdapter.buildReplyPage(
+                        replies: repliesResp, owner: owner,
+                        page: willLoadPage, totalPage: totalPage
+                    )
+                    dispatch(LoadMore.Done(id: id, result: .success(feedDetailInfo)))
+
+                    // Background: fetch HTML for reply love counts and thank status
+                    let htmlResult: APIResult<FeedDetailInfo> = await APIService.shared
+                        .htmlGet(endpoint: .topic(id: topicId), ["p" : willLoadPage.string])
+                    if case let .success(htmlInfo) = htmlResult, let htmlInfo = htmlInfo {
+                        dispatch(FetchData.InjectActionMetadata(id: id, htmlInfo: htmlInfo))
+                    }
+                } else {
+                    // API failed — fallback to HTML
+                    let result: APIResult<FeedDetailInfo> = await APIService.shared
+                        .htmlGet(endpoint: .topic(id: topicId), ["p" : willLoadPage.string])
+                    dispatch(LoadMore.Done(id: id, result: result))
+                }
             }
         }
 
