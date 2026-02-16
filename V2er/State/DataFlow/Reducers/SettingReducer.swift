@@ -39,6 +39,11 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
         UserDefaults.standard.set(action.enabled, forKey: SettingState.showDataSourceIndicatorKey)
         followingAction = nil
 
+    case let action as SettingActions.ToggleV2exTokenEnabledAction:
+        state.v2exTokenEnabled = action.enabled
+        UserDefaults.standard.set(action.enabled, forKey: SettingState.v2exTokenEnabledKey)
+        followingAction = nil
+
     case _ as SettingActions.StartAutoCheckinAction:
         state.isCheckingIn = true
         state.checkinError = nil

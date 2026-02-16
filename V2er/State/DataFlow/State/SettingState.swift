@@ -15,12 +15,14 @@ struct SettingState: FluxState {
     static let useBuiltinBrowserKey = "useBuiltinBrowser"
     static let v2exAccessTokenKey = "v2exAccessToken"
     static let showDataSourceIndicatorKey = "showDataSourceIndicator"
+    static let v2exTokenEnabledKey = "v2exAccessTokenEnabled"
 
     var appearance: AppearanceMode = .system
     var autoCheckin: Bool = false
     var imgurClientId: String = ""
     var useBuiltinBrowser: Bool = false
     var v2exAccessToken: String = ""
+    var v2exTokenEnabled: Bool = true
     var showDataSourceIndicator: Bool = false
 
     // Checkin state
@@ -49,8 +51,12 @@ struct SettingState: FluxState {
         self.useBuiltinBrowser = UserDefaults.standard.bool(forKey: Self.useBuiltinBrowserKey)
         // Load data source indicator preference
         self.showDataSourceIndicator = UserDefaults.standard.bool(forKey: Self.showDataSourceIndicatorKey)
-        // Load V2EX access token from Keychain
-        self.v2exAccessToken = Self.getV2exAccessToken() ?? ""
+        // Load V2EX access token enabled preference (defaults to true)
+        if UserDefaults.standard.object(forKey: Self.v2exTokenEnabledKey) != nil {
+            self.v2exTokenEnabled = UserDefaults.standard.bool(forKey: Self.v2exTokenEnabledKey)
+        }
+        // Load V2EX access token from Keychain (raw, for state display)
+        self.v2exAccessToken = Self.getRawV2exAccessToken() ?? ""
     }
 
     static func saveImgurClientId(_ clientId: String) {
@@ -77,7 +83,18 @@ struct SettingState: FluxState {
         SecItemAdd(addQuery as CFDictionary, nil)
     }
 
+    /// Returns the token only when it exists AND is enabled.
+    /// All consumers use this to decide V2 API vs HTML scraping.
     static func getV2exAccessToken() -> String? {
+        guard UserDefaults.standard.object(forKey: v2exTokenEnabledKey) == nil
+                || UserDefaults.standard.bool(forKey: v2exTokenEnabledKey) else {
+            return nil
+        }
+        return getRawV2exAccessToken()
+    }
+
+    /// Returns the stored token regardless of enabled state (for UI display).
+    static func getRawV2exAccessToken() -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: v2exAccessTokenKey,
@@ -181,6 +198,11 @@ struct SettingActions {
     }
 
     struct ToggleDataSourceIndicatorAction: Action {
+        var target: Reducer = R
+        let enabled: Bool
+    }
+
+    struct ToggleV2exTokenEnabledAction: Action {
         var target: Reducer = R
         let enabled: Bool
     }
