@@ -26,7 +26,7 @@ struct AdvancedSettingsView: View {
     }
 
     private var hasToken: Bool {
-        !v2exAccessToken.isEmpty
+        !v2exAccessToken.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var body: some View {
