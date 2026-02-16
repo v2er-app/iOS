@@ -10,18 +10,17 @@ import Foundation
 
 
 func parseAvatar(_ link: String) -> String {
-    // Check whether is start with http
     var link = link
-    if !link.starts(with: APIService.HTTP) {
-        if link.starts(with: "//") {
+    if !link.hasPrefix("http://") && !link.hasPrefix("https://") {
+        if link.hasPrefix("//") {
             link = APIService.HTTPS + link
-        } else if link.starts(with: "/") {
+        } else if link.hasPrefix("/") {
             link = APIService.baseUrlString + link
         }
     }
     return link
         .segment(separatedBy: "?m", at: .first)
-        .replace(segs: "_normal.png", "_mini.png", "_xxlarge.png",
+        .replace(segs: "_normal.png", "_mini.png", "_xlarge.png", "_xxlarge.png",
                  with: "_large.png")
 }
 

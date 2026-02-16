@@ -51,7 +51,7 @@ enum V2APIAdapter {
         var header = FeedDetailInfo.HeaderInfo(
             id: "\(topic.id)",
             title: topic.title,
-            avatar: parseAvatar(topic.member?.avatarNormal ?? topic.member?.avatar ?? "")
+            avatar: parseAvatar(topic.member?.bestAvatar ?? "")
         )
         header.userName = topic.member?.username
         header.replyUpdate = formatTimestamp(topic.created)
@@ -87,7 +87,7 @@ enum V2APIAdapter {
             item.replyId = "r_\(reply.id)"
             item.content = reply.contentRendered ?? reply.content ?? ""
             item.userName = reply.member?.username ?? ""
-            item.avatar = parseAvatar(reply.member?.avatarNormal ?? reply.member?.avatar ?? "")
+            item.avatar = parseAvatar(reply.member?.bestAvatar ?? "")
             item.time = formatTimestamp(reply.created)
             item.owner = owner
             replyInfo.items.append(item)
@@ -153,7 +153,7 @@ enum V2APIAdapter {
             item.id = "\(topic.id)"
             item.title = topic.title ?? ""
             item.userName = topic.member?.username ?? ""
-            item.avatar = parseAvatar(topic.member?.avatarNormal ?? topic.member?.avatar ?? "")
+            item.avatar = parseAvatar(topic.member?.bestAvatar ?? "")
             item.replyCount = topic.replies.map { "\($0)" } ?? ""
             // Build "time • lastReplier" string similar to HTML version
             let time = formatTimestamp(topic.created)
@@ -180,7 +180,7 @@ enum V2APIAdapter {
         for notification in response.result {
             var item = MessageInfo.Item()
             item.username = notification.member?.username ?? ""
-            item.avatar = parseAvatar(notification.member?.avatarNormal ?? notification.member?.avatar ?? "")
+            item.avatar = parseAvatar(notification.member?.bestAvatar ?? "")
             item.title = stripHtmlTags(notification.text ?? "")
             item.content = notification.payloadRendered ?? notification.payload ?? ""
             item.time = formatTimestamp(notification.created)
