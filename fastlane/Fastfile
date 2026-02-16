@@ -145,8 +145,8 @@ platform :ios do
     end
   end
 
-  desc "Build and upload to TestFlight"
-  lane :beta do
+  desc "Build iOS app (does not upload)"
+  lane :build_beta do
     # Setup CI environment (creates temporary keychain automatically)
     if ENV['CI']
       setup_ci
@@ -256,6 +256,27 @@ platform :ios do
     # Build the app
     build_ipa
 
+    UI.success("iOS build completed: ./build/V2er.ipa")
+  end
+
+  desc "Upload built IPA to TestFlight or App Store"
+  lane :upload_beta do
+    # Get App Store Connect API key
+    api_key = get_api_key
+
+    # Locate the built IPA
+    ipa_path = File.expand_path("../build/V2er.ipa")
+    UI.user_error!("IPA not found at #{ipa_path}. Run build_beta first.") unless File.exist?(ipa_path)
+
+    # Read current version from xcconfig
+    xcconfig_path = "../Version.xcconfig"
+    xcconfig_content = File.read(xcconfig_path)
+    version_match = xcconfig_content.match(/MARKETING_VERSION = (.+)/)
+    if version_match.nil?
+      UI.user_error!("Could not find MARKETING_VERSION in #{xcconfig_path}.")
+    end
+    current_version = version_match[1].strip
+
     submit_for_review = ENV['SUBMIT_FOR_REVIEW'] == 'true'
 
     if submit_for_review
@@ -325,6 +346,7 @@ platform :ios do
       # Upload binary and submit for review
       upload_to_app_store(
         api_key: api_key,
+        ipa: ipa_path,
         app_version: current_version,
         skip_metadata: edit_version != nil,
         skip_screenshots: true,
@@ -355,13 +377,23 @@ platform :ios do
       # NOTE: We skip waiting for build processing to avoid timeout issues.
       # IMPORTANT: Do NOT add a `changelog` parameter here — it causes fastlane to wait
       # for Apple's build processing even with skip_waiting_for_build_processing: true.
-      upload_to_testflight(
-        api_key: api_key,
-        skip_submission: false,
-        skip_waiting_for_build_processing: true,
-        distribute_external: false,
-        uses_non_exempt_encryption: false
-      )
+      begin
+        upload_to_testflight(
+          api_key: api_key,
+          ipa: ipa_path,
+          skip_submission: false,
+          skip_waiting_for_build_processing: true,
+          distribute_external: false,
+          uses_non_exempt_encryption: false
+        )
+      rescue => e
+        if e.message.include?("TLS") || e.message.include?("WILL RETRY")
+          UI.important("altool reported a transient TLS error during upload, but the upload may have succeeded.")
+          UI.important("Check App Store Connect / TestFlight to confirm. Error: #{e.message[0..200]}")
+        else
+          raise e
+        end
+      end
 
       UI.success("Build uploaded successfully to TestFlight!")
       UI.important("Build will be available for testing once Apple finishes processing (usually 5-30 minutes)")
@@ -373,6 +405,12 @@ platform :ios do
         message: "Build has been uploaded and will be available for testing soon"
       ) if is_ci == false
     end
+  end
+
+  desc "Build and upload to TestFlight (convenience lane)"
+  lane :beta do
+    build_beta
+    upload_beta
   end
 
   desc "Submit to App Store Review (legacy — builds first, use submit_review instead)"
