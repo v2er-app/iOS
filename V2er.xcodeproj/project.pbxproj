@@ -113,6 +113,7 @@
 		4C6ADF04884611B87D833DC2 /* iPadFeedSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575CF3490D99915BF1FCDB2F /* iPadFeedSplitView.swift */; };
 		4C81B42C47B6DFC05D939458 /* ExploreReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA535A5448FBC8B2F9FFB19 /* ExploreReducer.swift */; };
 		4C95EB69AACB2D8ABB486F72 /* OtherSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1307B95B65FF5C26F9E29BA4 /* OtherSettingsView.swift */; };
+		4C95EB69AACB2D8ABB486F73 /* AdvancedSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1307B95B65FF5C26F9E29BA5 /* AdvancedSettingsView.swift */; };
 		4D54AC4F2090A69CC4FAE37F /* image_holder_loading.gif in Resources */ = {isa = PBXBuildFile; fileRef = 81678F5CC1759D145E7DEC0B /* image_holder_loading.gif */; };
 		4ECF829F9AF13FEA6399CEA9 /* UserDetailPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2F79BCD91E8726AF6441FF /* UserDetailPlaceholder.swift */; };
 		4F0DB06616DB4F5F5C71B93A /* MyFavoritePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657787E5A8F00006F32393EE /* MyFavoritePage.swift */; };
@@ -232,6 +233,7 @@
 		A1ADF8DFC66B4C385FD60FAE /* highlight.js in Resources */ = {isa = PBXBuildFile; fileRef = 94F4F96890462FF2134706FF /* highlight.js */; };
 		A20168079912368293C74052 /* V2erTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BA775113D8F8528452B643 /* V2erTests.swift */; };
 		A215CDBB25A4FD1094FD7897 /* OtherSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1307B95B65FF5C26F9E29BA4 /* OtherSettingsView.swift */; };
+		A215CDBB25A4FD1094FD7898 /* AdvancedSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1307B95B65FF5C26F9E29BA5 /* AdvancedSettingsView.swift */; };
 		A261FAE82CDC1151A2ED2B1C /* BrowseSettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A929553CCF3D8678282DF4 /* BrowseSettingView.swift */; };
 		A421138A89905BCEDE607DB5 /* iPadContentWidth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A00D82CE69D9BAA0FD50733 /* iPadContentWidth.swift */; };
 		A421F69A0FE3BE9CC0516B6F /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 248924FD3E33BF3D0899A961 /* Toast.swift */; };
@@ -417,6 +419,7 @@
 		1227FAFAF7BEC84E134A54E2 /* bootstrap.min.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = bootstrap.min.css; sourceTree = "<group>"; };
 		126A2958A39DD1B1C54B1632 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		1307B95B65FF5C26F9E29BA4 /* OtherSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherSettingsView.swift; sourceTree = "<group>"; };
+		1307B95B65FF5C26F9E29BA5 /* AdvancedSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsView.swift; sourceTree = "<group>"; };
 		133ACD0030C1FC064774497C /* MultilineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineTextField.swift; sourceTree = "<group>"; };
 		135D3BF8C6988228AAA7434D /* AccountState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountState.swift; sourceTree = "<group>"; };
 		140CEFCAF8567423BD1B4514 /* image_holder_failed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image_holder_failed.png; sourceTree = "<group>"; };
@@ -1148,6 +1151,7 @@
 			isa = PBXGroup;
 			children = (
 				1F70D6073E7B32A82C373979 /* AboutView.swift */,
+				1307B95B65FF5C26F9E29BA5 /* AdvancedSettingsView.swift */,
 				348CD1DFACF8DA52A7E8B8EB /* AppearanceSettingView.swift */,
 				D3A929553CCF3D8678282DF4 /* BrowseSettingView.swift */,
 				38FB5224BC73CFAE870D7AE1 /* CreditsPage.swift */,
@@ -1478,6 +1482,7 @@
 				667AFE2D221D6C4C2847C6DF /* OnlineStatsInfo.swift in Sources */,
 				2816F8921D4E198BAED403B1 /* OtherAppsManager.swift in Sources */,
 				A215CDBB25A4FD1094FD7897 /* OtherSettingsView.swift in Sources */,
+				A215CDBB25A4FD1094FD7898 /* AdvancedSettingsView.swift in Sources */,
 				35FDA2A27850802FCC7F0D13 /* Persist.swift in Sources */,
 				74E6FE3CE8C08479C87CC082 /* PostscriptItemView.swift in Sources */,
 				F6026A0D0B8950EC417F6EC3 /* RenderActor.swift in Sources */,
@@ -1650,6 +1655,7 @@
 				5426D1B97DDFED9F53560D26 /* OnlineStatsInfo.swift in Sources */,
 				4C4ED6510E3C2780E6BAA37C /* OtherAppsManager.swift in Sources */,
 				4C95EB69AACB2D8ABB486F72 /* OtherSettingsView.swift in Sources */,
+				4C95EB69AACB2D8ABB486F73 /* AdvancedSettingsView.swift in Sources */,
 				444AA28FDBBECF67DFFC1DF2 /* Persist.swift in Sources */,
 				8FC0AE36C3AC20BFDADF48D9 /* PostscriptItemView.swift in Sources */,
 				70B8CF4B8509158FC2043899 /* RenderActor.swift in Sources */,

@@ -144,6 +144,10 @@ struct SettingsPage: View {
                 settingsNavRow(route: .otherSettings, isSplitMode: isSplitMode) {
                     Label("通用设置", systemImage: "gearshape")
                 }
+
+                settingsNavRow(route: .advancedSettings, isSplitMode: isSplitMode) {
+                    Label("高级设置", systemImage: "gearshape.2")
+                }
             }
 
             // MARK: - Help Section

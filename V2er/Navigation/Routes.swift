@@ -34,6 +34,7 @@ enum AppRoute: Hashable {
     case settings
     case appearanceSettings
     case otherSettings
+    case advancedSettings
     case credits
     case browseSettings
 
@@ -84,6 +85,8 @@ extension AppRoute {
             AppearanceSettingView()
         case .otherSettings:
             OtherSettingsView()
+        case .advancedSettings:
+            AdvancedSettingsView()
         case .credits:
             CreditsPage()
         case .browseSettings:
