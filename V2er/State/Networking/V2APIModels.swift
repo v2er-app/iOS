@@ -37,7 +37,13 @@ struct V2MemberBrief: Decodable {
     let id: Int?
     let username: String?
     let avatar: String?
+    let avatarMini: String?
     let avatarNormal: String?
+    let avatarLarge: String?
+
+    var bestAvatar: String {
+        avatarLarge ?? avatarNormal ?? avatar ?? avatarMini ?? ""
+    }
 }
 
 struct V2NodeBrief: Decodable {
@@ -86,20 +92,11 @@ struct V2MemberDetail: Decodable {
 
 struct V2NotificationDetail: Decodable {
     let id: Int
-    let memberID: Int?
-    let forMemberID: Int?
+    let memberId: Int?
+    let forMemberId: Int?
     let text: String?
     let payload: String?
     let payloadRendered: String?
     let created: Int?
     let member: V2MemberBrief?
-
-    enum CodingKeys: String, CodingKey {
-        case id
-        case memberID = "member_id"
-        case forMemberID = "for_member_id"
-        case text, payload
-        case payloadRendered = "payload_rendered"
-        case created, member
-    }
 }
