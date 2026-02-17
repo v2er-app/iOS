@@ -650,6 +650,11 @@ private struct ReplyFABBackground: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
             content
+                .background(
+                    Circle()
+                        .fill(Color.clear)
+                        .matchedGeometryEffect(id: "replyBarBg", in: namespace)
+                )
                 .glassEffect(.regular.interactive(), in: .circle)
         } else {
             content
