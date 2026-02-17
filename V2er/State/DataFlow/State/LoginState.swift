@@ -17,12 +17,11 @@ struct LoginState: FluxState {
     var username: String = .empty
     var password: String = .empty
     var captcha: String = .empty
-    var dismiss = false
     var toast = Toast()
-    var problemHtml: String? = .empty
+    var problemMessage: String = .empty
+    var showAlert: Bool = false
 
     var showLoginView = false
-    var showAlert: Bool = false
     var showTwoStepDialog = false
     var twoFAonce: String = .empty
 }

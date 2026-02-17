@@ -11,7 +11,6 @@ import Kingfisher
 
 struct LoginPage: StateView {
     @ObservedObject private var store = Store.shared
-    @Environment(\.dismiss) var dismiss
     @State var showPassword = false
     @FocusState private var focusedField: LoginField?
 
@@ -32,27 +31,13 @@ struct LoginPage: StateView {
             .onAppear {
                 dispatch(LoginActions.FetchCaptchaStart())
             }
-            .onChange(of: state.dismiss) { newValue in
-                if newValue {
-                    dismiss()
-                }
-            }
             .toast(isPresented: toast.isPresented, paddingTop: 40, version: toast.version.raw) {
                 DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
             }
-            .alert(isPresented: bindingState.showAlert) {
-                Alert(
-                    title: Text("提示"),
-                    message: Text(state.problemHtml ?? .empty),
-                    primaryButton: .default(
-                        Text("确定"),
-                        action: { dispatch(LoginActions.FetchCaptchaStart()) }
-                    ),
-                    secondaryButton: .destructive(
-                        Text("取消"),
-                        action: { dismiss() }
-                    )
-                )
+            .alert("提示", isPresented: bindingState.showAlert) {
+                Button("确定") {}
+            } message: {
+                Text(state.problemMessage)
             }
     }
 

@@ -27,8 +27,7 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                 // Load captcha failed
                 if case let .invalid(html) = error {
                     if html.contains("登录受限") {
-                        //                        Toast.show("登录受限", target: .login)
-                        state.problemHtml = "登录受限\n由于当前 IP 在短时间内的登录尝试次数太多，目前暂时不能继续尝试,你可能会需要等待至多 1 天的时间再继续尝试。"
+                        state.problemMessage = "登录受限，由于当前 IP 在短时间内的登录尝试次数太多，请稍后再试。"
                         state.showAlert = true
                     }
                 } else {
@@ -50,7 +49,7 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                 let account = AccountInfo(username: dailyInfo!.userName,
                                           avatar: dailyInfo!.avatar)
                 AccountState.saveAccount(account)
-                state.dismiss = true
+                state.showLoginView = false
             } else if case let .failure(error) = action.result {
                 // Refresh captcha after any login failure
                 followingAction = LoginActions.FetchCaptchaStart()
@@ -58,14 +57,14 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                     let loginParam: LoginParams? = APIService.shared.parse(from: html)
                     guard let loginParam = loginParam else { break }
                     let problemHtml = loginParam.problem
-                    if problemHtml.isEmpty {
-                        Toast.show("登录失败，用户名和密码无法匹配", target: .login)
-                    } else if problemHtml.notEmpty {
-                        state.problemHtml = problemHtml?.replace(segs: "<ul>","</ul>", "<li>", "</li>" , with: .empty)
-                        state.showAlert = true
+                    if problemHtml.notEmpty {
+                        state.problemMessage = problemHtml!
+                            .replace(segs: "<ul>","</ul>","<li>","</li>", with: .empty)
+                            .trimmingCharacters(in: .whitespacesAndNewlines)
                     } else {
-                        Toast.show("登录中遇到未知问题", target: .login)
+                        state.problemMessage = "用户名和密码无法匹配"
                     }
+                    state.showAlert = true
                 } else {
                     Toast.show(error, target: .login)
                 }
