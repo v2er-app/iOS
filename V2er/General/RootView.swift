@@ -51,6 +51,7 @@ struct RootHostView: View {
                             .navigationDestination(for: AppRoute.self) { $0.destination() }
                     }
                     .environmentObject(store)
+                    .interactiveDismissDisabled()
                 }
                 .overlay {
                     if loginState.raw.showTwoStepDialog {
