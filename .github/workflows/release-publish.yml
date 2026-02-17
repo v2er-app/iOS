@@ -143,6 +143,7 @@ jobs:
             echo "gem install attempt $i failed, retrying in 5s..."
             sleep 5
           done
+          gem list -i fastlane >/dev/null 2>&1 || { echo "Failed to install fastlane after 3 attempts"; exit 1; }
 
           echo ""
           echo "Build tools ready:"
