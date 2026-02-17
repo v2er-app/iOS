@@ -51,9 +51,9 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                 AccountState.saveAccount(account)
                 state.showLoginView = false
             } else if case let .failure(error) = action.result {
-                // Refresh captcha after any login failure
-                followingAction = LoginActions.FetchCaptchaStart()
                 if case let .invalid(html) = error {
+                    // Refresh captcha only for login page errors, not for 2FA or session redirects
+                    followingAction = LoginActions.FetchCaptchaStart()
                     let loginParam: LoginParams? = APIService.shared.parse(from: html)
                     guard let loginParam = loginParam else { break }
                     let problemHtml = loginParam.problem
