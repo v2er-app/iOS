@@ -502,12 +502,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 .font(.system(size: 24, weight: .medium))
                 .foregroundStyle(Color.accentColor)
                 .frame(width: 56, height: 56)
-                .background(
-                    Circle()
-                        .fill(Color(.secondarySystemGroupedBackground))
-                        .matchedGeometryEffect(id: "replyBarBg", in: replyBarNamespace)
-                )
-                .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 4)
+                .modifier(ReplyFABBackground(namespace: replyBarNamespace))
         }
         .padding(.trailing, Spacing.md)
         .padding(.bottom, Spacing.md)
@@ -647,4 +642,23 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .padding(.horizontal, Spacing.lg)
     }
 
+}
+
+private struct ReplyFABBackground: ViewModifier {
+    var namespace: Namespace.ID
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .glassEffect(.regular.interactive(), in: .circle)
+        } else {
+            content
+                .background(
+                    Circle()
+                        .fill(Color(.secondarySystemGroupedBackground))
+                        .matchedGeometryEffect(id: "replyBarBg", in: namespace)
+                )
+                .shadow(color: .black.opacity(0.12), radius: 10, x: 0, y: 4)
+        }
+    }
 }
