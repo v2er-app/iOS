@@ -63,28 +63,9 @@ struct MessageActions {
         var autoLoad: Bool = false
 
         func execute(in store: Store) async {
-            guard SettingState.getV2exAccessToken() != nil else {
-                // No token — fallback to HTML
-                let result: APIResult<MessageInfo> = await APIService.shared
-                    .htmlGet(endpoint: .message)
-                dispatch(FetchDone(result: result))
-                return
-            }
-
-            // Phase 1: Fetch via V2 API
-            let apiResult: APIResult<V2Response<[V2NotificationDetail]>> = await APIService.shared
-                .v2ApiGet(path: "notifications", params: ["p": "1"])
-
-            if case let .success(response) = apiResult,
-               let response = response, response.success {
-                let messageInfo = V2APIAdapter.buildMessageInfo(from: response, page: 1)
-                dispatch(FetchDone(source: .apiV2, result: .success(messageInfo)))
-            } else {
-                // API failed — fallback to HTML
-                let result: APIResult<MessageInfo> = await APIService.shared
-                    .htmlGet(endpoint: .message)
-                dispatch(FetchDone(result: result))
-            }
+            let result: APIResult<MessageInfo> = await APIService.shared
+                .htmlGet(endpoint: .message)
+            dispatch(FetchDone(result: result))
         }
     }
 
@@ -99,28 +80,10 @@ struct MessageActions {
         func execute(in store: Store) async {
             let state = store.appState.messageState
             let page = state.updatableState.willLoadPage
-
-            guard SettingState.getV2exAccessToken() != nil else {
-                let params = ["p": page.string]
-                let result: APIResult<MessageInfo> = await APIService.shared
-                    .htmlGet(endpoint: .message, params)
-                dispatch(LoadMoreDone(result: result))
-                return
-            }
-
-            let apiResult: APIResult<V2Response<[V2NotificationDetail]>> = await APIService.shared
-                .v2ApiGet(path: "notifications", params: ["p": "\(page)"])
-
-            if case let .success(response) = apiResult,
-               let response = response, response.success {
-                let messageInfo = V2APIAdapter.buildMessageInfo(from: response, page: page)
-                dispatch(LoadMoreDone(source: .apiV2, result: .success(messageInfo)))
-            } else {
-                let params = ["p": page.string]
-                let result: APIResult<MessageInfo> = await APIService.shared
-                    .htmlGet(endpoint: .message, params)
-                dispatch(LoadMoreDone(result: result))
-            }
+            let params = ["p": page.string]
+            let result: APIResult<MessageInfo> = await APIService.shared
+                .htmlGet(endpoint: .message, params)
+            dispatch(LoadMoreDone(result: result))
         }
     }
 
