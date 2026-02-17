@@ -52,7 +52,8 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
                 AccountState.saveAccount(account)
                 state.dismiss = true
             } else if case let .failure(error) = action.result {
-                //                Toast.show("登录失败", target: .login)
+                // Refresh captcha after any login failure
+                followingAction = LoginActions.FetchCaptchaStart()
                 if case let .invalid(html) = error {
                     let loginParam: LoginParams? = APIService.shared.parse(from: html)
                     guard let loginParam = loginParam else { break }

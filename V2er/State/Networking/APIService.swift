@@ -237,6 +237,10 @@ struct APIService {
         // 2. Login
         let loginParams: LoginParams? = parse(from: html)
         if loginParams?.isValid() ?? false {
+            // Login page with error (e.g. wrong password/captcha) — preserve HTML for caller
+            if loginParams?.problem.notEmpty ?? false {
+                return APIError.invalid(html)
+            }
             var reason: String = .empty
             if AccountState.hasSignIn() {
                 // Login session expired
