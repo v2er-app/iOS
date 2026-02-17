@@ -195,7 +195,13 @@ jobs:
       run: xcodebuild -version
 
     - name: Install xcpretty
-      run: gem install xcpretty
+      run: |
+        for i in 1 2 3; do
+          gem install xcpretty --no-document && break
+          echo "gem install attempt $i failed, retrying in 5s..."
+          sleep 5
+        done
+        gem list -i xcpretty >/dev/null 2>&1 || { echo "Failed to install xcpretty after 3 attempts"; exit 1; }
 
     - name: Cache SPM packages
       uses: actions/cache@v4
@@ -260,7 +266,13 @@ jobs:
       run: sudo xcode-select -s /Applications/Xcode_26.0.1.app/Contents/Developer
 
     - name: Install xcpretty
-      run: gem install xcpretty
+      run: |
+        for i in 1 2 3; do
+          gem install xcpretty --no-document && break
+          echo "gem install attempt $i failed, retrying in 5s..."
+          sleep 5
+        done
+        gem list -i xcpretty >/dev/null 2>&1 || { echo "Failed to install xcpretty after 3 attempts"; exit 1; }
 
     - name: Build and test with coverage
       run: |

@@ -46,7 +46,12 @@ jobs:
 
       - name: Install Fastlane
         run: |
-          gem install fastlane -v 2.231.1
+          for i in 1 2 3; do
+            gem install fastlane -v 2.231.1 --no-document && break
+            echo "gem install attempt $i failed, retrying in 5s..."
+            sleep 5
+          done
+          gem list -i fastlane >/dev/null 2>&1 || { echo "Failed to install fastlane after 3 attempts"; exit 1; }
 
       - name: Create App Store Connect API Key
         env:
