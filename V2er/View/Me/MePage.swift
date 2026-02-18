@@ -12,6 +12,8 @@ struct MePage: BaseHomePageView {
     @ObservedObject private var store = Store.shared
     @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @ObservedObject private var otherAppsManager = OtherAppsManager.shared
+    @ObservedObject private var accountManager = AccountManager.shared
+    @State private var showAccountSwitcher = false
 
     var bindingState: Binding<MeState> {
         $store.appState.meState
@@ -150,12 +152,30 @@ struct MePage: BaseHomePageView {
             // Profile row
             HStack(spacing: Spacing.lg) {
                 Button {
-                    navigateToProfile()
+                    showAccountSwitcher = true
                 } label: {
                     AvatarView(url: AccountState.avatarUrl, size: 64)
                         .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
+                        .overlay(alignment: .topTrailing) {
+                            if accountManager.accounts.count > 1 {
+                                Text("\(accountManager.accounts.count)")
+                                    .font(.caption2.weight(.bold))
+                                    .foregroundColor(.white)
+                                    .frame(minWidth: 18, minHeight: 18)
+                                    .background(Color.accentColor)
+                                    .clipShape(Circle())
+                                    .offset(x: 4, y: -4)
+                            }
+                        }
                 }
                 .buttonStyle(.plain)
+                .contextMenu {
+                    Button {
+                        navigateToProfile()
+                    } label: {
+                        Label("查看主页", systemImage: "person.crop.circle")
+                    }
+                }
 
                 VStack(alignment: .leading, spacing: Spacing.xs) {
                     Button {
@@ -224,6 +244,9 @@ struct MePage: BaseHomePageView {
         }
         .navigationDestination(item: $navigateToAllApps) { route in
             route.destination()
+        }
+        .sheet(isPresented: $showAccountSwitcher) {
+            AccountSwitcherView()
         }
     }
 

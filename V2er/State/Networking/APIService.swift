@@ -24,7 +24,6 @@ struct APIService {
     private let v2JsonDecoder: JSONDecoder
 
     private init() {
-        // TODO: support multi accounts
         self.session = URLSession.shared;
         jsonDecoder = JSONDecoder()
         v2JsonDecoder = JSONDecoder()
