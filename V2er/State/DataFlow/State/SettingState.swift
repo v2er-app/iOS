@@ -118,7 +118,10 @@ struct SettingState: FluxState {
 
     /// Delegates to per-user save using the active account.
     static func saveV2exAccessToken(_ token: String) {
-        guard let username = AccountManager.shared.activeUsername else { return }
+        guard let username = AccountManager.shared.activeUsername else {
+            log("saveV2exAccessToken skipped: no active username")
+            return
+        }
         saveV2exAccessToken(token, forUser: username)
     }
 
@@ -154,7 +157,8 @@ struct SettingState: FluxState {
               !token.isEmpty else { return }
         // Save to per-user key
         saveV2exAccessToken(token, forUser: username)
-        // Delete legacy key
+        // Only delete legacy key if per-user save succeeded
+        guard getRawV2exAccessToken(forUser: username) != nil else { return }
         let deleteQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: v2exAccessTokenKey,

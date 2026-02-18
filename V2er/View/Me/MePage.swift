@@ -12,7 +12,7 @@ struct MePage: BaseHomePageView {
     @ObservedObject private var store = Store.shared
     @Environment(\.iPadDetailRoute) private var iPadDetailRoute
     @ObservedObject private var otherAppsManager = OtherAppsManager.shared
-    @ObservedObject private var accountManager = AccountManager.shared
+    @StateObject private var accountManager = AccountManager.shared
     @State private var showAccountSwitcher = false
 
     var bindingState: Binding<MeState> {

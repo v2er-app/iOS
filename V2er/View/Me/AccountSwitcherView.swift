@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AccountSwitcherView: View {
-    @ObservedObject private var accountManager = AccountManager.shared
+    @StateObject private var accountManager = AccountManager.shared
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
