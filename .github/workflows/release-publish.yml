@@ -301,26 +301,33 @@ jobs:
       - name: Cleanup CI Keychain
         if: always()
         run: |
-          echo "Cleaning up temporary keychains (if any)..."
+          echo "Cleaning up CI keychains..."
 
-          KEYCHAIN_PATHS=(
-            "$HOME/Library/Keychains/fastlane_tmp_keychain-db"
-            "$HOME/Library/Keychains/fastlane_tmp_keychain"
-          )
-
-          CLEANED=0
-          for KEYCHAIN_PATH in "${KEYCHAIN_PATHS[@]}"; do
-            if [ -f "$KEYCHAIN_PATH" ]; then
-              security list-keychains -d user -s login.keychain-db 2>&1 || true
-              security lock-keychain "$KEYCHAIN_PATH" 2>&1 || true
-              security delete-keychain "$KEYCHAIN_PATH" 2>&1 || true
-              rm -f "$KEYCHAIN_PATH" 2>&1 || true
-              CLEANED=$((CLEANED + 1))
+          # Delete temporary CI keychain
+          for KC in "$HOME/Library/Keychains/fastlane_tmp_keychain-db" "$HOME/Library/Keychains/fastlane_tmp_keychain"; do
+            if [ -f "$KC" ]; then
+              echo "Deleting: $KC"
+              security delete-keychain "$KC" 2>&1 || rm -f "$KC" 2>&1 || true
             fi
           done
 
-          if [ $CLEANED -gt 0 ]; then
-            echo "Cleaned up $CLEANED temporary keychain(s)"
-          else
-            echo "No temporary keychains found"
+          # Safety net: restore login.keychain-db if it was renamed
+          LOGIN_KC="$HOME/Library/Keychains/login.keychain-db"
+          if [ ! -f "$LOGIN_KC" ]; then
+            echo "WARNING: login.keychain-db missing, restoring from renamed copy..."
+            LATEST=$(ls -t "$HOME/Library/Keychains/login_renamed_"*.keychain-db 2>/dev/null | head -1)
+            if [ -n "$LATEST" ]; then
+              mv "$LATEST" "$LOGIN_KC"
+              echo "Restored from: $LATEST"
+            fi
           fi
+
+          # Clean up any leftover login_renamed files
+          rm -f "$HOME/Library/Keychains/login_renamed_"*.keychain-db 2>/dev/null || true
+
+          # Restore keychain defaults
+          security default-keychain -s "$LOGIN_KC" 2>/dev/null || true
+          security list-keychains -d user -s "$LOGIN_KC" /Library/Keychains/System.keychain
+
+          echo "Final keychain list:"
+          security list-keychains -d user

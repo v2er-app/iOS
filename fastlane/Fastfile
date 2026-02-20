@@ -1,6 +1,7 @@
 # Fastfile for V2er iOS app
 
 require 'shellwords'
+require 'fileutils'
 # Import changelog helper
 require_relative 'changelog_helper'
 
@@ -48,8 +49,6 @@ platform :ios do
 
   # Helper method to get consistent keychain path across all operations
   private_lane :get_ci_keychain_path do
-    # Fastlane's setup_ci creates keychain with -db suffix
-    # Use MATCH_KEYCHAIN_PATH if set, otherwise use default path
     path = ENV["MATCH_KEYCHAIN_PATH"] || ENV["KEYCHAIN_PATH"] || "~/Library/Keychains/fastlane_tmp_keychain-db"
     File.expand_path(path)
   end
@@ -88,8 +87,6 @@ platform :ios do
 
   desc "Sync certificates and provisioning profiles"
   lane :sync_certificates do
-    # Note: When using setup_ci, MATCH_KEYCHAIN_NAME and MATCH_KEYCHAIN_PASSWORD
-    # are automatically set by Fastlane. No need to manually specify keychain.
     match_options = {
       type: "appstore",
       readonly: is_ci,
@@ -97,7 +94,6 @@ platform :ios do
       git_url: ENV["ORG_MATCH_GIT_URL"] || ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/ios-certificates.git"
     }
 
-    # Only specify keychain if explicitly provided (setup_ci sets these automatically)
     if ENV["MATCH_KEYCHAIN_NAME"]
       match_options[:keychain_name] = ENV["MATCH_KEYCHAIN_NAME"]
       match_options[:keychain_password] = ENV["MATCH_KEYCHAIN_PASSWORD"] if ENV["MATCH_KEYCHAIN_PASSWORD"]
@@ -147,29 +143,41 @@ platform :ios do
 
   desc "Build iOS app (does not upload)"
   lane :build_beta do
-    # Setup CI environment (creates temporary keychain automatically)
+    # Setup CI environment
+    # Uses create_keychain directly instead of setup_ci to avoid renaming login.keychain-db.
+    # setup_ci hardcodes default_keychain: true, which renames the login keychain and breaks
+    # self-hosted runners when CI jobs fail without proper cleanup.
     if ENV['CI']
-      setup_ci
+      keychain_name = "fastlane_tmp_keychain"
+      keychain_password = ""
+      keychain_path = File.expand_path("~/Library/Keychains/#{keychain_name}-db")
 
-      # Get consistent keychain path
-      keychain_path = get_ci_keychain_path
-      keychain_password = ENV["MATCH_KEYCHAIN_PASSWORD"] || ""
+      # Clean up stale keychain from previous failed runs
+      if File.exist?(keychain_path)
+        UI.message("Removing stale CI keychain from previous run...")
+        sh("security delete-keychain #{Shellwords.escape(keychain_path)} 2>&1 || true")
+        File.delete(keychain_path) if File.exist?(keychain_path)
+      end
 
-      # Add keychain to search list while keeping login keychain (for WWDR certs)
-      sh("security list-keychains -d user -s #{Shellwords.escape(keychain_path)} login.keychain-db")
-      UI.message("Added keychain to search list: #{keychain_path}")
-
-      # Unlock keychain to prevent codesign errors
-      unlock_keychain(
-        path: keychain_path,
+      create_keychain(
+        name: keychain_name,
         password: keychain_password,
-        set_default: true,
+        default_keychain: false,
+        unlock: true,
+        timeout: 3600,
+        lock_when_sleeps: false,
         add_to_search_list: true
       )
 
-      # Set timeout to prevent auto-lock during build
+      # Ensure login.keychain-db and System.keychain remain in search list
+      sh("security list-keychains -d user -s #{Shellwords.escape(keychain_path)} ~/Library/Keychains/login.keychain-db /Library/Keychains/System.keychain")
+
+      # Set environment variables for match to use this keychain
+      ENV["MATCH_KEYCHAIN_NAME"] = keychain_name
+      ENV["MATCH_KEYCHAIN_PASSWORD"] = keychain_password
+
       sh("security set-keychain-settings -t 3600 -l #{Shellwords.escape(keychain_path)}")
-      UI.message("Set keychain timeout to 3600 seconds to prevent auto-lock")
+      UI.message("CI keychain created (login.keychain-db preserved)")
     end
 
     # Validate that changelog exists for current version
@@ -191,7 +199,7 @@ platform :ios do
       unlock_keychain(
         path: keychain_path,
         password: keychain_password,
-        set_default: true,
+        set_default: false,
         add_to_search_list: true
       )
     end
@@ -651,38 +659,49 @@ platform :ios do
     end
   end
 
-  # Clean up CI keychain to prevent accumulation on self-hosted runners
+  # Clean up CI keychain and ensure login keychain is intact
   private_lane :cleanup_ci_keychain do
-    # Only run cleanup in CI environment
     next unless ENV['CI']
 
     keychain_path = get_ci_keychain_path
+    login_keychain = File.expand_path("~/Library/Keychains/login.keychain-db")
 
     begin
       UI.message("Cleaning up CI keychain...")
 
+      # Delete the temporary CI keychain
       if File.exist?(keychain_path)
-        # Reset keychain search list to default (only login keychain)
-        sh("security list-keychains -d user -s login.keychain-db 2>&1 || true")
-
-        # Lock the keychain before deleting
-        sh("security lock-keychain #{Shellwords.escape(keychain_path)} 2>&1 || true")
-
-        # Delete the keychain using security command
         sh("security delete-keychain #{Shellwords.escape(keychain_path)} 2>&1 || true")
-
-        # Force delete the file if it still exists
-        if File.exist?(keychain_path)
-          File.delete(keychain_path)
-        end
-
-        UI.success("Successfully cleaned up CI keychain")
-      else
-        UI.message("Keychain file doesn't exist, skipping cleanup")
+        File.delete(keychain_path) if File.exist?(keychain_path)
+        UI.message("Deleted CI keychain: #{keychain_path}")
       end
+
+      # Safety net: restore login.keychain-db if it was renamed by a stale setup_ci
+      unless File.exist?(login_keychain)
+        UI.important("login.keychain-db is missing! Attempting to restore from renamed copy...")
+        renamed = Dir.glob(File.expand_path("~/Library/Keychains/login_renamed_*.keychain-db")).sort_by { |f| File.mtime(f) }.last
+        if renamed
+          FileUtils.mv(renamed, login_keychain)
+          UI.success("Restored login.keychain-db from #{File.basename(renamed)}")
+        else
+          UI.important("No renamed keychain found, creating a new login.keychain-db")
+          sh("security create-keychain -p '' #{Shellwords.escape(login_keychain)} 2>&1 || true")
+        end
+      end
+
+      # Clean up any leftover login_renamed files
+      Dir.glob(File.expand_path("~/Library/Keychains/login_renamed_*.keychain-db")).each do |f|
+        File.delete(f)
+        UI.message("Cleaned up stale renamed keychain: #{File.basename(f)}")
+      end
+
+      # Restore keychain search list to default state
+      sh("security default-keychain -s #{Shellwords.escape(login_keychain)} 2>&1 || true")
+      sh("security list-keychains -d user -s #{Shellwords.escape(login_keychain)} /Library/Keychains/System.keychain 2>&1 || true")
+      UI.success("Keychain state restored")
+
     rescue => e
-      # Don't fail the build if cleanup fails
-      UI.important("Failed to clean up keychain: #{e.message}")
+      UI.important("Keychain cleanup failed: #{e.message}")
     end
   end
 
