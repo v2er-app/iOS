@@ -26,6 +26,15 @@ private struct AuthenticatorApp: Identifiable, Hashable {
     }
 }
 
+private struct AuthenticatorChipStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.8 : 1)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .animation(.default, value: configuration.isPressed)
+    }
+}
+
 struct TwoStepLoginPage: View {
     @State var twoStepCode: String = .empty
     @State private var installedAuthenticators: [AuthenticatorApp] = []
@@ -90,50 +99,55 @@ struct TwoStepLoginPage: View {
 
                 // Authenticator shortcuts
                 if !installedAuthenticators.isEmpty {
-                    // "Or" separator
-                    HStack(spacing: Spacing.md) {
+                    // Section separator with label
+                    HStack(spacing: Spacing.sm) {
                         VStack { Divider() }
-                        Text("或")
-                            .font(.caption2.weight(.medium))
-                            .foregroundStyle(Color.secondaryText)
+                        Text("或从验证器获取")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(Color.tertiaryText)
+                            .layoutPriority(1)
                         VStack { Divider() }
                     }
-                    .padding(.top, Spacing.lg)
+                    .padding(.top, Spacing.xl)
                     .padding(.bottom, Spacing.md)
+                    .opacity(showAuthenticators ? 1 : 0)
+                    .animation(
+                        reduceMotion ? .none : .easeOut(duration: 0.3).delay(0.05),
+                        value: showAuthenticators
+                    )
 
-                    // Authenticator app rows
-                    VStack(spacing: Spacing.xs) {
+                    // Chip grid for authenticator apps
+                    LazyVGrid(
+                        columns: [GridItem(.adaptive(minimum: 110), spacing: Spacing.sm)],
+                        spacing: Spacing.sm
+                    ) {
                         ForEach(Array(installedAuthenticators.enumerated()), id: \.element.id) { index, app in
                             Button {
                                 UIApplication.shared.open(app.url)
                             } label: {
-                                HStack(spacing: Spacing.md) {
+                                HStack(spacing: Spacing.sm) {
                                     Image(systemName: app.icon)
-                                        .font(.title3)
+                                        .font(.subheadline.weight(.semibold))
                                         .foregroundStyle(Color.accentColor)
-                                        .frame(width: 28)
 
                                     Text(app.name)
                                         .font(.subheadline.weight(.medium))
                                         .foregroundStyle(Color.primaryText)
-
-                                    Spacer()
-
-                                    Image(systemName: "arrow.up.forward.app.fill")
-                                        .font(.caption2)
-                                        .foregroundStyle(Color.tertiaryText)
+                                        .lineLimit(1)
                                 }
-                                .padding(.horizontal, Spacing.md)
-                                .frame(minHeight: 44)
+                                .frame(maxWidth: .infinity, minHeight: 44)
                                 .background(Color(.tertiarySystemFill))
                                 .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
+                                .contentShape(Rectangle())
                             }
+                            .buttonStyle(AuthenticatorChipStyle())
                             .opacity(showAuthenticators ? 1 : 0)
-                            .offset(y: showAuthenticators ? 0 : 6)
+                            .scaleEffect(showAuthenticators ? 1 : 0.92)
                             .animation(
                                 reduceMotion
                                     ? .none
-                                    : .easeOut(duration: 0.25).delay(Double(index) * 0.06 + 0.15),
+                                    : .spring(response: 0.4, dampingFraction: 0.7)
+                                        .delay(Double(index) * 0.05 + 0.1),
                                 value: showAuthenticators
                             )
                             .accessibilityLabel("打开\(app.name)验证器")
