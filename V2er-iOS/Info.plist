@@ -58,5 +58,12 @@
 	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>googleauthenticator</string>
+		<string>msauth</string>
+		<string>authy</string>
+		<string>onepassword</string>
+	</array>
 </dict>
 </plist>

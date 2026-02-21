@@ -56,8 +56,10 @@ struct RootHostView: View {
                 .overlay {
                     if loginState.raw.showTwoStepDialog {
                         TwoStepLoginPage()
+                            .transition(.opacity.combined(with: .scale(scale: 0.95)))
                     }
                 }
+                .animation(.spring(duration: 0.35, bounce: 0.15), value: loginState.raw.showTwoStepDialog)
 
             if !launchFinished {
                 SplashView()
