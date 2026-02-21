@@ -164,9 +164,14 @@ final class AccountManager: ObservableObject {
     private func restoreCookies(_ cookieData: [Data]) {
         let storage = HTTPCookieStorage.shared
         for data in cookieData {
-            guard var properties = try? NSKeyedUnarchiver.unarchivedObject(
-                ofClass: NSDictionary.self, from: data
-            ) as? [HTTPCookiePropertyKey: Any] else { continue }
+            // Must match archiveCurrentCookies' requiringSecureCoding: false,
+            // otherwise the mixed value types in cookie properties (NSString,
+            // NSDate, NSNumber, etc.) cause the unarchiver to silently fail.
+            guard let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data) else { continue }
+            defer { unarchiver.finishDecoding() }
+            unarchiver.requiresSecureCoding = false
+            guard var properties = unarchiver.decodeObject(forKey: NSKeyedArchiveRootObjectKey)
+                    as? [HTTPCookiePropertyKey: Any] else { continue }
 
             // Session cookies (no Expires) are discarded by HTTPCookieStorage on app termination.
             // Promote them to persistent cookies so they survive across launches.
