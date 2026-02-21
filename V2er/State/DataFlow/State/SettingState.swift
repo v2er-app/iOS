@@ -25,11 +25,29 @@ struct SettingState: FluxState {
     var v2exTokenEnabled: Bool = true
     var showDataSourceIndicator: Bool = false
 
-    // Checkin state
+    // Checkin state (per-user)
+    private static let checkinDateKeyPrefix = "lastCheckinDate"
+    private static let checkinDaysKeyPrefix = "checkinDays"
     var isCheckingIn: Bool = false
     var lastCheckinDate: Date? = nil
     var checkinDays: Int = 0
     var checkinError: String? = nil
+
+    /// Per-user key for check-in date.
+    static var checkinDateKey: String {
+        guard let username = AccountManager.shared.activeUsername else {
+            return checkinDateKeyPrefix
+        }
+        return "\(checkinDateKeyPrefix).\(username)"
+    }
+
+    /// Per-user key for check-in days.
+    static var checkinDaysKey: String {
+        guard let username = AccountManager.shared.activeUsername else {
+            return checkinDaysKeyPrefix
+        }
+        return "\(checkinDaysKeyPrefix).\(username)"
+    }
 
     init() {
         // Load saved preference
@@ -39,12 +57,11 @@ struct SettingState: FluxState {
         }
         // Load auto-checkin preference
         self.autoCheckin = UserDefaults.standard.bool(forKey: "autoCheckin")
-        // Load last checkin date
-        if let lastCheckin = UserDefaults.standard.object(forKey: "lastCheckinDate") as? Date {
+        // Load per-user checkin state
+        if let lastCheckin = UserDefaults.standard.object(forKey: Self.checkinDateKey) as? Date {
             self.lastCheckinDate = lastCheckin
         }
-        // Load checkin days
-        self.checkinDays = UserDefaults.standard.integer(forKey: "checkinDays")
+        self.checkinDays = UserDefaults.standard.integer(forKey: Self.checkinDaysKey)
         // Load Imgur client ID
         self.imgurClientId = UserDefaults.standard.string(forKey: Self.imgurClientIdKey) ?? ""
         // Load builtin browser preference

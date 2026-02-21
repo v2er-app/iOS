@@ -199,17 +199,30 @@ final class AccountManager: ObservableObject {
 
     private func resetAppStateForSwitch() {
         let store = Store.shared
+        // Reset all user-specific in-memory state
         store.appState.feedState = FeedState()
         store.appState.messageState = MessageState()
         store.appState.meState = MeState()
         store.appState.myFavoriteState = MyFavoriteState()
         store.appState.myFollowState = MyFollowState()
         store.appState.myRecentState = MyRecentState()
+        store.appState.exploreState = ExploreState()
+        store.appState.createTopicState = CreateTopicState()
+        store.appState.searchState = SearchState()
         store.appState.feedDetailStates = [:]
         store.appState.userDetailStates = [:]
         store.appState.userFeedStates = [:]
-        // Reload V2EX access token for new account
+        store.appState.tagDetailStates = [:]
+        // Reload per-user V2EX access token and checkin state
         store.appState.settingState.v2exAccessToken = SettingState.getRawV2exAccessToken() ?? ""
+        store.appState.settingState.lastCheckinDate = UserDefaults.standard.object(forKey: SettingState.checkinDateKey) as? Date
+        store.appState.settingState.checkinDays = UserDefaults.standard.integer(forKey: SettingState.checkinDaysKey)
+        store.appState.settingState.isCheckingIn = false
+        store.appState.settingState.checkinError = nil
+        // Clear in-memory content caches
+        if #available(iOS 18.0, *) {
+            RichViewCache.shared.clearAll()
+        }
         // Trigger feed reload
         dispatch(FeedActions.FetchData.Start())
     }

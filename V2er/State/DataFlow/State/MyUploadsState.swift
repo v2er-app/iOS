@@ -9,7 +9,15 @@
 import Foundation
 
 struct MyUploadsState: FluxState {
-    static let UPLOADS_KEY = "app.v2er.uploads"
+    static let UPLOADS_KEY_PREFIX = "app.v2er.uploads"
+
+    /// Per-user storage key for upload history.
+    static var uploadsKey: String {
+        guard let username = AccountManager.shared.activeUsername else {
+            return UPLOADS_KEY_PREFIX
+        }
+        return "\(UPLOADS_KEY_PREFIX).\(username)"
+    }
     static let maxUploadsHistory = 100
 
     var loading = false
@@ -51,7 +59,7 @@ struct MyUploadsState: FluxState {
     // MARK: - Persistence
 
     static func loadUploads() -> [UploadRecord] {
-        guard let data = Persist.read(key: UPLOADS_KEY) else { return [] }
+        guard let data = Persist.read(key: uploadsKey) else { return [] }
         let decoder = JSONDecoder()
         return (try? decoder.decode([UploadRecord].self, from: data)) ?? []
     }
@@ -72,7 +80,7 @@ struct MyUploadsState: FluxState {
     static func saveUploads(_ uploads: [UploadRecord]) {
         let encoder = JSONEncoder()
         if let data = try? encoder.encode(uploads) {
-            Persist.save(value: data, forkey: UPLOADS_KEY)
+            Persist.save(value: data, forkey: uploadsKey)
         }
     }
 

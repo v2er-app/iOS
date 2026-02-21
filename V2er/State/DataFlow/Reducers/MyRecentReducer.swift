@@ -41,7 +41,7 @@ struct MyRecentActions {
     private static func readRecordsSyncly() -> [MyRecentState.Record]? {
         var records: [MyRecentState.Record]? = nil
         do {
-            let data = Persist.read(key: MyRecentState.RECORD_KEY)
+            let data = Persist.read(key: MyRecentState.recordKey)
             if let data = data {
                 records = try JSONDecoder().decode([MyRecentState.Record].self, from: data)
                 records = records?.sorted(by: >)
@@ -93,7 +93,7 @@ struct MyRecentActions {
             // Persis to disk
             do {
                 let jsonData = try JSONEncoder().encode(records)
-                Persist.save(value: jsonData, forkey: MyRecentState.RECORD_KEY)
+                Persist.save(value: jsonData, forkey: MyRecentState.recordKey)
                 log("Record a new item: \(newRecord)")
             } catch {
                 log("Save record: \(newRecord) failed")
