@@ -19,6 +19,7 @@ struct V2erApp: App {
     #endif
 
     @StateObject private var store = Store.shared
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         #if os(iOS)
@@ -47,6 +48,11 @@ struct V2erApp: App {
             }
             .onChange(of: store.appState.settingState.appearance) { newValue in
                 updateAppearance(newValue)
+            }
+            .onChange(of: scenePhase) { phase in
+                if phase == .background {
+                    AccountManager.shared.refreshArchivedCookiesForActiveAccount()
+                }
             }
             #else
             RootHostView()

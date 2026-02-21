@@ -9,7 +9,15 @@
 import Foundation
 
 struct MyRecentState: FluxState {
-    static let RECORD_KEY = "app.v2er.record"
+    static let RECORD_KEY_PREFIX = "app.v2er.record"
+
+    /// Per-user storage key for recent history.
+    static var recordKey: String {
+        guard let username = AccountManager.shared.activeUsername else {
+            return RECORD_KEY_PREFIX
+        }
+        return "\(RECORD_KEY_PREFIX).\(username)"
+    }
     var loading = false
     var records: [Record]?
 
