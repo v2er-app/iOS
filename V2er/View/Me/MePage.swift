@@ -250,6 +250,9 @@ struct MePage: BaseHomePageView {
         .sheet(isPresented: $showAccountSwitcher, onDismiss: {
             if shouldAddAccountAfterDismiss {
                 shouldAddAccountAfterDismiss = false
+                // Clear cookies before new login to prevent V2EX from
+                // invalidating the archived account's server-side session.
+                APIService.shared.clearCookie()
                 dispatch(LoginActions.ShowLoginPageAction())
             }
         }) {

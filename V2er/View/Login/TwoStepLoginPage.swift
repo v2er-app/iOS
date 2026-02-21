@@ -40,6 +40,7 @@ struct TwoStepLoginPage: View {
     @State private var installedAuthenticators: [AuthenticatorApp] = []
     @FocusState private var isFocused: Bool
     @State private var showAuthenticators = false
+    @State private var openedAuthenticator = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
@@ -123,6 +124,7 @@ struct TwoStepLoginPage: View {
                     ) {
                         ForEach(Array(installedAuthenticators.enumerated()), id: \.element.id) { index, app in
                             Button {
+                                openedAuthenticator = true
                                 UIApplication.shared.open(app.url)
                             } label: {
                                 HStack(spacing: Spacing.sm) {
@@ -190,6 +192,15 @@ struct TwoStepLoginPage: View {
                 isFocused = true
                 installedAuthenticators = AuthenticatorApp.installed()
                 showAuthenticators = true
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+                guard openedAuthenticator else { return }
+                openedAuthenticator = false
+                guard let clip = UIPasteboard.general.string else { return }
+                let trimmed = clip.trimmingCharacters(in: .whitespacesAndNewlines)
+                let cleaned = trimmed.replacingOccurrences(of: "[\\s\\-]", with: "", options: .regularExpression)
+                guard cleaned.allSatisfy(\.isNumber), cleaned.count >= 6, cleaned.count <= 8 else { return }
+                twoStepCode = cleaned
             }
         }
     }

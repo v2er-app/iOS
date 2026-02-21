@@ -36,6 +36,15 @@ func loginReducer(_ state: LoginState, _ action: Action) -> (LoginState, Action?
             }
         case let action as LoginActions.ShowLoginPageAction:
             guard !state.showLoginView else { break }
+            // Reset form fields
+            state.password = .empty
+            state.captcha = .empty
+            // Pre-fill username when re-logging expired session
+            if AccountState.hasSignIn() && !action.reason.isEmpty {
+                state.username = AccountState.userName
+            } else {
+                state.username = .empty
+            }
             state.showLoginView = true
             Toast.show(action.reason, target: .login)
         case _ as LoginActions.StartLogin:
