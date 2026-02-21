@@ -8,51 +8,37 @@
 
 import Foundation
 
+/// Thin facade over AccountManager — preserves the existing static interface
+/// used by 30+ call sites across the codebase.
 struct AccountState {
-    static let ACCOUNT_KEY = "app.v2er.account"
-    static var ACCOUNT: AccountInfo?
 
     static func saveAccount(_ account: AccountInfo) {
-        do {
-            let jsonData = try JSONEncoder().encode(account)
-            Persist.save(value: jsonData, forkey: AccountState.ACCOUNT_KEY)
-            log("account: \(account) saved")
-            ACCOUNT = account
-        } catch {
-            log("Save account failed")
-        }
+        AccountManager.shared.saveAccount(account)
+        log("account: \(account) saved")
     }
 
     static func deleteAccount() {
-        Persist.save(value: String.empty, forkey: AccountState.ACCOUNT_KEY)
-        ACCOUNT = nil
-        APIService.shared.clearCookie()
+        guard let username = AccountManager.shared.activeUsername else {
+            log("deleteAccount skipped: no active username")
+            return
+        }
+        AccountManager.shared.removeAccount(username: username)
     }
 
     static func getAccount() -> AccountInfo? {
-        do {
-            if ACCOUNT != nil { return ACCOUNT }
-            let data = Persist.read(key: ACCOUNT_KEY)
-            guard let data = data else { return nil }
-            ACCOUNT = try JSONDecoder()
-                .decode(AccountInfo.self, from: data)
-            return ACCOUNT
-        } catch {
-            log("readAccount failed")
-        }
-        return nil
+        return AccountManager.shared.currentAccountInfo
     }
 
     static func hasSignIn() -> Bool {
-        return getAccount() != nil
+        return AccountManager.shared.currentAccount != nil
     }
 
     static var userName: String {
-        return getAccount()?.username ?? .default
+        return AccountManager.shared.activeUsername ?? .default
     }
 
     static var avatarUrl: String {
-        return getAccount()?.avatar ?? .default
+        return AccountManager.shared.currentAccount?.avatar ?? .default
     }
 
     static func isSelf(userName: String) -> Bool {
@@ -60,13 +46,10 @@ struct AccountState {
     }
 
     static var balance: BalanceInfo? {
-        return getAccount()?.balance
+        return AccountManager.shared.currentAccount?.balance
     }
 
     static func updateBalance(_ balance: BalanceInfo) {
-        guard var account = getAccount() else { return }
-        account.balance = balance
-        saveAccount(account)
+        AccountManager.shared.updateBalance(balance)
     }
-
 }

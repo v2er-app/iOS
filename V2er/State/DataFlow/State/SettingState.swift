@@ -68,36 +68,29 @@ struct SettingState: FluxState {
         return (clientId?.isEmpty == false) ? clientId : nil
     }
 
-    static func saveV2exAccessToken(_ token: String) {
+    // MARK: - Per-user Keychain methods
+
+    static func saveV2exAccessToken(_ token: String, forUser username: String) {
         let trimmed = token.trimmingCharacters(in: .whitespacesAndNewlines)
-        let data = Data(trimmed.utf8)
+        let keychainKey = "\(v2exAccessTokenKey).\(username)"
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: v2exAccessTokenKey,
+            kSecAttrAccount as String: keychainKey,
             kSecAttrService as String: "v2er.app"
         ]
         SecItemDelete(query as CFDictionary)
         if trimmed.isEmpty { return }
+        let data = Data(trimmed.utf8)
         var addQuery = query
         addQuery[kSecValueData as String] = data
         SecItemAdd(addQuery as CFDictionary, nil)
     }
 
-    /// Returns the token only when it exists AND is enabled.
-    /// All consumers use this to decide V2 API vs HTML scraping.
-    static func getV2exAccessToken() -> String? {
-        guard UserDefaults.standard.object(forKey: v2exTokenEnabledKey) == nil
-                || UserDefaults.standard.bool(forKey: v2exTokenEnabledKey) else {
-            return nil
-        }
-        return getRawV2exAccessToken()
-    }
-
-    /// Returns the stored token regardless of enabled state (for UI display).
-    static func getRawV2exAccessToken() -> String? {
+    static func getRawV2exAccessToken(forUser username: String) -> String? {
+        let keychainKey = "\(v2exAccessTokenKey).\(username)"
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: v2exAccessTokenKey,
+            kSecAttrAccount as String: keychainKey,
             kSecAttrService as String: "v2er.app",
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
@@ -111,6 +104,68 @@ struct SettingState: FluxState {
             return nil
         }
         return token
+    }
+
+    static func deleteV2exAccessToken(forUser username: String) {
+        let keychainKey = "\(v2exAccessTokenKey).\(username)"
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: keychainKey,
+            kSecAttrService as String: "v2er.app"
+        ]
+        SecItemDelete(query as CFDictionary)
+    }
+
+    /// Delegates to per-user save using the active account.
+    static func saveV2exAccessToken(_ token: String) {
+        guard let username = AccountManager.shared.activeUsername else {
+            log("saveV2exAccessToken skipped: no active username")
+            return
+        }
+        saveV2exAccessToken(token, forUser: username)
+    }
+
+    /// Returns the token only when it exists AND is enabled.
+    /// All consumers use this to decide V2 API vs HTML scraping.
+    static func getV2exAccessToken() -> String? {
+        guard UserDefaults.standard.object(forKey: v2exTokenEnabledKey) == nil
+                || UserDefaults.standard.bool(forKey: v2exTokenEnabledKey) else {
+            return nil
+        }
+        return getRawV2exAccessToken()
+    }
+
+    /// Returns the stored token for the active user (for UI display).
+    static func getRawV2exAccessToken() -> String? {
+        guard let username = AccountManager.shared.activeUsername else { return nil }
+        return getRawV2exAccessToken(forUser: username)
+    }
+
+    /// Migrates the legacy fixed-key token to a per-user key.
+    static func migrateLegacyToken(toUser username: String) {
+        let legacyQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: v2exAccessTokenKey,
+            kSecAttrService as String: "v2er.app",
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: AnyObject?
+        let status = SecItemCopyMatching(legacyQuery as CFDictionary, &result)
+        guard status == errSecSuccess,
+              let data = result as? Data,
+              let token = String(data: data, encoding: .utf8),
+              !token.isEmpty else { return }
+        // Save to per-user key
+        saveV2exAccessToken(token, forUser: username)
+        // Only delete legacy key if per-user save succeeded
+        guard getRawV2exAccessToken(forUser: username) != nil else { return }
+        let deleteQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: v2exAccessTokenKey,
+            kSecAttrService as String: "v2er.app"
+        ]
+        SecItemDelete(deleteQuery as CFDictionary)
     }
 
     /// Check if we should attempt auto-checkin today
