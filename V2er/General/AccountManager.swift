@@ -50,16 +50,18 @@ final class AccountManager: ObservableObject {
     private init() {
         loadAccounts()
         migrateLegacyAccountIfNeeded()
+        restoreActiveAccountCookiesIfNeeded()
     }
 
     // MARK: - Save / Update
 
     func saveAccount(_ account: AccountInfo) {
-        // If a different user is active, archive their cookies before the new session overwrites them
-        if let current = activeUsername, current != account.username,
-           let idx = accounts.firstIndex(where: { $0.username == current }) {
-            accounts[idx].archivedCookies = archiveCurrentCookies()
-        }
+        // NOTE: Do NOT re-archive the previous user's cookies here.
+        // By the time saveAccount is called (after login completes), the cookie jar
+        // already contains the NEW user's cookies. Archiving now would overwrite
+        // the previous user's valid cookies with the wrong session.
+        // The previous user's cookies are archived in archiveCurrentAccountCookies()
+        // which is called BEFORE the login flow starts.
 
         let cookies = archiveCurrentCookies()
         if let index = accounts.firstIndex(where: { $0.username == account.username }) {
@@ -137,6 +139,17 @@ final class AccountManager: ObservableObject {
         persistAccounts()
     }
 
+    /// Keeps the active account's cookie archive in sync with the live cookie jar.
+    /// Call this periodically (e.g. on app background) so archived cookies stay fresh.
+    func refreshArchivedCookiesForActiveAccount() {
+        guard let username = activeUsername,
+              let index = accounts.firstIndex(where: { $0.username == username }) else { return }
+        let fresh = archiveCurrentCookies()
+        guard !fresh.isEmpty else { return }
+        accounts[index].archivedCookies = fresh
+        persistAccounts()
+    }
+
     // MARK: - Cookie Archival
 
     private func archiveCurrentCookies() -> [Data] {
@@ -151,11 +164,34 @@ final class AccountManager: ObservableObject {
     private func restoreCookies(_ cookieData: [Data]) {
         let storage = HTTPCookieStorage.shared
         for data in cookieData {
-            guard let properties = try? NSKeyedUnarchiver.unarchivedObject(
+            guard var properties = try? NSKeyedUnarchiver.unarchivedObject(
                 ofClass: NSDictionary.self, from: data
-            ) as? [HTTPCookiePropertyKey: Any],
-                  let cookie = HTTPCookie(properties: properties) else { continue }
+            ) as? [HTTPCookiePropertyKey: Any] else { continue }
+
+            // Session cookies (no Expires) are discarded by HTTPCookieStorage on app termination.
+            // Promote them to persistent cookies so they survive across launches.
+            if properties[.expires] == nil || properties[.discard] as? String == "TRUE" {
+                properties[.expires] = Date(timeIntervalSinceNow: 365 * 24 * 60 * 60)
+                properties.removeValue(forKey: .discard)
+            }
+
+            guard let cookie = HTTPCookie(properties: properties) else { continue }
             storage.setCookie(cookie)
+        }
+    }
+
+    /// On cold launch, the cookie jar may be empty (session cookies don't persist).
+    /// Restore the active account's cookies so the first API request succeeds.
+    private func restoreActiveAccountCookiesIfNeeded() {
+        guard let username = activeUsername,
+              let account = accounts.first(where: { $0.username == username }),
+              !account.archivedCookies.isEmpty else { return }
+
+        let storage = HTTPCookieStorage.shared
+        let existing = storage.cookies(for: APIService.baseURL) ?? []
+        if existing.isEmpty {
+            log("Restoring cookies for \(username) on launch (jar was empty)")
+            restoreCookies(account.archivedCookies)
         }
     }
 
