@@ -126,6 +126,7 @@ struct SettingState: FluxState {
     }
 
     /// Returns the token only when it exists AND is enabled.
+    /// All consumers use this to decide V2 API vs HTML scraping.
     static func getV2exAccessToken() -> String? {
         guard UserDefaults.standard.object(forKey: v2exTokenEnabledKey) == nil
                 || UserDefaults.standard.bool(forKey: v2exTokenEnabledKey) else {

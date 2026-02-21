@@ -5,6 +5,7 @@
 //  Multi-account manager: archives/restores cookies per account for lightweight switching.
 //
 
+import Combine
 import Foundation
 
 struct StoredAccount: Codable, Identifiable {
@@ -54,6 +55,12 @@ final class AccountManager: ObservableObject {
     // MARK: - Save / Update
 
     func saveAccount(_ account: AccountInfo) {
+        // If a different user is active, archive their cookies before the new session overwrites them
+        if let current = activeUsername, current != account.username,
+           let idx = accounts.firstIndex(where: { $0.username == current }) {
+            accounts[idx].archivedCookies = archiveCurrentCookies()
+        }
+
         let cookies = archiveCurrentCookies()
         if let index = accounts.firstIndex(where: { $0.username == account.username }) {
             accounts[index].avatar = account.avatar
@@ -155,22 +162,20 @@ final class AccountManager: ObservableObject {
     // MARK: - State Reset
 
     private func resetAppStateForSwitch() {
-        DispatchQueue.main.async {
-            let store = Store.shared
-            store.appState.feedState = FeedState()
-            store.appState.messageState = MessageState()
-            store.appState.meState = MeState()
-            store.appState.myFavoriteState = MyFavoriteState()
-            store.appState.myFollowState = MyFollowState()
-            store.appState.myRecentState = MyRecentState()
-            store.appState.feedDetailStates = [:]
-            store.appState.userDetailStates = [:]
-            store.appState.userFeedStates = [:]
-            // Reload V2EX access token for new account
-            store.appState.settingState.v2exAccessToken = SettingState.getRawV2exAccessToken() ?? ""
-            // Trigger feed reload
-            dispatch(FeedActions.FetchData.Start())
-        }
+        let store = Store.shared
+        store.appState.feedState = FeedState()
+        store.appState.messageState = MessageState()
+        store.appState.meState = MeState()
+        store.appState.myFavoriteState = MyFavoriteState()
+        store.appState.myFollowState = MyFollowState()
+        store.appState.myRecentState = MyRecentState()
+        store.appState.feedDetailStates = [:]
+        store.appState.userDetailStates = [:]
+        store.appState.userFeedStates = [:]
+        // Reload V2EX access token for new account
+        store.appState.settingState.v2exAccessToken = SettingState.getRawV2exAccessToken() ?? ""
+        // Trigger feed reload
+        dispatch(FeedActions.FetchData.Start())
     }
 
     // MARK: - Persistence
@@ -191,8 +196,11 @@ final class AccountManager: ObservableObject {
     // MARK: - Legacy Migration
 
     private func migrateLegacyAccountIfNeeded() {
-        // Skip if already migrated (new-format accounts exist)
-        guard accounts.isEmpty else { return }
+        // If migration was interrupted, clean up the leftover legacy key
+        if !accounts.isEmpty {
+            UserDefaults.standard.removeObject(forKey: Self.legacyAccountKey)
+            return
+        }
 
         // Read legacy single-account data
         guard let legacyData = UserDefaults.standard.data(forKey: Self.legacyAccountKey),

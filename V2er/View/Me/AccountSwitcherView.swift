@@ -10,6 +10,7 @@ import SwiftUI
 struct AccountSwitcherView: View {
     @StateObject private var accountManager = AccountManager.shared
     @Environment(\.dismiss) private var dismiss
+    @Binding var shouldAddAccount: Bool
 
     var body: some View {
         NavigationStack {
@@ -46,10 +47,8 @@ struct AccountSwitcherView: View {
                 Section {
                     Button {
                         accountManager.archiveCurrentAccountCookies()
+                        shouldAddAccount = true
                         dismiss()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            dispatch(LoginActions.ShowLoginPageAction())
-                        }
                     } label: {
                         Label("添加账号", systemImage: "plus.circle")
                     }

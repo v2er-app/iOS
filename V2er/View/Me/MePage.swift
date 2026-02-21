@@ -14,6 +14,7 @@ struct MePage: BaseHomePageView {
     @ObservedObject private var otherAppsManager = OtherAppsManager.shared
     @StateObject private var accountManager = AccountManager.shared
     @State private var showAccountSwitcher = false
+    @State private var shouldAddAccountAfterDismiss = false
 
     var bindingState: Binding<MeState> {
         $store.appState.meState
@@ -157,8 +158,9 @@ struct MePage: BaseHomePageView {
                     AvatarView(url: AccountState.avatarUrl, size: 64)
                         .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
                         .overlay(alignment: .topTrailing) {
-                            if accountManager.accounts.count > 1 {
-                                Text("\(accountManager.accounts.count)")
+                            let otherCount = accountManager.accounts.count - 1
+                            if otherCount > 0 {
+                                Text("\(otherCount)")
                                     .font(.caption2.weight(.bold))
                                     .foregroundColor(.white)
                                     .frame(minWidth: 18, minHeight: 18)
@@ -245,8 +247,13 @@ struct MePage: BaseHomePageView {
         .navigationDestination(item: $navigateToAllApps) { route in
             route.destination()
         }
-        .sheet(isPresented: $showAccountSwitcher) {
-            AccountSwitcherView()
+        .sheet(isPresented: $showAccountSwitcher, onDismiss: {
+            if shouldAddAccountAfterDismiss {
+                shouldAddAccountAfterDismiss = false
+                dispatch(LoginActions.ShowLoginPageAction())
+            }
+        }) {
+            AccountSwitcherView(shouldAddAccount: $shouldAddAccountAfterDismiss)
         }
     }
 

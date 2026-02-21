@@ -19,7 +19,7 @@ struct AccountState {
 
     static func deleteAccount() {
         guard let username = AccountManager.shared.activeUsername else {
-            APIService.shared.clearCookie()
+            log("deleteAccount skipped: no active username")
             return
         }
         AccountManager.shared.removeAccount(username: username)
