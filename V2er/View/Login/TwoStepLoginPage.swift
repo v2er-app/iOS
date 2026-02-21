@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-private struct AuthenticatorApp: Identifiable {
+private struct AuthenticatorApp: Identifiable, Hashable {
     let id: String
     let name: String
     let icon: String
@@ -30,6 +30,8 @@ struct TwoStepLoginPage: View {
     @State var twoStepCode: String = .empty
     @State private var installedAuthenticators: [AuthenticatorApp] = []
     @FocusState private var isFocused: Bool
+    @State private var showAuthenticators = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -39,20 +41,23 @@ struct TwoStepLoginPage: View {
                     isFocused = false
                 }
 
-            VStack(spacing: Spacing.lg) {
-                // Header
-                Image(systemName: "lock.shield.fill")
-                    .font(.largeTitle)
-                    .foregroundColor(.accentColor)
-                    .padding(.top, Spacing.sm)
+            VStack(spacing: 0) {
+                // Header — tighter group for visual cohesion
+                VStack(spacing: Spacing.sm) {
+                    Image(systemName: "lock.shield.fill")
+                        .font(.largeTitle)
+                        .foregroundColor(.accentColor)
+                        .padding(.top, Spacing.sm)
 
-                Text("两步验证")
-                    .font(.headline)
-                    .foregroundColor(.primaryText)
+                    Text("两步验证")
+                        .font(.headline)
+                        .foregroundColor(.primaryText)
 
-                Text("请输入您的两步验证码")
-                    .font(.subheadline)
-                    .foregroundColor(.secondaryText)
+                    Text("请输入您的两步验证码")
+                        .font(.subheadline)
+                        .foregroundColor(.secondaryText)
+                }
+                .padding(.bottom, Spacing.lg)
 
                 // Input
                 HStack(spacing: Spacing.md) {
@@ -62,12 +67,21 @@ struct TwoStepLoginPage: View {
                         .frame(width: 24)
 
                     TextField("验证码", text: $twoStepCode)
-                        #if os(iOS)
                         .keyboardType(.numberPad)
-                        #endif
+                        .textContentType(.oneTimeCode)
                         .font(.title3.monospaced())
                         .focused($isFocused)
                         .accessibilityLabel("两步验证码")
+                        .onSubmit {
+                            guard !twoStepCode.isEmpty else { return }
+                            dispatch(LoginActions.TwoStepLogin(input: twoStepCode))
+                        }
+                        .onChange(of: twoStepCode) { _, newValue in
+                            let filtered = newValue.filter(\.isNumber)
+                            if filtered != newValue {
+                                twoStepCode = filtered
+                            }
+                        }
                 }
                 .padding(.horizontal, Spacing.lg)
                 .frame(height: 50)
@@ -76,28 +90,59 @@ struct TwoStepLoginPage: View {
 
                 // Authenticator shortcuts
                 if !installedAuthenticators.isEmpty {
-                    VStack(alignment: .leading, spacing: Spacing.sm) {
-                        Text("打开验证器获取验证码")
-                            .font(.caption)
-                            .foregroundColor(.secondaryText)
+                    // "Or" separator
+                    HStack(spacing: Spacing.md) {
+                        VStack { Divider() }
+                        Text("或")
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(Color.secondaryText)
+                        VStack { Divider() }
+                    }
+                    .padding(.top, Spacing.lg)
+                    .padding(.bottom, Spacing.md)
 
-                        HStack(spacing: Spacing.sm) {
-                            ForEach(installedAuthenticators) { app in
-                                Button {
-                                    UIApplication.shared.open(app.url)
-                                } label: {
-                                    Label(app.name, systemImage: app.icon)
-                                        .font(.caption)
-                                        .padding(.horizontal, Spacing.md)
-                                        .padding(.vertical, Spacing.xs)
-                                        .background(Color(.tertiarySystemFill))
-                                        .clipShape(Capsule())
+                    // Authenticator app rows
+                    VStack(spacing: Spacing.xs) {
+                        ForEach(Array(installedAuthenticators.enumerated()), id: \.element.id) { index, app in
+                            Button {
+                                UIApplication.shared.open(app.url)
+                            } label: {
+                                HStack(spacing: Spacing.md) {
+                                    Image(systemName: app.icon)
+                                        .font(.title3)
+                                        .foregroundStyle(Color.accentColor)
+                                        .frame(width: 28)
+
+                                    Text(app.name)
+                                        .font(.subheadline.weight(.medium))
+                                        .foregroundStyle(Color.primaryText)
+
+                                    Spacer()
+
+                                    Image(systemName: "arrow.up.forward.app.fill")
+                                        .font(.caption2)
+                                        .foregroundStyle(Color.tertiaryText)
                                 }
-                                .foregroundColor(.primaryText)
+                                .padding(.horizontal, Spacing.md)
+                                .frame(minHeight: 44)
+                                .background(Color(.tertiarySystemFill))
+                                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
                             }
+                            .opacity(showAuthenticators ? 1 : 0)
+                            .offset(y: showAuthenticators ? 0 : 6)
+                            .animation(
+                                reduceMotion
+                                    ? .none
+                                    : .easeOut(duration: 0.25).delay(Double(index) * 0.06 + 0.15),
+                                value: showAuthenticators
+                            )
+                            .accessibilityLabel("打开\(app.name)验证器")
+                            .accessibilityHint("跳转到\(app.name)应用获取验证码")
+                            .accessibilityAddTraits(.isLink)
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityElement(children: .contain)
+                    .accessibilityLabel("验证器应用快捷入口")
                 }
 
                 // Buttons
@@ -108,6 +153,7 @@ struct TwoStepLoginPage: View {
                         Text("取消")
                     }
                     .buttonStyle(SecondaryButtonStyle())
+                    .accessibilityHint("取消两步验证")
 
                     Button {
                         dispatch(LoginActions.TwoStepLogin(input: twoStepCode))
@@ -116,16 +162,20 @@ struct TwoStepLoginPage: View {
                     }
                     .buttonStyle(PrimaryButtonStyle())
                     .disabled(twoStepCode.isEmpty)
+                    .accessibilityHint("提交两步验证码")
                 }
+                .padding(.top, Spacing.xl)
             }
             .padding(Spacing.xl)
             .background(Color(.secondarySystemBackground))
             .clipShape(RoundedRectangle(cornerRadius: CornerRadius.large))
             .shadow(color: .black.opacity(0.15), radius: 20, y: 10)
             .padding(.horizontal, 40)
+            .accessibilityAddTraits(.isModal)
             .onAppear {
                 isFocused = true
                 installedAuthenticators = AuthenticatorApp.installed()
+                showAuthenticators = true
             }
         }
     }
