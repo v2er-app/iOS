@@ -38,6 +38,8 @@ final class AccountManager: ObservableObject {
 
     @Published var accounts: [StoredAccount] = []
     @Published var activeUsername: String?
+    /// Cross-component signal: set to `true` to open the account management sheet from anywhere.
+    @Published var showSwitcher = false
 
     var currentAccount: StoredAccount? {
         accounts.first { $0.username == activeUsername }
