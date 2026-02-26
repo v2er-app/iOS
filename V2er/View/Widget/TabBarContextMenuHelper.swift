@@ -141,11 +141,11 @@ final class TabBarMenuCoordinator: NSObject, UIContextMenuInteractionDelegate {
         self.onManageAccounts = onManageAccounts
     }
 
-    /// Attaches a UIContextMenuInteraction to the tab bar itself and keeps a cached
-    /// hit area for the 4th tab ("Me"), so the menu only appears when long-pressing
-    /// that tab. This is more reliable than attaching to private UITabBarButton views.
+    /// Attaches a UIContextMenuInteraction to the tab bar and filters by the Me tab hit area.
+    /// This path is the most reliable for long-press triggering across iOS versions.
     func attachContextMenu(to tabBar: UITabBar) {
-        meTabFrameInTabBar = resolveMeTabFrame(in: tabBar)
+        let geometry = resolveMeTabGeometry(in: tabBar)
+        meTabFrameInTabBar = geometry.frame
 
         // Already attached to this visible tab bar
         if let current = attachedTabBar,
@@ -182,6 +182,7 @@ final class TabBarMenuCoordinator: NSObject, UIContextMenuInteractionDelegate {
         _ interaction: UIContextMenuInteraction,
         previewForHighlightingMenuWithConfiguration configuration: UIContextMenuConfiguration
     ) -> UITargetedPreview? {
+        // Invisible anchor preview used only to position the menu over the Me tab.
         menuAnchorPreview()
     }
 
@@ -189,88 +190,83 @@ final class TabBarMenuCoordinator: NSObject, UIContextMenuInteractionDelegate {
         _ interaction: UIContextMenuInteraction,
         previewForDismissingMenuWithConfiguration configuration: UIContextMenuConfiguration
     ) -> UITargetedPreview? {
-        menuAnchorPreview()
+        // Avoid any flash/ghost rectangle on action tap.
+        nil
     }
 
     // MARK: - Me Tab Hit Area
 
-    private func resolveMeTabFrame(in tabBar: UITabBar) -> CGRect {
+    private func resolveMeTabGeometry(in tabBar: UITabBar) -> (frame: CGRect, interactionView: UIView?) {
         // Prefer actual item view geometry when we can find it.
-        if let frame = meTabFrameFromTabBarSubviews(in: tabBar) {
-            return frame.insetBy(dx: -6, dy: -6)
+        if let candidate = meTabCandidateFromTabBarSubviews(in: tabBar) {
+            return (candidate.frame.insetBy(dx: -6, dy: -6), candidate.view)
         }
 
         // Fallback: split the tab bar evenly by item count.
         let count = max(tabBar.items?.count ?? 4, 1)
         let index = min(3, count - 1)
         let width = tabBar.bounds.width / CGFloat(count)
-        return CGRect(
-            x: CGFloat(index) * width,
-            y: 0,
-            width: width,
-            height: tabBar.bounds.height
+        return (
+            CGRect(
+                x: CGFloat(index) * width,
+                y: 0,
+                width: width,
+                height: tabBar.bounds.height
+            ),
+            nil
         )
     }
 
-    private func meTabFrameFromTabBarSubviews(in tabBar: UITabBar) -> CGRect? {
+    private func meTabCandidateFromTabBarSubviews(in tabBar: UITabBar) -> (view: UIView, frame: CGRect)? {
         let tabBarBounds = tabBar.bounds
-
-        // Search recursively because SwiftUI / newer iOS versions may nest item views.
         let allViews = allDescendants(of: tabBar)
-        var candidates = allViews
-            .compactMap { view -> UIView? in
-                guard view !== tabBar else { return nil }
-                let className = String(describing: type(of: view))
-                if className.contains("TabBarButton") { return view }
-                if className.contains("TabBarItem") { return view }
-                return nil
-            }
-            .filter { view in
-                let frame = tabBar.convert(view.bounds, from: view)
-                return frame.width > 20 &&
-                       frame.height > 20 &&
-                       tabBarBounds.intersects(frame) &&
-                       !view.isHidden &&
-                       view.alpha > 0.01
-            }
 
-        if candidates.count < 4 {
-            // Fallback to UIControl descendants that look like item containers.
-            candidates = allViews
-                .compactMap { $0 as? UIControl }
-                .filter { control in
-                    let frame = tabBar.convert(control.bounds, from: control)
-                    return control !== tabBar &&
-                           frame.width > 20 &&
-                           frame.height > 20 &&
-                           tabBarBounds.intersects(frame) &&
-                           !control.isHidden &&
-                           control.alpha > 0.01
+        func collectControls(matchingClassName: Bool) -> [(view: UIView, frame: CGRect)] {
+            allViews.compactMap { rawView -> (view: UIView, frame: CGRect)? in
+                guard let control = rawView as? UIControl, control !== tabBar else { return nil }
+                let className = String(describing: type(of: control))
+                if matchingClassName && !className.contains("TabBarButton") {
+                    return nil
                 }
+
+                let frame = tabBar.convert(control.bounds, from: control)
+                guard frame.width > 20,
+                      frame.height > 20,
+                      tabBarBounds.intersects(frame),
+                      !control.isHidden,
+                      control.alpha > 0.01,
+                      control.isUserInteractionEnabled else {
+                    return nil
+                }
+                return (control, frame.integral)
+            }
         }
 
-        // Deduplicate equivalent frames produced by nested containers.
-        let sorted = candidates
-            .map { tabBar.convert($0.bounds, from: $0).integral }
-            .sorted { lhs, rhs in
-                if abs(lhs.minX - rhs.minX) > 0.5 { return lhs.minX < rhs.minX }
-                return lhs.width > rhs.width
-            }
+        var candidates = collectControls(matchingClassName: true)
+        if candidates.count < 4 {
+            candidates = collectControls(matchingClassName: false)
+        }
 
-        var uniqueFrames: [CGRect] = []
-        for frame in sorted {
-            let isDuplicate = uniqueFrames.contains { existing in
-                abs(existing.minX - frame.minX) < 1 &&
-                abs(existing.width - frame.width) < 2 &&
-                abs(existing.height - frame.height) < 2
+        // Deduplicate nested/overlapping controls and sort left-to-right.
+        let sorted = candidates.sorted { lhs, rhs in
+            if abs(lhs.frame.minX - rhs.frame.minX) > 0.5 { return lhs.frame.minX < rhs.frame.minX }
+            return lhs.frame.width > rhs.frame.width
+        }
+
+        var uniqueCandidates: [(view: UIView, frame: CGRect)] = []
+        for candidate in sorted {
+            let isDuplicate = uniqueCandidates.contains { existing in
+                abs(existing.frame.minX - candidate.frame.minX) < 1 &&
+                abs(existing.frame.midY - candidate.frame.midY) < 4 &&
+                abs(existing.frame.width - candidate.frame.width) < 4
             }
             if !isDuplicate {
-                uniqueFrames.append(frame)
+                uniqueCandidates.append(candidate)
             }
         }
 
-        guard uniqueFrames.count >= 4 else { return nil }
-        return uniqueFrames[3]
+        guard uniqueCandidates.count >= 4 else { return nil }
+        return uniqueCandidates[3]
     }
 
     private func allDescendants(of view: UIView) -> [UIView] {
@@ -300,7 +296,7 @@ final class TabBarMenuCoordinator: NSObject, UIContextMenuInteractionDelegate {
 
         let parameters = UIPreviewParameters()
         parameters.backgroundColor = .clear
-        parameters.visiblePath = UIBezierPath(roundedRect: stub.bounds, cornerRadius: 12)
+        // No visiblePath: keep the preview visually invisible while preserving the menu anchor point.
 
         let target = UIPreviewTarget(container: tabBar, center: CGPoint(x: anchorRect.midX, y: anchorRect.midY))
         return UITargetedPreview(view: stub, parameters: parameters, target: target)
@@ -310,13 +306,13 @@ final class TabBarMenuCoordinator: NSObject, UIContextMenuInteractionDelegate {
         let frame = meTabFrameInTabBar.intersection(tabBar.bounds)
         guard !frame.isNull, !frame.isEmpty else { return .null }
 
-        let anchorWidth = min(max(frame.width - 16, 40), 64)
-        let anchorHeight = min(max(frame.height - 14, 28), 44)
+        // Small anchor near the tab's center works well without showing any highlight.
+        let size = CGSize(width: 4, height: 4)
         return CGRect(
-            x: frame.midX - anchorWidth / 2,
-            y: max(frame.minY + 4, 0),
-            width: anchorWidth,
-            height: anchorHeight
+            x: frame.midX - size.width / 2,
+            y: frame.midY - size.height / 2,
+            width: size.width,
+            height: size.height
         ).integral
     }
 
