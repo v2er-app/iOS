@@ -82,26 +82,6 @@ struct MePage: BaseHomePageView {
                 SplitNavigationLink(route: .myUploads) {
                     Label("我的图片", systemImage: "photo.on.rectangle")
                 }
-
-                if accountManager.accounts.count > 0 {
-                    Button {
-                        showAccountSwitcher = true
-                    } label: {
-                        HStack {
-                            Label("账号管理", systemImage: "person.2")
-                                .foregroundColor(.primary)
-                            Spacer()
-                            if accountManager.accounts.count > 1 {
-                                Text("\(accountManager.accounts.count) 个账号")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundColor(.secondary.opacity(0.5))
-                        }
-                    }
-                }
             }
 
             // MARK: - Other Apps Section
