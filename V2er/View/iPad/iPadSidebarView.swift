@@ -12,7 +12,7 @@ struct iPadSidebarView: View {
     var onSwitchAccount: ((String) -> Void)? = nil
     var onAddAccount: (() -> Void)? = nil
     var onManageAccounts: (() -> Void)? = nil
-    @ObservedObject private var accountManager = AccountManager.shared
+    @StateObject private var accountManager = AccountManager.shared
 
     private var optionalSelection: Binding<TabId?> {
         Binding<TabId?>(
@@ -99,7 +99,7 @@ struct iPadSidebarView: View {
                 Label("添加账号", systemImage: "plus.circle")
             }
 
-            if others.count > 0 {
+            if !others.isEmpty {
                 Button {
                     onManageAccounts?()
                 } label: {

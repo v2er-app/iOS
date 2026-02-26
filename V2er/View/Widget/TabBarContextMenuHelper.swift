@@ -158,8 +158,10 @@ extension TabBarContextMenuAttacher {
         // MARK: - Me Tab Geometry
 
         private func meTabFrame(in tabBar: UITabBar) -> CGRect {
-            let count = max(tabBar.items?.count ?? 4, 1)
-            let meIndex = min(3, count - 1)
+            let items = tabBar.items ?? []
+            let count = max(items.count, 1)
+            // Me tab is the last tab; fall back to last position if not found
+            let meIndex = items.lastIndex(where: { $0.title == "我" }) ?? (count - 1)
             let w = tabBar.bounds.width / CGFloat(count)
             return CGRect(x: CGFloat(meIndex) * w, y: 0,
                           width: w, height: tabBar.bounds.height)

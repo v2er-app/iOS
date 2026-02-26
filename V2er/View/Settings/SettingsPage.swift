@@ -213,7 +213,7 @@ struct SettingsPage: View {
 
             // MARK: - Account Section
             Section {
-                if accountManager.accounts.count > 0 {
+                if !accountManager.accounts.isEmpty {
                     Button {
                         showAccountSwitcher = true
                     } label: {
