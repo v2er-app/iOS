@@ -19,8 +19,11 @@ struct IdentifiableURL: Identifiable {
 
 struct SettingsPage: View {
     @Environment(\.dismiss) var dismiss
+    @StateObject private var accountManager = AccountManager.shared
     @State private var showingDeleteAccountAlert = false
     @State private var showingLogoutConfirmation = false
+    @State private var showAccountSwitcher = false
+    @State private var shouldAddAccountAfterDismiss = false
     @State private var safariURL: IdentifiableURL?
     @State private var selectedSubSetting: AppRoute? = nil
 
@@ -210,6 +213,28 @@ struct SettingsPage: View {
 
             // MARK: - Account Section
             Section {
+                if !accountManager.accounts.isEmpty {
+                    Button {
+                        showAccountSwitcher = true
+                    } label: {
+                        HStack {
+                            Label("账号管理", systemImage: "person.2")
+                            Spacer()
+                            if accountManager.accounts.count > 1 {
+                                Text("\(accountManager.accounts.count) 个账号")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Image(systemName: "chevron.right")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(Color.tertiaryText)
+                                .accessibilityHidden(true)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .foregroundStyle(.primary)
+                }
+
                 Button {
                     showingDeleteAccountAlert = true
                 } label: {
@@ -228,6 +253,15 @@ struct SettingsPage: View {
         #if os(iOS)
         .navigationBarTitleDisplayMode(.large)
         #endif
+        .sheet(isPresented: $showAccountSwitcher, onDismiss: {
+            if shouldAddAccountAfterDismiss {
+                shouldAddAccountAfterDismiss = false
+                APIService.shared.clearCookie()
+                dispatch(LoginActions.ShowLoginPageAction())
+            }
+        }) {
+            AccountSwitcherView(shouldAddAccount: $shouldAddAccountAfterDismiss)
+        }
     }
 
     // MARK: - Settings Navigation Row

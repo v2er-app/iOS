@@ -15,6 +15,7 @@ struct MainPage: StateView {
     @State private var tabReselectionPublisher = PassthroughSubject<TabId, Never>()
     @State private var iPadSelectedTab: TabId = .feed
     @ObservedObject private var otherAppsManager = OtherAppsManager.shared
+    @ObservedObject private var accountManager = AccountManager.shared
 
     var bindingState: Binding<GlobalState> {
         $store.appState.globalState
@@ -117,6 +118,27 @@ struct MainPage: StateView {
             .tag(TabId.me)
         }
         .tint(Color("TintColor"))
+        #if os(iOS)
+        .background(
+            TabBarContextMenuAttacher(
+                accountManager: accountManager,
+                onSwitch: { username in
+                    accountManager.switchTo(username: username)
+                },
+                onAddAccount: {
+                    accountManager.archiveCurrentAccountCookies()
+                    APIService.shared.clearCookie()
+                    dispatch(LoginActions.ShowLoginPageAction())
+                },
+                onManageAccounts: {
+                    selectedTab.wrappedValue = .me
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        accountManager.showSwitcher = true
+                    }
+                }
+            )
+        )
+        #endif
         .onReceive(tabReselectionPublisher) { tappedTab in
             dispatch(TabbarClickAction(selectedTab: tappedTab))
         }
@@ -131,6 +153,20 @@ struct MainPage: StateView {
                 unReadNums: unReadNums,
                 onReselect: {
                     dispatch(TabbarClickAction(selectedTab: iPadSelectedTab))
+                },
+                onSwitchAccount: { username in
+                    accountManager.switchTo(username: username)
+                },
+                onAddAccount: {
+                    accountManager.archiveCurrentAccountCookies()
+                    APIService.shared.clearCookie()
+                    dispatch(LoginActions.ShowLoginPageAction())
+                },
+                onManageAccounts: {
+                    iPadSelectedTab = .me
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        accountManager.showSwitcher = true
+                    }
                 }
             )
         } detail: {
