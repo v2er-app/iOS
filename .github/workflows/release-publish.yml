@@ -172,22 +172,22 @@ jobs:
           done
           echo "Stale keychain cleanup complete"
 
-      # Install Apple WWDR intermediate certificates for code signing chain validation
-      - name: Install Apple WWDR Certificates
+      - name: Ensure Apple WWDR Certificates
         run: |
-          echo "Downloading Apple WWDR intermediate certificates..."
-          mkdir -p /tmp/apple-certs
-
-          curl -sL https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer -o /tmp/apple-certs/AppleWWDRCAG3.cer
-          curl -sL https://www.apple.com/certificateauthority/AppleWWDRCAG4.cer -o /tmp/apple-certs/AppleWWDRCAG4.cer
-          curl -sL https://developer.apple.com/certificationauthority/AppleWWDRCA.cer -o /tmp/apple-certs/AppleWWDRCA.cer
-
-          echo "Importing WWDR certificates to login keychain..."
-          security import /tmp/apple-certs/AppleWWDRCAG3.cer -k ~/Library/Keychains/login.keychain-db -T /usr/bin/codesign -T /usr/bin/security || true
-          security import /tmp/apple-certs/AppleWWDRCAG4.cer -k ~/Library/Keychains/login.keychain-db -T /usr/bin/codesign -T /usr/bin/security || true
-          security import /tmp/apple-certs/AppleWWDRCA.cer -k ~/Library/Keychains/login.keychain-db -T /usr/bin/codesign -T /usr/bin/security || true
-
-          echo "WWDR certificates installed successfully"
+          COUNT=$(security find-certificate -a -c "Apple Worldwide Developer Relations" ~/Library/Keychains/login.keychain-db 2>/dev/null | grep -c "alis" || echo "0")
+          if [ "$COUNT" -gt 0 ]; then
+            echo "Found $COUNT WWDR certificate(s) — skipping download"
+          else
+            echo "No WWDR certificates found, installing..."
+            curl -sL https://www.apple.com/certificateauthority/AppleWWDRCAG3.cer -o /tmp/AppleWWDRCAG3.cer
+            curl -sL https://www.apple.com/certificateauthority/AppleWWDRCAG4.cer -o /tmp/AppleWWDRCAG4.cer
+            curl -sL https://developer.apple.com/certificationauthority/AppleWWDRCA.cer -o /tmp/AppleWWDRCA.cer
+            security import /tmp/AppleWWDRCAG3.cer -k ~/Library/Keychains/login.keychain-db -T /usr/bin/codesign -T /usr/bin/security || true
+            security import /tmp/AppleWWDRCAG4.cer -k ~/Library/Keychains/login.keychain-db -T /usr/bin/codesign -T /usr/bin/security || true
+            security import /tmp/AppleWWDRCA.cer -k ~/Library/Keychains/login.keychain-db -T /usr/bin/codesign -T /usr/bin/security || true
+            rm -f /tmp/AppleWWDR*.cer
+            echo "WWDR certificates installed"
+          fi
 
       - name: Create App Store Connect API Key
         env:
