@@ -2,9 +2,9 @@
 //  TabBarContextMenuHelper.swift
 //  V2er
 //
-//  Attaches a UIContextMenuInteraction to the tab bar and only enables it
-//  within the Me tab hit area
-//  for Telegram-style long-press account switching.
+//  Attaches a UIContextMenuInteraction to the UITabBar itself (not individual
+//  buttons) and uses the hit-test location to only respond in the Me tab region.
+//  This avoids relying on private UITabBarButton internals that may eat gestures.
 //
 
 #if os(iOS)
@@ -12,20 +12,12 @@ import SwiftUI
 import UIKit
 import Kingfisher
 
-// MARK: - Tab Bar Finder View
+// MARK: - Tab Bar Finder
 
-    /// An invisible UIView embedded via UIViewRepresentable as a `.background` on the TabView.
-    /// When added to the window, it walks UP the superview chain to find the UITabBar,
-    /// then attaches a UIContextMenuInteraction for the Me tab area.
-///
-/// This approach is more reliable than searching from the window downward because:
-/// 1. We start from a known position inside the SwiftUI-managed UITabBar hierarchy.
-/// 2. `didMoveToWindow()` fires exactly when the view is in the hierarchy.
-/// 3. Walking up is deterministic; walking down is fragile with SwiftUI's deep nesting.
 private class TabBarFinderView: UIView {
     var onTabBarFound: ((UITabBar) -> Void)?
     private var retryCount = 0
-    private static let maxRetries = 20
+    private static let maxRetries = 30
 
     override func didMoveToWindow() {
         super.didMoveToWindow()
@@ -33,21 +25,14 @@ private class TabBarFinderView: UIView {
         attemptFind()
     }
 
-    /// Attempts to find the UITabBar and its buttons.
-    /// If the tab bar exists but buttons aren't laid out yet, retries after a short delay.
     private func attemptFind() {
-        guard let window = self.window else { return }
-
-        if let tabBar = Self.findSubview(ofType: UITabBar.self, in: window) {
-            // Check that tab bar buttons are actually laid out
-            let buttons = tabBar.subviews.filter { $0 is UIControl }
-            if buttons.count >= 4 {
-                onTabBarFound?(tabBar)
-                return
-            }
+        if let tabBar = resolveTabBar(),
+           tabBar.items?.count ?? 0 >= 1,
+           tabBar.window != nil,
+           !tabBar.bounds.isEmpty {
+            onTabBarFound?(tabBar)
+            return
         }
-
-        // Tab bar or its buttons may not exist yet; retry up to ~2 seconds
         guard retryCount < Self.maxRetries else { return }
         retryCount += 1
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
@@ -55,17 +40,32 @@ private class TabBarFinderView: UIView {
         }
     }
 
-    /// Recursive depth-first search for a view of a specific type.
+    func currentTabBar() -> UITabBar? { resolveTabBar() }
+
+    private func resolveTabBar() -> UITabBar? {
+        if let vc = nearestViewController(), let tb = vc.tabBarController?.tabBar { return tb }
+        guard let window = self.window else { return nil }
+        return Self.findSubview(ofType: UITabBar.self, in: window)
+    }
+
+    private func nearestViewController() -> UIViewController? {
+        var r: UIResponder? = self
+        while let current = r {
+            if let vc = current as? UIViewController { return vc }
+            r = current.next
+        }
+        return nil
+    }
+
     fileprivate static func findSubview<T: UIView>(ofType type: T.Type, in view: UIView) -> T? {
         if let match = view as? T { return match }
-        for sub in view.subviews {
-            if let found = findSubview(ofType: type, in: sub) { return found }
-        }
+        for sub in view.subviews { if let found = findSubview(ofType: type, in: sub) { return found } }
         return nil
     }
 }
 
-/// SwiftUI wrapper for `TabBarFinderView`. Place this as a `.background` on a TabView.
+// MARK: - SwiftUI Bridge
+
 struct TabBarContextMenuAttacher: UIViewRepresentable {
     let accountManager: AccountManager
     let onSwitch: (String) -> Void
@@ -74,330 +74,220 @@ struct TabBarContextMenuAttacher: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIView {
         let finder = TabBarFinderView()
-        // Use alpha=0 instead of isHidden=true to prevent SwiftUI from optimizing the view away
         finder.alpha = 0
         finder.isUserInteractionEnabled = false
-        // Non-zero frame ensures SwiftUI keeps this view in the hierarchy
         finder.frame = CGRect(x: 0, y: 0, width: 1, height: 1)
-        finder.onTabBarFound = { [weak coordinator = context.coordinator] tabBar in
-            coordinator?.attachContextMenu(to: tabBar)
+        finder.onTabBarFound = { [weak c = context.coordinator] tabBar in
+            c?.attach(to: tabBar)
         }
         return finder
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {
-        // Update the coordinator's callbacks so closures stay fresh
-        context.coordinator.accountManager = accountManager
-        context.coordinator.onSwitch = onSwitch
-        context.coordinator.onAddAccount = onAddAccount
-        context.coordinator.onManageAccounts = onManageAccounts
+        let c = context.coordinator
+        c.accountManager = accountManager
+        c.onSwitch = onSwitch
+        c.onAddAccount = onAddAccount
+        c.onManageAccounts = onManageAccounts
 
-        // Re-attempt attachment if needed (e.g., after a trait collection change
-        // or if the first attempt failed because the tab bar wasn't ready).
         if let finder = uiView as? TabBarFinderView {
-            finder.onTabBarFound = { [weak coordinator = context.coordinator] tabBar in
-                coordinator?.attachContextMenu(to: tabBar)
-            }
-            // Trigger a re-check on each SwiftUI state update
-            if let window = uiView.window,
-               let tabBar = TabBarFinderView.findSubview(ofType: UITabBar.self, in: window) {
-                context.coordinator.attachContextMenu(to: tabBar)
-            }
+            finder.onTabBarFound = { [weak c] tabBar in c?.attach(to: tabBar) }
+            if let tabBar = finder.currentTabBar() { c.attach(to: tabBar) }
         }
     }
 
-    func makeCoordinator() -> TabBarMenuCoordinator {
-        TabBarMenuCoordinator(
-            accountManager: accountManager,
-            onSwitch: onSwitch,
-            onAddAccount: onAddAccount,
-            onManageAccounts: onManageAccounts
-        )
+    func makeCoordinator() -> Coordinator {
+        Coordinator(accountManager: accountManager, onSwitch: onSwitch,
+                    onAddAccount: onAddAccount, onManageAccounts: onManageAccounts)
     }
 }
 
-// MARK: - Context Menu Coordinator
+// MARK: - Coordinator
 
-final class TabBarMenuCoordinator: NSObject, UIContextMenuInteractionDelegate {
-    var accountManager: AccountManager
-    var onSwitch: (String) -> Void
-    var onAddAccount: () -> Void
-    var onManageAccounts: () -> Void
+extension TabBarContextMenuAttacher {
 
-    private weak var attachedTabBar: UITabBar?
-    private var previewStubView: UIView?
-    private var menuInteraction: UIContextMenuInteraction?
-    private var meTabFrameInTabBar: CGRect = .zero
+    final class Coordinator: NSObject, UIContextMenuInteractionDelegate {
+        var accountManager: AccountManager
+        var onSwitch: (String) -> Void
+        var onAddAccount: () -> Void
+        var onManageAccounts: () -> Void
 
-    init(
-        accountManager: AccountManager,
-        onSwitch: @escaping (String) -> Void,
-        onAddAccount: @escaping () -> Void,
-        onManageAccounts: @escaping () -> Void
-    ) {
-        self.accountManager = accountManager
-        self.onSwitch = onSwitch
-        self.onAddAccount = onAddAccount
-        self.onManageAccounts = onManageAccounts
-    }
+        private weak var attachedTabBar: UITabBar?
+        private var interaction: UIContextMenuInteraction?
+        /// A tiny invisible view used as the context menu preview target.
+        /// Prevents UIKit from "lifting" the actual tab bar content.
+        private var previewAnchor: UIView?
 
-    /// Attaches a UIContextMenuInteraction to the tab bar and filters by the Me tab hit area.
-    /// This path is the most reliable for long-press triggering across iOS versions.
-    func attachContextMenu(to tabBar: UITabBar) {
-        let geometry = resolveMeTabGeometry(in: tabBar)
-        meTabFrameInTabBar = geometry.frame
-
-        // Already attached to this visible tab bar
-        if let current = attachedTabBar,
-           current === tabBar,
-           current.window != nil,
-           menuInteraction != nil {
-            return
+        init(accountManager: AccountManager,
+             onSwitch: @escaping (String) -> Void,
+             onAddAccount: @escaping () -> Void,
+             onManageAccounts: @escaping () -> Void) {
+            self.accountManager = accountManager
+            self.onSwitch = onSwitch
+            self.onAddAccount = onAddAccount
+            self.onManageAccounts = onManageAccounts
         }
 
-        // Clean up old interaction
-        if let old = menuInteraction {
-            attachedTabBar?.removeInteraction(old)
+        func attach(to tabBar: UITabBar) {
+            if let current = attachedTabBar,
+               current === tabBar, current.window != nil, interaction != nil { return }
+            cleanup()
+
+            let ctx = UIContextMenuInteraction(delegate: self)
+            tabBar.addInteraction(ctx)
+            interaction = ctx
+            attachedTabBar = tabBar
+
+            // Tiny invisible anchor positioned at the Me tab center.
+            // UIKit "lifts" this instead of the real tab bar content.
+            let anchor = UIView(frame: CGRect(x: 0, y: 0, width: 1, height: 1))
+            anchor.backgroundColor = .clear
+            anchor.isUserInteractionEnabled = false
+            tabBar.addSubview(anchor)
+            previewAnchor = anchor
         }
 
-        let interaction = UIContextMenuInteraction(delegate: self)
-        tabBar.addInteraction(interaction)
-        menuInteraction = interaction
-        attachedTabBar = tabBar
-    }
-
-    // MARK: - UIContextMenuInteractionDelegate
-
-    func contextMenuInteraction(
-        _ interaction: UIContextMenuInteraction,
-        configurationForMenuAtLocation location: CGPoint
-    ) -> UIContextMenuConfiguration? {
-        guard meTabFrameInTabBar.contains(location) else { return nil }
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
-            self?.buildMenu() ?? UIMenu(title: "", children: [])
-        }
-    }
-
-    func contextMenuInteraction(
-        _ interaction: UIContextMenuInteraction,
-        previewForHighlightingMenuWithConfiguration configuration: UIContextMenuConfiguration
-    ) -> UITargetedPreview? {
-        // Invisible anchor preview used only to position the menu over the Me tab.
-        menuAnchorPreview()
-    }
-
-    func contextMenuInteraction(
-        _ interaction: UIContextMenuInteraction,
-        previewForDismissingMenuWithConfiguration configuration: UIContextMenuConfiguration
-    ) -> UITargetedPreview? {
-        // Avoid any flash/ghost rectangle on action tap.
-        nil
-    }
-
-    // MARK: - Me Tab Hit Area
-
-    private func resolveMeTabGeometry(in tabBar: UITabBar) -> (frame: CGRect, interactionView: UIView?) {
-        // Prefer actual item view geometry when we can find it.
-        if let candidate = meTabCandidateFromTabBarSubviews(in: tabBar) {
-            return (candidate.frame.insetBy(dx: -6, dy: -6), candidate.view)
+        private func cleanup() {
+            if let old = interaction { attachedTabBar?.removeInteraction(old) }
+            previewAnchor?.removeFromSuperview()
+            previewAnchor = nil
+            interaction = nil
+            attachedTabBar = nil
         }
 
-        // Fallback: split the tab bar evenly by item count.
-        let count = max(tabBar.items?.count ?? 4, 1)
-        let index = min(3, count - 1)
-        let width = tabBar.bounds.width / CGFloat(count)
-        return (
-            CGRect(
-                x: CGFloat(index) * width,
-                y: 0,
-                width: width,
-                height: tabBar.bounds.height
-            ),
-            nil
-        )
-    }
+        // MARK: - Me Tab Geometry
 
-    private func meTabCandidateFromTabBarSubviews(in tabBar: UITabBar) -> (view: UIView, frame: CGRect)? {
-        let tabBarBounds = tabBar.bounds
-        let allViews = allDescendants(of: tabBar)
+        private func meTabFrame(in tabBar: UITabBar) -> CGRect {
+            let count = max(tabBar.items?.count ?? 4, 1)
+            let meIndex = min(3, count - 1)
+            let w = tabBar.bounds.width / CGFloat(count)
+            return CGRect(x: CGFloat(meIndex) * w, y: 0,
+                          width: w, height: tabBar.bounds.height)
+        }
 
-        func collectControls(matchingClassName: Bool) -> [(view: UIView, frame: CGRect)] {
-            allViews.compactMap { rawView -> (view: UIView, frame: CGRect)? in
-                guard let control = rawView as? UIControl, control !== tabBar else { return nil }
-                let className = String(describing: type(of: control))
-                if matchingClassName && !className.contains("TabBarButton") {
-                    return nil
+        // MARK: - UIContextMenuInteractionDelegate
+
+        func contextMenuInteraction(
+            _ interaction: UIContextMenuInteraction,
+            configurationForMenuAtLocation location: CGPoint
+        ) -> UIContextMenuConfiguration? {
+            guard let tabBar = attachedTabBar else { return nil }
+
+            // Only respond if the touch is within the Me tab area
+            let frame = meTabFrame(in: tabBar)
+            guard frame.insetBy(dx: -8, dy: -8).contains(location) else { return nil }
+
+            return UIContextMenuConfiguration(
+                identifier: nil,
+                previewProvider: nil,
+                actionProvider: { [weak self] _ in self?.buildMenu() }
+            )
+        }
+
+        /// Return an invisible 1×1 anchor so UIKit doesn't lift the tab bar content.
+        func contextMenuInteraction(
+            _ interaction: UIContextMenuInteraction,
+            previewForHighlightingMenuWithConfiguration configuration: UIContextMenuConfiguration
+        ) -> UITargetedPreview? {
+            guard let anchor = previewAnchor, let tabBar = attachedTabBar else { return nil }
+            let frame = meTabFrame(in: tabBar)
+            anchor.center = CGPoint(x: frame.midX, y: 4)
+            let params = UIPreviewParameters()
+            params.backgroundColor = .clear
+            return UITargetedPreview(view: anchor, parameters: params)
+        }
+
+        func contextMenuInteraction(
+            _ interaction: UIContextMenuInteraction,
+            previewForDismissingMenuWithConfiguration configuration: UIContextMenuConfiguration
+        ) -> UITargetedPreview? {
+            guard let anchor = previewAnchor, let tabBar = attachedTabBar else { return nil }
+            let frame = meTabFrame(in: tabBar)
+            anchor.center = CGPoint(x: frame.midX, y: 4)
+            let params = UIPreviewParameters()
+            params.backgroundColor = .clear
+            return UITargetedPreview(view: anchor, parameters: params)
+        }
+
+        // MARK: - Menu Builder
+
+        private func buildMenu() -> UIMenu {
+            let isLoggedIn = AccountState.hasSignIn()
+
+            guard isLoggedIn else {
+                let login = UIAction(
+                    title: "登录",
+                    image: UIImage(systemName: "person.crop.circle.badge.plus")
+                ) { [weak self] _ in
+                    DispatchQueue.main.async { self?.onAddAccount() }
                 }
-
-                let frame = tabBar.convert(control.bounds, from: control)
-                guard frame.width > 20,
-                      frame.height > 20,
-                      tabBarBounds.intersects(frame),
-                      !control.isHidden,
-                      control.alpha > 0.01,
-                      control.isUserInteractionEnabled else {
-                    return nil
-                }
-                return (control, frame.integral)
+                return UIMenu(title: "", children: [login])
             }
-        }
 
-        var candidates = collectControls(matchingClassName: true)
-        if candidates.count < 4 {
-            candidates = collectControls(matchingClassName: false)
-        }
+            var accountActions: [UIMenuElement] = []
 
-        // Deduplicate nested/overlapping controls and sort left-to-right.
-        let sorted = candidates.sorted { lhs, rhs in
-            if abs(lhs.frame.minX - rhs.frame.minX) > 0.5 { return lhs.frame.minX < rhs.frame.minX }
-            return lhs.frame.width > rhs.frame.width
-        }
-
-        var uniqueCandidates: [(view: UIView, frame: CGRect)] = []
-        for candidate in sorted {
-            let isDuplicate = uniqueCandidates.contains { existing in
-                abs(existing.frame.minX - candidate.frame.minX) < 1 &&
-                abs(existing.frame.midY - candidate.frame.midY) < 4 &&
-                abs(existing.frame.width - candidate.frame.width) < 4
+            if let current = accountManager.currentAccount {
+                let avatar = cachedAvatar(for: current.avatar)
+                accountActions.append(
+                    UIAction(title: current.username, image: avatar, state: .on) { _ in }
+                )
             }
-            if !isDuplicate {
-                uniqueCandidates.append(candidate)
+
+            let others = accountManager.accounts.filter { $0.username != accountManager.activeUsername }
+            for account in others {
+                let avatar = cachedAvatar(for: account.avatar)
+                accountActions.append(
+                    UIAction(title: account.username, image: avatar) { [weak self] _ in
+                        DispatchQueue.main.async { self?.onSwitch(account.username) }
+                    }
+                )
             }
-        }
 
-        guard uniqueCandidates.count >= 4 else { return nil }
-        return uniqueCandidates[3]
-    }
-
-    private func allDescendants(of view: UIView) -> [UIView] {
-        var result: [UIView] = [view]
-        for subview in view.subviews {
-            result.append(contentsOf: allDescendants(of: subview))
-        }
-        return result
-    }
-
-    private func menuAnchorPreview() -> UITargetedPreview? {
-        guard let tabBar = attachedTabBar else { return nil }
-        let anchorRect = previewAnchorRect(in: tabBar)
-        guard !anchorRect.isNull, !anchorRect.isEmpty else { return nil }
-
-        let stub: UIView
-        if let existing = previewStubView {
-            stub = existing
-        } else {
-            let newView = UIView(frame: .zero)
-            newView.backgroundColor = .clear
-            newView.isOpaque = false
-            previewStubView = newView
-            stub = newView
-        }
-        stub.frame = CGRect(origin: .zero, size: anchorRect.size)
-
-        let parameters = UIPreviewParameters()
-        parameters.backgroundColor = .clear
-        // No visiblePath: keep the preview visually invisible while preserving the menu anchor point.
-
-        let target = UIPreviewTarget(container: tabBar, center: CGPoint(x: anchorRect.midX, y: anchorRect.midY))
-        return UITargetedPreview(view: stub, parameters: parameters, target: target)
-    }
-
-    private func previewAnchorRect(in tabBar: UITabBar) -> CGRect {
-        let frame = meTabFrameInTabBar.intersection(tabBar.bounds)
-        guard !frame.isNull, !frame.isEmpty else { return .null }
-
-        // Small anchor near the tab's center works well without showing any highlight.
-        let size = CGSize(width: 4, height: 4)
-        return CGRect(
-            x: frame.midX - size.width / 2,
-            y: frame.midY - size.height / 2,
-            width: size.width,
-            height: size.height
-        ).integral
-    }
-
-    private func buildMenu() -> UIMenu {
-        let isLoggedIn = AccountState.hasSignIn()
-
-        guard isLoggedIn else {
-            let login = UIAction(
-                title: "登录",
-                image: UIImage(systemName: "person.crop.circle.badge.plus")
+            var mgmtActions: [UIAction] = []
+            mgmtActions.append(UIAction(
+                title: "添加账号", image: UIImage(systemName: "plus.circle")
             ) { [weak self] _ in
                 DispatchQueue.main.async { self?.onAddAccount() }
-            }
-            return UIMenu(title: "", children: [login])
-        }
-
-        var accountActions: [UIMenuElement] = []
-
-        if let current = accountManager.currentAccount {
-            let avatar = cachedAvatar(for: current.avatar)
-            let action = UIAction(title: current.username, image: avatar, state: .on) { _ in }
-            accountActions.append(action)
-        }
-
-        let others = accountManager.accounts.filter { $0.username != accountManager.activeUsername }
-        for account in others {
-            let avatar = cachedAvatar(for: account.avatar)
-            let action = UIAction(title: account.username, image: avatar) { [weak self] _ in
-                DispatchQueue.main.async { self?.onSwitch(account.username) }
-            }
-            accountActions.append(action)
-        }
-
-        var managementActions: [UIAction] = []
-
-        managementActions.append(UIAction(
-            title: "添加账号",
-            image: UIImage(systemName: "plus.circle")
-        ) { [weak self] _ in
-            DispatchQueue.main.async { self?.onAddAccount() }
-        })
-
-        if !others.isEmpty {
-            managementActions.append(UIAction(
-                title: "账号管理",
-                image: UIImage(systemName: "person.2")
-            ) { [weak self] _ in
-                DispatchQueue.main.async { self?.onManageAccounts() }
             })
+
+            if !others.isEmpty {
+                mgmtActions.append(UIAction(
+                    title: "账号管理", image: UIImage(systemName: "person.2")
+                ) { [weak self] _ in
+                    DispatchQueue.main.async { self?.onManageAccounts() }
+                })
+            }
+
+            return UIMenu(title: "", children: [
+                UIMenu(title: "", options: .displayInline, children: accountActions),
+                UIMenu(title: "", options: .displayInline, children: mgmtActions)
+            ])
         }
 
-        let accountMenu = UIMenu(title: "", options: .displayInline, children: accountActions)
-        let managementMenu = UIMenu(title: "", options: .displayInline, children: managementActions)
+        // MARK: - Avatar Cache
 
-        return UIMenu(title: "", children: [accountMenu, managementMenu])
-    }
-
-    // MARK: - Avatar Loading
-
-    private func cachedAvatar(for urlString: String) -> UIImage? {
-        let placeholder = UIImage(systemName: "person.circle.fill")
-        guard let url = URL(string: urlString) else { return placeholder }
-
-        let cache = ImageCache.default
-        let key = url.absoluteString
-
-        if let cached = cache.retrieveImageInMemoryCache(forKey: key) {
-            return circularImage(cached, size: 24)
+        private func cachedAvatar(for urlString: String) -> UIImage? {
+            let placeholder = UIImage(systemName: "person.circle.fill")
+            guard let url = URL(string: urlString) else { return placeholder }
+            let cache = ImageCache.default
+            let key = url.absoluteString
+            if let cached = cache.retrieveImageInMemoryCache(forKey: key) {
+                return circularImage(cached, size: 24)
+            }
+            if cache.isCached(forKey: key),
+               let data = try? cache.diskStorage.value(forKey: key),
+               let img = UIImage(data: data) {
+                return circularImage(img, size: 24)
+            }
+            return placeholder
         }
 
-        if cache.isCached(forKey: key),
-           let data = try? cache.diskStorage.value(forKey: key),
-           let image = UIImage(data: data) {
-            return circularImage(image, size: 24)
-        }
-
-        return placeholder
-    }
-
-    private func circularImage(_ image: UIImage, size: CGFloat) -> UIImage {
-        let rect = CGRect(origin: .zero, size: CGSize(width: size, height: size))
-        let renderer = UIGraphicsImageRenderer(bounds: rect)
-        return renderer.image { _ in
-            UIBezierPath(ovalIn: rect).addClip()
-            image.draw(in: rect)
+        private func circularImage(_ image: UIImage, size: CGFloat) -> UIImage {
+            let rect = CGRect(origin: .zero, size: CGSize(width: size, height: size))
+            return UIGraphicsImageRenderer(bounds: rect).image { _ in
+                UIBezierPath(ovalIn: rect).addClip()
+                image.draw(in: rect)
+            }
         }
     }
 }
