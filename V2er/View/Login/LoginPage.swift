@@ -192,6 +192,13 @@ struct LoginPage: StateView {
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("取消") {
+                    bindingState.showLoginView.wrappedValue = false
+                }
+            }
+        }
     }
 
     // MARK: - Components
