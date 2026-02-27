@@ -83,6 +83,7 @@ struct SettingState: FluxState {
             // Migrate legacy global key to per-user key
             self.v2exTokenEnabled = UserDefaults.standard.bool(forKey: Self.v2exTokenEnabledKeyPrefix)
             UserDefaults.standard.set(self.v2exTokenEnabled, forKey: Self.v2exTokenEnabledKey)
+            UserDefaults.standard.removeObject(forKey: Self.v2exTokenEnabledKeyPrefix)
         }
         // Load V2EX access token from Keychain (raw, for state display)
         self.v2exAccessToken = Self.getRawV2exAccessToken() ?? ""

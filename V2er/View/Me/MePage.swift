@@ -211,7 +211,7 @@ struct MePage: BaseHomePageView {
                             Text("🔥\(checkinDays)")
                                 .font(.subheadline.weight(.medium))
                         }
-                        if checkinDays > 0 && !isCheckingIn {
+                        if checkinDays > 0 {
                             Text("·")
                                 .font(.subheadline.weight(.medium))
                         }
