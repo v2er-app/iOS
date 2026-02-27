@@ -207,7 +207,9 @@ final class AccountManager: ObservableObject {
     private func resetAppStateForSwitch() {
         let store = Store.shared
         // Reset all user-specific in-memory state
+        store.appState.loginState = LoginState()
         store.appState.feedState = FeedState()
+        store.appState.feedState.selectedTab = .all  // Reset to safe default; the persisted tab may require login
         store.appState.messageState = MessageState()
         store.appState.meState = MeState()
         store.appState.myFavoriteState = MyFavoriteState()
@@ -220,8 +222,13 @@ final class AccountManager: ObservableObject {
         store.appState.userDetailStates = [:]
         store.appState.userFeedStates = [:]
         store.appState.tagDetailStates = [:]
-        // Reload per-user V2EX access token and checkin state
+        // Reload per-user V2EX access token, token-enabled preference, and checkin state
         store.appState.settingState.v2exAccessToken = SettingState.getRawV2exAccessToken() ?? ""
+        if let enabledValue = UserDefaults.standard.object(forKey: SettingState.v2exTokenEnabledKey) {
+            store.appState.settingState.v2exTokenEnabled = (enabledValue as? Bool) ?? true
+        } else {
+            store.appState.settingState.v2exTokenEnabled = true  // Default: enabled
+        }
         store.appState.settingState.lastCheckinDate = UserDefaults.standard.object(forKey: SettingState.checkinDateKey) as? Date
         store.appState.settingState.checkinDays = UserDefaults.standard.integer(forKey: SettingState.checkinDaysKey)
         store.appState.settingState.isCheckingIn = false
