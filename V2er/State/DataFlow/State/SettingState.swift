@@ -15,7 +15,15 @@ struct SettingState: FluxState {
     static let useBuiltinBrowserKey = "useBuiltinBrowser"
     static let v2exAccessTokenKey = "v2exAccessToken"
     static let showDataSourceIndicatorKey = "showDataSourceIndicator"
-    static let v2exTokenEnabledKey = "v2exAccessTokenEnabled"
+    private static let v2exTokenEnabledKeyPrefix = "v2exAccessTokenEnabled"
+
+    /// Per-user key for V2EX token enabled preference.
+    static var v2exTokenEnabledKey: String {
+        guard let username = AccountManager.shared.activeUsername else {
+            return v2exTokenEnabledKeyPrefix
+        }
+        return "\(v2exTokenEnabledKeyPrefix).\(username)"
+    }
 
     var appearance: AppearanceMode = .system
     var autoCheckin: Bool = false
@@ -71,6 +79,11 @@ struct SettingState: FluxState {
         // Load V2EX access token enabled preference (defaults to true)
         if UserDefaults.standard.object(forKey: Self.v2exTokenEnabledKey) != nil {
             self.v2exTokenEnabled = UserDefaults.standard.bool(forKey: Self.v2exTokenEnabledKey)
+        } else if UserDefaults.standard.object(forKey: Self.v2exTokenEnabledKeyPrefix) != nil {
+            // Migrate legacy global key to per-user key
+            self.v2exTokenEnabled = UserDefaults.standard.bool(forKey: Self.v2exTokenEnabledKeyPrefix)
+            UserDefaults.standard.set(self.v2exTokenEnabled, forKey: Self.v2exTokenEnabledKey)
+            UserDefaults.standard.removeObject(forKey: Self.v2exTokenEnabledKeyPrefix)
         }
         // Load V2EX access token from Keychain (raw, for state display)
         self.v2exAccessToken = Self.getRawV2exAccessToken() ?? ""

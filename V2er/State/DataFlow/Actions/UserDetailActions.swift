@@ -34,7 +34,8 @@ struct UserDetailActions {
                     .v2ApiGet(path: "member")
 
                 if case let .success(response) = apiResult,
-                   let response = response, response.success {
+                   let response = response, response.success,
+                   response.result.username?.lowercased() == userName.lowercased() {
                     let userDetailInfo = V2APIAdapter.buildUserDetailInfo(from: response)
                     dispatch(FetchData.Done(id: id, source: .apiV2, result: .success(userDetailInfo)))
 

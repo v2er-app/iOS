@@ -45,7 +45,12 @@ struct RootHostView: View {
                 .toast(isPresented: toast.isPresented, version: toast.version.raw) {
                     DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
                 }
-                .sheet(isPresented: loginState.showLoginView) {
+                .sheet(isPresented: loginState.showLoginView, onDismiss: {
+                    // If the login sheet was dismissed without a successful login
+                    // (e.g. user cancelled during "Add Account" flow), restore the
+                    // active account's cookies that were cleared beforehand.
+                    AccountManager.shared.restoreActiveAccountCookiesIfEmpty()
+                }) {
                     NavigationStack {
                         LoginPage()
                             .navigationDestination(for: AppRoute.self) { $0.destination() }

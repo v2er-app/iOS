@@ -50,9 +50,9 @@ struct MePage: BaseHomePageView {
             // MARK: - User Banner Section
             Section {
                 userBannerView
+                    .padding(.horizontal, Spacing.md)
+                    .padding(.vertical, Spacing.sm)
             }
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.clear)
 
             // MARK: - Content Section
             Section {
@@ -115,6 +115,12 @@ struct MePage: BaseHomePageView {
         #if os(iOS)
         .listStyle(.insetGrouped)
         #endif
+        .navigationDestination(item: $navigateToUserDetail) { route in
+            route.destination()
+        }
+        .navigationDestination(item: $navigateToAllApps) { route in
+            route.destination()
+        }
         .overlay {
             if !AccountState.hasSignIn() {
                 loginOverlayView
@@ -164,84 +170,79 @@ struct MePage: BaseHomePageView {
     // MARK: - User Banner View
     @ViewBuilder
     private var userBannerView: some View {
-        VStack(spacing: Spacing.lg) {
+        VStack(spacing: Spacing.sm) {
             // Profile row
-            HStack(spacing: Spacing.lg) {
+            HStack(spacing: Spacing.md) {
                 Button {
                     navigateToProfile()
                 } label: {
-                    AvatarView(url: AccountState.avatarUrl, size: 64)
-                        .shadow(color: .black.opacity(0.08), radius: 6, y: 3)
+                    AvatarView(url: AccountState.avatarUrl, size: 48)
+                        .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
                 }
                 .buttonStyle(.plain)
 
-                VStack(alignment: .leading, spacing: Spacing.xs) {
+                VStack(alignment: .leading, spacing: 2) {
                     Button {
                         navigateToProfile()
                     } label: {
                         Text(AccountState.userName)
-                            .font(.title3.weight(.semibold))
+                            .font(.headline)
                             .foregroundColor(.primaryText)
                     }
                     .buttonStyle(.plain)
 
                     if let balance = AccountState.balance, balance.isValid() {
-                        BalanceView(balance: balance, size: 13)
+                        BalanceView(balance: balance, size: 12)
                     }
                 }
 
                 Spacer()
 
-                // Checkin Button
+                // Checkin + Streak Button
                 Button {
-                    dispatch(SettingActions.StartAutoCheckinAction())
+                    if hasCheckedInToday {
+                        dispatch(ShowToastAction(title: "今日已签到", icon: "checkmark.circle.fill"))
+                    } else {
+                        dispatch(SettingActions.StartAutoCheckinAction())
+                    }
                 } label: {
-                    HStack(spacing: Spacing.xs) {
+                    HStack(spacing: 4) {
+                        if checkinDays > 0 {
+                            Text("🔥\(checkinDays)")
+                                .font(.subheadline.weight(.medium))
+                        }
+                        if checkinDays > 0 {
+                            Text("·")
+                                .font(.subheadline.weight(.medium))
+                        }
                         if isCheckingIn {
                             ProgressView()
-                                .scaleEffect(0.8)
-                                .tint(hasCheckedInToday ? Color.secondary : Color.accentColor)
+                                .scaleEffect(0.7)
+                                .tint(.accentColor)
+                        } else if hasCheckedInToday {
+                            Image(systemName: "checkmark")
+                                .font(.caption.weight(.semibold))
+                            if checkinDays == 0 {
+                                Text("已签到")
+                                    .font(.subheadline.weight(.medium))
+                            }
                         } else {
-                            Image(systemName: hasCheckedInToday ? "checkmark.circle.fill" : "checkmark.circle")
-                                .font(.subheadline)
+                            Text("签到")
+                                .font(.subheadline.weight(.medium))
                         }
-                        Text(hasCheckedInToday ? "已签到" : "签到")
-                            .font(.subheadline.weight(.medium))
                     }
-                    .foregroundColor(hasCheckedInToday ? .secondary : .accentColor)
-                    .padding(.horizontal, Spacing.md)
-                    .padding(.vertical, Spacing.sm)
-                    .background(hasCheckedInToday ? Color.secondary.opacity(0.1) : Color.accentColor.opacity(0.1))
+                    .foregroundColor(.accentColor)
+                    .padding(.horizontal, Spacing.sm)
+                    .padding(.vertical, Spacing.xs)
+                    .background(Color.accentColor.opacity(0.1))
                     .clipShape(Capsule())
                 }
                 .disabled(isCheckingIn)
                 .accessibilityLabel(hasCheckedInToday ? "已签到" : "签到")
-                .accessibilityHint(hasCheckedInToday ? "今日已完成签到" : "点击完成每日签到")
+                .accessibilityHint(hasCheckedInToday
+                    ? "今日已完成签到\(checkinDays > 0 ? "，连续\(checkinDays)天" : "")"
+                    : "点击完成每日签到")
             }
-
-            // Streak info bar
-            if checkinDays > 0 {
-                HStack(spacing: Spacing.sm) {
-                    Image(systemName: "flame.fill")
-                        .font(.caption)
-                        .foregroundColor(.secondaryText)
-                    Text("已连续签到 \(checkinDays) 天")
-                        .font(.caption.weight(.medium))
-                        .foregroundColor(.secondaryText)
-                    Spacer()
-                }
-                .padding(.horizontal, Spacing.md)
-                .padding(.vertical, Spacing.sm)
-                .background(Color(.systemGray5).opacity(0.6))
-                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
-            }
-        }
-        .padding(.vertical, Spacing.sm)
-        .navigationDestination(item: $navigateToUserDetail) { route in
-            route.destination()
-        }
-        .navigationDestination(item: $navigateToAllApps) { route in
-            route.destination()
         }
     }
 
