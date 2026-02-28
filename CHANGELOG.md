@@ -2,6 +2,37 @@
 
 All notable changes to V2er iOS app will be documented in this file.
 
+## v1.2.11 (Build 65)
+
+### What's New
+- Added multi-account support with Telegram-style tab bar switching
+- Added authenticator app quick-launch buttons to 2FA login dialog
+- Added iOS 26 Liquid Glass effect to reply button
+- Migrated topic detail, notifications, node detail, and profile to V2EX API v2
+- Added data source indicator and redesigned Advanced Settings page
+- Fixed login expiration after account switch
+- Fixed iPad sidebar tap not working on text and icon areas
+- Fixed notification avatar and decoding issues
+
+### All Changes
+- ✨ Multi-account support with cookie archival and per-user state isolation (#192, #194)
+- ✨ Telegram-style tab bar account switching with long-press menu (#198)
+- ✨ Authenticator app quick-launch buttons in 2FA dialog
+- ✨ iOS 26 Liquid Glass effect on reply FAB (#189)
+- ✨ Migrated topic detail, notifications, node detail, and profile to V2EX API v2 (#181, #185)
+- ✨ Data source indicator and redesigned Advanced Settings (#186)
+- 🐛 Fixed login expiration after account switch and improved 2FA UX (#196)
+- 🐛 Fixed account switch identity scoping and redesigned checkin UI (#199)
+- 🐛 Fixed multi-account login state preservation and per-user data isolation (#194)
+- 🐛 Fixed iPad sidebar tap on text and icon areas (#188)
+- 🐛 Fixed notification avatar and decoding issues in API v2 mode (#185)
+- 🐛 Fixed proper error feedback on login failure (#187)
+- 🐛 Reverted notification fetch to HTML-only mode (#190)
+- 🔧 Optimized CI pipeline and WWDR certificate installation (#197)
+- 🔧 Added retry logic to gem install across workflows (#191)
+
+---
+
 ## v1.2.10 (Build 57)
 
 ### What's New
