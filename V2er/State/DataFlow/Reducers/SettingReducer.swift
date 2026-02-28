@@ -31,7 +31,7 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
 
     case let action as SettingActions.ToggleDailyHotPushAction:
         state.dailyHotPush = action.enabled
-        UserDefaults.standard.set(action.enabled, forKey: "dailyHotPush")
+        UserDefaults.standard.set(action.enabled, forKey: SettingState.dailyHotPushKey)
         if action.enabled {
             NotificationManager.shared.requestPermission { granted in
                 if granted {
@@ -51,8 +51,8 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
     case let action as SettingActions.ChangeDailyHotPushTimeAction:
         state.dailyHotPushHour = action.hour
         state.dailyHotPushMinute = action.minute
-        UserDefaults.standard.set(action.hour, forKey: "dailyHotPushHour")
-        UserDefaults.standard.set(action.minute, forKey: "dailyHotPushMinute")
+        UserDefaults.standard.set(action.hour, forKey: SettingState.dailyHotPushHourKey)
+        UserDefaults.standard.set(action.minute, forKey: SettingState.dailyHotPushMinuteKey)
         // Reschedule with new time
         if state.dailyHotPush {
             NotificationManager.shared.scheduleHotTopicNotification()

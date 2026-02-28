@@ -34,9 +34,9 @@ struct SettingState: FluxState {
     var showDataSourceIndicator: Bool = false
 
     // Daily hot push notification settings
-    private static let dailyHotPushKey = "dailyHotPush"
-    private static let dailyHotPushHourKey = "dailyHotPushHour"
-    private static let dailyHotPushMinuteKey = "dailyHotPushMinute"
+    static let dailyHotPushKey = "dailyHotPush"
+    static let dailyHotPushHourKey = "dailyHotPushHour"
+    static let dailyHotPushMinuteKey = "dailyHotPushMinute"
     var dailyHotPush: Bool = false
     var dailyHotPushHour: Int = 9
     var dailyHotPushMinute: Int = 0

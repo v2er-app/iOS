@@ -33,10 +33,13 @@ struct OtherSettingsView: View {
 
     @State private var pushTime: Date = {
         let settings = Store.shared.appState.settingState
-        var components = DateComponents()
-        components.hour = settings.dailyHotPushHour
-        components.minute = settings.dailyHotPushMinute
-        return Calendar.current.date(from: components) ?? Date()
+        let calendar = Calendar.current
+        return calendar.date(
+            bySettingHour: settings.dailyHotPushHour,
+            minute: settings.dailyHotPushMinute,
+            second: 0,
+            of: Date()
+        ) ?? Date()
     }()
 
     var body: some View {

@@ -37,8 +37,17 @@ final class NotificationManager {
 
     func checkPermission(completion: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
+            let isAllowed: Bool
+            switch settings.authorizationStatus {
+            case .authorized, .provisional, .ephemeral:
+                isAllowed = true
+            case .denied, .notDetermined:
+                isAllowed = false
+            @unknown default:
+                isAllowed = false
+            }
             DispatchQueue.main.async {
-                completion(settings.authorizationStatus == .authorized)
+                completion(isAllowed)
             }
         }
     }
@@ -93,7 +102,7 @@ final class NotificationManager {
 
         let trigger = UNCalendarNotificationTrigger(
             dateMatching: dateComponents,
-            repeats: false
+            repeats: true
         )
 
         let request = UNNotificationRequest(
@@ -116,9 +125,10 @@ final class NotificationManager {
     // MARK: - Cancel
 
     func cancelPendingNotifications() {
-        UNUserNotificationCenter.current()
-            .removePendingNotificationRequests(withIdentifiers: [Self.pendingNotificationId])
-        log("Cancelled pending hot topic notifications")
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: [Self.pendingNotificationId])
+        center.removeDeliveredNotifications(withIdentifiers: [Self.pendingNotificationId])
+        log("Cancelled hot topic notifications")
     }
 
     // MARK: - Background Task
@@ -137,19 +147,23 @@ final class NotificationManager {
         let settings = Store.shared.appState.settingState
         guard settings.dailyHotPush else { return }
 
+        // Cancel existing request before submitting new one
+        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: Self.bgTaskIdentifier)
+
         let request = BGAppRefreshTaskRequest(identifier: Self.bgTaskIdentifier)
 
         let calendar = Calendar.current
         var components = DateComponents()
         components.hour = settings.dailyHotPushHour
-        components.minute = max(0, settings.dailyHotPushMinute - 30)
+        components.minute = settings.dailyHotPushMinute
 
         if let nextDate = calendar.nextDate(
             after: Date(),
             matching: components,
             matchingPolicy: .nextTime
         ) {
-            request.earliestBeginDate = nextDate
+            let refreshDate = calendar.date(byAdding: .minute, value: -30, to: nextDate) ?? nextDate
+            request.earliestBeginDate = refreshDate
         } else {
             request.earliestBeginDate = Date(timeIntervalSinceNow: 8 * 3600)
         }
@@ -166,13 +180,15 @@ final class NotificationManager {
         scheduleBackgroundRefresh()
 
         let fetchTask = Task {
+            var didScheduleNotification = false
             let result: APIResult<ExploreInfo> = await APIService.shared.htmlGet(endpoint: .explore)
             if case .success(let info) = result, let info = info {
                 await MainActor.run {
                     self.createNotification(with: info.dailyHotInfo)
                 }
+                didScheduleNotification = true
             }
-            task.setTaskCompleted(success: true)
+            task.setTaskCompleted(success: didScheduleNotification)
         }
 
         task.expirationHandler = {
