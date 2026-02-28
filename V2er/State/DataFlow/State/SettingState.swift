@@ -33,6 +33,14 @@ struct SettingState: FluxState {
     var v2exTokenEnabled: Bool = true
     var showDataSourceIndicator: Bool = false
 
+    // Daily hot push notification settings
+    private static let dailyHotPushKey = "dailyHotPush"
+    private static let dailyHotPushHourKey = "dailyHotPushHour"
+    private static let dailyHotPushMinuteKey = "dailyHotPushMinute"
+    var dailyHotPush: Bool = false
+    var dailyHotPushHour: Int = 9
+    var dailyHotPushMinute: Int = 0
+
     // Checkin state (per-user)
     private static let checkinDateKeyPrefix = "lastCheckinDate"
     private static let checkinDaysKeyPrefix = "checkinDays"
@@ -76,6 +84,14 @@ struct SettingState: FluxState {
         self.useBuiltinBrowser = UserDefaults.standard.bool(forKey: Self.useBuiltinBrowserKey)
         // Load data source indicator preference
         self.showDataSourceIndicator = UserDefaults.standard.bool(forKey: Self.showDataSourceIndicatorKey)
+        // Load daily hot push preferences
+        self.dailyHotPush = UserDefaults.standard.bool(forKey: Self.dailyHotPushKey)
+        if UserDefaults.standard.object(forKey: Self.dailyHotPushHourKey) != nil {
+            self.dailyHotPushHour = UserDefaults.standard.integer(forKey: Self.dailyHotPushHourKey)
+        }
+        if UserDefaults.standard.object(forKey: Self.dailyHotPushMinuteKey) != nil {
+            self.dailyHotPushMinute = UserDefaults.standard.integer(forKey: Self.dailyHotPushMinuteKey)
+        }
         // Load V2EX access token enabled preference (defaults to true)
         if UserDefaults.standard.object(forKey: Self.v2exTokenEnabledKey) != nil {
             self.v2exTokenEnabled = UserDefaults.standard.bool(forKey: Self.v2exTokenEnabledKey)
@@ -290,6 +306,17 @@ struct SettingActions {
     struct ToggleV2exTokenEnabledAction: Action {
         var target: Reducer = R
         let enabled: Bool
+    }
+
+    struct ToggleDailyHotPushAction: Action {
+        var target: Reducer = R
+        let enabled: Bool
+    }
+
+    struct ChangeDailyHotPushTimeAction: Action {
+        var target: Reducer = R
+        let hour: Int
+        let minute: Int
     }
 
     struct StartAutoCheckinAction: AwaitAction {
