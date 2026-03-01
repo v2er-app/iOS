@@ -84,8 +84,10 @@ struct SettingState: FluxState {
         self.checkinDays = UserDefaults.standard.integer(forKey: Self.checkinDaysKey)
         // Load Imgur client ID
         self.imgurClientId = UserDefaults.standard.string(forKey: Self.imgurClientIdKey) ?? ""
-        // Load iCloud sync preference
-        self.iCloudSyncEnabled = UserDefaults.standard.bool(forKey: Self.iCloudSyncEnabledKey)
+        // Load iCloud sync preference (defaults to true when not set)
+        if UserDefaults.standard.object(forKey: Self.iCloudSyncEnabledKey) != nil {
+            self.iCloudSyncEnabled = UserDefaults.standard.bool(forKey: Self.iCloudSyncEnabledKey)
+        }
         // Load builtin browser preference
         self.useBuiltinBrowser = UserDefaults.standard.bool(forKey: Self.useBuiltinBrowserKey)
         // Load data source indicator preference

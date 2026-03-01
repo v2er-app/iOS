@@ -18,7 +18,7 @@ struct MyUploadsState: FluxState {
         }
         return "\(UPLOADS_KEY_PREFIX).\(username)"
     }
-    static let maxUploadsHistory = 100
+    static let maxUploadsHistory = SyncDataService.maxUploadRecords
 
     var loading = false
     var uploads: [UploadRecord]?

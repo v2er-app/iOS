@@ -25,7 +25,12 @@ struct SyncDataService {
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
         )
         descriptor.fetchLimit = maxBrowsingRecords
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            log("fetchBrowsingRecords failed: \(error)")
+            return []
+        }
     }
 
     static func saveBrowsingRecord(
@@ -46,31 +51,36 @@ struct SyncDataService {
         var descriptor = FetchDescriptor(predicate: predicate)
         descriptor.fetchLimit = 1
 
-        if let existing = try? context.fetch(descriptor).first {
-            existing.timestamp = Date.currentTimeStamp
-            existing.title = title
-            existing.avatar = avatar
-            existing.authorName = authorName
-            existing.replyUpdate = replyUpdate
-            existing.nodeName = nodeName
-            existing.nodeId = nodeId
-            existing.replyNum = replyNum
-        } else {
-            let record = BrowsingRecord(
-                topicId: topicId,
-                username: username,
-                title: title,
-                avatar: avatar,
-                authorName: authorName,
-                replyUpdate: replyUpdate,
-                nodeName: nodeName,
-                nodeId: nodeId,
-                replyNum: replyNum
-            )
-            context.insert(record)
-            trimBrowsingRecords(for: username)
+        do {
+            let results = try context.fetch(descriptor)
+            if let existing = results.first {
+                existing.timestamp = Date.currentTimeStamp
+                existing.title = title
+                existing.avatar = avatar
+                existing.authorName = authorName
+                existing.replyUpdate = replyUpdate
+                existing.nodeName = nodeName
+                existing.nodeId = nodeId
+                existing.replyNum = replyNum
+            } else {
+                let record = BrowsingRecord(
+                    topicId: topicId,
+                    username: username,
+                    title: title,
+                    avatar: avatar,
+                    authorName: authorName,
+                    replyUpdate: replyUpdate,
+                    nodeName: nodeName,
+                    nodeId: nodeId,
+                    replyNum: replyNum
+                )
+                context.insert(record)
+                trimBrowsingRecords(for: username)
+            }
+            try context.save()
+        } catch {
+            log("saveBrowsingRecord failed: \(error)")
         }
-        try? context.save()
     }
 
     private static func trimBrowsingRecords(for username: String) {
@@ -96,7 +106,12 @@ struct SyncDataService {
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
         )
         descriptor.fetchLimit = maxUploadRecords
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            log("fetchUploadRecords failed: \(error)")
+            return []
+        }
     }
 
     static func saveUploadRecord(imageUrl: String, thumbnailUrl: String, username: String) {
@@ -107,19 +122,24 @@ struct SyncDataService {
         var descriptor = FetchDescriptor(predicate: predicate)
         descriptor.fetchLimit = 1
 
-        if let existing = try? context.fetch(descriptor).first {
-            existing.timestamp = Date.currentTimeStamp
-            existing.thumbnailUrl = thumbnailUrl
-        } else {
-            let record = ImageUploadRecord(
-                imageUrl: imageUrl,
-                thumbnailUrl: thumbnailUrl,
-                username: username
-            )
-            context.insert(record)
-            trimUploadRecords(for: username)
+        do {
+            let results = try context.fetch(descriptor)
+            if let existing = results.first {
+                existing.timestamp = Date.currentTimeStamp
+                existing.thumbnailUrl = thumbnailUrl
+            } else {
+                let record = ImageUploadRecord(
+                    imageUrl: imageUrl,
+                    thumbnailUrl: thumbnailUrl,
+                    username: username
+                )
+                context.insert(record)
+                trimUploadRecords(for: username)
+            }
+            try context.save()
+        } catch {
+            log("saveUploadRecord failed: \(error)")
         }
-        try? context.save()
     }
 
     static func deleteUploadRecord(imageUrl: String, username: String) {
@@ -127,11 +147,14 @@ struct SyncDataService {
             $0.imageUrl == imageUrl && $0.username == username
         }
         let descriptor = FetchDescriptor(predicate: predicate)
-        if let records = try? context.fetch(descriptor) {
+        do {
+            let records = try context.fetch(descriptor)
             for record in records {
                 context.delete(record)
             }
-            try? context.save()
+            try context.save()
+        } catch {
+            log("deleteUploadRecord failed: \(error)")
         }
     }
 
@@ -141,9 +164,13 @@ struct SyncDataService {
         }
         var descriptor = FetchDescriptor(predicate: predicate)
         descriptor.fetchLimit = 1
-        if let record = try? context.fetch(descriptor).first {
-            record.imageData = data
-            try? context.save()
+        do {
+            if let record = try context.fetch(descriptor).first {
+                record.imageData = data
+                try context.save()
+            }
+        } catch {
+            log("updateUploadImageData failed: \(error)")
         }
     }
 
