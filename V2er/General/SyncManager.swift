@@ -13,6 +13,7 @@ final class SyncManager: ObservableObject {
     static let shared = SyncManager()
 
     private static let syncEnabledKey = "app.v2er.icloudSyncEnabled"
+    private static let cloudKitContainerID = "iCloud.v2er.app"
 
     var iCloudSyncEnabled: Bool {
         get { UserDefaults.standard.bool(forKey: Self.syncEnabledKey) }
@@ -32,21 +33,25 @@ final class SyncManager: ObservableObject {
         if UserDefaults.standard.object(forKey: Self.syncEnabledKey) == nil {
             UserDefaults.standard.set(true, forKey: Self.syncEnabledKey)
         }
-        modelContainer = Self.makeContainer(
-            cloudKit: UserDefaults.standard.bool(forKey: Self.syncEnabledKey)
-        )
-    }
-
-    private static func makeContainer(cloudKit: Bool) -> ModelContainer {
+        let useCloudKit = UserDefaults.standard.bool(forKey: Self.syncEnabledKey)
         let schema = Schema([BrowsingRecord.self, ImageUploadRecord.self])
         let config = ModelConfiguration(
             schema: schema,
-            cloudKitDatabase: cloudKit ? .automatic : .none
+            cloudKitDatabase: useCloudKit ? .private(Self.cloudKitContainerID) : .none
         )
         do {
-            return try ModelContainer(for: schema, configurations: [config])
+            modelContainer = try ModelContainer(for: schema, configurations: [config])
         } catch {
-            fatalError("Failed to create ModelContainer: \(error)")
+            log("ModelContainer with cloudKit=\(useCloudKit) failed: \(error), retrying local-only")
+            let localConfig = ModelConfiguration(
+                schema: schema,
+                cloudKitDatabase: .none
+            )
+            do {
+                modelContainer = try ModelContainer(for: schema, configurations: [localConfig])
+            } catch {
+                fatalError("Failed to create local ModelContainer: \(error)")
+            }
         }
     }
 }
