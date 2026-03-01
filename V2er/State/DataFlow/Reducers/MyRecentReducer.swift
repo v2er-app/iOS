@@ -32,24 +32,24 @@ struct MyRecentActions {
     struct LoadDataStart: AwaitAction {
         var target: Reducer = R
 
+        @MainActor
         func execute(in store: Store) async {
-            let result: [MyRecentState.Record]? = readRecordsSyncly()
-            dispatch(LoadDataDone(result: result))
-        }
-    }
-
-    private static func readRecordsSyncly() -> [MyRecentState.Record]? {
-        var records: [MyRecentState.Record]? = nil
-        do {
-            let data = Persist.read(key: MyRecentState.recordKey)
-            if let data = data {
-                records = try JSONDecoder().decode([MyRecentState.Record].self, from: data)
-                records = records?.sorted(by: >)
+            let username = AccountManager.shared.activeUsername ?? ""
+            let browsingRecords = SyncDataService.fetchBrowsingRecords(for: username)
+            let result: [MyRecentState.Record] = browsingRecords.map { br in
+                MyRecentState.Record(
+                    id: br.topicId,
+                    title: br.title,
+                    avatar: br.avatar,
+                    userName: br.authorName,
+                    replyUpdate: br.replyUpdate,
+                    nodeName: br.nodeName,
+                    nodeId: br.nodeId,
+                    replyNum: br.replyNum
+                )
             }
-        } catch {
-            log("read records failed")
+            dispatch(LoadDataDone(result: result.isEmpty ? nil : result))
         }
-        return records
     }
 
     struct LoadDataDone: Action {
@@ -61,43 +61,21 @@ struct MyRecentActions {
         var target: Reducer = R
         let data: FeedInfo.Item?
 
+        @MainActor
         func execute(in store: Store) async {
             guard let data = data else { return }
-            let newRecord: MyRecentState.Record =
-            MyRecentState.Record(id: data.id,
-                                 title: data.title,
-                                 avatar: data.avatar,
-                                 userName: data.userName,
-                                 nodeName: data.nodeName,
-                                 nodeId: data.nodeId,
-                                 replyNum: data.replyNum)
-            var records: [MyRecentState.Record] = readRecordsSyncly() ?? []
-            var isAlreadyExist = false
-            for (index, item) in records.enumerated() {
-                if item == newRecord {
-                    isAlreadyExist = true
-                    records[index] = newRecord
-                    break;
-                }
-            }
-            if !isAlreadyExist {
-                // check whether count >=max_capacity
-                let max_capacity = 50
-                if records.count >= max_capacity {
-                    // delete the oldest one
-                    records = records.sorted(by: > )
-                    records.remove(at: max_capacity - 1)
-                }
-                records.append(newRecord)
-            }
-            // Persis to disk
-            do {
-                let jsonData = try JSONEncoder().encode(records)
-                Persist.save(value: jsonData, forkey: MyRecentState.recordKey)
-                log("Record a new item: \(newRecord)")
-            } catch {
-                log("Save record: \(newRecord) failed")
-            }
+            let username = AccountManager.shared.activeUsername ?? ""
+            SyncDataService.saveBrowsingRecord(
+                topicId: data.id,
+                username: username,
+                title: data.title ?? "",
+                avatar: data.avatar ?? "",
+                authorName: data.userName ?? "",
+                nodeName: data.nodeName ?? "",
+                nodeId: data.nodeId ?? "",
+                replyNum: data.replyNum ?? ""
+            )
+            log("Recorded browsing: \(data.id)")
         }
     }
 

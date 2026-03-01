@@ -60,6 +60,11 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
         }
         followingAction = nil
 
+    case let action as SettingActions.ToggleICloudSyncAction:
+        state.iCloudSyncEnabled = action.enabled
+        UserDefaults.standard.set(action.enabled, forKey: SettingState.iCloudSyncEnabledKey)
+        followingAction = nil
+
     case let action as SettingActions.ToggleBuiltinBrowserAction:
         state.useBuiltinBrowser = action.enabled
         UserDefaults.standard.set(action.enabled, forKey: SettingState.useBuiltinBrowserKey)

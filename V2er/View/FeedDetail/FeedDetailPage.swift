@@ -562,6 +562,13 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
 
     private func uploadImage(_ image: PlatformImage) {
         isUploadingImage = true
+        #if os(iOS)
+        let originalData = image.jpegData(compressionQuality: 0.8)
+        #elseif os(macOS)
+        let originalData: Data? = image.tiffRepresentation.flatMap {
+            NSBitmapImageRep(data: $0)?.representation(using: .jpeg, properties: [.compressionFactor: 0.8])
+        }
+        #endif
         Task {
             let result = await ImgurService.shared.upload(image: image)
             await MainActor.run {
@@ -571,6 +578,11 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     // Save to upload history
                     let record = MyUploadsState.UploadRecord(imageUrl: imageUrl)
                     MyUploadsState.saveUpload(record)
+                    // Backup original image data to SwiftData
+                    if let data = originalData {
+                        let username = AccountManager.shared.activeUsername ?? ""
+                        SyncDataService.updateUploadImageData(imageUrl: imageUrl, username: username, data: data)
+                    }
                     // Insert image URL on its own line
                     let currentContent = state.replyContent
                     let prefix = currentContent.isEmpty || currentContent.hasSuffix("\n") ? "" : "\n"

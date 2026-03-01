@@ -18,7 +18,7 @@ struct MyUploadsState: FluxState {
         }
         return "\(UPLOADS_KEY_PREFIX).\(username)"
     }
-    static let maxUploadsHistory = 100
+    static let maxUploadsHistory = SyncDataService.maxUploadRecords
 
     var loading = false
     var uploads: [UploadRecord]?
@@ -56,37 +56,35 @@ struct MyUploadsState: FluxState {
         }
     }
 
-    // MARK: - Persistence
+    // MARK: - Persistence (SwiftData-backed)
 
+    @MainActor
     static func loadUploads() -> [UploadRecord] {
-        guard let data = Persist.read(key: uploadsKey) else { return [] }
-        let decoder = JSONDecoder()
-        return (try? decoder.decode([UploadRecord].self, from: data)) ?? []
+        let username = AccountManager.shared.activeUsername ?? ""
+        return SyncDataService.fetchUploadRecords(for: username).map { ir in
+            var record = UploadRecord(imageUrl: ir.imageUrl)
+            record.timestamp = ir.timestamp
+            record.thumbnailUrl = ir.thumbnailUrl.isEmpty ? nil : ir.thumbnailUrl
+            return record
+        }
     }
 
+    @MainActor
     static func saveUpload(_ record: UploadRecord) {
-        var uploads = loadUploads()
-        // Remove duplicate if exists
-        uploads.removeAll { $0.imageUrl == record.imageUrl }
-        // Add to beginning
-        uploads.insert(record, at: 0)
-        // Keep only last N uploads
-        if uploads.count > maxUploadsHistory {
-            uploads = Array(uploads.prefix(maxUploadsHistory))
-        }
-        saveUploads(uploads)
+        let username = AccountManager.shared.activeUsername ?? ""
+        SyncDataService.saveUploadRecord(
+            imageUrl: record.imageUrl,
+            thumbnailUrl: record.thumbnailUrl ?? "",
+            username: username
+        )
     }
 
-    static func saveUploads(_ uploads: [UploadRecord]) {
-        let encoder = JSONEncoder()
-        if let data = try? encoder.encode(uploads) {
-            Persist.save(value: data, forkey: uploadsKey)
-        }
-    }
-
+    @MainActor
     static func deleteUpload(_ record: UploadRecord) {
-        var uploads = loadUploads()
-        uploads.removeAll { $0.imageUrl == record.imageUrl }
-        saveUploads(uploads)
+        let username = AccountManager.shared.activeUsername ?? ""
+        SyncDataService.deleteUploadRecord(
+            imageUrl: record.imageUrl,
+            username: username
+        )
     }
 }

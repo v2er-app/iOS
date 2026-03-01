@@ -91,7 +91,7 @@ platform :ios do
       type: "appstore",
       readonly: is_ci,
       app_identifier: "v2er.app",
-      git_url: ENV["ORG_MATCH_GIT_URL"] || ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/ios-certificates.git"
+      git_url: ENV["ORG_MATCH_GIT_URL"] || ENV["MATCH_GIT_URL"] || "git@github.com:lessmorepro/ios-certificates.git"
     }
 
     if ENV["MATCH_KEYCHAIN_NAME"]

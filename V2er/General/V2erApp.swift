@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import SwiftData
 import Combine
 
 @main
@@ -26,6 +27,7 @@ struct V2erApp: App {
         setupApperance()
         NotificationManager.shared.registerBackgroundTask()
         #endif
+        MigrationService.migrateIfNeeded()
     }
 
     #if os(iOS)
@@ -41,6 +43,7 @@ struct V2erApp: App {
             RootView {
                 RootHostView()
                     .environmentObject(store)
+                    .modelContainer(SyncManager.shared.modelContainer)
             }
             .onAppear {
                 updateAppearance(store.appState.settingState.appearance)
@@ -58,6 +61,7 @@ struct V2erApp: App {
             #else
             RootHostView()
                 .environmentObject(store)
+                .modelContainer(SyncManager.shared.modelContainer)
                 .macOSLifecycle()
                 .onAppear {
                     OtherAppsManager.shared.recordLaunch()

@@ -33,6 +33,10 @@ struct SettingState: FluxState {
     var v2exTokenEnabled: Bool = true
     var showDataSourceIndicator: Bool = false
 
+    // iCloud sync
+    static let iCloudSyncEnabledKey = "app.v2er.icloudSyncEnabled"
+    var iCloudSyncEnabled: Bool = true
+
     // Daily hot push notification settings
     static let dailyHotPushKey = "dailyHotPush"
     static let dailyHotPushHourKey = "dailyHotPushHour"
@@ -80,6 +84,10 @@ struct SettingState: FluxState {
         self.checkinDays = UserDefaults.standard.integer(forKey: Self.checkinDaysKey)
         // Load Imgur client ID
         self.imgurClientId = UserDefaults.standard.string(forKey: Self.imgurClientIdKey) ?? ""
+        // Load iCloud sync preference (defaults to true when not set)
+        if UserDefaults.standard.object(forKey: Self.iCloudSyncEnabledKey) != nil {
+            self.iCloudSyncEnabled = UserDefaults.standard.bool(forKey: Self.iCloudSyncEnabledKey)
+        }
         // Load builtin browser preference
         self.useBuiltinBrowser = UserDefaults.standard.bool(forKey: Self.useBuiltinBrowserKey)
         // Load data source indicator preference
@@ -304,6 +312,11 @@ struct SettingActions {
     }
 
     struct ToggleV2exTokenEnabledAction: Action {
+        var target: Reducer = R
+        let enabled: Bool
+    }
+
+    struct ToggleICloudSyncAction: Action {
         var target: Reducer = R
         let enabled: Bool
     }

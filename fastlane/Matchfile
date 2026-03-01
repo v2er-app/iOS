@@ -1,7 +1,7 @@
 # Matchfile - Configuration for code signing
 
 # Git repository URL for storing certificates
-git_url(ENV["MATCH_GIT_URL"] || "git@github.com:graycreate/ios-certificates.git")
+git_url(ENV["MATCH_GIT_URL"] || "git@github.com:lessmorepro/ios-certificates.git")
 
 # Storage mode
 storage_mode("git")
