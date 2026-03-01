@@ -18,7 +18,6 @@ final class SyncManager: ObservableObject {
         get { UserDefaults.standard.bool(forKey: Self.syncEnabledKey) }
         set {
             UserDefaults.standard.set(newValue, forKey: Self.syncEnabledKey)
-            rebuildContainer()
         }
     }
 
@@ -29,13 +28,13 @@ final class SyncManager: ObservableObject {
     }
 
     private init() {
+        // Default to enabled for new installs
+        if UserDefaults.standard.object(forKey: Self.syncEnabledKey) == nil {
+            UserDefaults.standard.set(true, forKey: Self.syncEnabledKey)
+        }
         modelContainer = Self.makeContainer(
             cloudKit: UserDefaults.standard.bool(forKey: Self.syncEnabledKey)
         )
-    }
-
-    private func rebuildContainer() {
-        modelContainer = Self.makeContainer(cloudKit: iCloudSyncEnabled)
     }
 
     private static func makeContainer(cloudKit: Bool) -> ModelContainer {

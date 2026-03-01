@@ -137,7 +137,7 @@ struct OtherSettingsView: View {
             } header: {
                 Text("iCloud")
             } footer: {
-                Text("开启后浏览历史和上传记录将通过 iCloud 在多设备间同步")
+                Text("开启后浏览历史和上传记录将通过 iCloud 在多设备间同步。更改后需重启 App 生效。")
             }
 
         }

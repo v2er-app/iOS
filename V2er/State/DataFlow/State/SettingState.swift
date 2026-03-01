@@ -35,7 +35,7 @@ struct SettingState: FluxState {
 
     // iCloud sync
     static let iCloudSyncEnabledKey = "app.v2er.icloudSyncEnabled"
-    var iCloudSyncEnabled: Bool = false
+    var iCloudSyncEnabled: Bool = true
 
     // Daily hot push notification settings
     static let dailyHotPushKey = "dailyHotPush"
