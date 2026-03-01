@@ -38,7 +38,7 @@ struct SettingState: FluxState {
     static let dailyHotPushHourKey = "dailyHotPushHour"
     static let dailyHotPushMinuteKey = "dailyHotPushMinute"
     var dailyHotPush: Bool = false
-    var dailyHotPushHour: Int = 9
+    var dailyHotPushHour: Int = 18
     var dailyHotPushMinute: Int = 0
 
     // Checkin state (per-user)
