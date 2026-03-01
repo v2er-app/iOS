@@ -31,6 +31,10 @@ struct OtherSettingsView: View {
         store.appState.settingState.dailyHotPush
     }
 
+    private var iCloudSyncEnabled: Bool {
+        store.appState.settingState.iCloudSyncEnabled
+    }
+
     @State private var pushTime: Date = {
         let settings = Store.shared.appState.settingState
         let calendar = Calendar.current
@@ -120,6 +124,20 @@ struct OtherSettingsView: View {
                 ))
             } footer: {
                 Text("开启后站外链接将在内置浏览器中打开")
+            }
+
+            // MARK: - iCloud Section
+            Section {
+                Toggle("iCloud 同步", isOn: Binding(
+                    get: { iCloudSyncEnabled },
+                    set: { newValue in
+                        dispatch(SettingActions.ToggleICloudSyncAction(enabled: newValue))
+                    }
+                ))
+            } header: {
+                Text("iCloud")
+            } footer: {
+                Text("开启后浏览历史和上传记录将通过 iCloud 在多设备间同步")
             }
 
         }

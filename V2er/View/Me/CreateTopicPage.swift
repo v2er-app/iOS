@@ -233,6 +233,13 @@ struct CreateTopicPage: StateView {
 
     private func uploadImage(_ image: PlatformImage) {
         isUploadingImage = true
+        #if os(iOS)
+        let originalData = image.jpegData(compressionQuality: 0.8)
+        #elseif os(macOS)
+        let originalData: Data? = image.tiffRepresentation.flatMap {
+            NSBitmapImageRep(data: $0)?.representation(using: .jpeg, properties: [.compressionFactor: 0.8])
+        }
+        #endif
         Task {
             let result = await ImgurService.shared.upload(image: image)
             await MainActor.run {
@@ -241,6 +248,11 @@ struct CreateTopicPage: StateView {
                 if result.success, let imageUrl = result.imageUrl {
                     let record = MyUploadsState.UploadRecord(imageUrl: imageUrl)
                     MyUploadsState.saveUpload(record)
+                    // Backup original image data to SwiftData
+                    if let data = originalData {
+                        let username = AccountManager.shared.activeUsername ?? ""
+                        SyncDataService.updateUploadImageData(imageUrl: imageUrl, username: username, data: data)
+                    }
                     let currentContent = state.content
                     let prefix = currentContent.isEmpty || currentContent.hasSuffix("\n") ? "" : "\n"
                     store.appState.createTopicState.content += "\(prefix)\(imageUrl)\n"
