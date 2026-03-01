@@ -29,6 +29,37 @@ func settingStateReducer(_ state: SettingState, _ action: Action) -> (SettingSta
         UserDefaults.standard.set(action.enabled, forKey: "autoCheckin")
         followingAction = nil
 
+    case let action as SettingActions.ToggleDailyHotPushAction:
+        state.dailyHotPush = action.enabled
+        UserDefaults.standard.set(action.enabled, forKey: SettingState.dailyHotPushKey)
+        if action.enabled {
+            NotificationManager.shared.requestPermission { granted in
+                if granted {
+                    NotificationManager.shared.scheduleHotTopicNotification()
+                    NotificationManager.shared.scheduleBackgroundRefresh()
+                } else {
+                    // Permission denied, revert toggle
+                    dispatch(SettingActions.ToggleDailyHotPushAction(enabled: false))
+                    Toast.show("请在系统设置中允许通知")
+                }
+            }
+        } else {
+            NotificationManager.shared.cancelPendingNotifications()
+        }
+        followingAction = nil
+
+    case let action as SettingActions.ChangeDailyHotPushTimeAction:
+        state.dailyHotPushHour = action.hour
+        state.dailyHotPushMinute = action.minute
+        UserDefaults.standard.set(action.hour, forKey: SettingState.dailyHotPushHourKey)
+        UserDefaults.standard.set(action.minute, forKey: SettingState.dailyHotPushMinuteKey)
+        // Reschedule with new time
+        if state.dailyHotPush {
+            NotificationManager.shared.scheduleHotTopicNotification()
+            NotificationManager.shared.scheduleBackgroundRefresh()
+        }
+        followingAction = nil
+
     case let action as SettingActions.ToggleBuiltinBrowserAction:
         state.useBuiltinBrowser = action.enabled
         UserDefaults.standard.set(action.enabled, forKey: SettingState.useBuiltinBrowserKey)

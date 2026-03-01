@@ -116,6 +116,8 @@
 		4B4166483377264D325AD746 /* ExploreActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65F6D72251766C4DEA184AB /* ExploreActions.swift */; };
 		4B4DFCC88712A39A3B9093B7 /* NodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1937A3DA2F6122D630C11F /* NodeView.swift */; };
 		4C4ED6510E3C2780E6BAA37C /* OtherAppsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A86E8DA91317BC68D7E0D483 /* OtherAppsManager.swift */; };
+		NOTI19F3260E /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTIF28FB186 /* NotificationManager.swift */; };
+		NOTI219C0313 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTIF28FB186 /* NotificationManager.swift */; };
 		4C6ADF04884611B87D833DC2 /* iPadFeedSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575CF3490D99915BF1FCDB2F /* iPadFeedSplitView.swift */; };
 		4C81B42C47B6DFC05D939458 /* ExploreReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CA535A5448FBC8B2F9FFB19 /* ExploreReducer.swift */; };
 		4C95EB69AACB2D8ABB486F72 /* OtherSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1307B95B65FF5C26F9E29BA4 /* OtherSettingsView.swift */; };
@@ -540,6 +542,7 @@
 		A48ECC5F04B8CA6828EAC6D9 /* tomorrow.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = tomorrow.css; sourceTree = "<group>"; };
 		A556FB7401AD43A34C1BB82E /* iPadDetailNavigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadDetailNavigation.swift; sourceTree = "<group>"; };
 		A86E8DA91317BC68D7E0D483 /* OtherAppsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OtherAppsManager.swift; sourceTree = "<group>"; };
+		NOTIF28FB186 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		A8CFA14330F67535F0EDFAD1 /* SettingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingState.swift; sourceTree = "<group>"; };
 		A97150A3E10244EB1C95845E /* V2erUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2erUITests.swift; sourceTree = "<group>"; };
 		A9C99FEA1E828691E425789F /* FeedDetailPlaceholder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeedDetailPlaceholder.swift; sourceTree = "<group>"; };
@@ -739,6 +742,7 @@
 				BE14268879B4DB8930EDC318 /* Device.swift */,
 				F20FE6CF849AF688DBCA723B /* Extentions.swift */,
 				A86E8DA91317BC68D7E0D483 /* OtherAppsManager.swift */,
+				NOTIF28FB186 /* NotificationManager.swift */,
 				C47979B1D445912236974B40 /* Persist.swift */,
 				CEFEABF8E81DCAFE84CCBD6B /* RootView.swift */,
 				14172F11BF911D1E948A7C54 /* URLRouter.swift */,
@@ -1496,6 +1500,7 @@
 				EE92C58DA188C03497F70B46 /* Nodes.swift in Sources */,
 				667AFE2D221D6C4C2847C6DF /* OnlineStatsInfo.swift in Sources */,
 				2816F8921D4E198BAED403B1 /* OtherAppsManager.swift in Sources */,
+				NOTI19F3260E /* NotificationManager.swift in Sources */,
 				A215CDBB25A4FD1094FD7897 /* OtherSettingsView.swift in Sources */,
 				A215CDBB25A4FD1094FD7898 /* AdvancedSettingsView.swift in Sources */,
 				35FDA2A27850802FCC7F0D13 /* Persist.swift in Sources */,
@@ -1672,6 +1677,7 @@
 				DF7ECAC43F0B79272DA3BD54 /* Nodes.swift in Sources */,
 				5426D1B97DDFED9F53560D26 /* OnlineStatsInfo.swift in Sources */,
 				4C4ED6510E3C2780E6BAA37C /* OtherAppsManager.swift in Sources */,
+				NOTI219C0313 /* NotificationManager.swift in Sources */,
 				4C95EB69AACB2D8ABB486F72 /* OtherSettingsView.swift in Sources */,
 				4C95EB69AACB2D8ABB486F73 /* AdvancedSettingsView.swift in Sources */,
 				444AA28FDBBECF67DFFC1DF2 /* Persist.swift in Sources */,

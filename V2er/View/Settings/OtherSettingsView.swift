@@ -27,6 +27,21 @@ struct OtherSettingsView: View {
         store.appState.settingState.useBuiltinBrowser
     }
 
+    private var dailyHotPush: Bool {
+        store.appState.settingState.dailyHotPush
+    }
+
+    @State private var pushTime: Date = {
+        let settings = Store.shared.appState.settingState
+        let calendar = Calendar.current
+        return calendar.date(
+            bySettingHour: settings.dailyHotPushHour,
+            minute: settings.dailyHotPushMinute,
+            second: 0,
+            of: Date()
+        ) ?? Date()
+    }()
+
     var body: some View {
         List {
             // MARK: - Checkin Section
@@ -64,6 +79,35 @@ struct OtherSettingsView: View {
                 Text("签到")
             } footer: {
                 Text("开启后每次打开 App 时会自动尝试签到")
+            }
+
+            // MARK: - Daily Push Section
+            Section {
+                Toggle("每日热议推送", isOn: Binding(
+                    get: { dailyHotPush },
+                    set: { newValue in
+                        dispatch(SettingActions.ToggleDailyHotPushAction(enabled: newValue))
+                    }
+                ))
+
+                if dailyHotPush {
+                    DatePicker(
+                        "推送时间",
+                        selection: $pushTime,
+                        displayedComponents: .hourAndMinute
+                    )
+                    .onChange(of: pushTime) { newValue in
+                        let components = Calendar.current.dateComponents([.hour, .minute], from: newValue)
+                        dispatch(SettingActions.ChangeDailyHotPushTimeAction(
+                            hour: components.hour ?? 9,
+                            minute: components.minute ?? 0
+                        ))
+                    }
+                }
+            } header: {
+                Text("通知")
+            } footer: {
+                Text("开启后将在设定时间推送今日热议帖子")
             }
 
             // MARK: - Browser Section

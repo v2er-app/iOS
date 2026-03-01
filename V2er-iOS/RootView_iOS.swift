@@ -58,6 +58,7 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
 
     @objc private func handleAppBecameActive() {
         checkAutoCheckin()
+        scheduleDailyHotPush()
     }
 
     private func checkAutoCheckin() {
@@ -70,6 +71,15 @@ class RootHostingController<Content: View>: UIHostingController<Content> {
             guard !settings.isCheckingIn else { return }
 
             dispatch(SettingActions.StartAutoCheckinAction())
+        }
+    }
+
+    private func scheduleDailyHotPush() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            let settings = Store.shared.appState.settingState
+            guard settings.dailyHotPush else { return }
+            NotificationManager.shared.scheduleHotTopicNotification()
+            NotificationManager.shared.scheduleBackgroundRefresh()
         }
     }
 
