@@ -13,13 +13,47 @@ import UserNotifications
 import BackgroundTasks
 #endif
 
-final class NotificationManager {
+final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationManager()
     static let bgTaskIdentifier = "v2er.app.dailyHotRefresh"
     private static let notificationCategoryId = "dailyHotTopics"
     private static let pendingNotificationId = "dailyHotTopicNotification"
 
-    private init() {}
+    private override init() {
+        super.init()
+    }
+
+    /// Sets this manager as the notification center delegate. Must be called early in app lifecycle.
+    func setupDelegate() {
+        UNUserNotificationCenter.current().delegate = self
+    }
+
+    // MARK: - UNUserNotificationCenterDelegate
+
+    /// Called when user taps a delivered notification.
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let categoryId = response.notification.request.content.categoryIdentifier
+        if categoryId == Self.notificationCategoryId {
+            DispatchQueue.main.async {
+                dispatch(TabbarClickAction(selectedTab: .explore))
+                completionHandler()
+            }
+        } else {
+            completionHandler()
+        }
+    }
+
+    /// Show notification banner even when app is in foreground.
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        return [.banner, .sound]
+    }
 
     // MARK: - Permission
 

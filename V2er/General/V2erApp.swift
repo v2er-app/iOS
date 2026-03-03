@@ -27,6 +27,7 @@ struct V2erApp: App {
         setupApperance()
         NotificationManager.shared.registerBackgroundTask()
         #endif
+        NotificationManager.shared.setupDelegate()
         MigrationService.migrateIfNeeded()
     }
 
