@@ -39,10 +39,12 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
         let categoryId = response.notification.request.content.categoryIdentifier
         if categoryId == Self.notificationCategoryId {
             DispatchQueue.main.async {
-                Store.shared.appState.globalState.selectedTab = .explore
+                dispatch(TabbarClickAction(selectedTab: .explore))
+                completionHandler()
             }
+        } else {
+            completionHandler()
         }
-        completionHandler()
     }
 
     /// Show notification banner even when app is in foreground.
