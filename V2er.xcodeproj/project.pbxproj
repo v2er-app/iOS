@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B1C2D3E4F5A6789012345678 /* AdaptiveTabContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6789012345678 /* AdaptiveTabContent.swift */; };
+		C1D2E3F4A5B6789012345678 /* AdaptiveTabContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6789012345678 /* AdaptiveTabContent.swift */; };
 		015062F6C112E2A8691D0E7A /* SwiftSoupExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238B3CD211C82CC90C58162D /* SwiftSoupExtention.swift */; };
 		01DC6434A6F24C7E3F42748E /* ExploreInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80B7AF5901EDAEDD1AA42C51 /* ExploreInfo.swift */; };
 		0331510694949DD7FFF820E7 /* iPadTabSplitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24772F3892EA26EF27186B28 /* iPadTabSplitView.swift */; };
@@ -210,7 +212,6 @@
 		8A562405B6894FDDD089DDBE /* MyRecentReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96E8210C5D24C7A3A7046A1A /* MyRecentReducer.swift */; };
 		8A8A2C9C9BB655C3B6CDC7C4 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE14268879B4DB8930EDC318 /* Device.swift */; };
 		8AC426BCD1909011940CF9E4 /* RenderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35B32E5A47B0F081AFD343D /* RenderPerformanceTests.swift */; };
-		8AFD9B5DADBF830AE535710B /* iPadSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35196B8852B17320864EE6C /* iPadSidebarView.swift */; };
 		8BF9E7357A3022097C07090B /* font.css in Resources */ = {isa = PBXBuildFile; fileRef = C6A30BDFD0E639480254971C /* font.css */; };
 		8D25370B525BCCBFF2C1DC51 /* FeedbackHelperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4767211CCA1A0A236B10083 /* FeedbackHelperView.swift */; };
 		8D4941D4A63A096D50C861E4 /* NodeChooserPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C25CF68E8D043541C79E04 /* NodeChooserPage.swift */; };
@@ -232,7 +233,6 @@
 		991E58BEDE62B4EB1915988F /* GlobalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3539400DC8B89BC35793134C /* GlobalState.swift */; };
 		99B8B88D3B6F53B609BBF3C2 /* Extentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F20FE6CF849AF688DBCA723B /* Extentions.swift */; };
 		9CC96C46DEA8CEC04657503D /* HTMLToMarkdownConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 864EAD83710D1B5ACF07FB6E /* HTMLToMarkdownConverter.swift */; };
-		9CF451048B1023449CDC5F51 /* iPadSidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E35196B8852B17320864EE6C /* iPadSidebarView.swift */; };
 		9EEFD6FCAAE1E8BDFDD94808 /* SettingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8CFA14330F67535F0EDFAD1 /* SettingState.swift */; };
 		9F83BEF87805D7031A1D3B19 /* SearchStateReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E807762AB185541E0ACF3DBA /* SearchStateReducer.swift */; };
 		A02C2A6C66E2E0ABD4469BF7 /* UserDetailInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC2112E948BA98E5586DF942 /* UserDetailInfo.swift */; };
@@ -422,6 +422,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A1B2C3D4E5F6789012345678 /* AdaptiveTabContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveTabContent.swift; sourceTree = "<group>"; };
 		0054CF270DDE47BD89C9392B /* MyFavoriteReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyFavoriteReducer.swift; sourceTree = "<group>"; };
 		022AB74F5E4C5288724F2A38 /* UserFeedState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserFeedState.swift; sourceTree = "<group>"; };
 		04031A0571CA356615DA5957 /* V2erApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2erApp.swift; sourceTree = "<group>"; };
@@ -605,7 +606,6 @@
 		E21E0C5F37C228D7F18A1829 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		E274D235CF3219293292F494 /* BaseState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseState.swift; sourceTree = "<group>"; };
 		E279B5487229443097E24146 /* SettingReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingReducer.swift; sourceTree = "<group>"; };
-		E35196B8852B17320864EE6C /* iPadSidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iPadSidebarView.swift; sourceTree = "<group>"; };
 		E35B32E5A47B0F081AFD343D /* RenderPerformanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderPerformanceTests.swift; sourceTree = "<group>"; };
 		E3AE26B3D72BB20F580075FA /* MyUploadsState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyUploadsState.swift; sourceTree = "<group>"; };
 		E4F95AB53F951204CE94ECF8 /* Webview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Webview.swift; sourceTree = "<group>"; };
@@ -814,7 +814,6 @@
 			isa = PBXGroup;
 			children = (
 				575CF3490D99915BF1FCDB2F /* iPadFeedSplitView.swift */,
-				E35196B8852B17320864EE6C /* iPadSidebarView.swift */,
 				24772F3892EA26EF27186B28 /* iPadTabSplitView.swift */,
 			);
 			path = iPad;
@@ -891,6 +890,7 @@
 			isa = PBXGroup;
 			children = (
 				4DA0714B5906321E1484B665 /* TabBarContextMenuHelper.swift */,
+				A1B2C3D4E5F6789012345678 /* AdaptiveTabContent.swift */,
 				D8BA3B3D87C46D0DB4B7F943 /* RichText */,
 				E0FD784792BE29B53CB31C29 /* RichTextView */,
 				F36552FBDC2674312AFC54EE /* AvatarView.swift */,
@@ -1545,6 +1545,7 @@
 				20D29CE79DA2930A9647406B /* Spacing.swift in Sources */,
 				2E7B6A1C3135E6C2E2859816 /* SplashView.swift in Sources */,
 				5890FF45DBCBDE7909B82032 /* SplitNavigationLink.swift in Sources */,
+				B1C2D3E4F5A6789012345678 /* AdaptiveTabContent.swift in Sources */,
 				3A91EFE0640F3B624FA365F8 /* StateView.swift in Sources */,
 				27B10AEE712EB22BDE4A3B24 /* Store.swift in Sources */,
 				232900BBC8CD9669F3C5FA1D /* SwiftSoupExtention.swift in Sources */,
@@ -1588,7 +1589,6 @@
 				191B745B21343813A11FB0B8 /* iPadContentWidth.swift in Sources */,
 				ADFC6266073F991B88C08075 /* iPadDetailNavigation.swift in Sources */,
 				4C6ADF04884611B87D833DC2 /* iPadFeedSplitView.swift in Sources */,
-				9CF451048B1023449CDC5F51 /* iPadSidebarView.swift in Sources */,
 				329C49E055CEADC3C571ACCF /* iPadTabSplitView.swift in Sources */,
 				6B2B786B299F87AF91E745DB /* FeedDetailPlaceholder.swift in Sources */,
 				359E73C99D6955E784F0D219 /* FeedPlaceholder.swift in Sources */,
@@ -1726,6 +1726,7 @@
 				62A0B920DDFDB9238B3D4868 /* Spacing.swift in Sources */,
 				4AD969004646CA7BA5EBC9B7 /* SplashView.swift in Sources */,
 				CADBB9380E4464653187A496 /* SplitNavigationLink.swift in Sources */,
+				C1D2E3F4A5B6789012345678 /* AdaptiveTabContent.swift in Sources */,
 				6093A4A576B21BA56B031F38 /* StateView.swift in Sources */,
 				23AD310A7DD16B0BE59CA3DE /* Store.swift in Sources */,
 				015062F6C112E2A8691D0E7A /* SwiftSoupExtention.swift in Sources */,
@@ -1769,7 +1770,6 @@
 				A421138A89905BCEDE607DB5 /* iPadContentWidth.swift in Sources */,
 				1C328DD652D56AB56EB2DE69 /* iPadDetailNavigation.swift in Sources */,
 				5E6E6273F061852F6E1BF62A /* iPadFeedSplitView.swift in Sources */,
-				8AFD9B5DADBF830AE535710B /* iPadSidebarView.swift in Sources */,
 				0331510694949DD7FFF820E7 /* iPadTabSplitView.swift in Sources */,
 				1D9F8C0CA834CF7C52653822 /* FeedDetailPlaceholder.swift in Sources */,
 				D3ABD7F25FDA4E6B62B9E7B8 /* FeedPlaceholder.swift in Sources */,
