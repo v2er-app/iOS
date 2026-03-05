@@ -29,6 +29,14 @@ struct RootHostView: View {
         ProcessInfo.processInfo.arguments.contains("--uitesting")
     }
 
+    /// Switches to the tab requested by a notification tap (cold-start safe).
+    private func applyPendingNotificationTab() {
+        guard let tab = NotificationManager.pendingTab else { return }
+        NotificationManager.pendingTab = nil
+        guard store.appState.globalState.selectedTab != tab else { return }
+        dispatch(TabbarClickAction(selectedTab: tab))
+    }
+
     private func getTestTopicId() -> String? {
         let args = ProcessInfo.processInfo.arguments
         if let topicArgIndex = args.firstIndex(of: "--test-topic"),
@@ -87,6 +95,11 @@ struct RootHostView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     testTopicId = topicId
                 }
+            }
+        }
+        .onChange(of: launchFinished) { finished in
+            if finished {
+                applyPendingNotificationTab()
             }
         }
     }
