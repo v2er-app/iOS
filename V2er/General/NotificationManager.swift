@@ -44,8 +44,11 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
             // Set synchronously so the flag survives cold-start timing races.
             // RootHostView reads this after splash finishes (view hierarchy guaranteed ready).
             Self.pendingTab = .explore
-            // Also dispatch immediately for foreground/background cases where views are already live.
-            dispatch(TabbarClickAction(selectedTab: .explore))
+            // Only dispatch immediately when the UI is already active (foreground/background).
+            // On cold start, rely solely on pendingTab to avoid the double-async race.
+            if Store.shared.appState.globalState.launchFinished {
+                dispatch(TabbarClickAction(selectedTab: .explore))
+            }
         }
         completionHandler()
     }

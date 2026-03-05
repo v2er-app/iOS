@@ -33,7 +33,6 @@ struct RootHostView: View {
     private func applyPendingNotificationTab() {
         guard let tab = NotificationManager.pendingTab else { return }
         NotificationManager.pendingTab = nil
-        guard store.appState.globalState.selectedTab != tab else { return }
         dispatch(TabbarClickAction(selectedTab: tab))
     }
 

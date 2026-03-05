@@ -70,7 +70,7 @@ struct ExplorePage: BaseHomePageView {
                 }
             }
             .onChange(of: selecedTab) { tab in
-                if tab == .explore && !state.hasLoadedOnce {
+                if tab == .explore && !state.hasLoadedOnce && !state.refreshing {
                     dispatch(ExploreActions.FetchData.Start(autoLoad: true))
                 }
             }
