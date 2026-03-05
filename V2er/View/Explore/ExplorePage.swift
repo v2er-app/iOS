@@ -69,6 +69,11 @@ struct ExplorePage: BaseHomePageView {
                     dispatch(ExploreActions.FetchData.Start(autoLoad: true))
                 }
             }
+            .onChange(of: selecedTab) { tab in
+                if tab == .explore && !state.hasLoadedOnce && !state.refreshing {
+                    dispatch(ExploreActions.FetchData.Start(autoLoad: true))
+                }
+            }
             .navigationTitle("搜索")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)

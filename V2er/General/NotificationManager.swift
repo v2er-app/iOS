@@ -19,6 +19,9 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     private static let notificationCategoryId = "dailyHotTopics"
     private static let pendingNotificationId = "dailyHotTopicNotification"
 
+    /// Tab to switch to after splash finishes (set synchronously on notification tap).
+    static var pendingTab: TabId?
+
     private override init() {
         super.init()
     }
@@ -38,13 +41,16 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
     ) {
         let categoryId = response.notification.request.content.categoryIdentifier
         if categoryId == Self.notificationCategoryId {
-            DispatchQueue.main.async {
+            // Set synchronously so the flag survives cold-start timing races.
+            // RootHostView reads this after splash finishes (view hierarchy guaranteed ready).
+            Self.pendingTab = .explore
+            // Only dispatch immediately when the UI is already active (foreground/background).
+            // On cold start, rely solely on pendingTab to avoid the double-async race.
+            if Store.shared.appState.globalState.launchFinished {
                 dispatch(TabbarClickAction(selectedTab: .explore))
-                completionHandler()
             }
-        } else {
-            completionHandler()
         }
+        completionHandler()
     }
 
     /// Show notification banner even when app is in foreground.
