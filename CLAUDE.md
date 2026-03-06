@@ -4,27 +4,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-V2er is a V2EX forum client built for iOS using SwiftUI. It implements a Redux-like unidirectional data flow architecture for state management.
+V2er is a V2EX forum client built for iOS and macOS using SwiftUI. It implements a Redux-like unidirectional data flow architecture for state management.
+
+### Multi-Platform Structure (Single Target)
+```
+V2er/                  # Shared code (iOS + macOS)
+├── View/              # SwiftUI views organized by feature
+├── Views/Platform/    # Platform-specific views (destinationFilters)
+│   ├── RootView_iOS.swift      (iOS only)
+│   ├── RootView_macOS.swift    (macOS only)
+│   └── MenuBarCommands.swift   (macOS only)
+├── State/             # Redux-like state management
+├── DesignSystem/      # Typography, colors
+├── General/           # Utilities, extensions
+├── V2er-iOS.entitlements
+└── V2er-macOS.entitlements
+```
+
+The project uses a single XcodeGen multiplatform target (`V2er`) with `supportedDestinations: [iOS, macOS]`. Two schemes (`V2er-iOS`, `V2er-macOS`) control which platform to build.
+
+## Prerequisites
+
+1. **XcodeGen** - Install via `brew install xcodegen`
+2. Run `xcodegen generate` after cloning or after changes to `project.yml`
 
 ## Development Commands
 
-Since this is an Xcode project, most development is done through Xcode IDE. However, for command-line operations:
-
 ```bash
-# Build the project
-xcodebuild -project V2er.xcodeproj -scheme V2er -configuration Debug build
+# Generate Xcode project
+xcodegen generate
+
+# Build iOS
+xcodebuild -scheme V2er-iOS -destination 'platform=iOS Simulator,name=iPhone 16' build
+
+# Build macOS
+xcodebuild -scheme V2er-macOS build
 
 # Run tests
-xcodebuild test -project V2er.xcodeproj -scheme V2er -destination 'platform=iOS Simulator,name=iPhone 14'
-
-# Archive for App Store release
-xcodebuild archive -project V2er.xcodeproj -scheme V2er -archivePath V2er.xcarchive
-
-# Clean build folder
-xcodebuild clean -project V2er.xcodeproj -scheme V2er
-
-# Build for specific simulator
-xcodebuild -project V2er.xcodeproj -scheme V2er -sdk iphonesimulator -configuration Debug
+xcodebuild test -scheme V2er-iOS -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
 
 ## Architecture
@@ -152,7 +169,7 @@ fastlane sync_certificates
 
 ## Important Notes
 
-- Minimum iOS version: iOS 15.0
+- Minimum iOS version: iOS 18.0, macOS 15.0
 - Supported architectures: armv7, arm64
 - Orientation: Portrait only on iPhone, all orientations on iPad
 - UI Style: Light mode enforced

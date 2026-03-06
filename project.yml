@@ -35,18 +35,25 @@ packages:
     revision: 86d3f06a48d1641e348f162afc99832b42cb9ce9
 
 targets:
-  V2er-iOS:
+  V2er:
     type: application
-    platform: iOS
+    platform: auto
+    supportedDestinations: [iOS, macOS]
     sources:
       - path: V2er
         excludes:
           - "**/.DS_Store"
-          - Info.plist
-      - path: V2er-iOS
-        excludes:
-          - "**/.DS_Store"
-          - Info.plist
+          - "Views/Platform/*_iOS.swift"
+          - "Views/Platform/*_macOS.swift"
+          - "Views/Platform/MenuBarCommands.swift"
+      # iOS-only source files
+      - path: V2er/Views/Platform/RootView_iOS.swift
+        destinationFilters: [iOS]
+      # macOS-only source files
+      - path: V2er/Views/Platform/RootView_macOS.swift
+        destinationFilters: [macOS]
+      - path: V2er/Views/Platform/MenuBarCommands.swift
+        destinationFilters: [macOS]
     dependencies:
       - package: Kingfisher
       - package: SwiftSoup
@@ -56,48 +63,59 @@ targets:
         product: Atributika
     settings:
       base:
-        INFOPLIST_FILE: V2er-iOS/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: v2er.app
         PRODUCT_NAME: V2er
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        CODE_SIGN_ENTITLEMENTS: V2er/V2er-iOS.entitlements
+        CODE_SIGN_ENTITLEMENTS[sdk=macosx*]: V2er/V2er-macOS.entitlements
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: false
-    entitlements:
-      path: V2er-iOS/V2er.entitlements
-
-  V2er-macOS:
-    type: application
-    platform: macOS
-    sources:
-      - path: V2er
-        excludes:
-          - "**/.DS_Store"
-          - Info.plist
-      - path: V2er-macOS
-        excludes:
-          - "**/.DS_Store"
-          - Info.plist
-    dependencies:
-      - package: Kingfisher
-      - package: SwiftSoup
-      - package: SwiftUI-WebView
-        product: WebView
-      - package: SwiftRichText
-        product: Atributika
-    settings:
-      base:
-        INFOPLIST_FILE: V2er-macOS/Info.plist
-        PRODUCT_BUNDLE_IDENTIFIER: v2er.app
-        PRODUCT_NAME: V2er
-        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-        CODE_SIGN_ENTITLEMENTS: V2er-macOS/V2er.entitlements
+        IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+        MACOSX_DEPLOYMENT_TARGET: "15.0"
       configs:
         Debug:
           ENABLE_HARDENED_RUNTIME: false
         Release:
           ENABLE_HARDENED_RUNTIME: true
+    info:
+      path: V2er/Info.plist
+      properties:
+        CFBundleName: V2er
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        ITSAppUsesNonExemptEncryption: false
+        # iOS-specific (ignored on macOS)
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: Default Configuration
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
+        UILaunchScreen: {}
+        UIRequiredDeviceCapabilities:
+          - armv7
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIViewControllerBasedStatusBarAppearance: true
+        UIBackgroundModes:
+          - fetch
+        BGTaskSchedulerPermittedIdentifiers:
+          - v2er.app.dailyHotRefresh
+        LSApplicationQueriesSchemes:
+          - googleauthenticator
+          - msauth
+          - authy
+          - onepassword
+        # macOS-specific (ignored on iOS)
+        LSMinimumSystemVersion: "$(MACOSX_DEPLOYMENT_TARGET)"
+        NSHumanReadableCopyright: "Copyright © 2024 lessmore.io. All rights reserved."
+        LSApplicationCategoryType: public.app-category.social-networking
 
   V2erTests:
     type: bundle.unit-test
@@ -107,7 +125,7 @@ targets:
         excludes:
           - "**/.DS_Store"
     dependencies:
-      - target: V2er-iOS
+      - target: V2er
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.lessmore.V2erTests
@@ -121,18 +139,18 @@ targets:
         excludes:
           - "**/.DS_Store"
     dependencies:
-      - target: V2er-iOS
+      - target: V2er
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.lessmore.V2erUITests
         PRODUCT_NAME: V2erUITests
-        TEST_TARGET_NAME: V2er-iOS
+        TEST_TARGET_NAME: V2er
 
 schemes:
   V2er-iOS:
     build:
       targets:
-        V2er-iOS: all
+        V2er: all
         V2erUITests: [test]
     run:
       config: Debug
@@ -151,7 +169,7 @@ schemes:
   V2er-macOS:
     build:
       targets:
-        V2er-macOS: all
+        V2er: all
     run:
       config: Debug
     test:

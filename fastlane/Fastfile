@@ -248,7 +248,7 @@ platform :ios do
       team_id: ENV["ORG_TEAM_ID"] || ENV["TEAM_ID"],
       profile_name: profile_name,
       code_sign_identity: "Apple Distribution",
-      targets: ["V2er-iOS"]
+      targets: ["V2er"]
     )
 
     # Explicitly set provisioning profile for CI
@@ -256,7 +256,7 @@ platform :ios do
       update_project_provisioning(
         xcodeproj: "V2er.xcodeproj",
         profile: ENV["sigh_v2er.app_appstore_profile-path"],
-        target_filter: "V2er-iOS",
+        target_filter: "V2er",
         build_configuration: "Release"
       )
     end
