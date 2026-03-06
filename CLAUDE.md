@@ -21,7 +21,7 @@ V2er/                  # Shared code (iOS + macOS)
 └── V2er-macOS.entitlements
 ```
 
-The project uses a single XcodeGen multiplatform target (`V2er`) with `supportedDestinations: [iOS, macOS]`. Two schemes (`V2er-iOS`, `V2er-macOS`) control which platform to build.
+The project uses a single XcodeGen multiplatform target (`V2er`) with `supportedDestinations: [iOS, macOS]`. The actual platform built is determined by the selected destination/SDK (e.g. `-destination` / `-sdk` in `xcodebuild`), while the `V2er-iOS` and `V2er-macOS` schemes group build/test actions and keep CI/Fastlane configuration compatible.
 
 ## Prerequisites
 
