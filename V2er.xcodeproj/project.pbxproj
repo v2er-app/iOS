@@ -105,6 +105,7 @@
 		7B22915B8DA54170B7B6815E /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB341CA6FDFDD43EF60F38AE /* Store.swift */; };
 		7C24066AA559BCDE31221194 /* CreateReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615746B78249CF38B0FE39B8 /* CreateReducer.swift */; };
 		7E26DB9962C2823DE6A09A8E /* TagDetailPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FA9CDC6F04A893FB6481755 /* TagDetailPlaceholder.swift */; };
+		7EC454F046F7A6D37522D548 /* SelectableTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813FDDF4055D66CD261B8376 /* SelectableTextView.swift */; };
 		7F8D73ECBBBD5E60292839DF /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA25EA12E2F0012F2D5D652 /* ViewExtension.swift */; };
 		818B90FC3ACBB0D68C44072A /* Persist.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47979B1D445912236974B40 /* Persist.swift */; };
 		8229955B855791BD2282B85C /* MessageState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56272E71A683FB8F81C991B /* MessageState.swift */; };
@@ -321,6 +322,7 @@
 		7D1249C399E78E8413628C5F /* V2er-iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "V2er-iOS.entitlements"; sourceTree = "<group>"; };
 		7E8A1B58A545DF34895BBE87 /* RichContentView+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RichContentView+Preview.swift"; sourceTree = "<group>"; };
 		80B7AF5901EDAEDD1AA42C51 /* ExploreInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreInfo.swift; sourceTree = "<group>"; };
+		813FDDF4055D66CD261B8376 /* SelectableTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectableTextView.swift; sourceTree = "<group>"; };
 		81678F5CC1759D145E7DEC0B /* image_holder_loading.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = image_holder_loading.gif; sourceTree = "<group>"; };
 		820B47D342744C0D597C0968 /* TwoStepLoginInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepLoginInfo.swift; sourceTree = "<group>"; };
 		82C84B371941D17A411A1A9E /* UserDetailPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailPage.swift; sourceTree = "<group>"; };
@@ -755,6 +757,7 @@
 				7E8A1B58A545DF34895BBE87 /* RichContentView+Preview.swift */,
 				28866DF7F12A94DC2786AB0C /* RichView.swift */,
 				4105E538C21A46D2BFF8FAF5 /* RichView+Preview.swift */,
+				813FDDF4055D66CD261B8376 /* SelectableTextView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1297,6 +1300,7 @@
 				466564061E5045CF98DCCAB7 /* SearchStateReducer.swift in Sources */,
 				BD8B789C88DB1BF0C9427457 /* SectionItemView.swift in Sources */,
 				F9FA403B3D01C923B2DC6AEB /* SectionTitleView.swift in Sources */,
+				7EC454F046F7A6D37522D548 /* SelectableTextView.swift in Sources */,
 				8F5D04A9F7F0B029C51E04D2 /* SettingReducer.swift in Sources */,
 				3C7C2298626D4ECCB988121B /* SettingState.swift in Sources */,
 				4B3CAF9BC42F0420E8AE026B /* SettingsPage.swift in Sources */,

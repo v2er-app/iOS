@@ -57,8 +57,8 @@ public struct RichContentView: View {
                 ErrorView(error: error)
             } else if !contentElements.isEmpty {
                 VStack(alignment: .leading, spacing: configuration.stylesheet.body.paragraphSpacing) {
-                    ForEach(contentElements) { element in
-                        renderElement(element)
+                    ForEach(Array(groupedElements.enumerated()), id: \.offset) { _, group in
+                        renderGroup(group)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -72,22 +72,77 @@ public struct RichContentView: View {
         }
     }
 
+    // MARK: - Grouping
+
+    /// Groups consecutive text and heading elements so they render in a single UITextView for cross-paragraph selection.
+    /// Only non-text elements (images, code blocks, tables, rules) break the group.
+    private var groupedElements: [ElementGroup] {
+        var groups: [ElementGroup] = []
+        var pendingTexts: [AttributedString] = []
+
+        for element in contentElements {
+            switch element.type {
+            case .text(let attr):
+                pendingTexts.append(attr)
+            case .heading(let text, let level):
+                var headingAttr = AttributedString(text)
+                headingAttr.setCrossplatformFont(size: sizeForHeading(level), weight: configuration.stylesheet.heading.fontWeight)
+                headingAttr.foregroundColor = configuration.stylesheet.heading.color
+                pendingTexts.append(headingAttr)
+            case .horizontalRule:
+                // Treat as a paragraph break so selection can cross it
+                if !pendingTexts.isEmpty {
+                    pendingTexts.append(AttributedString("───────────────────\n"))
+                }
+            default:
+                if !pendingTexts.isEmpty {
+                    groups.append(.mergedText(pendingTexts))
+                    pendingTexts = []
+                }
+                groups.append(.single(element))
+            }
+        }
+        if !pendingTexts.isEmpty {
+            groups.append(.mergedText(pendingTexts))
+        }
+        return groups
+    }
+
     // MARK: - Rendering
+
+    @ViewBuilder
+    private func renderGroup(_ group: ElementGroup) -> some View {
+        switch group {
+        case .mergedText(let strings):
+            let merged = mergeAttributedStrings(strings)
+            SelectableTextView(
+                attributedString: merged,
+                fontSize: configuration.stylesheet.body.fontSize,
+                lineSpacing: configuration.stylesheet.body.lineSpacing,
+                onLinkTapped: onLinkTapped
+            )
+            .frame(maxWidth: .infinity, alignment: .leading)
+        case .single(let element):
+            renderElement(element)
+        }
+    }
+
+    private func mergeAttributedStrings(_ strings: [AttributedString]) -> AttributedString {
+        var result = AttributedString()
+        for (index, str) in strings.enumerated() {
+            if index > 0 {
+                result.append(AttributedString("\n\n"))
+            }
+            result.append(str)
+        }
+        return result
+    }
 
     @ViewBuilder
     private func renderElement(_ element: ContentElement) -> some View {
         switch element.type {
-        case .text(let attributedString):
-            Text(attributedString)
-                .font(.system(size: configuration.stylesheet.body.fontSize))
-                .lineSpacing(configuration.stylesheet.body.lineSpacing)
-                .textSelection(.enabled)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .environment(\.openURL, OpenURLAction { url in
-                    onLinkTapped?(url)
-                    return .handled
-                })
+        case .text:
+            EmptyView()
 
         case .codeBlock(let code, let language):
             CodeBlockAttachment(
@@ -137,17 +192,19 @@ public struct RichContentView: View {
     }
 
     private func fontForHeading(_ level: Int) -> Font {
-        let size: CGFloat
+        return .system(size: sizeForHeading(level))
+    }
+
+    private func sizeForHeading(_ level: Int) -> CGFloat {
         switch level {
-        case 1: size = configuration.stylesheet.heading.h1Size
-        case 2: size = configuration.stylesheet.heading.h2Size
-        case 3: size = configuration.stylesheet.heading.h3Size
-        case 4: size = configuration.stylesheet.heading.h4Size
-        case 5: size = configuration.stylesheet.heading.h5Size
-        case 6: size = configuration.stylesheet.heading.h6Size
-        default: size = configuration.stylesheet.heading.h1Size
+        case 1: return configuration.stylesheet.heading.h1Size
+        case 2: return configuration.stylesheet.heading.h2Size
+        case 3: return configuration.stylesheet.heading.h3Size
+        case 4: return configuration.stylesheet.heading.h4Size
+        case 5: return configuration.stylesheet.heading.h5Size
+        case 6: return configuration.stylesheet.heading.h6Size
+        default: return configuration.stylesheet.heading.h1Size
         }
-        return .system(size: size)
     }
 
     @MainActor
@@ -183,6 +240,13 @@ public struct RichContentView: View {
         }
     }
 
+}
+
+// MARK: - Element Group
+
+enum ElementGroup {
+    case mergedText([AttributedString])
+    case single(ContentElement)
 }
 
 // MARK: - Content Element

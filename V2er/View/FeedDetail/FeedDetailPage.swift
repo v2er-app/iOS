@@ -125,6 +125,28 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
     }
 
+    private func topicPlainText() -> String {
+        var text = topicTitle
+        if let html = state.model.contentInfo?.html, html.notEmpty() {
+            let plainText = html.htmlToPlainText()
+            if plainText.notEmpty() {
+                text += "\n\n" + plainText
+            }
+        }
+        return text
+    }
+
+    private func copyTopicContent() {
+        let text = topicPlainText()
+        #if os(iOS)
+        UIPasteboard.general.string = text
+        #elseif os(macOS)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        #endif
+        Toast.show("已复制")
+    }
+
     private func shareTopicContent() {
         let title = state.model.headerInfo?.title ?? "V2EX 话题"
         let urlString = APIService.baseUrlString + "/t/\(id)"
@@ -346,6 +368,12 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                 }
             }
 
+            Button {
+                copyTopicContent()
+            } label: {
+                Label("复制正文", systemImage: "doc.on.doc")
+            }
+
             // Share button
             Button {
                 shareTopicContent()
@@ -452,10 +480,7 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         } action: { _, newValue in
             updateNavTitleVisibility(scrollOffset: newValue)
         }
-        .onTapGesture {
-            replyIsFocused = false
-            collapseReplyBarIfEmpty()
-        }
+        .scrollDismissesKeyboard(.interactively)
         .overlay {
             if isInitialLoading {
                 placeholderOverlay
