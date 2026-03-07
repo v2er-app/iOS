@@ -187,20 +187,21 @@ final class AccountManager: ObservableObject {
         }
     }
 
-    /// Restores the active account's cookies if the cookie jar is empty.
-    /// Called when the "Add Account" login flow is cancelled so the
-    /// original session is recovered after cookies were cleared.
-    func restoreActiveAccountCookiesIfEmpty() {
+    /// Restores the active account's cookies from the archive.
+    /// Called when the login sheet is dismissed so the original session
+    /// is recovered — whether the user cancelled or completed login.
+    ///
+    /// The jar is cleared first to remove any stale cookies deposited
+    /// during the login flow (e.g. anonymous session cookies from the
+    /// captcha fetch that would otherwise shadow the real session).
+    func restoreActiveAccountCookies() {
         guard let username = activeUsername,
               let account = accounts.first(where: { $0.username == username }),
               !account.archivedCookies.isEmpty else { return }
 
-        let storage = HTTPCookieStorage.shared
-        let existing = storage.cookies(for: APIService.baseURL) ?? []
-        if existing.isEmpty {
-            log("Restoring cookies for \(username) after login cancel")
-            restoreCookies(account.archivedCookies)
-        }
+        APIService.shared.clearCookie()
+        log("Restoring cookies for \(username) after login sheet dismiss")
+        restoreCookies(account.archivedCookies)
     }
 
     /// On cold launch, the cookie jar may be empty (session cookies don't persist).
