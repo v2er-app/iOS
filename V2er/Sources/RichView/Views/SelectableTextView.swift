@@ -9,9 +9,10 @@ struct SelectableTextView: UIViewRepresentable {
     let fontSize: CGFloat
     let lineSpacing: CGFloat
     var onLinkTapped: ((URL) -> Void)?
+    var onSelectionCleared: (() -> Void)?
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onLinkTapped: onLinkTapped)
+        Coordinator(onLinkTapped: onLinkTapped, onSelectionCleared: onSelectionCleared)
     }
 
     func makeUIView(context: Context) -> SelfSizingTextView {
@@ -31,6 +32,14 @@ struct SelectableTextView: UIViewRepresentable {
 
     func updateUIView(_ textView: SelfSizingTextView, context: Context) {
         context.coordinator.onLinkTapped = onLinkTapped
+        context.coordinator.onSelectionCleared = onSelectionCleared
+
+        // Skip expensive NSAttributedString conversion if content hasn't changed
+        if context.coordinator.lastAttributedString == attributedString {
+            return
+        }
+        context.coordinator.lastAttributedString = attributedString
+        context.coordinator.cachedSize = nil
 
         let nsAttr = NSMutableAttributedString(attributedString)
 
@@ -48,33 +57,42 @@ struct SelectableTextView: UIViewRepresentable {
             }
         }
 
-        if let current = textView.attributedText, current.isEqual(to: nsAttr) {
-            return
-        }
-
         textView.attributedText = nsAttr
         textView.invalidateIntrinsicContentSize()
     }
 
     func sizeThatFits(_ proposal: ProposedViewSize, uiView textView: SelfSizingTextView, context: Context) -> CGSize? {
+        let width: CGFloat
         if let proposedWidth = proposal.width {
-            let fittingSize = textView.sizeThatFits(CGSize(width: proposedWidth, height: .greatestFiniteMagnitude))
-            return CGSize(width: proposedWidth, height: fittingSize.height)
+            width = proposedWidth
+        } else {
+            let viewWidth = textView.bounds.width
+            guard viewWidth > 0 else { return nil }
+            width = viewWidth
         }
 
-        let viewWidth = textView.bounds.width
-        guard viewWidth > 0 else { return nil }
+        // Return cached size if width hasn't changed
+        if let cached = context.coordinator.cachedSize, abs(cached.width - width) < 1 {
+            return cached
+        }
 
-        let fittingSize = textView.sizeThatFits(CGSize(width: viewWidth, height: .greatestFiniteMagnitude))
-        return CGSize(width: viewWidth, height: fittingSize.height)
+        let fittingSize = textView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
+        let result = CGSize(width: width, height: fittingSize.height)
+        context.coordinator.cachedSize = result
+        return result
     }
 
     class Coordinator: NSObject, UITextViewDelegate {
         var onLinkTapped: ((URL) -> Void)?
+        var onSelectionCleared: (() -> Void)?
+        var lastAttributedString: AttributedString?
+        var cachedSize: CGSize?
+        private var hasHadSelection = false
         private weak var parentScrollView: UIScrollView?
 
-        init(onLinkTapped: ((URL) -> Void)?) {
+        init(onLinkTapped: ((URL) -> Void)?, onSelectionCleared: (() -> Void)?) {
             self.onLinkTapped = onLinkTapped
+            self.onSelectionCleared = onSelectionCleared
         }
 
         func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
@@ -86,8 +104,19 @@ struct SelectableTextView: UIViewRepresentable {
             if parentScrollView == nil {
                 parentScrollView = textView.findEnclosingScrollView()
             }
-            // Disable scrolling while text is selected so cursor handles can move freely
-            parentScrollView?.isScrollEnabled = textView.selectedRange.length == 0
+            let hasSelection = textView.selectedRange.length > 0
+            parentScrollView?.isScrollEnabled = !hasSelection
+
+            if hasSelection {
+                hasHadSelection = true
+            } else if hasHadSelection {
+                hasHadSelection = false
+                // Brief delay so the user can start a new selection without dismissing
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                    guard let self, !self.hasHadSelection else { return }
+                    self.onSelectionCleared?()
+                }
+            }
         }
     }
 }
@@ -95,11 +124,21 @@ struct SelectableTextView: UIViewRepresentable {
 /// UITextView subclass that correctly reports intrinsic content size for SwiftUI.
 class SelfSizingTextView: UITextView {
     private var lastKnownWidth: CGFloat = 0
+    private var cachedIntrinsicHeight: CGFloat?
 
     override var intrinsicContentSize: CGSize {
+        if let cached = cachedIntrinsicHeight {
+            return CGSize(width: UIView.noIntrinsicMetric, height: cached)
+        }
         let width = bounds.width > 0 ? bounds.width : UIScreen.main.bounds.width
         let size = sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
+        cachedIntrinsicHeight = size.height
         return CGSize(width: UIView.noIntrinsicMetric, height: size.height)
+    }
+
+    override func invalidateIntrinsicContentSize() {
+        cachedIntrinsicHeight = nil
+        super.invalidateIntrinsicContentSize()
     }
 
     override func layoutSubviews() {
@@ -140,6 +179,10 @@ struct SelectableTextView: NSViewRepresentable {
     let lineSpacing: CGFloat
     var onLinkTapped: ((URL) -> Void)?
 
+    func makeCoordinator() -> Coordinator {
+        Coordinator()
+    }
+
     func makeNSView(context: Context) -> NSScrollView {
         let scrollView = NSTextView.scrollableTextView()
         let textView = scrollView.documentView as! NSTextView
@@ -157,6 +200,12 @@ struct SelectableTextView: NSViewRepresentable {
     func updateNSView(_ scrollView: NSScrollView, context: Context) {
         guard let textView = scrollView.documentView as? NSTextView else { return }
 
+        // Skip expensive NSAttributedString conversion if content hasn't changed
+        if context.coordinator.lastAttributedString == attributedString {
+            return
+        }
+        context.coordinator.lastAttributedString = attributedString
+
         let nsAttr = NSMutableAttributedString(attributedString)
         let style = NSMutableParagraphStyle()
         style.lineSpacing = lineSpacing
@@ -171,6 +220,10 @@ struct SelectableTextView: NSViewRepresentable {
         }
 
         textView.textStorage?.setAttributedString(nsAttr)
+    }
+
+    class Coordinator {
+        var lastAttributedString: AttributedString?
     }
 }
 #endif

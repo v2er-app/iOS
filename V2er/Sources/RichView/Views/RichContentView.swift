@@ -21,6 +21,17 @@ public struct RichContentView: View {
     @State private var error: RenderError?
     @State private var renderMetadata: RenderMetadata?
 
+    // Cache for computed groups — avoids recomputation on every body evaluation.
+    // Uses a reference type so mutation doesn't trigger extra SwiftUI re-renders.
+    private class GroupCache { var groups: [ElementGroup]? }
+    @State private var groupCache = GroupCache()
+
+    #if os(iOS)
+    /// Index of the text group currently in selection mode (UITextView).
+    /// nil means all groups render as lightweight SwiftUI Text.
+    @State private var selectingGroupIndex: Int? = nil
+    #endif
+
     // Actor for background rendering
     private let renderActor = RenderActor()
 
@@ -57,11 +68,19 @@ public struct RichContentView: View {
                 ErrorView(error: error)
             } else if !contentElements.isEmpty {
                 VStack(alignment: .leading, spacing: configuration.stylesheet.body.paragraphSpacing) {
-                    ForEach(Array(groupedElements.enumerated()), id: \.offset) { _, group in
-                        renderGroup(group)
+                    let groups = groupCache.groups ?? {
+                        let computed = computeGroupedElements()
+                        groupCache.groups = computed
+                        return computed
+                    }()
+                    ForEach(Array(groups.enumerated()), id: \.offset) { index, group in
+                        renderGroup(group, index: index)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+                #if os(iOS)
+                .onDisappear { selectingGroupIndex = nil }
+                #endif
             } else {
                 Text("No content")
                     .foregroundColor(.secondary)
@@ -74,11 +93,22 @@ public struct RichContentView: View {
 
     // MARK: - Grouping
 
-    /// Groups consecutive text and heading elements so they render in a single UITextView for cross-paragraph selection.
-    /// Only non-text elements (images, code blocks, tables, rules) break the group.
-    private var groupedElements: [ElementGroup] {
+    /// Groups consecutive text and heading elements into a single merged AttributedString
+    /// for cross-paragraph text selection. Non-text elements (images, code blocks, tables) break the group.
+    private func computeGroupedElements() -> [ElementGroup] {
         var groups: [ElementGroup] = []
         var pendingTexts: [AttributedString] = []
+
+        func flushPending() {
+            guard !pendingTexts.isEmpty else { return }
+            var merged = AttributedString()
+            for (i, str) in pendingTexts.enumerated() {
+                if i > 0 { merged.append(AttributedString("\n\n")) }
+                merged.append(str)
+            }
+            groups.append(.mergedText(merged))
+            pendingTexts = []
+        }
 
         for element in contentElements {
             switch element.type {
@@ -96,47 +126,56 @@ public struct RichContentView: View {
                     groups.append(.single(element))
                 }
             default:
-                if !pendingTexts.isEmpty {
-                    groups.append(.mergedText(pendingTexts))
-                    pendingTexts = []
-                }
+                flushPending()
                 groups.append(.single(element))
             }
         }
-        if !pendingTexts.isEmpty {
-            groups.append(.mergedText(pendingTexts))
-        }
+        flushPending()
         return groups
     }
 
     // MARK: - Rendering
 
     @ViewBuilder
-    private func renderGroup(_ group: ElementGroup) -> some View {
+    private func renderGroup(_ group: ElementGroup, index: Int) -> some View {
         switch group {
-        case .mergedText(let strings):
-            let merged = mergeAttributedStrings(strings)
-            SelectableTextView(
-                attributedString: merged,
-                fontSize: configuration.stylesheet.body.fontSize,
-                lineSpacing: configuration.stylesheet.body.lineSpacing,
-                onLinkTapped: onLinkTapped
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
+        case .mergedText(let merged):
+            #if os(iOS)
+            if selectingGroupIndex == index {
+                SelectableTextView(
+                    attributedString: merged,
+                    fontSize: configuration.stylesheet.body.fontSize,
+                    lineSpacing: configuration.stylesheet.body.lineSpacing,
+                    onLinkTapped: onLinkTapped,
+                    onSelectionCleared: { selectingGroupIndex = nil }
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                textView(for: merged)
+                    .onLongPressGesture(minimumDuration: 0.4) {
+                        selectingGroupIndex = index
+                    }
+            }
+            #else
+            textView(for: merged)
+                .textSelection(.enabled)
+            #endif
         case .single(let element):
             renderElement(element)
         }
     }
 
-    private func mergeAttributedStrings(_ strings: [AttributedString]) -> AttributedString {
-        var result = AttributedString()
-        for (index, str) in strings.enumerated() {
-            if index > 0 {
-                result.append(AttributedString("\n\n"))
-            }
-            result.append(str)
-        }
-        return result
+    @ViewBuilder
+    private func textView(for merged: AttributedString) -> some View {
+        Text(merged)
+            .font(.system(size: configuration.stylesheet.body.fontSize))
+            .lineSpacing(configuration.stylesheet.body.lineSpacing)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .environment(\.openURL, OpenURLAction { url in
+                onLinkTapped?(url)
+                return .handled
+            })
     }
 
     @ViewBuilder
@@ -224,6 +263,7 @@ public struct RichContentView: View {
             )
 
             self.contentElements = result.elements
+            self.groupCache.groups = computeGroupedElements()
             self.renderMetadata = result.metadata
             self.isLoading = false
 
@@ -246,7 +286,7 @@ public struct RichContentView: View {
 // MARK: - Element Group
 
 enum ElementGroup {
-    case mergedText([AttributedString])
+    case mergedText(AttributedString)
     case single(ContentElement)
 }
 
