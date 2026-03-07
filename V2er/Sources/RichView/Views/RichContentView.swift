@@ -21,10 +21,7 @@ public struct RichContentView: View {
     @State private var error: RenderError?
     @State private var renderMetadata: RenderMetadata?
 
-    // Cache for computed groups — avoids recomputation on every body evaluation.
-    // Uses a reference type so mutation doesn't trigger extra SwiftUI re-renders.
-    private class GroupCache { var groups: [ElementGroup]? }
-    @State private var groupCache = GroupCache()
+    @State private var groups: [ElementGroup] = []
 
     #if os(iOS)
     /// Index of the text group currently in selection mode (UITextView).
@@ -68,7 +65,6 @@ public struct RichContentView: View {
                 ErrorView(error: error)
             } else if !contentElements.isEmpty {
                 VStack(alignment: .leading, spacing: configuration.stylesheet.body.paragraphSpacing) {
-                    let groups = groupCache.groups ?? []
                     ForEach(Array(groups.enumerated()), id: \.offset) { index, group in
                         renderGroup(group, index: index)
                     }
@@ -247,8 +243,8 @@ public struct RichContentView: View {
     private func parseContent() async {
         // Already populated (e.g. from cache in init) — compute groups and skip re-parse.
         if !contentElements.isEmpty {
-            if groupCache.groups == nil {
-                groupCache.groups = computeGroupedElements()
+            if groups.isEmpty {
+                groups = computeGroupedElements()
             }
             return
         }
@@ -264,7 +260,7 @@ public struct RichContentView: View {
             )
 
             self.contentElements = result.elements
-            self.groupCache.groups = computeGroupedElements()
+            self.groups = computeGroupedElements()
             self.renderMetadata = result.metadata
             self.isLoading = false
 
