@@ -157,7 +157,7 @@ struct LoginPage: StateView {
                     .buttonStyle(PrimaryButtonStyle())
                     .disabled(!notEmpty(state.username, state.password, state.captcha) || state.logining)
 
-                    NavigationLink(value: AppRoute.webBrowser(url: APIService.baseUrlString + "/signup?r=ghui")) {
+                    Link(destination: APIService.baseURL.appendingPathComponent("signup").appending(queryItems: [URLQueryItem(name: "r", value: "ghui")])) {
                         Text("Register")
                     }
                     .buttonStyle(SecondaryButtonStyle())
