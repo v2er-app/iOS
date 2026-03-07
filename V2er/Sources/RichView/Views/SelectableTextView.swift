@@ -48,14 +48,25 @@ struct SelectableTextView: UIViewRepresentable {
             }
         }
 
+        if let current = textView.attributedText, current.isEqual(to: nsAttr) {
+            return
+        }
+
         textView.attributedText = nsAttr
         textView.invalidateIntrinsicContentSize()
     }
 
     func sizeThatFits(_ proposal: ProposedViewSize, uiView textView: SelfSizingTextView, context: Context) -> CGSize? {
-        let width = proposal.width ?? UIScreen.main.bounds.width
-        let fittingSize = textView.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude))
-        return CGSize(width: width, height: fittingSize.height)
+        if let proposedWidth = proposal.width {
+            let fittingSize = textView.sizeThatFits(CGSize(width: proposedWidth, height: .greatestFiniteMagnitude))
+            return CGSize(width: proposedWidth, height: fittingSize.height)
+        }
+
+        let viewWidth = textView.bounds.width
+        guard viewWidth > 0 else { return nil }
+
+        let fittingSize = textView.sizeThatFits(CGSize(width: viewWidth, height: .greatestFiniteMagnitude))
+        return CGSize(width: viewWidth, height: fittingSize.height)
     }
 
     class Coordinator: NSObject, UITextViewDelegate {

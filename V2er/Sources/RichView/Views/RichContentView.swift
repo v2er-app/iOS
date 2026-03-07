@@ -87,12 +87,13 @@ public struct RichContentView: View {
             case .heading(let text, let level):
                 var headingAttr = AttributedString(text)
                 headingAttr.setCrossplatformFont(size: sizeForHeading(level), weight: configuration.stylesheet.heading.fontWeight)
-                headingAttr.foregroundColor = configuration.stylesheet.heading.color
+                headingAttr.foregroundColor = configuration.stylesheet.heading.color.uiColor
                 pendingTexts.append(headingAttr)
             case .horizontalRule:
-                // Treat as a paragraph break so selection can cross it
                 if !pendingTexts.isEmpty {
                     pendingTexts.append(AttributedString("───────────────────\n"))
+                } else {
+                    groups.append(.single(element))
                 }
             default:
                 if !pendingTexts.isEmpty {
