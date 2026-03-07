@@ -7,6 +7,9 @@
 //
 
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 private struct AuthenticatorApp: Identifiable, Hashable {
     let id: String
@@ -22,7 +25,11 @@ private struct AuthenticatorApp: Identifiable, Hashable {
     ]
 
     static func installed() -> [AuthenticatorApp] {
+        #if os(iOS)
         all.filter { UIApplication.shared.canOpenURL($0.url) }
+        #else
+        []
+        #endif
     }
 }
 
@@ -77,9 +84,11 @@ struct TwoStepLoginPage: View {
                         .frame(width: 24)
 
                     TextField("验证码", text: $twoStepCode)
+                        #if os(iOS)
                         .keyboardType(.numberPad)
                         .textContentType(.oneTimeCode)
-                        .font(.title3.monospaced())
+                        #endif
+                        .font(.system(size: 20).monospaced())
                         .focused($isFocused)
                         .accessibilityLabel("两步验证码")
                         .onSubmit {
@@ -87,7 +96,7 @@ struct TwoStepLoginPage: View {
                             dispatch(LoginActions.TwoStepLogin(input: twoStepCode))
                         }
                         .onChange(of: twoStepCode) { _, newValue in
-                            let filtered = newValue.filter(\.isNumber)
+                            let filtered = newValue.filter { $0.isNumber }
                             if filtered != newValue {
                                 twoStepCode = filtered
                             }
@@ -125,7 +134,11 @@ struct TwoStepLoginPage: View {
                         ForEach(Array(installedAuthenticators.enumerated()), id: \.element.id) { index, app in
                             Button {
                                 openedAuthenticator = true
+                                #if os(iOS)
                                 UIApplication.shared.open(app.url)
+                                #elseif os(macOS)
+                                NSWorkspace.shared.open(app.url)
+                                #endif
                             } label: {
                                 HStack(spacing: Spacing.sm) {
                                     Image(systemName: app.icon)
@@ -193,6 +206,7 @@ struct TwoStepLoginPage: View {
                 installedAuthenticators = AuthenticatorApp.installed()
                 showAuthenticators = true
             }
+            #if os(iOS)
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                 guard openedAuthenticator else { return }
                 openedAuthenticator = false
@@ -202,6 +216,17 @@ struct TwoStepLoginPage: View {
                 guard cleaned.allSatisfy(\.isNumber), cleaned.count >= 6, cleaned.count <= 8 else { return }
                 twoStepCode = cleaned
             }
+            #elseif os(macOS)
+            .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+                guard openedAuthenticator else { return }
+                openedAuthenticator = false
+                guard let clip = NSPasteboard.general.string(forType: .string) else { return }
+                let trimmed = clip.trimmingCharacters(in: .whitespacesAndNewlines)
+                let cleaned = trimmed.replacingOccurrences(of: "[\\s\\-]", with: "", options: .regularExpression)
+                guard cleaned.allSatisfy(\.isNumber), cleaned.count >= 6, cleaned.count <= 8 else { return }
+                twoStepCode = cleaned
+            }
+            #endif
         }
     }
 }

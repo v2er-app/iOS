@@ -53,11 +53,15 @@ struct NodeChooserPage: View {
                         }
                     }
                 }
+                #if os(iOS)
                 .listStyle(.insetGrouped)
+                #endif
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("选择节点")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("取消") { dismiss() }
