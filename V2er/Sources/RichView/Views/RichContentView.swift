@@ -68,11 +68,7 @@ public struct RichContentView: View {
                 ErrorView(error: error)
             } else if !contentElements.isEmpty {
                 VStack(alignment: .leading, spacing: configuration.stylesheet.body.paragraphSpacing) {
-                    let groups = groupCache.groups ?? {
-                        let computed = computeGroupedElements()
-                        groupCache.groups = computed
-                        return computed
-                    }()
+                    let groups = groupCache.groups ?? []
                     ForEach(Array(groups.enumerated()), id: \.offset) { index, group in
                         renderGroup(group, index: index)
                     }
@@ -249,8 +245,13 @@ public struct RichContentView: View {
 
     @MainActor
     private func parseContent() async {
-        // Already populated (e.g. from cache in init) — skip re-parse.
-        guard contentElements.isEmpty else { return }
+        // Already populated (e.g. from cache in init) — compute groups and skip re-parse.
+        if !contentElements.isEmpty {
+            if groupCache.groups == nil {
+                groupCache.groups = computeGroupedElements()
+            }
+            return
+        }
 
         isLoading = true
         error = nil

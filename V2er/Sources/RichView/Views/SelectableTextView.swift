@@ -34,11 +34,15 @@ struct SelectableTextView: UIViewRepresentable {
         context.coordinator.onLinkTapped = onLinkTapped
         context.coordinator.onSelectionCleared = onSelectionCleared
 
-        // Skip expensive NSAttributedString conversion if content hasn't changed
-        if context.coordinator.lastAttributedString == attributedString {
+        // Skip expensive NSAttributedString conversion if inputs haven't changed
+        if context.coordinator.lastAttributedString == attributedString
+            && context.coordinator.lastFontSize == fontSize
+            && context.coordinator.lastLineSpacing == lineSpacing {
             return
         }
         context.coordinator.lastAttributedString = attributedString
+        context.coordinator.lastFontSize = fontSize
+        context.coordinator.lastLineSpacing = lineSpacing
         context.coordinator.cachedSize = nil
 
         let nsAttr = NSMutableAttributedString(attributedString)
@@ -86,6 +90,8 @@ struct SelectableTextView: UIViewRepresentable {
         var onLinkTapped: ((URL) -> Void)?
         var onSelectionCleared: (() -> Void)?
         var lastAttributedString: AttributedString?
+        var lastFontSize: CGFloat = 0
+        var lastLineSpacing: CGFloat = 0
         var cachedSize: CGSize?
         private var hasHadSelection = false
         private weak var parentScrollView: UIScrollView?
@@ -200,11 +206,15 @@ struct SelectableTextView: NSViewRepresentable {
     func updateNSView(_ scrollView: NSScrollView, context: Context) {
         guard let textView = scrollView.documentView as? NSTextView else { return }
 
-        // Skip expensive NSAttributedString conversion if content hasn't changed
-        if context.coordinator.lastAttributedString == attributedString {
+        // Skip expensive NSAttributedString conversion if inputs haven't changed
+        if context.coordinator.lastAttributedString == attributedString
+            && context.coordinator.lastFontSize == fontSize
+            && context.coordinator.lastLineSpacing == lineSpacing {
             return
         }
         context.coordinator.lastAttributedString = attributedString
+        context.coordinator.lastFontSize = fontSize
+        context.coordinator.lastLineSpacing = lineSpacing
 
         let nsAttr = NSMutableAttributedString(attributedString)
         let style = NSMutableParagraphStyle()
@@ -224,6 +234,8 @@ struct SelectableTextView: NSViewRepresentable {
 
     class Coordinator {
         var lastAttributedString: AttributedString?
+        var lastFontSize: CGFloat = 0
+        var lastLineSpacing: CGFloat = 0
     }
 }
 #endif
