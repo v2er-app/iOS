@@ -53,10 +53,10 @@ struct RootHostView: View {
                     DefaultToastView(title: toast.title.raw, icon: toast.icon.raw)
                 }
                 .sheet(isPresented: loginState.showLoginView, onDismiss: {
-                    // If the login sheet was dismissed without a successful login
-                    // (e.g. user cancelled during "Add Account" flow), restore the
-                    // active account's cookies that were cleared beforehand.
-                    AccountManager.shared.restoreActiveAccountCookiesIfEmpty()
+                    // Restore the active account's archived cookies.
+                    // The login flow's captcha fetch contaminates the cookie jar
+                    // with anonymous session cookies, so we must clear + restore.
+                    AccountManager.shared.restoreActiveAccountCookies()
                 }) {
                     NavigationStack {
                         LoginPage()
