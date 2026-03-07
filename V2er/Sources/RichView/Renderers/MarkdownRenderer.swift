@@ -7,6 +7,11 @@
 
 import Foundation
 import SwiftUI
+#if os(iOS)
+import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
 
 /// Renders Markdown content to AttributedString with styling
 @available(iOS 18.0, macOS 15.0, *)
@@ -132,7 +137,7 @@ public class MarkdownRenderer {
         default: fontSize = stylesheet.heading.h1Size
         }
 
-        attributed.font = .system(size: fontSize, weight: stylesheet.heading.fontWeight)
+        attributed.setCrossplatformFont(size: fontSize, weight: stylesheet.heading.fontWeight)
         attributed.foregroundColor = stylesheet.heading.color.uiColor
 
         // Add spacing
@@ -162,7 +167,7 @@ public class MarkdownRenderer {
         var attributed = AttributedString(code)
 
         // Apply code block styling
-        attributed.font = .system(size: stylesheet.code.blockFontSize).monospaced()
+        attributed.setCrossplatformFont(size: stylesheet.code.blockFontSize, monospace: true)
         attributed.foregroundColor = stylesheet.code.blockTextColor.uiColor
         attributed.backgroundColor = stylesheet.code.blockBackgroundColor.uiColor
 
@@ -189,7 +194,7 @@ public class MarkdownRenderer {
             result.append(AttributedString("\n"))
         } else {
             var contentAttr = renderInlineMarkdown(text)
-            contentAttr.font = .system(size: stylesheet.blockquote.fontSize)
+            contentAttr.setCrossplatformFont(size: stylesheet.blockquote.fontSize)
             contentAttr.foregroundColor = stylesheet.body.color.uiColor
             result.append(contentAttr)
             result.append(AttributedString("\n"))
@@ -293,7 +298,7 @@ public class MarkdownRenderer {
 
                 // Add bold text
                 var boldText = AttributedString(String(boldMatch.1))
-                boldText.font = .system(size: stylesheet.body.fontSize, weight: .bold)
+                boldText.setCrossplatformFont(size: stylesheet.body.fontSize, weight: .bold)
                 boldText.foregroundColor = stylesheet.body.color.uiColor
                 result.append(boldText)
 
@@ -312,7 +317,7 @@ public class MarkdownRenderer {
 
                 // Add italic text
                 var italicText = AttributedString(String(italicMatch.1))
-                italicText.font = .system(size: stylesheet.body.fontSize).italic()
+                italicText.setCrossplatformFont(size: stylesheet.body.fontSize, italic: true)
                 italicText.foregroundColor = stylesheet.body.color.uiColor
                 result.append(italicText)
 
@@ -331,7 +336,7 @@ public class MarkdownRenderer {
 
                 // Add code text
                 var codeText = AttributedString(String(codeMatch.1))
-                codeText.font = .system(size: stylesheet.code.inlineFontSize).monospaced()
+                codeText.setCrossplatformFont(size: stylesheet.code.inlineFontSize, monospace: true)
                 codeText.foregroundColor = stylesheet.code.inlineTextColor.uiColor
                 codeText.backgroundColor = stylesheet.code.inlineBackgroundColor.uiColor
                 result.append(codeText)
@@ -366,7 +371,7 @@ public class MarkdownRenderer {
                         }
                         // Render @username as mention with the @ included
                         var mentionText = AttributedString("@\(linkText)")
-                        mentionText.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight)
+                        mentionText.setCrossplatformFont(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight)
                         mentionText.foregroundColor = stylesheet.mention.textColor.uiColor
                         if let url = URL(string: linkURL) {
                             mentionText.link = url
@@ -378,7 +383,7 @@ public class MarkdownRenderer {
                             result.append(renderPlainText(beforeText))
                         }
                         var mentionText = AttributedString(linkText)
-                        mentionText.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight)
+                        mentionText.setCrossplatformFont(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight)
                         mentionText.foregroundColor = stylesheet.mention.textColor.uiColor
                         if let url = URL(string: linkURL) {
                             mentionText.link = url
@@ -392,7 +397,7 @@ public class MarkdownRenderer {
                     }
                     // Add regular link text
                     var linkAttributed = AttributedString(linkText)
-                    linkAttributed.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.link.fontWeight)
+                    linkAttributed.setCrossplatformFont(size: stylesheet.body.fontSize, weight: stylesheet.link.fontWeight)
                     linkAttributed.foregroundColor = stylesheet.link.color.uiColor
                     if stylesheet.link.underline {
                         linkAttributed.underlineStyle = .single
@@ -420,7 +425,7 @@ public class MarkdownRenderer {
                 // Add mention with color only (no background)
                 let username = String(mentionMatch.1)
                 var mentionText = AttributedString("@\(username)")
-                mentionText.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight)
+                mentionText.setCrossplatformFont(size: stylesheet.body.fontSize, weight: stylesheet.mention.fontWeight)
                 mentionText.foregroundColor = stylesheet.mention.textColor.uiColor
                 result.append(mentionText)
 
@@ -439,7 +444,7 @@ public class MarkdownRenderer {
 
                 // Add strikethrough text
                 var strikeText = AttributedString(String(strikeMatch.1))
-                strikeText.font = .system(size: stylesheet.body.fontSize)
+                strikeText.setCrossplatformFont(size: stylesheet.body.fontSize)
                 strikeText.foregroundColor = stylesheet.body.color.uiColor
                 strikeText.strikethroughStyle = .single
                 result.append(strikeText)
@@ -459,7 +464,7 @@ public class MarkdownRenderer {
 
                 // Add highlighted text
                 var highlightText = AttributedString(String(highlightMatch.1))
-                highlightText.font = .system(size: stylesheet.body.fontSize)
+                highlightText.setCrossplatformFont(size: stylesheet.body.fontSize)
                 highlightText.foregroundColor = stylesheet.body.color.uiColor
                 highlightText.backgroundColor = Color.yellow.opacity(0.3)
                 result.append(highlightText)
@@ -479,7 +484,7 @@ public class MarkdownRenderer {
 
                 // Add underlined text
                 var underlineText = AttributedString(String(underlineMatch.1))
-                underlineText.font = .system(size: stylesheet.body.fontSize)
+                underlineText.setCrossplatformFont(size: stylesheet.body.fontSize)
                 underlineText.foregroundColor = stylesheet.body.color.uiColor
                 underlineText.underlineStyle = .single
                 result.append(underlineText)
@@ -499,7 +504,7 @@ public class MarkdownRenderer {
 
                 // Add superscript text (smaller font, baseline offset)
                 var supText = AttributedString(String(supMatch.1))
-                supText.font = .system(size: stylesheet.body.fontSize * 0.7)
+                supText.setCrossplatformFont(size: stylesheet.body.fontSize * 0.7)
                 supText.foregroundColor = stylesheet.body.color.uiColor
                 supText.baselineOffset = stylesheet.body.fontSize * 0.3
                 result.append(supText)
@@ -519,7 +524,7 @@ public class MarkdownRenderer {
 
                 // Add subscript text (smaller font, negative baseline offset)
                 var subText = AttributedString(String(subMatch.1))
-                subText.font = .system(size: stylesheet.body.fontSize * 0.7)
+                subText.setCrossplatformFont(size: stylesheet.body.fontSize * 0.7)
                 subText.foregroundColor = stylesheet.body.color.uiColor
                 subText.baselineOffset = -stylesheet.body.fontSize * 0.2
                 result.append(subText)
@@ -539,7 +544,7 @@ public class MarkdownRenderer {
 
     private func renderPlainText(_ text: String) -> AttributedString {
         var attributed = AttributedString(text)
-        attributed.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.body.fontWeight)
+        attributed.setCrossplatformFont(size: stylesheet.body.fontSize, weight: stylesheet.body.fontWeight)
         attributed.foregroundColor = stylesheet.body.color.uiColor
         return attributed
     }
@@ -619,7 +624,7 @@ public class MarkdownRenderer {
 
                 // Apply header style for first row
                 if rowIndex == 0 {
-                    cellText.font = .system(size: stylesheet.body.fontSize, weight: stylesheet.table.headerFontWeight)
+                    cellText.setCrossplatformFont(size: stylesheet.body.fontSize, weight: stylesheet.table.headerFontWeight)
                 }
 
                 result.append(cellText)
@@ -645,4 +650,83 @@ public class MarkdownRenderer {
         result.append(AttributedString("\n"))
         return result
     }
+}
+
+// MARK: - Cross-platform font helper
+
+/// Sets both SwiftUI and UIKit/AppKit font attributes so the AttributedString works in both Text and UITextView.
+@available(iOS 18.0, macOS 15.0, *)
+extension AttributedString {
+    mutating func setCrossplatformFont(size: CGFloat, weight: Font.Weight = .regular, italic: Bool = false, monospace: Bool = false) {
+        // SwiftUI font
+        var swiftUIFont = Font.system(size: size, weight: weight)
+        if italic { swiftUIFont = swiftUIFont.italic() }
+        if monospace { swiftUIFont = swiftUIFont.monospaced() }
+        self.font = swiftUIFont
+
+        // UIKit/AppKit font
+        #if os(iOS)
+        let uiWeight = weight.uiFontWeight
+        var uiFont: UIFont
+        if monospace {
+            uiFont = UIFont.monospacedSystemFont(ofSize: size, weight: uiWeight)
+        } else {
+            uiFont = UIFont.systemFont(ofSize: size, weight: uiWeight)
+        }
+        if italic {
+            if let descriptor = uiFont.fontDescriptor.withSymbolicTraits(.traitItalic) {
+                uiFont = UIFont(descriptor: descriptor, size: size)
+            }
+        }
+        self.uiKit.font = uiFont
+        #elseif os(macOS)
+        let nsWeight = weight.nsFontWeight
+        var nsFont: NSFont
+        if monospace {
+            nsFont = NSFont.monospacedSystemFont(ofSize: size, weight: nsWeight)
+        } else {
+            nsFont = NSFont.systemFont(ofSize: size, weight: nsWeight)
+        }
+        if italic {
+            let descriptor = nsFont.fontDescriptor.withSymbolicTraits(.italic)
+            nsFont = NSFont(descriptor: descriptor, size: size) ?? nsFont
+        }
+        self.appKit.font = nsFont
+        #endif
+    }
+}
+
+@available(iOS 18.0, macOS 15.0, *)
+private extension Font.Weight {
+    #if os(iOS)
+    var uiFontWeight: UIFont.Weight {
+        switch self {
+        case .ultraLight: return .ultraLight
+        case .thin: return .thin
+        case .light: return .light
+        case .regular: return .regular
+        case .medium: return .medium
+        case .semibold: return .semibold
+        case .bold: return .bold
+        case .heavy: return .heavy
+        case .black: return .black
+        default: return .regular
+        }
+    }
+    #elseif os(macOS)
+    var nsFontWeight: NSFont.Weight {
+        switch self {
+        case .ultraLight: return .ultraLight
+        case .thin: return .thin
+        case .light: return .light
+        case .regular: return .regular
+        case .medium: return .medium
+        case .semibold: return .semibold
+        case .bold: return .bold
+        case .heavy: return .heavy
+        case .black: return .black
+        default: return .regular
+        }
+    }
+    #endif
 }

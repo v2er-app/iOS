@@ -59,20 +59,41 @@ struct ReplyItemView: View {
                             .font(.caption)
                             .foregroundColor(.secondaryText)
                     }
-                    Button {
-                        if !info.hadThanked {
-                            dispatch(FeedDetailActions.ThankReply(
-                                id: topicId,
-                                replyId: info.replyId,
-                                replyUserName: info.userName
-                            ))
+                    Menu {
+                        Button {
+                            let plainText = info.content.htmlToPlainText()
+                            #if os(iOS)
+                            UIPasteboard.general.string = plainText
+                            #elseif os(macOS)
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(plainText, forType: .string)
+                            #endif
+                            Toast.show("已复制")
+                        } label: {
+                            Label("复制", systemImage: "doc.on.doc")
                         }
+                        Button {
+                            dispatch(FeedDetailActions.ReplyToUser(id: topicId, userName: info.userName))
+                        } label: {
+                            Label("回复", systemImage: "arrowshape.turn.up.left")
+                        }
+                        Button {
+                            if !info.hadThanked {
+                                dispatch(FeedDetailActions.ThankReply(
+                                    id: topicId,
+                                    replyId: info.replyId,
+                                    replyUserName: info.userName
+                                ))
+                            }
+                        } label: {
+                            Label(info.hadThanked ? "已感谢" : "感谢", systemImage: info.hadThanked ? "heart.fill" : "heart")
+                        }
+                        .disabled(info.hadThanked)
                     } label: {
-                        Image(systemName: info.hadThanked ? "heart.fill" : "heart")
+                        Image(systemName: "ellipsis")
                             .font(AppFont.actionIcon)
-                            .foregroundColor(info.hadThanked ? .red : .secondaryText)
+                            .foregroundColor(.secondaryText)
                     }
-                    .disabled(info.hadThanked)
                     .minTapTarget()
                 }
 
@@ -96,7 +117,6 @@ struct ReplyItemView: View {
         .padding(Spacing.md)
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
-        .contentShape(RoundedRectangle(cornerRadius: CornerRadius.medium))
         .accessibilityElement(children: .combine)
         .accessibilityAction(named: "回复") {
             dispatch(FeedDetailActions.ReplyToUser(id: topicId, userName: info.userName))
@@ -104,13 +124,6 @@ struct ReplyItemView: View {
         .accessibilityAction(named: "感谢") {
             if !info.hadThanked {
                 dispatch(FeedDetailActions.ThankReply(id: topicId, replyId: info.replyId, replyUserName: info.userName))
-            }
-        }
-        .contextMenu {
-            Button {
-                dispatch(FeedDetailActions.ReplyToUser(id: topicId, userName: info.userName))
-            } label: {
-                Label("回复", systemImage: "arrowshape.turn.up.left")
             }
         }
         .navigationDestination(item: $navigateToRoute) { route in
