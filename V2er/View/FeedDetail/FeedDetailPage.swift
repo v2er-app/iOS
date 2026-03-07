@@ -697,7 +697,7 @@ private struct ReplyFABBackground: ViewModifier {
     var namespace: Namespace.ID
 
     func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
+        if #available(iOS 26.0, macOS 26.0, *) {
             content
                 .background(
                     Circle()
