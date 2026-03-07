@@ -467,6 +467,18 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
                     }
                 }
             }
+
+            #if os(macOS)
+            // Bottom spacer so the last reply isn't hidden behind the floating reply button.
+            // safeAreaInset with Color.clear doesn't reliably extend List scroll area on macOS.
+            if !replyBarExpanded && !state.hasMoreData {
+                Color.clear
+                    .frame(height: 80)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color(.systemGroupedBackground))
+            }
+            #endif
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
