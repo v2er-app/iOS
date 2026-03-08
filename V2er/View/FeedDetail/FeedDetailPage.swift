@@ -524,11 +524,16 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
     }
 
-    private func collapseReplyBarIfEmpty() {
-        guard !hasReplyContent else { return }
+    private func collapseReplyBar() {
+        replyIsFocused = false
         withAnimation(.spring(duration: 0.35, bounce: 0.1)) {
             replyBarExpanded = false
         }
+    }
+
+    private func collapseReplyBarIfEmpty() {
+        guard !hasReplyContent else { return }
+        collapseReplyBar()
     }
 
     private var replyFAB: some View {
@@ -547,50 +552,61 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
     }
 
     private var expandedReplyBar: some View {
-        HStack(alignment: .bottom, spacing: Spacing.sm) {
-            // Image picker button
-            if isUploadingImage {
-                ProgressView()
-                    .frame(width: 28, height: 28)
-                    .padding(.leading, Spacing.xs + 2)
-                    .padding(.vertical, 3)
-            } else {
-                UnifiedImagePickerButton(selectedImage: $selectedImage)
-                    .padding(.leading, Spacing.xs + 2)
-                    .padding(.vertical, 3)
-            }
+        VStack(spacing: 0) {
+            HStack(alignment: .bottom, spacing: Spacing.sm) {
+                // Image picker button
+                if isUploadingImage {
+                    ProgressView()
+                        .frame(width: 28, height: 28)
+                        .padding(.leading, Spacing.xs + 2)
+                        .padding(.vertical, 3)
+                } else {
+                    UnifiedImagePickerButton(selectedImage: $selectedImage)
+                        .padding(.leading, Spacing.xs + 2)
+                        .padding(.vertical, 3)
+                }
 
-            MultilineTextField("发表回复", text: bindingState.replyContent)
-                .focused($replyIsFocused)
+                MultilineTextField("发表回复", text: bindingState.replyContent)
+                    .focused($replyIsFocused)
 
-            Button {
-                replyIsFocused = false
-                dispatch(FeedDetailActions.ReplyTopic(id: id))
-            } label: {
-                Image(systemName: "arrow.up.circle.fill")
-                    .font(.title.weight(.regular))
-                    .foregroundColor(Color.accentColor.opacity(hasReplyContent ? 1.0 : 0.6))
-                    .padding(.trailing, Spacing.xs + 2)
-                    .padding(.vertical, 3)
+                Button {
+                    replyIsFocused = false
+                    dispatch(FeedDetailActions.ReplyTopic(id: id))
+                } label: {
+                    Image(systemName: "arrow.up.circle.fill")
+                        .font(.title.weight(.regular))
+                        .foregroundColor(Color.accentColor.opacity(hasReplyContent ? 1.0 : 0.6))
+                        .padding(.trailing, Spacing.xs + 2)
+                        .padding(.vertical, 3)
+                }
+                .disabled(!hasReplyContent)
+                .accessibilityLabel("发送回复")
             }
-            .disabled(!hasReplyContent)
-            .accessibilityLabel("发送回复")
+            .padding(.horizontal, Spacing.sm)
+            .padding(.vertical, Spacing.md)
         }
-        .padding(.horizontal, Spacing.sm)
-        .padding(.top, Spacing.md)
-        .padding(.bottom, Spacing.md)
-        .background(
-            RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .fill(Color(.secondarySystemGroupedBackground))
-                .matchedGeometryEffect(id: "replyBarBg", in: replyBarNamespace)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: CornerRadius.medium)
-                .stroke(Color(.separator), lineWidth: 0.5)
-        )
-        .shadow(color: .black.opacity(0.18), radius: 12, x: 0, y: -4)
+        .modifier(ExpandedReplyBarBackground(namespace: replyBarNamespace))
+        .overlay(alignment: .top) {
+            Capsule()
+                .fill(Color(.separator))
+                .frame(width: 36, height: 4)
+                .padding(.top, Spacing.xs)
+                .onTapGesture {
+                    collapseReplyBar()
+                }
+                .accessibilityLabel("收起回复")
+                .accessibilityAddTraits(.isButton)
+        }
         .padding(.horizontal, Spacing.md)
         .padding(.bottom, Spacing.sm)
+        .gesture(
+            DragGesture(minimumDistance: 12)
+                .onEnded { value in
+                    if value.translation.height > 30 {
+                        collapseReplyBar()
+                    }
+                }
+        )
         .onChange(of: selectedImage) { _, newImage in
             guard let image = newImage else { return }
             uploadImage(image)
@@ -691,6 +707,34 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         .padding(.horizontal, Spacing.lg)
     }
 
+}
+
+private struct ExpandedReplyBarBackground: ViewModifier {
+    var namespace: Namespace.ID
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, macOS 26.0, *) {
+            content
+                .background(
+                    RoundedRectangle(cornerRadius: CornerRadius.medium)
+                        .fill(Color.clear)
+                        .matchedGeometryEffect(id: "replyBarBg", in: namespace)
+                )
+                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: CornerRadius.medium))
+        } else {
+            content
+                .background(
+                    RoundedRectangle(cornerRadius: CornerRadius.medium)
+                        .fill(Color(.secondarySystemGroupedBackground))
+                        .matchedGeometryEffect(id: "replyBarBg", in: namespace)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: CornerRadius.medium)
+                        .stroke(Color(.separator), lineWidth: 0.5)
+                )
+                .shadow(color: .black.opacity(0.18), radius: 12, x: 0, y: -4)
+        }
+    }
 }
 
 private struct ReplyFABBackground: ViewModifier {
