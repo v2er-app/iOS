@@ -587,26 +587,28 @@ struct FeedDetailPage: StateView, KeyboardReadable, InstanceIdentifiable {
         }
         .modifier(ExpandedReplyBarBackground(namespace: replyBarNamespace))
         .overlay(alignment: .top) {
-            Capsule()
-                .fill(Color(.separator))
-                .frame(width: 36, height: 4)
-                .padding(.top, Spacing.xs)
-                .onTapGesture {
-                    collapseReplyBar()
-                }
-                .accessibilityLabel("收起回复")
-                .accessibilityAddTraits(.isButton)
+            Button {
+                collapseReplyBar()
+            } label: {
+                Capsule()
+                    .fill(Color(.separator))
+                    .frame(width: 36, height: 4)
+                    .padding(.vertical, Spacing.sm)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("收起回复")
+            .gesture(
+                DragGesture(minimumDistance: 12)
+                    .onEnded { value in
+                        if value.translation.height > 30 {
+                            collapseReplyBar()
+                        }
+                    }
+            )
         }
         .padding(.horizontal, Spacing.md)
         .padding(.bottom, Spacing.sm)
-        .gesture(
-            DragGesture(minimumDistance: 12)
-                .onEnded { value in
-                    if value.translation.height > 30 {
-                        collapseReplyBar()
-                    }
-                }
-        )
         .onChange(of: selectedImage) { _, newImage in
             guard let image = newImage else { return }
             uploadImage(image)
